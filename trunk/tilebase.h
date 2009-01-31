@@ -5,8 +5,16 @@
 
 #include "codebase.h" // universal code base
 #include "ddsbase.h" // volume file reader
+#include "dicombase.h" // dicom file reader
 #include "oglbase.h" // OpenGL base and window handling
 #include "tfbase.h" // transfer functions
+
+#define MAXSTR 256
+
+#define PROGNUM 2
+
+#define TILEINC 1000
+#define QUEUEINC 1000
 
 // a texture brick:
 
@@ -163,8 +171,6 @@ class tile
 
    private:
 
-   static const int MAXSTR=256;
-
    // eye parameters:
 
    float EX,EY,EZ,
@@ -181,10 +187,8 @@ class tile
 
    // fragment program loading:
 
-   const static int PROGNUM=2;
-
    static BOOLINT LOADED;
-   static GLuint PROGID[PROGNUM];
+   static GLuint PROGID[2];
 
    static void setup(char *base=NULL);
    static void destroy();
@@ -256,10 +260,6 @@ class volume
    tfunc2D *TFUNC;
 
    private:
-
-   static const int MAXSTR=256;
-
-   static const int TILEINC=1000;
 
    char BASE[MAXSTR];
 
@@ -356,10 +356,6 @@ class mipmap
 
    private:
 
-   static const int MAXSTR=256;
-
-   static const int QUEUEINC=1000;
-
    char BASE[MAXSTR];
 
    char filestr[MAXSTR];
@@ -378,6 +374,10 @@ class mipmap
 
    int *QUEUEX,*QUEUEY,*QUEUEZ;
    unsigned int QUEUEMAX,QUEUECNT,QUEUESTART,QUEUEEND;
+
+   unsigned char *readANYvolume(char *filename,
+                                unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
    unsigned char *reduce(unsigned char *data,
                          unsigned int width,unsigned int height,unsigned int depth);
@@ -404,6 +404,28 @@ class mipmap
                           unsigned int width,unsigned int height,unsigned int depth,
                           float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
                           float *gradmax=NULL);
+
+   inline float getgrad(unsigned char *data,
+                        int width,int height,int depth,
+                        int i,int j,int k,
+                        float dsx,float dsy,float dsz);
+
+   inline float getgrad2(unsigned char *data,
+                         int width,int height,int depth,
+                         int i,int j,int k,
+                         float dsx,float dsy,float dsz);
+
+   inline float getsobel(unsigned char *data,
+                         int width,int height,int depth,
+                         int i,int j,int k,
+                         float dsx,float dsy,float dsz);
+
+   inline float threshold(float x,float thres);
+
+   unsigned char *gradmagML(unsigned char *data,
+                            unsigned int width,unsigned int height,unsigned int depth,
+                            float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
+                            float *gradmax=NULL);
 
    unsigned char *variance(unsigned char *data,
                            unsigned int width,unsigned int height,unsigned int depth);
@@ -467,6 +489,10 @@ class mipmap
    inline unsigned char getscalar(unsigned char *volume,
                                   unsigned int width,unsigned int height,unsigned int depth,
                                   float x,float y,float z);
+
+   inline float getscalar(float *volume,
+                          unsigned int width,unsigned int height,unsigned int depth,
+                          float x,float y,float z);
 
    unsigned char *scale(unsigned char *volume,
                         unsigned int width,unsigned int height,unsigned int depth,

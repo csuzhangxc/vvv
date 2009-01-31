@@ -31,6 +31,8 @@ tfunc::tfunc(int res)
 
    IMPORTANCE=1.0f;
 
+   INVMODE=FALSE;
+
    PRE=new float[res];
    PGE=new float[res];
    PBE=new float[res];
@@ -152,6 +154,55 @@ float tfunc::prepow3(float x,float p)
 // quantize float to 8 bit
 unsigned char tfunc::quant(float x)
    {return((x<1.0f)?ftrc(255.0f*x+0.5f):255);}
+
+// invert the actual transfer function
+void tfunc::invert1D(BOOLINT RGBA)
+   {
+   int c;
+
+   unsigned char *ptr;
+   int R,G,B;
+
+   if (!INVMODE) return;
+
+   for (ptr=EDATA,c=0; c<RES; c++)
+      {
+      R=ptr[0];
+      G=ptr[1];
+      B=ptr[2];
+
+      *ptr++=max(max(G-R,B-R),0);
+      *ptr++=max(max(R-G,B-G),0);
+      *ptr++=max(max(R-B,G-B),0);
+
+      if (RGBA) ptr++;
+      }
+   }
+
+// invert the actual transfer function
+void tfunc::invert2D(BOOLINT RGBA)
+   {
+   int c,r;
+
+   unsigned char *ptr;
+   int R,G,B;
+
+   if (!INVMODE) return;
+
+   for (ptr=EDATA,r=0; r<RES; r++)
+      for (c=0; c<RES; c++)
+         {
+         R=ptr[0];
+         G=ptr[1];
+         B=ptr[2];
+
+         *ptr++=max(max(G-R,B-R),0);
+         *ptr++=max(max(R-G,B-G),0);
+         *ptr++=max(max(R-B,G-B),0);
+
+         if (RGBA) ptr++;
+         }
+   }
 
 // refresh the actual transfer function
 BOOLINT tfunc::refresh1D(const float emission,
@@ -290,6 +341,8 @@ BOOLINT tfunc::refresh1D(const float emission,
          *ptr++=quant(1.0f-prepow3(exp_ba,BA[c]));
          }
       }
+
+   invert1D(RGBA);
 
    CHANGED=FALSE;
 
@@ -461,6 +514,8 @@ BOOLINT tfunc::refresh2D(const float emission,
                }
       }
 
+   invert2D(RGBA);
+
    CHANGED=FALSE;
 
    return(TRUE);
@@ -619,6 +674,16 @@ void tfunc::set_imp(float imp)
    if (fabs(imp-IMPORTANCE)>tolerance) CHANGED=TRUE;
 
    IMPORTANCE=imp;
+   }
+
+// set inverse mode
+void tfunc::set_invmode(BOOLINT invmode)
+   {
+   if (INVMODE!=invmode)
+      {
+      INVMODE=invmode;
+      CHANGED=TRUE;
+      }
    }
 
 // set red emission component of the transfer function
@@ -1024,6 +1089,8 @@ tfunc2D::tfunc2D(int res)
 
    WHICH=RANGE=0.0f;
    IMPORTANT=FALSE;
+
+   INVMODE=FALSE;
 
    MODE=0;
 
@@ -1478,6 +1545,16 @@ float tfunc2D::get_imp(int num)
    {
    if (num<0 || num>=NUM) ERRORMSG();
    return(TF[num]->get_imp());
+   }
+
+// set inverse mode
+void tfunc2D::set_invmode(BOOLINT invmode)
+   {
+   int i;
+
+   INVMODE=invmode;
+
+   for (i=0; i<NUM; i++) TF[i]->set_invmode(invmode);
    }
 
 // copy one component of the transfer function

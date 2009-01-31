@@ -22,10 +22,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories=".,../dcmtk/dcmdata/include,../dcmtk/config/include,../dcmtk/ofstd/include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/v3.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -38,10 +38,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib glut32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib netapi32.lib wsock32.lib glut32.lib ofstd.lib dcmdata.lib"
 				OutputFile=".\Debug/v3.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+			        AdditionalLibraryDirectories="../dcmtk/ofstd/libsrc/debug,../dcmtk/dcmdata/libsrc/debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/v3.pdb"
 				SubSystem="1"/>
@@ -84,9 +85,9 @@
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories=".,../dcmtk/dcmdata/include,../dcmtk/config/include,../dcmtk/ofstd/include"
 				PreprocessorDefinitions="WIN32,NDEBUG,_CONSOLE"
-				RuntimeLibrary="4"
+				RuntimeLibrary="0"
 				PrecompiledHeaderFile=".\Release/v3.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -98,10 +99,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib glut32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib netapi32.lib wsock32.lib glut32.lib ofstd.lib dcmdata.lib"
 				OutputFile=".\Release/v3.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+			        AdditionalLibraryDirectories="../dcmtk/ofstd/libsrc/release,../dcmtk/dcmdata/libsrc/release"
 				ProgramDatabaseFile=".\Release/v3.pdb"
 				SubSystem="1"/>
 			<Tool
@@ -139,6 +141,9 @@
 				RelativePath="ddsbase.cpp">
 			</File>
 			<File
+				RelativePath="dicombase.cpp">
+			</File>
+			<File
 				RelativePath="oglbase.cpp">
 			</File>
 			<File
@@ -162,6 +167,9 @@
 			</File>
 			<File
 				RelativePath="ddsbase.h">
+			</File>
+			<File
+				RelativePath="dicombase.h">
 			</File>
 			<File
 				RelativePath="oglbase.h">

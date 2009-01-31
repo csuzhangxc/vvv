@@ -59,6 +59,7 @@
 // window handling prototypes:
 
 void clearwindow();
+void invertwindow();
 void swapbuffers();
 void openwindow(int width,int height,float fps,char *title);
 void setbackground(float R,float G,float B);

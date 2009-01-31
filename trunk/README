@@ -1,11 +1,11 @@
 This package contains the V^3, the Versatile Volume Viewer.
-Copyright (c) 2003-2006 by Stefan Roettger.
+Copyright (c) 2003-2007 by Stefan Roettger.
 
 The volume viewer is licensed under the terms of the GPL (see
 http://www.gnu.org/copyleft/ for more information on the license).
 Any commercial use of the code or parts of it requires the explicit
 permission of the author! The source code is distributed with
-ABSOLUTELY NO WARRANTY!
+ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY etc.!
 
 The author's contact address is:
 
@@ -31,6 +31,7 @@ converted back to raw data with the complementary "pvm2raw" tool which
 also prints information about the volume data. As an example PVM
 dataset the famous Bucky Ball is contained within the package. In
 order to view this dataset just type "v3 Bucky.pvm" on the console.
+To read a stack of DICOM files type "v3 filename*.dcm".
 
 For best performance an NVIDIA GeForceFX or GeForce 4 is recommended.
 On platforms without such a graphics accelerator the cross-section

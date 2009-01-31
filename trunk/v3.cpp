@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger
 
-#define VERSION "2.2 as of 28.April.2005"
+#define VERSION "2.3 as of 16.Mar.2007"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -12,8 +12,8 @@
 
 #define STR_MAX (256)
 
-#define WIN_WIDTH (512)
-#define WIN_HEIGHT (512)
+#define WIN_WIDTH (900)
+#define WIN_HEIGHT (900)
 
 #define WIN_FPS (30.0f)
 
@@ -32,7 +32,7 @@
 #define VOL_BRICKSIZE (128)
 
 #define VOL_DELAY1 (2.0f)
-#define VOL_DELAY2 (30.0f)
+#define VOL_DELAY2 (600.0f)
 
 // global variables:
 
@@ -82,7 +82,7 @@ int GUI_hook1,
     GUI_hook26;
 
 BOOLINT GUI_wire=FALSE,
-        GUI_white=FALSE,
+        GUI_white=TRUE,
         GUI_premult=TRUE,
         GUI_preint=TRUE,
         GUI_reduced=FALSE,
@@ -94,14 +94,14 @@ float GUI_rot=0.5f,
       GUI_height=0.5f;
 
 float GUI_slab1=0.5f;
-float GUI_slab2=0.5f;
+float GUI_slab2=1.0f;
 
-float GUI_re_scale=0.5f,
-      GUI_ge_scale=0.5f,
-      GUI_be_scale=0.5f,
-      GUI_ra_scale=0.5f,
-      GUI_ga_scale=0.5f,
-      GUI_ba_scale=0.5f;
+float GUI_re_scale=0.25f,
+      GUI_ge_scale=0.25f,
+      GUI_be_scale=0.25f,
+      GUI_ra_scale=0.25f,
+      GUI_ga_scale=0.25f,
+      GUI_ba_scale=0.25f;
 
 BOOLINT GUI_re_mod=TRUE,
         GUI_ge_mod=TRUE,
@@ -128,17 +128,15 @@ BOOLINT GUI_extra=FALSE,
 
 int GUI_mode=0;
 char GUI_commands[STR_MAX]="";
+BOOLINT GUI_invmode=FALSE;
 
 BOOLINT GUI_blurvol=FALSE;
 int GUI_histmin=5;
-float GUI_histfreq=5.0f;
+float GUI_histfreq=10.0f;
 float GUI_histslide=0.5f;
 float GUI_histtweak=0.5f;
 int GUI_kneigh=1;
 float GUI_histstep=1.0f;
-
-double GUI_time=0.0,
-       GUI_start=0.0;
 
 BOOLINT GUI_hide=FALSE,
         GUI_capt=FALSE,
@@ -147,13 +145,16 @@ BOOLINT GUI_hide=FALSE,
 float GUI_cycle=0.0f,
       GUI_range=0.0f;
 
-int GUI_texid=0;
-
 BOOLINT GUI_record=FALSE,
         GUI_demo=FALSE,
         GUI_loop=FALSE;
 
 FILE *GUI_recfile;
+
+double GUI_time=0.0,
+       GUI_start=0.0;
+
+int GUI_texid=0;
 
 void loadvolume()
    {
@@ -1071,6 +1072,8 @@ void setupGUI()
 
 void parseargs(int argc,char *argv[])
    {
+   int i;
+
    int arg;
 
    char *str1,*str2;
@@ -1081,7 +1084,7 @@ void parseargs(int argc,char *argv[])
       {
       printf("version: %s\n",VERSION);
       printf("usage: %s <data.pvm> {[-]<option>=<value>}\n",argv[0]);
-      printf("       options: bv | gf | hm | hf | kn | hs | rd | ld\n");
+      printf("       options: bv | gf | hm | hf | kn | hs | rd | ld | im\n");
       exit(1);
       }
 
@@ -1090,7 +1093,14 @@ void parseargs(int argc,char *argv[])
    strncpy(GRADNAME,"",STR_MAX);
 
    snprintf(CONFIG,STR_MAX,"%s.sav",FILENAME);
+
+   for (i=0; i<strlen(CONFIG); i++)
+      if (CONFIG[i]=='*') CONFIG[i]='_';
+
    snprintf(RECORD,STR_MAX,"%s.rec",FILENAME);
+
+   for (i=0; i<strlen(RECORD); i++)
+      if (RECORD[i]=='*') RECORD[i]='_';
 
    for (arg=2; arg<argc; arg++)
       {
@@ -1109,6 +1119,7 @@ void parseargs(int argc,char *argv[])
       else if (strcasecmp(str1,"hs")==0) sscanf(str2,"%g",&GUI_histstep); // histogram sampling
       else if (strcasecmp(str1,"rd")==0) {sscanf(str2,"%d",&tmp); GUI_record=(tmp!=0);} // record demo
       else if (strcasecmp(str1,"ld")==0) {sscanf(str2,"%d",&tmp); GUI_loop=(tmp!=0);} // loop demo
+      else if (strcasecmp(str1,"im")==0) {sscanf(str2,"%d",&tmp); GUI_invmode=(tmp!=0);} // inverse mode
       }
    }
 
@@ -1261,6 +1272,9 @@ void handler(float time)
          case 'b': // toggle white background
             GUI_white=!GUI_white;
             break;
+         case 'B': // toggle inverse mode
+            GUI_invmode=!GUI_invmode;
+            break;
          case 'm': // toggle premultiplied alpha
             GUI_premult=!GUI_premult;
             break;
@@ -1308,7 +1322,7 @@ void handler(float time)
          case '1': // enable gradient selection
             VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
             break;
-         case 'C': // toggle coupling/clicking
+         case 'C': // toggle coupling
             GUI_coupled=!GUI_coupled;
             break;
          case 'W': // write .sav file
@@ -1448,12 +1462,16 @@ void handler(float time)
    VOL->get_tfunc()->set_escale(fsqr(GUI_re_scale),fsqr(GUI_ge_scale),fsqr(GUI_be_scale));
    VOL->get_tfunc()->set_ascale(fsqr(GUI_ra_scale),fsqr(GUI_ga_scale),fsqr(GUI_ba_scale));
 
+   VOL->get_tfunc()->set_invmode(GUI_invmode);
+
    VOL->get_tfunc()->refresh(VOL_EMISSION,VOL_DENSITY,VOL->get_slab()*over,
                              GUI_premult,GUI_preint,GUI_light);
 
    VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
-   if (GUI_white) setbackground(0.85f,0.85f,0.85f);
+   if (GUI_white)
+     if (!GUI_invmode) setbackground(0.85f,0.85f,0.85f);
+     else setbackground(1.0f,1.0f,1.0f);
    else setbackground(0.0f,0.0f,0.0f);
 
    clearwindow();

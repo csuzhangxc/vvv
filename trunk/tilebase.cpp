@@ -1,5 +1,8 @@
 // (c) by Stefan Roettger
 
+#define SOBEL
+#define MULTILEVEL
+
 #include "tilebase.h"
 
 #include "progs.h"
@@ -2112,6 +2115,8 @@ unsigned char *mipmap::gradmag(unsigned char *data,
                                float dsx,float dsy,float dsz,
                                float *gradmax)
    {
+   static const float mingrad=0.1f;
+
    int i,j,k;
 
    unsigned char *data2,*ptr;
@@ -2187,12 +2192,301 @@ unsigned char *mipmap::gradmag(unsigned char *data,
                else gz=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i,j,k-1);
             else gz=get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k);
 
-            *ptr++=ftrc(255.0f*fsqrt(fmin((fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz))/gmax,1.0f))+0.5f);
+            *ptr++=ftrc(255.0f*threshold(fsqrt(fmin((fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz))/gmax,1.0f)),mingrad)+0.5f);
             }
 
    if (gradmax!=NULL) *gradmax=fsqrt(gmax)/255.0f;
 
    return(data2);
+   }
+
+inline float mipmap::getgrad(unsigned char *data,
+                             int width,int height,int depth,
+                             int i,int j,int k,
+                             float dsx,float dsy,float dsz)
+   {
+   unsigned char *ptr;
+   int v;
+
+   float gx,gy,gz;
+
+   ptr=&data[i+(j+k*height)*width];
+   v=*ptr;
+
+   if (i>0) gx=v-ptr[-1];
+   else gx=ptr[1]-v;
+
+   if (j>0) gy=v-ptr[-width];
+   else gy=ptr[width]-v;
+
+   if (k>0) gz=v-ptr[-width*height];
+   else gz=ptr[width*height]-v;
+
+   return(fsqrt(fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz)));
+   }
+
+inline float mipmap::getgrad2(unsigned char *data,
+                              int width,int height,int depth,
+                              int i,int j,int k,
+                              float dsx,float dsy,float dsz)
+   {
+   unsigned char *ptr;
+   int v;
+
+   float gx,gy,gz;
+
+   ptr=&data[i+(j+k*height)*width];
+   v=*ptr;
+
+   if (i>0)
+      if (i<width-1) gx=0.5f*(ptr[1]-ptr[-1]);
+      else gx=v-ptr[-1];
+   else gx=ptr[1]-v;
+
+   if (j>0)
+      if (j<height-1) gy=0.5f*(ptr[width]-ptr[-width]);
+      else gy=v-ptr[-width];
+   else gy=ptr[width]-v;
+
+   if (k>0)
+      if (k<depth-1) gz=0.5f*(ptr[width*height]-ptr[-width*height]);
+      else gz=v-ptr[-width*height];
+   else gz=ptr[width*height]-v;
+
+   return(fsqrt(fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz)));
+   }
+
+inline float mipmap::getsobel(unsigned char *data,
+                              int width,int height,int depth,
+                              int i,int j,int k,
+                              float dsx,float dsy,float dsz)
+   {
+   unsigned char *ptr;
+   int v0,v[27];
+
+   float gx,gy,gz;
+
+   if (i>0 && i<width-1 && j>0 && j<height-1 && k>0 && k<depth-1)
+      {
+      ptr=&data[i-1+(j-1+(k-1)*height)*width];
+
+      v[0]=*ptr++;
+      v[1]=3*(*ptr++);
+      v[2]=*ptr;
+      ptr+=width-2;
+      v[3]=3*(*ptr++);
+      v[4]=6*(*ptr++);
+      v[5]=3*(*ptr);
+      ptr+=width-2;
+      v[6]=*ptr++;
+      v[7]=3*(*ptr++);
+      v[8]=*ptr;
+      ptr+=width*height-2*width-2;
+      v[9]=3*(*ptr++);
+      v[10]=6*(*ptr++);
+      v[11]=3*(*ptr);
+      ptr+=width-2;
+      v[12]=6*(*ptr++);
+      v[13]=*ptr++;
+      v[14]=6*(*ptr);
+      ptr+=width-2;
+      v[15]=3*(*ptr++);
+      v[16]=6*(*ptr++);
+      v[17]=3*(*ptr);
+      ptr+=width*height-2*width-2;
+      v[18]=*ptr++;
+      v[19]=3*(*ptr++);
+      v[20]=*ptr;
+      ptr+=width-2;
+      v[21]=3*(*ptr++);
+      v[22]=6*(*ptr++);
+      v[23]=3*(*ptr);
+      ptr+=width-2;
+      v[24]=*ptr++;
+      v[25]=3*(*ptr++);
+      v[26]=*ptr;
+
+      gx=(-v[0]-v[3]-v[6]-v[9]-v[12]-v[15]-v[18]-v[21]-v[24]+v[2]+v[5]+v[8]+v[11]+v[14]+v[17]+v[20]+v[23]+v[26])/44.0f;
+      gy=(-v[0]-v[1]-v[2]-v[9]-v[10]-v[11]-v[18]-v[19]-v[20]+v[6]+v[7]+v[8]+v[15]+v[16]+v[17]+v[24]+v[25]+v[26])/44.0f;
+      gz=(-v[0]-v[1]-v[2]-v[3]-v[4]-v[5]-v[6]-v[7]-v[8]+v[18]+v[19]+v[20]+v[21]+v[22]+v[23]+v[24]+v[25]+v[26])/44.0f;
+      }
+   else
+      {
+      ptr=&data[i+(j+k*height)*width];
+      v0=*ptr;
+
+      if (i>0)
+         if (i<width-1) gx=0.5f*(ptr[1]-ptr[-1]);
+         else gx=v0-ptr[-1];
+      else gx=ptr[1]-v0;
+
+      if (j>0)
+         if (j<height-1) gy=0.5f*(ptr[width]-ptr[-width]);
+         else gy=v0-ptr[-width];
+      else gy=ptr[width]-v0;
+
+      if (k>0)
+         if (k<depth-1) gz=0.5f*(ptr[width*height]-ptr[-width*height]);
+         else gz=v0-ptr[-width*height];
+      else gz=ptr[width*height]-v0;
+      }
+
+   return(fsqrt(fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz)));
+   }
+
+inline float mipmap::threshold(float x,float thres)
+   {
+   if (x>=thres) return(x);
+   return(x*fexp(-3.0f*fsqr((thres-x)/thres)));
+   }
+
+// calculate the gradient magnitude with multi-level averaging
+unsigned char *mipmap::gradmagML(unsigned char *data,
+                                 unsigned int width,unsigned int height,unsigned int depth,
+                                 float dsx,float dsy,float dsz,
+                                 float *gradmax)
+   {
+   static const int maxlevel=2;
+   static const float mingrad=0.1f;
+
+   int i,j,k;
+
+   float *data2,*ptr2;
+   float *data3,*ptr3;
+   unsigned char *data4,*ptr4;
+   unsigned char *data5,*ptr5;
+
+   int width2,height2,depth2;
+
+   float gx,gy,gz;
+   float gm,gmax,gmax2;
+
+   int level;
+   float weight;
+
+   float minds;
+
+   minds=fmin(dsx,fmin(dsy,dsz));
+
+   dsx/=minds;
+   dsy/=minds;
+   dsz/=minds;
+
+   if (dsx>4.0f) dsx=4.0f;
+   else if (dsx>2.0f) dsx=2.0f;
+   else if (dsx>1.0f) dsx=1.0f;
+
+   if (dsy>4.0f) dsy=4.0f;
+   else if (dsy>2.0f) dsy=2.0f;
+   else if (dsy>1.0f) dsy=1.0f;
+
+   if (dsz>4.0f) dsz=4.0f;
+   else if (dsz>2.0f) dsz=2.0f;
+   else if (dsz>1.0f) dsz=1.0f;
+
+   dsx=1.0f/dsx;
+   dsy=1.0f/dsy;
+   dsz=1.0f/dsz;
+
+   if ((data2=(float *)malloc(width*height*depth*sizeof(float)))==NULL) ERRORMSG();
+
+   gmax=0.0f;
+
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
+            {
+#ifndef SOBEL
+            gm=getgrad(data,width,height,depth,i,j,k,dsx,dsy,dsz);
+#else
+            gm=getsobel(data,width,height,depth,i,j,k,dsx,dsy,dsz);
+#endif
+            if (gm>gmax) gmax=gm;
+
+            *ptr2++=gm;
+            }
+
+   if (gmax==0.0f) gmax=1.0f;
+
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
+            {
+            gm=*ptr2;
+            *ptr2++=threshold(gm/gmax,mingrad);
+            }
+
+   width2=width;
+   height2=height;
+   depth2=depth;
+
+   data4=data;
+
+   level=0;
+   weight=1.0f;
+
+   gmax2=0.0f;
+
+   while (width2>5 && height2>5 && depth2>5 && level<maxlevel)
+      {
+      data5=reduce(data4,width2,height2,depth2);
+      if (data4!=data) free(data4);
+      data4=data5;
+
+      width2=width2/2;
+      height2=height2/2;
+      depth2=depth2/2;
+
+      level++;
+      weight*=0.5f;
+
+      if ((data3=(float *)malloc(width2*height2*depth2*sizeof(float)))==NULL) ERRORMSG();
+
+      for (ptr3=data3,k=0; k<depth2; k++)
+         for (j=0; j<height2; j++)
+            for (i=0; i<width2; i++)
+            {
+#ifndef SOBEL
+            gm=getgrad(data4,width2,height2,depth2,i,j,k,dsx,dsy,dsz);
+#else
+            gm=getsobel(data4,width2,height2,depth2,i,j,k,dsx,dsy,dsz);
+#endif
+            *ptr3++=gm/gmax;
+            }
+
+      for (ptr2=data2,k=0; k<depth; k++)
+         for (j=0; j<height; j++)
+            for (i=0; i<width; i++)
+               {
+               gm=*ptr2;
+               gm+=weight*threshold(getscalar(data3,width2,height2,depth2,(float)i/(width-1),(float)j/(height-1),(float)k/(depth-1)),mingrad);
+               if (gm>gmax2) gmax2=gm;
+
+               *ptr2++=gm;
+               }
+
+      free(data3);
+      }
+
+   if (gmax2==0.0f) gmax2=1.0f;
+
+   if (data4!=data) free(data4);
+
+   if ((data5=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
+
+   for (ptr2=data2,ptr5=data5,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
+            {
+            gm=*ptr2++;
+            *ptr5++=ftrc(255.0f*gm/gmax2+0.5f);
+            }
+
+   free(data2);
+
+   if (gradmax!=NULL) *gradmax=gmax2/255.0f;
+
+   return(data5);
    }
 
 // calculate the variance
@@ -3571,6 +3865,72 @@ unsigned char mipmap::getscalar(unsigned char *volume,
                   y*((1.0f-x)*ptr2[width]+x*ptr2[width+1]))+0.5f));
    }
 
+// get interpolated scalar value from volume
+float mipmap::getscalar(float *volume,
+                        unsigned int width,unsigned int height,unsigned int depth,
+                        float x,float y,float z)
+   {
+   int i,j,k;
+
+   float *ptr1,*ptr2;
+
+   x*=width-1;
+   y*=height-1;
+   z*=depth-1;
+
+   i=ftrc(x);
+   j=ftrc(y);
+   k=ftrc(z);
+
+   x-=i;
+   y-=j;
+   z-=k;
+
+   if (i<0)
+      {
+      i=0;
+      x=0.0f;
+      }
+
+   if (j<0)
+      {
+      j=0;
+      y=0.0f;
+      }
+
+   if (k<0)
+      {
+      k=0;
+      z=0.0f;
+      }
+
+   if (i>=width-1)
+      {
+      i=width-2;
+      x=1.0f;
+      }
+
+   if (j>=height-1)
+      {
+      j=height-2;
+      y=1.0f;
+      }
+
+   if (k>=depth-1)
+      {
+      k=depth-2;
+      z=1.0f;
+      }
+
+   ptr1=&volume[(unsigned int)i+((unsigned int)j+(unsigned int)k*height)*width];
+   ptr2=ptr1+width*height;
+
+   return((1.0f-z)*((1.0f-y)*((1.0f-x)*ptr1[0]+x*ptr1[1])+
+                    y*((1.0f-x)*ptr1[width]+x*ptr1[width+1]))+
+          z*((1.0f-y)*((1.0f-x)*ptr2[0]+x*ptr2[1])+
+             y*((1.0f-x)*ptr2[width]+x*ptr2[width+1])));
+   }
+
 // scale volume
 unsigned char *mipmap::scale(unsigned char *volume,
                              unsigned int width,unsigned int height,unsigned int depth,
@@ -3591,6 +3951,37 @@ unsigned char *mipmap::scale(unsigned char *volume,
 
    free(volume);
    return(volume2);
+   }
+
+// read either PVM or DICOM identified by the * in the filename pattern
+unsigned char *mipmap::readANYvolume(char *filename,
+                                     unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                     float *scalex,float *scaley,float *scalez)
+   {
+   DicomVolume data;
+   unsigned char *chunk;
+
+   if (strchr(filename,'*')==NULL)
+      return(readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
+   else
+      {
+      if (!data.loadImages(filename)) ERRORMSG();
+
+      if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
+      memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+
+      *width=data.getCols();
+      *height=data.getRows();
+      *depth=data.getSlis();
+
+      *components=1;
+
+      if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
+      if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
+      if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
+
+      return(chunk);
+      }
    }
 
 // load the volume and convert it to 8 bit
@@ -3620,7 +4011,7 @@ void mipmap::loadvolume(char *filename, // filename of PVM to load
        xrotate!=xrflag || zrotate!=zrflag)
       {
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readPVMvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) exit(1);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) exit(1);
 
       if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
       else if (COMPONENTS!=1) exit(1);
@@ -3643,10 +4034,17 @@ void mipmap::loadvolume(char *filename, // filename of PVM to load
 
       if (usegrad && strlen(gradname)==0)
          {
+#ifdef MULTILEVEL
+         GRAD=gradmagML(VOLUME,
+                        WIDTH,HEIGHT,DEPTH,
+                        DSX,DSY,DSZ,
+                        &GRADMAX);
+#else
          GRAD=gradmag(VOLUME,
                       WIDTH,HEIGHT,DEPTH,
                       DSX,DSY,DSZ,
                       &GRADMAX);
+#endif
 
          parsegradcommands(VOLUME,GRAD,
                            WIDTH,HEIGHT,DEPTH,
@@ -3672,7 +4070,7 @@ void mipmap::loadvolume(char *filename, // filename of PVM to load
           strncmp(gradname,gradstr,MAXSTR)!=0)
          {
          if (GRAD!=NULL) free(GRAD);
-         if ((GRAD=readPVMvolume(gradname,&GWIDTH,&GHEIGHT,&GDEPTH,&GCOMPONENTS))==NULL) exit(1);
+         if ((GRAD=readANYvolume(gradname,&GWIDTH,&GHEIGHT,&GDEPTH,&GCOMPONENTS))==NULL) exit(1);
          GRADMAX=1.0f;
 
          if (GCOMPONENTS==2) GRAD=quantize(GRAD,GWIDTH,GHEIGHT,GDEPTH);
@@ -3803,6 +4201,8 @@ void mipmap::render(float ex,float ey,float ez,
                     nearp,slab,
                     GRADMAX/get_slab(),
                     lighting);
+
+   if (TFUNC->get_invmode()) invertwindow();
    }
 
 // draw the surrounding wire frame box

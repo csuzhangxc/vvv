@@ -3,6 +3,8 @@
 #ifndef CODEBASE_H
 #define CODEBASE_H
 
+#define _CRT_SECURE_NO_DEPRECATE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

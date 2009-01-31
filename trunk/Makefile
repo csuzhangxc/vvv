@@ -1,7 +1,7 @@
 SHELL	= sh
 
 PRG	= v3
-MODS	= ddsbase oglbase guibase tfbase tilebase
+MODS	= ddsbase dicombase oglbase guibase tfbase tilebase
 
 LIBS	= -lGL -lGLU -lm
 

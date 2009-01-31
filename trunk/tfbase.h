@@ -63,6 +63,9 @@ class tfunc
    // get importance of transfer function
    float get_imp() {return(IMPORTANCE);}
 
+   // set inverse mode
+   void set_invmode(BOOLINT invmode=FALSE);
+
    // get one emission component of the transfer function
    float *get_re() {return(RE);}
    float *get_ge() {return(GE);}
@@ -130,6 +133,8 @@ class tfunc
 
    float IMPORTANCE; // importance of transfer function
 
+   BOOLINT INVMODE; // inverse mode flag
+
    unsigned char *EDATA,*ADATA; // pre-integration tables
 
    float LAST_EMS,LAST_DNS,LAST_SLB;
@@ -153,6 +158,9 @@ class tfunc
    float prepow3(float x,float p);
 
    inline unsigned char quant(float x);
+
+   void invert1D(BOOLINT RGBA);
+   void invert2D(BOOLINT RGBA);
 
    float pn_interpolate(float *octave,int size,float c);
    inline float pn_interpolateC(float v0,float v1,float v2,float v3,float x);
@@ -195,6 +203,12 @@ class tfunc2D
 
    // get importance of transfer function
    float get_imp(int num);
+
+   // set inverse mode
+   void set_invmode(BOOLINT invmode=FALSE);
+
+   // get inverse mode
+   BOOLINT get_invmode() {return(INVMODE);}
 
    // pre-integrate the transfer functions
    void refresh(const float emission=1000.0f, // global emission
@@ -305,6 +319,8 @@ class tfunc2D
 
    float WHICH,RANGE; // most important transfer function and its range
    BOOLINT IMPORTANT; // importance on/off
+
+   BOOLINT INVMODE; // inverse mode flag
 
    int MODE; // transfer function setup mode
 

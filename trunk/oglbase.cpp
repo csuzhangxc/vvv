@@ -70,6 +70,35 @@ void clearwindow()
    glEnable(GL_DITHER);
    }
 
+void invertwindow()
+   {
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix();
+   glLoadIdentity();
+   gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+   glLoadIdentity();
+
+   glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+   glEnable(GL_BLEND);
+
+   glBegin(GL_QUADS);
+   glColor3f(1.0f,1.0f,1.0f);
+   glVertex2f(-1.0f,-1.0f);
+   glVertex2f(1.0f,-1.0f);
+   glVertex2f(1.0f,1.0f);
+   glVertex2f(-1.0f,1.0f);
+   glEnd();
+
+   glDisable(GL_BLEND);
+
+   glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
+   }
+
 void swapbuffers()
    {
    char str[OGL_MAXSTR],
