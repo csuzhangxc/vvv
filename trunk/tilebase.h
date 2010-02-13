@@ -11,7 +11,7 @@
 
 #define MAXSTR 256
 
-#define PROGNUM 2
+#define PROGNUM 5
 
 #define TILEINC 1000
 #define QUEUEINC 1000
@@ -188,7 +188,7 @@ class tile
    // fragment program loading:
 
    static BOOLINT LOADED;
-   static GLuint PROGID[2];
+   static GLuint PROGID[PROGNUM];
 
    static void setup(char *base=NULL);
    static void destroy();

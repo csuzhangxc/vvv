@@ -41,13 +41,6 @@ static void initwglprocs()
    if ((glMultiTexCoord4fARB=(PFNGLMULTITEXCOORD4FARBPROC)wglGetProcAddress("glMultiTexCoord4fARB"))==NULL) ERRORMSG();
 #endif
 
-#ifdef GL_NV_register_combiners
-   if ((glCombinerParameteriNV=(PFNGLCOMBINERPARAMETERINVPROC)wglGetProcAddress("glCombinerParameteriNV"))==NULL) ERRORMSG();
-   if ((glCombinerInputNV=(PFNGLCOMBINERINPUTNVPROC)wglGetProcAddress("glCombinerInputNV"))==NULL) ERRORMSG();
-   if ((glCombinerOutputNV=(PFNGLCOMBINEROUTPUTNVPROC)wglGetProcAddress("glCombinerOutputNV"))==NULL) ERRORMSG();
-   if ((glFinalCombinerInputNV=(PFNGLFINALCOMBINERINPUTNVPROC)wglGetProcAddress("glFinalCombinerInputNV"))==NULL) ERRORMSG();
-#endif
-
 #ifdef GL_ARB_fragment_program
    if ((glGenProgramsARB=(PFNGLGENPROGRAMSARBPROC)wglGetProcAddress("glGenProgramsARB"))==NULL) ERRORMSG();
    if ((glBindProgramARB=(PFNGLBINDPROGRAMARBPROC)wglGetProcAddress("glBindProgramARB"))==NULL) ERRORMSG();
@@ -328,13 +321,6 @@ PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT=NULL;
 PFNGLACTIVETEXTUREARBPROC glActiveTextureARB=NULL;
 PFNGLMULTITEXCOORD3FARBPROC glMultiTexCoord3fARB=NULL;
 PFNGLMULTITEXCOORD4FARBPROC glMultiTexCoord4fARB=NULL;
-#endif
-
-#ifdef GL_NV_register_combiners
-PFNGLCOMBINERPARAMETERINVPROC glCombinerParameteriNV=NULL;
-PFNGLCOMBINERINPUTNVPROC glCombinerInputNV=NULL;
-PFNGLCOMBINEROUTPUTNVPROC glCombinerOutputNV=NULL;
-PFNGLFINALCOMBINERINPUTNVPROC glFinalCombinerInputNV=NULL;
 #endif
 
 #ifdef GL_ARB_fragment_program

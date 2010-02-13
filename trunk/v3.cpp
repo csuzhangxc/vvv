@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger
 
-#define VERSION "2.3 as of 16.Mar.2007"
+#define VERSION "2.4 as of 13.Feb.2010"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling

@@ -94,13 +94,6 @@ extern PFNGLMULTITEXCOORD3FARBPROC glMultiTexCoord3fARB;
 extern PFNGLMULTITEXCOORD4FARBPROC glMultiTexCoord4fARB;
 #endif
 
-#ifdef GL_NV_register_combiners
-extern PFNGLCOMBINERPARAMETERINVPROC glCombinerParameteriNV;
-extern PFNGLCOMBINERINPUTNVPROC glCombinerInputNV;
-extern PFNGLCOMBINEROUTPUTNVPROC glCombinerOutputNV;
-extern PFNGLFINALCOMBINERINPUTNVPROC glFinalCombinerInputNV;
-#endif
-
 #ifdef GL_ARB_fragment_program
 extern PFNGLGENPROGRAMSARBPROC glGenProgramsARB;
 extern PFNGLBINDPROGRAMARBPROC glBindProgramARB;

@@ -85,8 +85,8 @@ void tile::setup(char *base)
 
    if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
 
-   if (strstr(GL_EXTs,"NV_texture_shader")==NULL ||
-       strstr(GL_EXTs,"NV_register_combiners")==NULL)
+   if (strstr(GL_EXTs,"ARB_multitexture")==NULL ||
+       strstr(GL_EXTs,"ARB_fragment_program")==NULL)
       printf("warning: necessary rendering extensions not fully supported\n");
 
    if (!LOADED)
@@ -737,17 +737,18 @@ void tile::drawhexa(const float p1x,const float p1y,const float p1z,
 // bind 3D texture map using dependent 2D lookup
 void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA)
    {
-#ifdef GL_NV_texture_shader
+#ifdef GL_ARB_fragment_program
 
    if (texid3D>0)
       {
-      // activate texture shaders
-      glEnable(GL_TEXTURE_SHADER_NV);
+      // activate fragment program
+      glEnable(GL_FRAGMENT_PROGRAM_ARB);
+      glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[0]);
 
       // lighting is not supported
       LIGHTING=FALSE;
 
-      // stage 0:
+      // texture 0:
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
 
@@ -758,36 +759,9 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA)
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-      // 3D texture lookup (back of slab)
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_TEXTURE_3D);
-
       glEnable(GL_TEXTURE_3D);
 
-      // stage 1:
-
-      glActiveTextureARB(GL_TEXTURE1_ARB);
-
-      glBindTexture(GL_TEXTURE_3D,texid3D);
-      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_R,GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-
-      // 3D texture lookup (front of slab)
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_TEXTURE_3D);
-
-      glEnable(GL_TEXTURE_3D);
-
-      // stage 2:
-
-      glActiveTextureARB(GL_TEXTURE2_ARB);
-
-      // dot product
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_DOT_PRODUCT_NV);
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_PREVIOUS_TEXTURE_INPUT_NV,GL_TEXTURE0_ARB);
-
-      // stage 3:
+      // texture 3:
 
       glActiveTextureARB(GL_TEXTURE3_ARB);
 
@@ -806,46 +780,18 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA)
          glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
          }
 
-      // dot product dependent 2D texture lookup in pre-integration table
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_DOT_PRODUCT_TEXTURE_2D_NV);
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_PREVIOUS_TEXTURE_INPUT_NV,GL_TEXTURE1_ARB);
-
       glEnable(GL_TEXTURE_2D);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
-
-      // activate combiners:
-
-      glEnable(GL_REGISTER_COMBINERS_NV);
-
-      glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV,1);
-
-      // combiner 0
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_A_NV,GL_TEXTURE3_ARB,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_A_NV,GL_TEXTURE3_ARB,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_RGB,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_ALPHA,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-
-      // final combiner
-      glFinalCombinerInputNV(GL_VARIABLE_A_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_B_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_C_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_D_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_G_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
       }
    else
       {
       glActiveTextureARB(GL_TEXTURE3_ARB);
       glDisable(GL_TEXTURE_2D);
-      glActiveTextureARB(GL_TEXTURE1_ARB);
-      glDisable(GL_TEXTURE_3D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glDisable(GL_TEXTURE_3D);
 
-      glDisable(GL_TEXTURE_SHADER_NV);
-      glDisable(GL_REGISTER_COMBINERS_NV);
+      glDisable(GL_FRAGMENT_PROGRAM_ARB);
       }
 
 #endif
@@ -854,17 +800,18 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA)
 // bind 3D texture map using dependent 1D lookup
 void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA)
    {
-#ifdef GL_NV_texture_shader
+#ifdef GL_ARB_fragment_program
 
    if (texid3D>0)
       {
-      // activate texture shaders
-      glEnable(GL_TEXTURE_SHADER_NV);
+      // activate fragment program
+      glEnable(GL_FRAGMENT_PROGRAM_ARB);
+      glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[1]);
 
       // lighting is not supported
       LIGHTING=FALSE;
 
-      // stage 0:
+      // texture 0:
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
 
@@ -875,14 +822,11 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA)
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-      // 3D texture lookup
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_TEXTURE_3D);
-
       glEnable(GL_TEXTURE_3D);
 
-      // stage 1:
+      // texture 3:
 
-      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glActiveTextureARB(GL_TEXTURE3_ARB);
 
       glBindTexture(GL_TEXTURE_2D,texid1DE);
       glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
@@ -899,44 +843,18 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA)
          glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
          }
 
-      // dependent texture lookup in transfer function table
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_DEPENDENT_GB_TEXTURE_2D_NV);
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_PREVIOUS_TEXTURE_INPUT_NV,GL_TEXTURE0_ARB);
-
       glEnable(GL_TEXTURE_2D);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
-
-      // activate combiners:
-
-      glEnable(GL_REGISTER_COMBINERS_NV);
-
-      glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV,1);
-
-      // combiner 0
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_A_NV,GL_TEXTURE1_ARB,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_A_NV,GL_TEXTURE1_ARB,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_RGB,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_ALPHA,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-
-      // final combiner
-      glFinalCombinerInputNV(GL_VARIABLE_A_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_B_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_C_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_D_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_G_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
       }
    else
       {
-      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glActiveTextureARB(GL_TEXTURE3_ARB);
       glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glDisable(GL_TEXTURE_3D);
 
-      glDisable(GL_TEXTURE_SHADER_NV);
-      glDisable(GL_REGISTER_COMBINERS_NV);
+      glDisable(GL_FRAGMENT_PROGRAM_ARB);
       }
 
 #endif
@@ -945,17 +863,18 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA)
 // bind 3D texture map using dependent 2D lookup with gradient magnitude
 void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA)
    {
-#ifdef GL_NV_texture_shader
+#ifdef GL_ARB_fragment_program
 
    if (texid3D>0)
       {
-      // activate texture shaders
-      glEnable(GL_TEXTURE_SHADER_NV);
+      // activate fragment program
+      glEnable(GL_FRAGMENT_PROGRAM_ARB);
+      glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[2]);
 
       // lighting is not supported
       LIGHTING=FALSE;
 
-      // stage 0:
+      // texture 0:
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
 
@@ -966,12 +885,9 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA)
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
       glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-      // 3D texture lookup
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_TEXTURE_3D);
-
       glEnable(GL_TEXTURE_3D);
 
-      // stage 1:
+      // texture 1:
 
       glActiveTextureARB(GL_TEXTURE1_ARB);
 
@@ -991,20 +907,9 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA)
          glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
          }
 
-      // 3D texture lookup (gradient magnitude)
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_TEXTURE_3D);
-
       glEnable(GL_TEXTURE_3D);
 
-      // stage 2:
-
-      glActiveTextureARB(GL_TEXTURE2_ARB);
-
-      // dot product
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_DOT_PRODUCT_NV);
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_PREVIOUS_TEXTURE_INPUT_NV,GL_TEXTURE0_ARB);
-
-      // stage 3:
+      // texture 3:
 
       glActiveTextureARB(GL_TEXTURE3_ARB);
 
@@ -1023,34 +928,9 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA)
          glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
          }
 
-      // dot product dependent 2D texture lookup in emission/absorption table
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,GL_DOT_PRODUCT_TEXTURE_2D_NV);
-      glTexEnvi(GL_TEXTURE_SHADER_NV,GL_PREVIOUS_TEXTURE_INPUT_NV,GL_TEXTURE1_ARB);
-
       glEnable(GL_TEXTURE_2D);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
-
-      // activate combiners:
-
-      glEnable(GL_REGISTER_COMBINERS_NV);
-
-      glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV,1);
-
-      // combiner 0
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_A_NV,GL_TEXTURE3_ARB,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_A_NV,GL_TEXTURE3_ARB,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_RGB,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glCombinerInputNV(GL_COMBINER0_NV,GL_ALPHA,GL_VARIABLE_B_NV,GL_PRIMARY_COLOR_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_RGB,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-      glCombinerOutputNV(GL_COMBINER0_NV,GL_ALPHA,GL_SPARE0_NV,GL_DISCARD_NV,GL_DISCARD_NV,GL_NONE,GL_NONE,GL_FALSE,GL_FALSE,GL_FALSE);
-
-      // final combiner
-      glFinalCombinerInputNV(GL_VARIABLE_A_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_B_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_C_NV,GL_ZERO,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_D_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_RGB);
-      glFinalCombinerInputNV(GL_VARIABLE_G_NV,GL_SPARE0_NV,GL_UNSIGNED_IDENTITY_NV,GL_ALPHA);
       }
    else
       {
@@ -1061,8 +941,7 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA)
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glDisable(GL_TEXTURE_3D);
 
-      glDisable(GL_TEXTURE_SHADER_NV);
-      glDisable(GL_REGISTER_COMBINERS_NV);
+      glDisable(GL_FRAGMENT_PROGRAM_ARB);
       }
 
 #endif
@@ -1082,7 +961,7 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          {
          // disable lighting:
 
-         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[0]);
+         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[3]);
 
          LIGHTING=FALSE;
          }
@@ -1090,7 +969,7 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          {
          // enable lighting:
 
-         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[1]);
+         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[4]);
 
          glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,0,rslab,NOISE,0.0f,0.0f);
          glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,1,AMBNT,DIFUS,SPECL,SPECX);
@@ -1203,7 +1082,7 @@ void tile::render(float ex,float ey,float ez,
          {
          // 1D transfer functions:
 
-         // standard version with pre-integration using texture shaders
+         // standard version with pre-integration
          bindtexmaps(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
 
 #ifdef GL_ARB_multitexture
@@ -1246,9 +1125,6 @@ void tile::render(float ex,float ey,float ez,
 
          glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-         glMultiTexCoord4fARB(GL_TEXTURE2_ARB,1.0f,0.0f,0.0f,0.0f);
-         glMultiTexCoord4fARB(GL_TEXTURE3_ARB,1.0f,0.0f,0.0f,0.0f);
-
          glActiveTextureARB(GL_TEXTURE3_ARB);
 
          glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
@@ -1283,7 +1159,7 @@ void tile::render(float ex,float ey,float ez,
          {
          // 1D transfer functions:
 
-         // fall-back version without pre-integration using texture shaders
+         // fall-back version without pre-integration
          bindtexmaps1D(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
 
 #ifdef GL_ARB_multitexture
@@ -1308,7 +1184,7 @@ void tile::render(float ex,float ey,float ez,
 
          glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-         glActiveTextureARB(GL_TEXTURE1_ARB);
+         glActiveTextureARB(GL_TEXTURE3_ARB);
 
          glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1335,9 +1211,9 @@ void tile::render(float ex,float ey,float ez,
    else
       if (!TFUNC->get_dim())
          {
-         // 2D transfer functions without pre-integration:
+         // 2D transfer functions:
 
-         // fall-back version using texture shaders
+         // fall-back version without pre-integration
          bindtexmaps2D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
 
 #ifdef GL_ARB_multitexture
@@ -1380,9 +1256,6 @@ void tile::render(float ex,float ey,float ez,
 
          glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-         glMultiTexCoord4fARB(GL_TEXTURE2_ARB,1.0f,0.0f,0.0f,0.0f);
-         glMultiTexCoord4fARB(GL_TEXTURE3_ARB,1.0f,0.0f,0.0f,0.0f);
-
          glActiveTextureARB(GL_TEXTURE3_ARB);
 
          glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
@@ -1415,13 +1288,13 @@ void tile::render(float ex,float ey,float ez,
          }
       else
          {
-         // 2D transfer functions with pre-integration using a fragment program:
+         // 2D transfer functions:
 
          if (!lighting || !TFUNC->get_imode())
-            // high-quality version without lighting
+            // high-quality version with pre-integration
             bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),0.0f);
          else
-            // high-quality version with lighting
+            // high-quality version with pre-integration and lighting
             bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),1.0f/(slab*rslab));
 
 #ifdef GL_ARB_multitexture

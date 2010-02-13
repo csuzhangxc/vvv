@@ -7,6 +7,63 @@ TEMP tmp, col;\n\
 # get data from 3D textures\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab\n\
 TEX tmp.y, fragment.texcoord[1], texture[0], 3D;   # get the scalar value at the front of the slab\n\
+\n\
+# dependent 2D texture lookup\n\
+TEX col, tmp, texture[3], 2D;   # perform 2D dependent texture lookup in pre-integration table\n\
+\n\
+# write to output register\n\
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color\n\
+\n\
+END\n\
+";
+
+char inline_prog2[]=
+"\
+!!ARBfp1.0\n\
+\n\
+TEMP tmp, col;\n\
+\n\
+# get data from 3D texture\n\
+TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab\n\
+\n\
+# dependent 1D texture lookup\n\
+MOV tmp.y, 0.5;\n\
+TEX col, tmp, texture[3], 2D;   # perform 1D dependent texture lookup in transfer function\n\
+\n\
+# write to output register\n\
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color\n\
+\n\
+END\n\
+";
+
+char inline_prog3[]=
+"\
+!!ARBfp1.0\n\
+\n\
+TEMP tmp, col;\n\
+\n\
+# get data from 3D textures\n\
+TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab\n\
+TEX tmp.y, fragment.texcoord[1], texture[1], 3D;   # get the gradient magnitude at the mid of the slab\n\
+\n\
+# dependent 2D texture lookup\n\
+TEX col, tmp, texture[3], 2D;   # perform 2D dependent texture lookup in pre-integration table\n\
+\n\
+# write to output register\n\
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color\n\
+\n\
+END\n\
+";
+
+char inline_prog4[]=
+"\
+!!ARBfp1.0\n\
+\n\
+TEMP tmp, col;\n\
+\n\
+# get data from 3D textures\n\
+TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab\n\
+TEX tmp.y, fragment.texcoord[1], texture[0], 3D;   # get the scalar value at the front of the slab\n\
 TEX tmp.z, fragment.texcoord[2], texture[1], 3D;   # get the gradient magnitude at the mid of the slab\n\
 \n\
 # dependent 3D texture lookup\n\
@@ -18,7 +75,7 @@ MUL result.color, col, fragment.color.primary;   # attenuate with primary color\
 END\n\
 ";
 
-char inline_prog2[]=
+char inline_prog5[]=
 "\
 !!ARBfp1.0\
 \n\
@@ -52,4 +109,4 @@ MUL result.color, col, fragment.color.primary;   # attenuate with primary color\
 END\n\
 ";
 
-char *inline_prog[2]={inline_prog1,inline_prog2};
+char *inline_prog[5]={inline_prog1,inline_prog2,inline_prog3,inline_prog4,inline_prog5};
