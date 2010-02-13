@@ -178,9 +178,9 @@ void tile::set_data(unsigned char *data,
    for (ptr=volume,k=pz; k<pz+bricksize; k++)
       for (j=py; j<py+bricksize; j++)
          for (i=px; i<px+bricksize; i++)
-            if (i<0 || i>=width ||
-                j<0 || j>=height ||
-                k<0 || k>=depth) *ptr++=0;
+            if (i<0 || i>=(int)width ||
+                j<0 || j>=(int)height ||
+                k<0 || k>=(int)depth) *ptr++=0;
             else *ptr++=data[((unsigned int)i)+(((unsigned int)j)+((unsigned int)k)*height)*width];
 
    BRICK->buildtexmap3D(volume,bricksize,bricksize,bricksize);
@@ -234,9 +234,9 @@ void tile::set_extra(unsigned char *extra,
    for (ptr=volume,k=pz; k<pz+bricksize; k++)
       for (j=py; j<py+bricksize; j++)
          for (i=px; i<px+bricksize; i++)
-            if (i<0 || i>=width ||
-                j<0 || j>=height ||
-                k<0 || k>=depth) *ptr++=0;
+            if (i<0 || i>=(int)width ||
+                j<0 || j>=(int)height ||
+                k<0 || k>=(int)depth) *ptr++=0;
             else *ptr++=extra[((unsigned int)i)+(((unsigned int)j)+((unsigned int)k)*height)*width];
 
    if (EXTRA==NULL) EXTRA=new brick();
@@ -1933,7 +1933,7 @@ void mipmap::cache(const unsigned char *data,
          CACHE=new unsigned char[width*height*(unsigned int)slices];
 
          for (i=0; i<slices; i++)
-            if (slice+i>=0 && slice+i<depth)
+            if (slice+i>=0 && slice+i<(int)depth)
                memcpy(&CACHE[width*height*i],&data[width*height*(unsigned int)(slice+i)],width*height);
          }
 
@@ -1947,18 +1947,18 @@ void mipmap::cache(const unsigned char *data,
       {
       if (slice>CSLICE)
          for (i=0; i<CSLICES; i++)
-            if (slice+i>=0 && slice+i<depth)
+            if (slice+i>=0 && slice+i<(int)depth)
                if (slice+i>=CSLICE && slice+i<CSLICE+CSLICES)
                   memcpy(&CACHE[CSIZEX*CSIZEY*i],&CACHE[CSIZEX*CSIZEY*(i+slice-CSLICE)],CSIZEX*CSIZEY);
 
       if (slice<CSLICE)
          for (i=CSLICES-1; i>=0; i--)
-            if (slice+i>=0 && slice+i<depth)
+            if (slice+i>=0 && slice+i<(int)depth)
                if (slice+i>=CSLICE && slice+i<CSLICE+CSLICES)
                   memcpy(&CACHE[CSIZEX*CSIZEY*i],&CACHE[CSIZEX*CSIZEY*(i+CSLICE-slice)],CSIZEX*CSIZEY);
 
       for (i=0; i<CSLICES; i++)
-         if (slice+i>=0 && slice+i<depth)
+         if (slice+i>=0 && slice+i<(int)depth)
             if (slice+i<CSLICE || slice+i>=CSLICE+CSLICES)
                memcpy(&CACHE[CSIZEX*CSIZEY*i],&data[CSIZEX*CSIZEY*(unsigned int)(slice+i)],CSIZEX*CSIZEY);
 
@@ -1971,7 +1971,7 @@ inline unsigned char mipmap::get(const unsigned char *data,
                                  const unsigned int x,const unsigned int y,const unsigned int z)
    {
    if (CACHE!=NULL)
-      if (z>=CSLICE && z<CSLICE+CSLICES)
+      if ((int)z>=CSLICE && (int)z<CSLICE+CSLICES)
          return(CACHE[x+(y+(z-CSLICE)*height)*width]);
 
    return(data[x+(y+z*height)*width]);
@@ -3083,7 +3083,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<width-1)
+      if (xs<(int)width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -3105,7 +3105,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<height-1)
+      if (ys<(int)height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -3127,7 +3127,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<depth-1)
+      if (zs<(int)depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -3222,7 +3222,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<width-1)
+      if (xs<(int)width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -3244,7 +3244,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<height-1)
+      if (ys<(int)height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -3266,7 +3266,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<depth-1)
+      if (zs<(int)depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -3360,7 +3360,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<width-1)
+      if (xs<(int)width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -3382,7 +3382,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<height-1)
+      if (ys<(int)height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -3404,7 +3404,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<depth-1)
+      if (zs<(int)depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -3710,19 +3710,19 @@ unsigned char mipmap::getscalar(unsigned char *volume,
       z=0.0f;
       }
 
-   if (i>=width-1)
+   if (i>=(int)width-1)
       {
       i=width-2;
       x=1.0f;
       }
 
-   if (j>=height-1)
+   if (j>=(int)height-1)
       {
       j=height-2;
       y=1.0f;
       }
 
-   if (k>=depth-1)
+   if (k>=(int)depth-1)
       {
       k=depth-2;
       z=1.0f;
@@ -3776,19 +3776,19 @@ float mipmap::getscalar(float *volume,
       z=0.0f;
       }
 
-   if (i>=width-1)
+   if (i>=(int)width-1)
       {
       i=width-2;
       x=1.0f;
       }
 
-   if (j>=height-1)
+   if (j>=(int)height-1)
       {
       j=height-2;
       y=1.0f;
       }
 
-   if (k>=depth-1)
+   if (k>=(int)depth-1)
       {
       k=depth-2;
       z=1.0f;
