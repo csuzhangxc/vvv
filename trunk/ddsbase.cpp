@@ -374,7 +374,7 @@ unsigned char *readDDSfile(char *filename,unsigned int *bytes)
    skip=readbits(DDS_file,2)+1;
    strip=readbits(DDS_file,16)+1;
 
-   data=NULL;
+   data=ptr=NULL;
    cnt=act=0;
 
    while ((cnt1=readbits(DDS_file,DDS_RL))!=0)
@@ -473,13 +473,14 @@ void swapshort(unsigned char *ptr,unsigned int size)
    {
    unsigned int i;
 
-   unsigned char tmp;
+   unsigned char lo,hi;
 
    for (i=0; i<size; i++)
       {
-      tmp=*ptr;
-      *ptr++=ptr[1];
-      *ptr++=tmp;
+      lo=ptr[0];
+      hi=ptr[1];
+      *ptr++=hi;
+      *ptr++=lo;
       }
    }
 

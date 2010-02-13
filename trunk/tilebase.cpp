@@ -2231,7 +2231,6 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    int width2,height2,depth2;
 
-   float gx,gy,gz;
    float gm,gmax,gmax2;
 
    int level;
@@ -2293,7 +2292,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
    height2=height;
    depth2=depth;
 
-   data4=data;
+   data4=ptr4=data;
 
    level=0;
    weight=1.0f;

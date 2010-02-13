@@ -36,5 +36,5 @@ else
    if ($HOSTTYPE == "i686-linux") make COMPILER="c++" OPTS="-O3 -I/usr/X11R6/include" LINK="-lglut -lGLU -L/usr/X11R6/lib -lX11 -lXm -lXt -lXmu" TARGET=LINUX $rule
    if ($HOSTTYPE == "powerpc") make COMPILER="c++" OPTS="-O3 -I/usr/X11R6/include" LINK="-lglut -lGLU -L/usr/X11R6/lib -lX11 -lXm -lXt -lXmu" TARGET=LINUX $rule
    if ($HOSTTYPE == "powermac") make COMPILER="c++" OPTS="-O3" LINK="-Wl,-w -L/System/Library/Frameworks/OpenGL.framework/Libraries -framework GLUT -lobjc" TARGET=MACOSX $rule
-   if ($HOSTTYPE == "intel-pc") make COMPILER="c++" OPTS="-O3" LINK="-Wl,-w -L/System/Library/Frameworks/OpenGL.framework/Libraries -framework GLUT -lobjc" TARGET=MACOSX $rule
+   if ($HOSTTYPE == "intel-pc") make COMPILER="c++" OPTS="-O3 -Wall -Wno-parentheses" LINK="-Wl,-w -L/System/Library/Frameworks/OpenGL.framework/Libraries -framework GLUT -lobjc" TARGET=MACOSX $rule
 endif

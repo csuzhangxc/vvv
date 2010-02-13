@@ -1181,7 +1181,7 @@ void handler(float time)
 
    static float mx,my;
    static BOOLINT b1,b2,b3;
-   static char key;
+   static int key;
 
    int t1,t2,t3;
    float newtime;
