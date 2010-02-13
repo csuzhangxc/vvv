@@ -1072,7 +1072,7 @@ void setupGUI()
 
 void parseargs(int argc,char *argv[])
    {
-   int i;
+   unsigned int i;
 
    int arg;
 

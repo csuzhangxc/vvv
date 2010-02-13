@@ -2192,19 +2192,19 @@ unsigned char histo::getscalar(unsigned char *volume,
       z=0.0f;
       }
 
-   if (i>=width-1)
+   if (i>=(int)width-1)
       {
       i=width-2;
       x=1.0f;
       }
 
-   if (j>=height-1)
+   if (j>=(int)height-1)
       {
       j=height-2;
       y=1.0f;
       }
 
-   if (k>=depth-1)
+   if (k>=(int)depth-1)
       {
       k=depth-2;
       z=1.0f;
@@ -2256,9 +2256,9 @@ void histo::initcentroids(unsigned char *volume,
 
    for (i=0; i<3*256; i++) centroid1D[i]=0.0f;
 
-   for (ptr=volume,k=0; k<depth; k++)
-      for (j=0; j<height; j++)
-         for (i=0; i<width; i++,ptr++)
+   for (ptr=volume,k=0; k<(int)depth; k++)
+      for (j=0; j<(int)height; j++)
+         for (i=0; i<(int)width; i++,ptr++)
             {
             p=*ptr;
             HIST[p]++;
@@ -2365,9 +2365,9 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
 
       unsigned char *ptr1,*ptr2;
 
-      for (ptr1=volume,ptr2=grad,k=0; k<depth; k++)
-         for (j=0; j<height; j++)
-            for (i=0; i<width; i++)
+      for (ptr1=volume,ptr2=grad,k=0; k<(int)depth; k++)
+         for (j=0; j<(int)height; j++)
+            for (i=0; i<(int)width; i++)
                {
                s=*ptr1++;
                g=*ptr2++;
@@ -2446,9 +2446,9 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
 
       unsigned char *ptr1,*ptr2;
 
-      for (ptr1=volume,ptr2=grad,k=0; k<depth; k++)
-         for (j=0; j<height; j++)
-            for (i=0; i<width; i++)
+      for (ptr1=volume,ptr2=grad,k=0; k<(int)depth; k++)
+         for (j=0; j<(int)height; j++)
+            for (i=0; i<(int)width; i++)
                {
                s=*ptr1++;
                g=*ptr2++;
