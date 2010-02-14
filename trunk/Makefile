@@ -11,6 +11,8 @@ OBJS	= $(PRG:=.o) $(MODS:=.o)
 AR	= ar -crs
 RM	= rm -rf
 
+ZIP	= zip -qr9
+
 .SUFFIXES: .cpp
 
 .cpp.o:
@@ -39,5 +41,8 @@ tidy:	clean
 	@-(cd tools; make tidy)
 	@-$(RM) *~ Makefile.d Debug Release *.ncb *.opt *.plg
 	@-$(RM) $(PRG) libv3.a libv3
+
+zip:	tidy
+	@-(cd ..; $(ZIP) viewer/viewer.zip viewer -x \*/.\?\?\* -x \*CVS/\*)
 
 sinclude Makefile.d
