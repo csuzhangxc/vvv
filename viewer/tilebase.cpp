@@ -4071,7 +4071,7 @@ void mipmap::render(float ex,float ey,float ez,
                     dx,dy,dz,
                     ux,uy,uz,
                     nearp,slab,
-                    GRADMAX/get_slab(),
+                    1.0f/get_slab(),
                     lighting);
 
    if (TFUNC->get_invmode()) invertwindow();
