@@ -102,7 +102,7 @@ class GUI
 
    protected:
 
-   static void drawsymbol(float hue,float sat,float val,float alpha,char *symbol);
+   static void drawsymbol(float hue,float sat,float val,float alpha,const char *symbol);
    static void drawletter(float hue,float sat,float val,float alpha,char letter);
 
    private:

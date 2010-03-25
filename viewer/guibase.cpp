@@ -449,7 +449,7 @@ void GUI::drawframeRGBA(float x,float y,float width,float height,
    glEnd();
    }
 
-void GUI::drawsymbol(float hue,float sat,float val,float alpha,char *symbol)
+void GUI::drawsymbol(float hue,float sat,float val,float alpha,const char *symbol)
    {
    float rgb[3];
 

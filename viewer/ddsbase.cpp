@@ -204,7 +204,7 @@ void writeDDSfile(char *filename,unsigned char *data,unsigned int bytes,unsigned
 
    if ((DDS_file=fopen(filename,"wb"))==NULL) ERRORMSG();
 
-   fprintf(DDS_file,(version==1)?DDS_ID:DDS_ID2);
+   fprintf(DDS_file,"%s",(version==1)?DDS_ID:DDS_ID2);
 
    deinterleave(data,bytes,skip,DDS_INTERLEAVE);
 

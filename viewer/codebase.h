@@ -3,7 +3,9 @@
 #ifndef CODEBASE_H
 #define CODEBASE_H
 
+#ifdef _MSC_VER
 #define _CRT_SECURE_NO_DEPRECATE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +52,7 @@
 
 #define ERRORMSG() errormsg(__FILE__,__LINE__)
 
-inline void errormsg(char *file,int line)
+inline void errormsg(const char *file,int line)
    {
    fprintf(stderr,"fatal error in <%s> at line %d!\n",file,line);
    exit(EXIT_FAILURE);
