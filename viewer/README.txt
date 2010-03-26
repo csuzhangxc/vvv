@@ -15,7 +15,7 @@ The author's contact address is:
 In order to compile the viewer under Linux simply type "build.sh" in a
 shell. The viewer requires OpenGL and the GLUT library to be installed.
 
-Under Windows either use the supplied Visual C++ project files
+Under Windows either use the CMake GUI to produce a Visual C++ project
 or use cygwin in the following way:
 
 1. Download cygwin from http://cygwin.com
