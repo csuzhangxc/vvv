@@ -34,7 +34,7 @@ tools:
 
 depend:
 	@-(cd tools; $(MAKE) depend)
-	@-$(MAKEDEPEND) -D$(TARGET) $(SRCS) >Makefile.d 2>/dev/null
+	@-$(MAKEDEPEND) -D$(TARGET) $(SRCS) >$(MMFILE).d 2>/dev/null
 
 clean:
 	@-(cd tools; $(MAKE) clean)
@@ -42,10 +42,11 @@ clean:
 
 tidy:	clean
 	@-(cd tools; $(MAKE) tidy)
-	@-$(RM) *~ Makefile.d Debug Release *.ncb *.opt *.plg
+	@-$(RM) *~ $(MMFILE).d Debug* Release* *.ncb *.opt *.plg
+	@-$(RM) CMakeCache.txt CMakeFiles Makefile cmake_install.cmake
 	@-$(RM) $(PRG) libv3.a libv3
 
 zip:	tidy
 	@-(cd ..; $(ZIP) viewer/viewer.zip viewer -x \*/.\?\?\* -x \*CVS/\*)
 
-sinclude Makefile.d
+sinclude $(MMFILE).d
