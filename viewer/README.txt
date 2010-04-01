@@ -13,14 +13,15 @@ The author's contact address is:
    http://stereofx.org
 
 In order to compile the viewer under Linux simply type "build.sh" in a
-shell. The viewer requires OpenGL and the GLUT library to be installed.
+shell. If CMake is installed, type "cmake . && make". The viewer
+requires OpenGL and the GLUT library as the only dependencies.
 
 Under Windows either use the CMake GUI to produce a Visual C++ project
 or use cygwin in the following way:
 
 1. Download cygwin from http://cygwin.com
 2. Run the installer program and make sure to select "Devel"
-3. After the installation finishes, download the V^3 to somewhere useful
+3. After the installation finishes, download the V^3
 4. Unzip the V^3 package
 5. Double-click the cygwin icon to get a bash session
 6. In bash, type: "cd viewer" and "build.sh"
