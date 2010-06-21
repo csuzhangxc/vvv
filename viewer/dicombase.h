@@ -7,12 +7,8 @@
 
 #include "codebase.h"
 
-#ifndef WINOS
-typedef void *DcmFileFormat;
-#else
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dctk.h>
-#endif
 
 class DicomVolume
    {

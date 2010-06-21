@@ -2,9 +2,7 @@
 
 #include "codebase.h"
 
-#ifdef WINOS
-#include <windows.h>
-#endif
+#include "dirbase.h"
 
 #include "dicombase.h"
 
@@ -41,59 +39,47 @@ bool DicomVolume::loadImages(const char *filenamepattern)
 
 bool DicomVolume::dicomLoad(const char *filenamepattern)
    {
-#ifndef WINOS
-   return(false);
-#else
-   int i,j;
+   unsigned int i,j;
 
-   if (filenamepattern==0) return(false);
+   const char *fname;
 
-   // check which file has to be read first
-   WIN32_FIND_DATA ffData;
-   HANDLE hFind=FindFirstFile(filenamepattern,&ffData);
+   if (filenamepattern==NULL) return(false);
 
-   if (!hFind) return(false);
+   // read DICOM instances:
 
-   char path_buffer[_MAX_PATH];
-   char drive[_MAX_DRIVE];
-   char dir[_MAX_DIR];
-   char fname[_MAX_FNAME];
-   char ext[_MAX_EXT];
+   filesearch(filenamepattern);
+   fname=findfile();
 
-   _splitpath(filenamepattern,drive,dir,fname,ext);
+   if (!fname) return(false);
 
-   // read all DICOM instances
    do
       {
-      if (ffData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) continue;
-
       ImageDesc *desc=new ImageDesc();
       desc->m_Image=new DcmFileFormat();
 
-      _splitpath(ffData.cFileName,NULL,NULL,fname,ext);
-      _makepath(path_buffer,drive,dir,fname,ext);
+      printf("load DICOM file %s\n",fname);
 
-      printf("load DICOM file %s%s\n",fname,ext);
-
-      if (desc->m_Image->loadFile(path_buffer).bad()) return(false);
+      if (desc->m_Image->loadFile(fname).bad()) return(false);
 
       desc->m_Image->getDataset()->loadAllDataIntoMemory();
 
       // add to image vector
       m_Images.push_back(desc);
+
+      fname=findfile();
       }
-   while (FindNextFile(hFind,&ffData));
+   while (fname);
 
    if (m_Images.size()<2) return(false);
 
-   // now check and sort the images by their position:
+   // check and sort the images by their position:
 
    OFString tmp;
 
    float position0[3];
    float position1[3];
 
-   int last = m_Images.size()-1;
+   unsigned int last = m_Images.size()-1;
 
    DcmDataset *firstImage=m_Images[0]->m_Image->getDataset();
    DcmDataset *lastImage=m_Images[last]->m_Image->getDataset();
@@ -130,9 +116,9 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
 
    // read columns and rows
    if (firstImage->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%d",&m_Cols);
+   sscanf(tmp.c_str(),"%lu",&m_Cols);
    if (firstImage->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%d",&m_Rows);
+   sscanf(tmp.c_str(),"%lu",&m_Rows);
 
    // read pixel spacing
    if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,0).bad()) return(false);
@@ -142,9 +128,9 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
 
    // read pixel value range
    if (firstImage->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) m_SmallestPixVal=0;
-   else sscanf(tmp.c_str(),"%d",&m_SmallestPixVal);
+   else sscanf(tmp.c_str(),"%lu",&m_SmallestPixVal);
    if (firstImage->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) m_LargestPixVal=4095;
-   else sscanf(tmp.c_str(),"%d",&m_LargestPixVal);
+   else sscanf(tmp.c_str(),"%lu",&m_LargestPixVal);
 
    // now calculate the position of the slices along the direction vector
    for (i=1; i<=last; i++)
@@ -172,18 +158,18 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
 
       // retrieve number of columns and rows
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
-      sscanf(tmp.c_str(),"%d",&cols);
+      sscanf(tmp.c_str(),"%lu",&cols);
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
-      sscanf(tmp.c_str(),"%d",&rows);
+      sscanf(tmp.c_str(),"%lu",&rows);
 
       // compare number of columns and rows
       if (cols!=m_Cols || rows!=m_Rows) return(false);
 
       // retrieve smallest and largest pixel value
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) smallestPixVal=0;
-      else sscanf(tmp.c_str(),"%d",&smallestPixVal);
+      else sscanf(tmp.c_str(),"%lu",&smallestPixVal);
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) largestPixVal=4095;
-      else sscanf(tmp.c_str(),"%d",&largestPixVal);
+      else sscanf(tmp.c_str(),"%lu",&largestPixVal);
 
       if (smallestPixVal<m_SmallestPixVal) m_SmallestPixVal=smallestPixVal;
       if (largestPixVal>m_LargestPixVal) m_LargestPixVal=largestPixVal;
@@ -224,7 +210,6 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
       }
 
    return(true);
-#endif
    }
 
 void DicomVolume::sortImages()
