@@ -4,7 +4,7 @@
 
 #include "dirbase.h"
 
-#ifndef _WIN32
+#ifndef WINOS
 #include <dirent.h>
 #else
 #include <windows.h>
@@ -30,22 +30,17 @@ void filesearch(const char *spec)
    strncpy(copy,spec?spec:defaultpattern,STRING_MAX);
 
    path=copy;
-   pattern=strchr(copy,'*');
+   pattern=strchr(copy,'/');
 
-   if (pattern==NULL) pattern=defaultpattern;
+   if (pattern!=NULL) *pattern++='\0';
    else
       {
-      pattern=strchr(copy,'/');
+      pattern=strchr(copy,'\\');
       if (pattern!=NULL) *pattern++='\0';
       else
          {
-         pattern=strchr(copy,'\\');
-         if (pattern!=NULL) *pattern++='\0';
-         else
-            {
-            pattern=copy;
-            path=defaultpath;
-            }
+         pattern=copy;
+         path=defaultpath;
          }
       }
 
@@ -55,11 +50,7 @@ void filesearch(const char *spec)
    searchpre=searchpattern;
    searchpost=strchr(searchpattern,'*');
 
-   if (searchpost!=NULL)
-      {
-      *searchpost++='\0';
-      if (strlen(searchpost)==0) searchpost=NULL;
-      }
+   if (searchpost!=NULL) *searchpost++='\0';
 
    searchstate=1;
    }
@@ -69,7 +60,7 @@ const char *nextfile()
    {
    if (searchstate==0) return(NULL);
 
-#ifndef _WIN32
+#ifndef WINOS
    static DIR *searchdir;
    struct dirent *dirp;
 
@@ -120,15 +111,25 @@ const char *findfile()
    {
    const char *file;
 
+   unsigned int pre,post,len;
+
+   pre=strlen(searchpre);
+   post=searchpost?strlen(searchpost):0;
+
    while ((file=nextfile())!=NULL)
       if (strcasestr(file,searchpre)==file)
+         {
+         len=strlen(file);
+         len=(len>post)?len-post:0;
          if (searchpost==NULL ||
-             strcasestr(file,searchpost)+strlen(searchpost)==file+strlen(file))
+             strcasecmp(file+len,searchpost)==0)
             {
+            if (searchpost==NULL && len!=pre) continue;
             if (strcmp(searchpath,".")==0) return(file);
             snprintf(foundfile,STRING_MAX,"%s/%s",searchpath,file);
             return(foundfile);
             }
+         }
 
    return(NULL);
    }

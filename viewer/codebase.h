@@ -204,6 +204,26 @@ inline int strcasecmp(char *str1,char *str2)
    return(*ptr2-*ptr1);
    }
 
+inline char *strcasestr(const char *str1,const char *str2)
+   {
+   unsigned int i,j;
+
+   unsigned int len1,len2;
+
+   len1=strlen(str1);
+   len2=strlen(str2);
+
+   for (i=0; i+len2<=len1; i++)
+      {
+      for (j=0; j<len2; j++)
+         if (tolower(str2[j])!=tolower(str1[i+j])) break;
+
+      if (j==len2) return((char *)&str1[i]);
+      }
+
+   return(NULL);
+   }
+
 #define snprintf _snprintf
 
 #endif
