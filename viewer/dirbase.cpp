@@ -125,6 +125,7 @@ const char *findfile()
          if (searchpost==NULL ||
              strcasestr(file,searchpost)+strlen(searchpost)==file+strlen(file))
             {
+            if (strcmp(searchpath,".")==0) return(file);
             snprintf(foundfile,STRING_MAX,"%s/%s",searchpath,file);
             return(foundfile);
             }
