@@ -30,12 +30,12 @@ void filesearch(const char *spec)
    strncpy(copy,spec?spec:defaultpattern,STRING_MAX);
 
    path=copy;
-   pattern=strchr(copy,'/');
+   pattern=strrchr(copy,'/');
 
    if (pattern!=NULL) *pattern++='\0';
    else
       {
-      pattern=strchr(copy,'\\');
+      pattern=strrchr(copy,'\\');
       if (pattern!=NULL) *pattern++='\0';
       else
          {
