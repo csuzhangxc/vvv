@@ -8,8 +8,8 @@ MODS	= ddsbase dicombase dirbase oglbase guibase tfbase tilebase
 
 LIBS	= -lGL -lGLU -lm
 
-SRCS	= $(PRG:=.cpp) $(MODS:=.cpp)
-OBJS	= $(PRG:=.o) $(MODS:=.o)
+SRCS	= $(MODS:=.cpp)
+OBJS	= $(MODS:=.o)
 
 AR	= ar -crs
 RM	= rm -rf
@@ -24,9 +24,9 @@ ZIP	= zip -qr9
 trap:
 
 all:	$(OBJS)
-	@-$(AR) libv3.a $(MODS:=.o)
+	@-$(AR) libViewer.a $(OBJS)
 	@-(cd tools; $(MAKE) all)
-	$(COMPILER) $(OPTS) -o $(PRG) $(OBJS) $(LINK) $(LIBS) $(LINK)
+	$(COMPILER) $(OPTS) -D$(TARGET) $(PRG).cpp -o $(PRG) libViewer.a $(LINK) $(LIBS) $(LINK)
 	@-if [ -e $(PRG) ]; then strip $(PRG); fi
 
 tools:
@@ -44,7 +44,7 @@ tidy:	clean
 	@-(cd tools; $(MAKE) tidy)
 	@-$(RM) *~ $(MMFILE).d Debug* Release* *.ncb *.opt *.plg
 	@-$(RM) CMakeCache.txt CMakeFiles Makefile cmake_install.cmake
-	@-$(RM) $(PRG) libv3.a libv3
+	@-$(RM) $(PRG) libViewer*.a
 
 zip:	tidy
 	@-(cd ..; $(ZIP) viewer/viewer.zip viewer -x \*/.\?\?\* -x \*CVS/\*)
