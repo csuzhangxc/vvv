@@ -5,7 +5,7 @@ SHELL	= sh
 
 PRGS	= raw2pvm pvm2raw pvm2pvm pvminfo pvmplay dti2pvm rgb2hsv
 
-LIBS	= -L.. -lv3 -lGL -lGLU -lm
+LIBS	= -L.. -lViewer -lGL -lGLU -lm
 
 SRCS	= $(PRGS:=.cpp)
 OBJS	= $(PRGS:=.o)
