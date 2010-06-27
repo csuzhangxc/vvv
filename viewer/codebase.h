@@ -188,18 +188,12 @@ inline double getclockticks()
 
 #ifdef WINOS
 
-inline char *strdup(char *str)
-   {
-   int len;
-   char *dup;
-   if ((dup=(char *)malloc(len=strlen(str)+1))==NULL) ERRORMSG();
-   memcpy(dup,str,len);
-   return(dup);
-   }
+#define strdup _strdup
+#define snprintf _snprintf
 
-inline int strcasecmp(char *str1,char *str2)
+inline int strcasecmp(const char *str1,const char *str2)
    {
-   char *ptr1,*ptr2;
+   const char *ptr1,*ptr2;
    for (ptr1=str1,ptr2=str2; tolower(*ptr1)==tolower(*ptr2) && *ptr1!='\0' && *ptr2!='\0'; ptr1++,ptr2++);
    return(*ptr2-*ptr1);
    }
@@ -223,8 +217,6 @@ inline char *strcasestr(const char *str1,const char *str2)
 
    return(NULL);
    }
-
-#define snprintf _snprintf
 
 #endif
 
