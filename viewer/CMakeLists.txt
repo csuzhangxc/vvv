@@ -20,12 +20,12 @@ MACRO(MAKE_VIEWER_EXECUTABLE name)
    ADD_EXECUTABLE(${name} ${name}.cpp)
    TARGET_LINK_LIBRARIES(${name}
       ${VIEWER_NAME}
-      ${ZLIB_LIBRARY}
-      ${DCMTK_ofstd_LIBRARY}
       ${DCMTK_dcmdata_LIBRARY}
       ${DCMTK_dcmtls_LIBRARY}
+      ${DCMTK_ofstd_LIBRARY}
       ${OPENGL_LIBRARIES}
       ${GLUT_LIBRARY}
+      ${ZLIB_LIBRARY}
       )
 ENDMACRO(MAKE_VIEWER_EXECUTABLE)
 

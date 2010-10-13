@@ -12,7 +12,7 @@ ENDIF (WIN32)
 IF (NOT VIEWER_PATH)
    SET(VIEWER_PATH $ENV{VIEWER_PATH})
    IF (NOT VIEWER_PATH)
-      FIND_PATH(VIEWER_PATH tfbase.h ${CMAKE_CURRENT_SOURCE_DIR}/../viewer)
+      FIND_PATH(VIEWER_PATH tfbase.h ${CMAKE_CURRENT_SOURCE_DIR})
    ENDIF(NOT VIEWER_PATH)
 ENDIF(NOT VIEWER_PATH)
 
@@ -55,6 +55,7 @@ ENDIF(NOT VIEWER_THIRDPARTY_DIR)
 
 MACRO(SET_VIEWER_PATH name subdir)
    SET(${name} ${VIEWER_PATH}
+               ${VIEWER_PATH}/..
                ${VIEWER_PATH}/${subdir}
                ${VIEWER_PATH}/../${subdir}
                ${VIEWER_PATH}/../../${subdir}
