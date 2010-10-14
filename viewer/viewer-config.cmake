@@ -56,15 +56,20 @@ ENDIF(NOT VIEWER_THIRDPARTY_DIR)
 MACRO(SET_VIEWER_PATH name subdir)
    SET(${name} ${VIEWER_PATH}
                ${VIEWER_PATH}/..
+               ${VIEWER_PATH}/../..
                ${VIEWER_PATH}/${subdir}
                ${VIEWER_PATH}/../${subdir}
                ${VIEWER_PATH}/../../${subdir}
-               /usr/local/${subdir})
+               /usr/local/${subdir}
+               /usr/local
+               /usr)
    IF (VIEWER_THIRDPARTY_DIR)
       SET(${name} ${${name}}
                   ${VIEWER_THIRDPARTY_DIR}
                   ${VIEWER_THIRDPARTY_DIR}/${subdir}
-                  /usr/local/${subdir})
+                  /usr/local/${subdir}
+                  /usr/local
+                  /usr)
    ENDIF (VIEWER_THIRDPARTY_DIR)
 ENDMACRO(SET_VIEWER_PATH)
 
