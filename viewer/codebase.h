@@ -3,10 +3,6 @@
 #ifndef CODEBASE_H
 #define CODEBASE_H
 
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -17,10 +13,6 @@
 
 #if defined(IRIX) || defined(LINUX) || defined(MACOSX)
 #define UNIX
-#endif
-
-#ifdef _WIN32
-#define WINOS
 #endif
 
 #include <time.h>
@@ -219,5 +211,22 @@ inline char *strcasestr(const char *str1,const char *str2)
    }
 
 #endif
+
+inline char *strdup2(const char *str1,const char *str2)
+   {
+   char *str;
+
+   if (str1==NULL && str2==NULL) return(NULL);
+
+   if (str1==NULL) return(strdup(str2));
+   if (str2==NULL) return(strdup(str1));
+
+   if ((str=(char *)malloc(strlen(str1)+strlen(str2)+1))==NULL) ERRORMSG();
+
+   memcpy(str,str1,strlen(str1));
+   memcpy(str+strlen(str1),str2,strlen(str2)+1);
+
+   return(str);
+   }
 
 #endif
