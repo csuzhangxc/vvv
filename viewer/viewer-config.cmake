@@ -78,7 +78,7 @@ ENDMACRO(SET_VIEWER_PATH)
 
 # paths to optional dependencies
 SET_VIEWER_PATH(ZLIB_PATH zlib)
-SET_VIEWER_PATH(DCMTK_PATH dcmtk)
+SET_VIEWER_PATH(DCMTK_PATH dicom)
 SET_VIEWER_PATH(FREEGLUT_PATH freeglut)
 
 # paths to optional WIN32 dependencies
