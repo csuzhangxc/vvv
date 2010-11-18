@@ -11,6 +11,16 @@
 #include <float.h>
 #include <math.h>
 
+#if !defined WIN32 && !defined MACOSX && !defined LINUX
+#if defined _WIN32
+#   define WINOS
+#elif defined __APPLE__
+#   define MACOSX
+#else
+#   define LINUX
+#endif
+#endif
+
 #if defined(IRIX) || defined(LINUX) || defined(MACOSX)
 #define UNIX
 #endif
