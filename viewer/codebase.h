@@ -161,6 +161,7 @@ inline double gettime()
 
 inline void waitfor(double secs)
    {
+   if (secs<=0.0) return;
 #ifdef UNIX
    struct timespec dt,rt;
    dt.tv_sec=ftrc(secs);
