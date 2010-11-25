@@ -5,16 +5,16 @@
 
 #include "codebase.h" // universal code base
 
-void writeDDSfile(char *filename,unsigned char *data,unsigned int bytes,unsigned int skip=0,unsigned int strip=0,int nofree=0);
-unsigned char *readDDSfile(char *filename,unsigned int *bytes);
+void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip=0,unsigned int strip=0,int nofree=0);
+unsigned char *readDDSfile(const char *filename,unsigned int *bytes);
 
-void writeRAWfile(char *filename,unsigned char *data,unsigned int bytes,int nofree=0);
-unsigned char *readRAWfile(char *filename,unsigned int *bytes);
+void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree=0);
+unsigned char *readRAWfile(const char *filename,unsigned int *bytes);
 
-void writePNMimage(char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds=0);
-unsigned char *readPNMimage(char *filename,unsigned int *width,unsigned int *height,unsigned int *components);
+void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds=0);
+unsigned char *readPNMimage(const char *filename,unsigned int *width,unsigned int *height,unsigned int *components);
 
-void writePVMvolume(char *filename,unsigned char *volume,
+void writePVMvolume(const char *filename,unsigned char *volume,
                     unsigned int width,unsigned int height,unsigned int depth,unsigned int components=1,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                     unsigned char *description=NULL,
@@ -22,7 +22,7 @@ void writePVMvolume(char *filename,unsigned char *volume,
                     unsigned char *parameter=NULL,
                     unsigned char *comment=NULL);
 
-unsigned char *readPVMvolume(char *filename,
+unsigned char *readPVMvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
                              float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
                              unsigned char **description=NULL,

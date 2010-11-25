@@ -182,7 +182,7 @@ void interleave(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
    {deinterleave(data,bytes,skip,block,TRUE);}
 
 // write a Differential Data Stream
-void writeDDSfile(char *filename,unsigned char *data,unsigned int bytes,unsigned int skip,unsigned int strip,int nofree)
+void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip,unsigned int strip,int nofree)
    {
    int version=1;
 
@@ -334,7 +334,7 @@ void writeDDSfile(char *filename,unsigned char *data,unsigned int bytes,unsigned
    }
 
 // read a Differential Data Stream
-unsigned char *readDDSfile(char *filename,unsigned int *bytes)
+unsigned char *readDDSfile(const char *filename,unsigned int *bytes)
    {
    int version=1;
 
@@ -419,7 +419,7 @@ unsigned char *readDDSfile(char *filename,unsigned int *bytes)
    }
 
 // write a RAW file
-void writeRAWfile(char *filename,unsigned char *data,unsigned int bytes,int nofree)
+void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree)
    {
    if (bytes<1) ERRORMSG();
 
@@ -432,7 +432,7 @@ void writeRAWfile(char *filename,unsigned char *data,unsigned int bytes,int nofr
    }
 
 // read a RAW file
-unsigned char *readRAWfile(char *filename,unsigned int *bytes)
+unsigned char *readRAWfile(const char *filename,unsigned int *bytes)
    {
    unsigned char *data;
    unsigned int cnt,blkcnt;
@@ -485,7 +485,7 @@ void swapshort(unsigned char *ptr,unsigned int size)
    }
 
 // write an optionally compressed PNM image
-void writePNMimage(char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds)
+void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds)
    {
    char str[DDS_MAXSTR];
 
@@ -514,7 +514,7 @@ void writePNMimage(char *filename,unsigned char *image,unsigned int width,unsign
    }
 
 // read a possibly compressed PNM image
-unsigned char *readPNMimage(char *filename,unsigned int *width,unsigned int *height,unsigned int *components)
+unsigned char *readPNMimage(const char *filename,unsigned int *width,unsigned int *height,unsigned int *components)
    {
    const int maxstr=100;
 
@@ -585,7 +585,7 @@ unsigned char *readPNMimage(char *filename,unsigned int *width,unsigned int *hei
    }
 
 // write a compressed PVM volume
-void writePVMvolume(char *filename,unsigned char *volume,
+void writePVMvolume(const char *filename,unsigned char *volume,
                     unsigned int width,unsigned int height,unsigned int depth,unsigned int components,
                     float scalex,float scaley,float scalez,
                     unsigned char *description,
@@ -647,7 +647,7 @@ void writePVMvolume(char *filename,unsigned char *volume,
    }
 
 // read a compressed PVM volume
-unsigned char *readPVMvolume(char *filename,
+unsigned char *readPVMvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
                              float *scalex,float *scaley,float *scalez,
                              unsigned char **description,
