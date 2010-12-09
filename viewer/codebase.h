@@ -11,7 +11,7 @@
 #include <float.h>
 #include <math.h>
 
-#if !defined WIN32 && !defined MACOSX && !defined LINUX
+#if !defined WINOS && !defined MACOSX && !defined LINUX
 #if defined _WIN32
 #   define WINOS
 #elif defined __APPLE__
