@@ -1,0 +1,591 @@
+<html>
+
+<script type="text/javascript"
+        src="http://glmatrix.googlecode.com/files/glMatrix-0.9.5.min.js">
+</script> 
+
+<script type="text/javascript">
+window.requestAnimFrame = (
+   function()
+   {
+       return window.requestAnimationFrame ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame ||
+              window.oRequestAnimationFrame ||
+              window.msRequestAnimationFrame ||
+              function(callback, element)
+              {
+                 window.setTimeout(callback, 1000/60);
+              };
+   }) ();
+</script>
+
+<script id="volren-frag-shader" type="x-shader/x-fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec2 vTextureCoord;
+
+    uniform float uAlpha;
+    uniform float uCutoff;
+
+    uniform sampler2D uSampler;
+
+    void main()
+    {
+        vec4 textureColor = texture2D(uSampler, vTextureCoord);
+        float l = textureColor.r;
+
+        float r=1.0;
+        float g=l<0.5?1.0:0.0;
+        float b=l<0.5?1.0:0.0;
+        float a = (l<uCutoff)?0.0:uAlpha;
+
+        gl_FragColor = vec4(r,g,b,a);
+    }
+</script>
+
+<script id="volren-vrtx-shader" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    varying vec2 vTextureCoord;
+
+    uniform mat4 mvpMatrix;
+
+    void main()
+    {
+        vTextureCoord = aTextureCoord;
+        gl_Position = mvpMatrix * vec4(aVertexPosition, 1.0);
+    }
+</script>
+
+<script type="text/javascript">
+
+   var logging = true;
+
+   var gl;
+   var shader;
+
+   var mu;
+   var cutoff;
+
+   var link;
+   var texDir;
+   var numberOfSlices;
+
+   var planeVtxBuffer;
+   var planeTexCoordBuffer;
+
+   var planeTexture;
+   var planeImage;
+
+   var imagesToLoad;
+   var imagesLoaded;
+
+   var angle = 0;
+   var rotation = 0.01;
+   var eye_height = 1;
+   var radius = 3;
+
+   function createBuffer(data, items, size)
+   {
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+
+      buffer.numItems = items;
+      buffer.itemSize = size;
+
+      return(buffer);
+   }
+
+   function initBuffers()
+   {
+      // plane vertices
+      var vertices = [
+                -0.5, -0.5, -0.5,
+                 0.5, -0.5, -0.5,
+                 -0.5, 0.5, -0.5,
+                 0.5, 0.5, -0.5
+       ];
+
+      planeVtxBuffer = createBuffer(vertices, 4, 3);
+
+      // texture coords for plane vertices
+      var texcoords = [
+                0.0, 0.0,
+                1.0, 0.0,
+                0.0, 1.0,
+                1.0, 1.0
+      ];
+
+      // map the texture onto the plane
+      planeTexCoordBuffer = createBuffer(texcoords, 4, 2);
+   }
+
+   function initTextures() 
+   {
+      var planeActivated;
+      var fileFormat = ".png";
+	  
+      texDir = link.substr(link.lastIndexOf("/")+1);
+      numberOfSlices = texDir.substring(0, texDir.indexOf("_"));
+
+      planeImage = new Array(3*numberOfSlices);
+      planeTexture = new Array(3*numberOfSlices);
+
+      imagesToLoad = 3*numberOfSlices;
+      imagesLoaded = false;
+
+      var index = 0;
+      
+      for (var plane = 0; plane < 3; plane++)
+      {
+         if (plane==0) planeActivated = "z";
+         else if (plane==1) planeActivated = "y";
+         else planeActivated = "x";
+
+         for (var sliceNr = 0; sliceNr < numberOfSlices; sliceNr++)
+         {
+            planeTexture[index] = gl.createTexture();
+            planeImage[index] = new Image();
+
+            planeImage[index].onload = function() { imagesToLoad--; }
+            planeImage[index].onerror = function() { imagesToLoad--; }
+            planeImage[index].src = link + "/" + texDir + "_" + planeActivated + "_" + sliceNr + fileFormat;
+
+            if (logging && sliceNr==0)
+               console.log("first image in series: "+planeImage[index].src);
+            if (logging && sliceNr==numberOfSlices-1)
+               console.log("last image in series: "+planeImage[index].src);
+
+            index++;
+         }
+      }
+
+      if (logging)
+      {
+         console.log("link: " + link);
+         console.log("texDir: " + texDir);
+         console.log("numberOfSlices: " + numberOfSlices );
+      }
+   }
+
+   function getShader(id)
+   {
+      var shaderScript = document.getElementById(id);
+
+      if (!shaderScript)
+         return(null);
+
+      var str = "";
+      var k = shaderScript.firstChild;
+      while (k)
+      {
+         if (k.nodeType == 3) str += k.textContent;
+         k = k.nextSibling;
+      }
+
+      if (logging)
+         console.log("load "+shaderScript.type+": "+str);
+
+      var shader;
+
+      if (shaderScript.type == "x-shader/x-fragment")
+         shader = gl.createShader(gl.FRAGMENT_SHADER);
+      else if (shaderScript.type == "x-shader/x-vertex")
+         shader = gl.createShader(gl.VERTEX_SHADER);
+      else
+         return(null);
+
+      gl.shaderSource(shader, str);
+      gl.compileShader(shader);
+
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+      {
+         alert(gl.getShaderInfoLog(shader));
+         return(null);
+      }
+
+      return(shader);
+   }
+
+   function initShader()
+   {
+      var fragmentShader = getShader("volren-frag-shader");
+      var vertexShader = getShader("volren-vrtx-shader");
+
+      shader = gl.createProgram();
+      gl.attachShader(shader, vertexShader);
+      gl.attachShader(shader, fragmentShader);
+      gl.linkProgram(shader);
+
+      if (!gl.getProgramParameter(shader, gl.LINK_STATUS))
+         alert("Could not create shader program!");
+
+      gl.useProgram(shader);
+
+      // vertices
+      shader.vertexPositionAttribute = gl.getAttribLocation(shader, "aVertexPosition");
+      gl.enableVertexAttribArray(shader.vertexPositionAttribute);
+
+      // tex coords
+      shader.textureCoordAttribute = gl.getAttribLocation(shader, "aTextureCoord");
+      gl.enableVertexAttribArray(shader.textureCoordAttribute);
+
+      // combined modelview projection matrix                        
+      shader.mvpMatrixUniform = gl.getUniformLocation(shader, "mvpMatrix");
+
+      // alpha uniform for blending
+      shader.alphaUniform = gl.getUniformLocation(shader, "uAlpha");
+
+      // cutoff uniform for making low densities void
+      shader.cutoffUniform = gl.getUniformLocation(shader, "uCutoff");
+   }
+
+   function setMatrices(pMatrix, mvMatrix)
+   {
+      var mvpMatrix = mat4.create();
+      mat4.multiply(pMatrix, mvMatrix, mvpMatrix);
+
+      gl.uniformMatrix4fv(shader.mvpMatrixUniform, false, mvpMatrix);
+   }
+
+   function renderStrip(vtxBuffer, texBuffer, texture)
+   {
+      gl.bindBuffer(gl.ARRAY_BUFFER, vtxBuffer);
+      gl.vertexAttribPointer(shader.vertexPositionAttribute, vtxBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
+      gl.vertexAttribPointer(shader.textureCoordAttribute, texBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(gl.getUniformLocation(shader, "uSampler"), 0);
+
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, vtxBuffer.numItems);
+   }
+
+   // various keyboard related methods:
+
+   var currentlyPressedKeys = {};
+
+   function handleKeyDown(event)
+   {
+      currentlyPressedKeys[event.keyCode] = true;
+   }
+
+   function handleKeyUp(event)
+   {
+      currentlyPressedKeys[event.keyCode] = false;
+   }
+
+   function handleKeys()
+   {
+      /*
+         keycodes:
+            37 = left cursor
+            38 = up cursor
+            39 = right cursor
+            40 = down cursor
+            16 = shift
+            17 = ctrl
+      */
+
+   // rotate y-axis
+   if (currentlyPressedKeys[37]) rotation-=0.01;
+   if (currentlyPressedKeys[39]) rotation+=0.01;
+   
+   // radius
+   if (currentlyPressedKeys[16]) radius-=0.1;
+   if (currentlyPressedKeys[17]) radius+=0.1;
+
+   // translate y-axis
+   if (currentlyPressedKeys[38]) eye_height+=0.1;
+   if (currentlyPressedKeys[40]) eye_height-=0.1;
+   }
+
+   function checkGUI()
+   {
+      var changed_textureLink = document.getElementById("link").value;
+
+      if (link != changed_textureLink.replace("\\", "/"))
+      {
+         link = document.getElementById("link").value;
+         link = link.replace("\\", "/");
+
+         texDir = link.substr(link.lastIndexOf("/")+1);
+         numberOfSlices = texDir.substring(0, texDir.indexOf("_"));
+                        
+         initTextures();
+      }
+
+      mu = document.getElementById("mu").value;
+      cutoff = document.getElementById("cutoff").value;
+   }
+
+   function drawScene()
+   {
+      requestAnimFrame(drawScene);
+
+      var canvas = document.getElementById("webgl-canvas");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      gl.viewportWidth = canvas.width;
+      gl.viewportHeight = canvas.height;
+
+      gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      var pMatrix = mat4.create();
+      var mvMatrix = mat4.create();
+
+      mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+      // Eye point
+      if (angle > 2*Math.PI) angle-= 2*Math.PI;
+      var eye = [Math.cos(angle) * radius, eye_height, Math.sin(angle) * radius];
+
+      // Centre of wold coordinates
+      var at = [0,0,0];
+
+      // Up-vector
+      var up = [0,1,0];
+
+      // Dir-vector
+      var dir = vec3.normalize(vec3.subtract(at,eye));
+
+      // define modelview matrix
+      mat4.lookAt(eye, at, up, mvMatrix);
+
+      checkGUI();
+
+      var lambda = 1.0/(numberOfSlices-1);
+      var alpha = 1-Math.exp(-lambda*mu);
+
+      // enable gl blending
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.enable(gl.BLEND);
+
+      // set alpha via shader uniform
+      gl.uniform1f(shader.alphaUniform, alpha);
+
+      // set void cutoff via uniform
+      gl.uniform1f(shader.cutoffUniform, cutoff);
+
+      gl.disable(gl.DEPTH_TEST);
+
+      var p = getRenderParameters(dir);
+
+      // initial transform of first slice
+      mat4.multiply(mvMatrix, p[0]);
+	  
+      // incremental transform between slices
+      var dvec = p[1];
+      vec3.scale(dvec, lambda);
+
+      // texture index range;
+      var texIndex = p[2][0];
+      var texIncr = p[2][1];
+
+      // create texture objects from loaded images
+      if (imagesToLoad == 0)
+      {
+         if (!imagesLoaded)
+         {
+            for (var index = 0; index < 3*numberOfSlices; index++)
+            {
+               gl.bindTexture(gl.TEXTURE_2D, planeTexture[index]);
+               gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+               gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, planeImage[index]);
+               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+               gl.generateMipmap(gl.TEXTURE_2D);
+               gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+
+            imagesLoaded=true;
+         }
+      }
+
+      // loop over slice from back to front depending on eye point via parameterization
+      if (imagesLoaded)
+      {
+         for (var i=0; i<numberOfSlices; i++)
+         {
+            setMatrices(pMatrix, mvMatrix);
+            renderStrip(planeVtxBuffer, planeTexCoordBuffer, planeTexture[texIndex]);
+
+            // translate to next slice position
+            mat4.translate(mvMatrix, dvec);
+
+            // goto next texture slice index
+            texIndex += texIncr;
+         }
+      }
+
+      gl.enable(gl.DEPTH_TEST);
+
+      angle += rotation;
+
+      handleKeys();
+   }
+
+   function getRenderParameters(dir)
+   {
+      var result = new Array(3);
+
+      // initial transformation
+      result[0] = mat4.create();
+      mat4.identity(result[0]);
+
+      // incremental translate vector
+      result[1] = [0, 0, 0];
+
+      // texture index range
+      // first component: first texture index
+      // second component: index increment
+      result[2] = [0, 0];
+
+      var dx = Math.abs(dir[0]);
+      var dy = Math.abs(dir[1]);
+      var dz = Math.abs(dir[2]);
+
+      if (dz>=dx && dz>=dy) // z-axis
+      {
+         if (dir[2]<0.0)
+         {
+            result[1] = [0,0,1];
+            result[2] = [0, 1];
+         }
+         else
+         {
+            mat4.translate(result[0], [0,0,1]);
+            result[1] = [0,0,-1];
+            result[2] = [1*numberOfSlices-1, -1];
+         }
+      }
+      else if (dy>=dx && dy>=dz)  // y-axis
+      {
+         mat4.rotate(result[0], Math.PI/2, [1,0,0]);
+         if (dir[1]<0.0)
+         {
+            mat4.translate(result[0], [0,0,1]);
+            result[1] = [0,0,-1];            
+            result[2] = [1*numberOfSlices, 1];
+         }
+         else
+         {
+            result[1] = [0,0,1];
+            result[2] = [2*numberOfSlices-1, -1];
+         }
+      }
+      else // x-axis
+      {
+         mat4.rotate(result[0], -Math.PI/2, [0,1,0]);
+         if (dir[0]<0.0)
+         {
+            mat4.translate(result[0], [0,0,1]);
+            result[1] = [0,0,-1];
+            result[2] = [2*numberOfSlices, 1];
+         }
+         else
+         {
+            result[1] = [0,0,1];
+            result[2] = [3*numberOfSlices-1, -1];
+         }
+      }
+
+      return(result);
+   }
+
+   function webGLStart()
+   {
+      var canvas = document.getElementById("webgl-canvas");
+
+      try
+      {
+         gl = canvas.getContext("experimental-webgl");
+      }
+      catch (e)
+      {
+         alert("Your browser does not support WebGL!");
+      }
+
+      document.onkeydown = handleKeyDown;
+      document.onkeyup = handleKeyUp;
+
+      gl.enable(gl.DEPTH_TEST);
+
+      initBuffers();
+      initShader();
+
+      // get url parameter "data" and pass to link gui element
+      // e.g. from "file:WebGL-Shader.html?data=32_Bucky"
+      document.getElementById("link").value = gup('data');
+
+      checkGUI();
+
+      drawScene();
+   }
+
+   // a function to get url parameters
+   function gup( name )
+   {
+   // Source: http://www.netlobo.com/url_query_string_javascript.html
+   // Example:
+   // var frank_param = gup( 'frank' );
+      name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+      var regexS = "[\\?&]"+name+"=([^&#]*)";
+      var regex = new RegExp( regexS );
+      var results = regex.exec( window.location.href );
+      if( results == null )
+         return "";
+      else
+         return results[1];
+   }
+
+</script>
+
+<style type='text/css'>
+   html, body{ margin: 0; }
+   canvas { width: 100%; height: 80%; }
+</style>
+
+<body onload="webGLStart();">
+
+   <center><b>WebGL volume renderer, Ohm University of Applied Sciences</b></center>
+   <!--
+      (c) by Norman Haensch and Stefan Roettger, June 2011
+      Published under the GPL 3 license
+      No warranty WHATSOEVER is expressed -->
+
+   <canvas id="webgl-canvas"> </canvas>
+
+   <br/>
+   <br/>Link to Datafolder: <input type="text" id="link" value="32_Bucky" /><br/>
+   <br/>Optical density &mu;: <input type="text" id="mu" value="1" /><br/>
+   <br/>Void cutoff: <input type="text" id="cutoff" value="0.1" /><br/>
+
+   <span style="font-family:Verdana,sans-serif">
+      <font size="4">
+         <p><u>Controls:</u></p>
+      </font>
+      <font size="3">
+         <p>
+            left/right arrow : change rotation speed <br/>
+            up/down arrow : change height <br/>
+            shift/ctrl : change distance <br/>
+         </p>
+      </font>
+   </span>
+</body>
+
+</html>
