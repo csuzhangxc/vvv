@@ -194,13 +194,14 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
    if (m_LargestPixVal==m_SmallestPixVal) m_LargestPixVal++;
    float factor=255.0f/(m_LargestPixVal-m_SmallestPixVal);
 
-   const Uint16 *data;
-   unsigned long length;
+   const Uint16 *data=NULL;
+   unsigned long length=0;
 
    // now we copy the pixel data into the volume slice by slice
    for (i=0; i<=last; i++)
       {
       if (m_Images[i]->m_Image->getDataset()->findAndGetUint16Array(DCM_PixelData,data,&length).bad()) return(false);
+      if (data==NULL || length==0) return(false);
 
       unsigned short *usdata=(unsigned short *)data;
 
