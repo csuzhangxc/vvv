@@ -168,6 +168,11 @@ void loadvolume()
                    GUI_kneigh,GUI_histstep);
    }
 
+void savevolume()
+   {
+   VOL->savePVMvolume("output.pvm");
+   }
+
 void setupGUI();
 
 void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
@@ -1342,6 +1347,9 @@ void handler(float time)
                   GUI_start=gettime();
                   }
                }
+            break;
+         case 'O':
+            savevolume(); // output pvm
             break;
          case '\033': // quit application
          case 'q':

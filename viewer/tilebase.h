@@ -306,6 +306,9 @@ class mipmap
                    char *commands=NULL,
                    int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
 
+   // save the volume data as PVM
+   void savePVMvolume(char *filename);
+
    tfunc2D *get_tfunc() {return(TFUNC);} // return the transfer function
    histo *get_histo() {return(HISTO);} // return the histogram
 

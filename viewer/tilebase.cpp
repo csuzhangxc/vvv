@@ -3994,6 +3994,16 @@ void mipmap::loadvolume(char *filename, // filename of PVM to load
    hsvalue=histstep;
    }
 
+// save the volume data as PVM
+void mipmap::savePVMvolume(char *filename)
+   {
+   if (VOLUME==NULL) return;
+
+   writePVMvolume(filename,VOLUME,
+                  WIDTH,HEIGHT,DEPTH,1,
+                  DSX,DSY,DSZ);
+   }
+
 // return the histogram
 float *mipmap::get_hist()
    {
