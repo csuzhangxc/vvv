@@ -6,6 +6,8 @@
 
 #include "dicombase.h"
 
+#include <dcmtk/dcmjpeg/djdecode.h>
+
 DicomVolume::ImageDesc::~ImageDesc()
    {delete m_Image;}
 
@@ -197,10 +199,17 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
    const Uint16 *data=NULL;
    unsigned long length=0;
 
+   DJDecoderRegistration::registerCodecs(); // register JPEG codecs
+
    // now we copy the pixel data into the volume slice by slice
    for (i=0; i<=last; i++)
       {
-      if (m_Images[i]->m_Image->getDataset()->findAndGetUint16Array(DCM_PixelData,data,&length).bad()) return(false);
+      DcmDataset *dataset=m_Images[i]->m_Image->getDataset();
+
+      dataset->chooseRepresentation(EXS_LittleEndianExplicit, NULL); // decompress
+      if (!dataset->canWriteXfer(EXS_LittleEndianExplicit)) return(false);
+
+      if (dataset->findAndGetUint16Array(DCM_PixelData,data,&length).bad()) return(false);
       if (data==NULL || length==0) return(false);
 
       unsigned short *usdata=(unsigned short *)data;
@@ -209,6 +218,8 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
       for (j=0; j<length; j++, voxels++)
          *voxels=(unsigned char)((usdata[j]-m_SmallestPixVal)*factor+0.5f);
       }
+
+   DJDecoderRegistration::cleanup(); // deregister JPEG codecs
 
    return(true);
    }

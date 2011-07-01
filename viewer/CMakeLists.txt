@@ -21,6 +21,10 @@ MACRO(MAKE_VIEWER_EXECUTABLE name)
    TARGET_LINK_LIBRARIES(${name}
       ${VIEWER_NAME}
       ${DCMTK_dcmdata_LIBRARY}
+      ${DCMTK_dcmjpeg_LIBRARY}
+      ${DCMTK_ijg8_LIBRARY}
+      ${DCMTK_ijg12_LIBRARY}
+      ${DCMTK_ijg16_LIBRARY}
       ${DCMTK_dcmtls_LIBRARY}
       ${DCMTK_ofstd_LIBRARY}
       ${OPENGL_LIBRARIES}
