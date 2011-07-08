@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <sstream>
 using namespace std;
 
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
 
       char ch_inputfilename[MAXSTR];
       char ch_outputfilename[MAXSTR];
+      char ch_outputfolder[MAXSTR];
 
       // no cmd line arguments given
       if (argc<=1)
@@ -80,13 +82,21 @@ int main(int argc, char *argv[])
 
       // create the first part for the name of the output file
       string str_CompleteFilePath = string(ch_inputfilename);
-      str_CompleteFilePath.erase(str_CompleteFilePath.rfind(".pvm"), str_CompleteFilePath.size());
+      if (str_CompleteFilePath.rfind(".pvm") != string::npos)
+         str_CompleteFilePath.erase(str_CompleteFilePath.rfind(".pvm"), str_CompleteFilePath.size());
+      if (str_CompleteFilePath.size() == 0) ERRORMSG();
 
       // get the name of the directory and the name of the PVM file
       string str_Folder = str_CompleteFilePath;
-      str_Folder.erase(str_Folder.find_last_of("\\")+1, str_Folder.size());
+      if (str_Folder.rfind("\\") != string::npos)
+         str_Folder.erase(str_Folder.rfind("\\")+1, str_Folder.size());
+      if (str_Folder.rfind("/") != string::npos)
+         str_Folder.erase(str_Folder.rfind("/")+1, str_Folder.size());
       string str_File = str_CompleteFilePath;
-      str_File.erase(0, str_File.find_last_of("\\")+1);
+      if (str_File.rfind("\\") != string::npos)
+         str_File.erase(0, str_File.rfind("\\")+1);
+      if (str_File.rfind("/") != string::npos)
+         str_File.erase(0, str_File.rfind("/")+1);
 
       // create the basic file name of the resulting PGM files
       string str_CreatedFileName = int2str(length);
@@ -95,14 +105,13 @@ int main(int argc, char *argv[])
 
       // create the folder to store the files
       str_Folder += str_CreatedFileName;
-      str_Folder += "\\";
-      char ch_outputfolder[MAXSTR];
       strncpy(ch_outputfolder, str_Folder.c_str(), MAXSTR);
 #ifdef _WIN32
       mkdir(ch_outputfolder);
 #else
-      mkdir(ch_outputfolder, 777);
+      mkdir(ch_outputfolder, 0777);
 #endif
+      str_Folder += "/";
 
       str_CreatedFileName += "_";
 

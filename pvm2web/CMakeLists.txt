@@ -1,0 +1,15 @@
+# cmake build file for pvm2web tool
+# (c) by Stefan Roettger
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(pvm2web)
+
+FIND_PATH(VIEWER_INCLUDE_DIR v3.cpp PATHS .. ../viewer)
+FIND_LIBRARY(VIEWER_LIBRARY Viewer PATHS .. ../viewer)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${VIEWER_INCLUDE_DIR}/..)
+
+ADD_EXECUTABLE(pvm2web pvm2web.cpp texture.cpp)
+TARGET_LINK_LIBRARIES(pvm2web ${VIEWER_LIBRARY})
