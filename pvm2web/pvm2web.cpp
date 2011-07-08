@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
          for (int val = 0; val < length; val++)
          {
-            // create the names of the individual planes 
+            // create the names of the individual planes
             string str_CreatedFileNamePGM = str_CreatedFileName;
             str_CreatedFileNamePGM += int2str(plane);
             str_CreatedFileNamePGM += "_";

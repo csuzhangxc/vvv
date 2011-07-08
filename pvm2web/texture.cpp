@@ -48,7 +48,7 @@ unsigned char interpol(unsigned char *source, unsigned int qw, unsigned int qh, 
     return( (1-w) * ( (1-v) * ( (1-u) * p[0][0][0] +
                                  u * p[1][0][0]) +
                        v    * ( (1-u) * p[0][1][0] +
-                                 u * p[1][1][0])) + 
+                                 u * p[1][1][0])) +
              w    * ( (1-v) * ( (1-u) * p[0][0][1] +
                                  u * p[1][0][1]) +
                        v    * ( (1-u) * p[0][1][1] +
@@ -118,7 +118,7 @@ unsigned char *getTextureFromVolume(unsigned char *volume, unsigned int size,
    else if (plane == 'y')
    {
       j = row;
-        
+
       for (k = 0; k < size; k++)
             for (i = 0; i < size; i++)
                 texture[i + (size-1-k)*size]= volume[i + size * j + size * size * k];
@@ -131,6 +131,6 @@ unsigned char *getTextureFromVolume(unsigned char *volume, unsigned int size,
          for (i = 0; i < size; i++)
             texture[i + (size-1-j)*size]= volume[i + size * j + size * size * k];
    }
-    
+
    return(texture);
 }
