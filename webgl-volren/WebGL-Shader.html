@@ -9,7 +9,7 @@
 
 <script type="text/javascript"
         src="http://glmatrix.googlecode.com/files/glMatrix-0.9.5.min.js">
-</script> 
+</script>
 
 <script type="text/javascript">
 window.requestAnimFrame = (
@@ -133,11 +133,11 @@ window.requestAnimFrame = (
       planeTexCoordBuffer = createBuffer(texcoords, 4, 2);
    }
 
-   function initTextures() 
+   function initTextures()
    {
       var planeActivated;
       var fileFormat = ".png";
-	  
+
       texDir = link.substr(link.lastIndexOf("/")+1);
       numberOfSlices = texDir.substring(0, texDir.indexOf("_"));
 
@@ -148,7 +148,7 @@ window.requestAnimFrame = (
       imagesLoaded = false;
 
       var index = 0;
-      
+
       for (var plane = 0; plane < 3; plane++)
       {
          if (plane==0) planeActivated = "z";
@@ -243,7 +243,7 @@ window.requestAnimFrame = (
       shader.textureCoordAttribute = gl.getAttribLocation(shader, "aTextureCoord");
       gl.enableVertexAttribArray(shader.textureCoordAttribute);
 
-      // combined modelview projection matrix                        
+      // combined modelview projection matrix
       shader.mvpMatrixUniform = gl.getUniformLocation(shader, "mvpMatrix");
 
       // alpha uniform for blending
@@ -305,7 +305,7 @@ window.requestAnimFrame = (
    // rotate y-axis
    if (currentlyPressedKeys[37]) rotation-=0.01;
    if (currentlyPressedKeys[39]) rotation+=0.01;
-   
+
    // radius
    if (currentlyPressedKeys[16]) radius-=0.1;
    if (currentlyPressedKeys[17]) radius+=0.1;
@@ -326,7 +326,7 @@ window.requestAnimFrame = (
 
          texDir = link.substr(link.lastIndexOf("/")+1);
          numberOfSlices = texDir.substring(0, texDir.indexOf("_"));
-                        
+
          initTextures();
       }
 
@@ -393,7 +393,7 @@ window.requestAnimFrame = (
 
       // initial transform of first slice
       mat4.multiply(mvMatrix, p[0]);
-	  
+
       // incremental transform between slices
       var dvec = p[1];
       vec3.scale(dvec, lambda);
@@ -485,7 +485,7 @@ window.requestAnimFrame = (
          if (dir[1]<0.0)
          {
             mat4.translate(result[0], [0,0,1]);
-            result[1] = [0,0,-1];            
+            result[1] = [0,0,-1];
             result[2] = [1*numberOfSlices, 1];
          }
          else
@@ -616,7 +616,7 @@ window.requestAnimFrame = (
                <td>shift/ctrl: </td>
                <td>change distance</td>
             </tr>
-	 </table>
+         </table>
 
       </font>
    </span>
