@@ -410,13 +410,21 @@ window.requestAnimFrame = (
          {
             for (var index = 0; index < 3*numberOfSlices; index++)
             {
-               gl.bindTexture(gl.TEXTURE_2D, planeTexture[index]);
-               gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-               gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, planeImage[index]);
-               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-               gl.generateMipmap(gl.TEXTURE_2D);
-               gl.bindTexture(gl.TEXTURE_2D, null);
+               try
+               {
+                  planeTexture[index].bad=false;
+                  gl.bindTexture(gl.TEXTURE_2D, planeTexture[index]);
+                  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, planeImage[index]);
+                  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+                  gl.generateMipmap(gl.TEXTURE_2D);
+                  gl.bindTexture(gl.TEXTURE_2D, null);
+               }
+               catch (e)
+               {
+                  planeTexture[index].bad=true;
+               }
             }
 
             imagesLoaded=true;
@@ -428,14 +436,17 @@ window.requestAnimFrame = (
       {
          for (var i=0; i<numberOfSlices; i++)
          {
-            setMatrices(pMatrix, mvMatrix);
-            renderStrip(planeVtxBuffer, planeTexCoordBuffer, planeTexture[texIndex]);
+            if (!planeTexture[texIndex].bad)
+            {
+               setMatrices(pMatrix, mvMatrix);
+               renderStrip(planeVtxBuffer, planeTexCoordBuffer, planeTexture[texIndex]);
 
-            // translate to next slice position
-            mat4.translate(mvMatrix, dvec);
+               // translate to next slice position
+               mat4.translate(mvMatrix, dvec);
 
-            // goto next texture slice index
-            texIndex += texIncr;
+               // goto next texture slice index
+               texIndex += texIncr;
+            }
          }
       }
 
