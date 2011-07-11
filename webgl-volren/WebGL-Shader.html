@@ -162,6 +162,7 @@ window.requestAnimFrame = (
 
             planeImage[index].onload = function() { imagesToLoad--; }
             planeImage[index].onerror = function() { imagesToLoad--; }
+            planeImage[index].onabort = function() { imagesToLoad--; }
             planeImage[index].src = link + "/" + texDir + "_" + planeActivated + "_" + sliceNr + fileFormat;
 
             if (logging && sliceNr==0)
