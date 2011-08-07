@@ -506,9 +506,6 @@ void writePNMimage(const char *filename,unsigned char *image,unsigned int width,
    memcpy(data,str,strlen(str));
    memcpy(data+strlen(str),image,width*height*components);
 
-   if (DDS_ISINTEL)
-      if (components==2) swapshort(data+strlen(str),width*height);
-
    if (dds!=0) writeDDSfile(filename,data,strlen(str)+width*height*components,components,width);
    else writeRAWfile(filename,data,strlen(str)+width*height*components);
    }
@@ -574,9 +571,6 @@ unsigned char *readPNMimage(const char *filename,unsigned int *width,unsigned in
 
    if ((image=(unsigned char *)malloc((*width)*(*height)*(*components)))==NULL) ERRORMSG();
    if (data+bytes!=ptr2+(*width)*(*height)*(*components)) ERRORMSG();
-
-   if (DDS_ISINTEL)
-      if (*components==2) swapshort(ptr2,(*width)*(*height));
 
    memcpy(image,ptr2,(*width)*(*height)*(*components));
    free(data);
@@ -678,15 +672,19 @@ unsigned char *readPVMvolume(const char *filename,
       else if (strncmp((char *)data,"PVM3\n",5)==0) version=3;
       else return(NULL);
 
-      if (sscanf((char *)&data[5],"%d %d %d\n%g %g %g\n",width,height,depth,&sx,&sy,&sz)!=6) ERRORMSG();
+      ptr=&data[5];
+      if (sscanf((char *)ptr,"%d %d %d\n%g %g %g\n",width,height,depth,&sx,&sy,&sz)!=6) ERRORMSG();
       if (*width<1 || *height<1 || *depth<1 || sx<=0.0f || sy<=0.0f || sz<=0.0f) ERRORMSG();
-      ptr=(unsigned char *)strchr((char *)&data[5],'\n')+1;
+      ptr=(unsigned char *)strchr((char *)ptr,'\n')+1;
       }
    else
       {
-      if (sscanf((char *)&data[4],"%d %d %d\n",width,height,depth)!=3) ERRORMSG();
-      if (*width<1 || *height<1 || *depth<1) ERRORMSG();
       ptr=&data[4];
+      while (*ptr=='#')
+         while (*ptr++!='\n');
+
+      if (sscanf((char *)ptr,"%d %d %d\n",width,height,depth)!=3) ERRORMSG();
+      if (*width<1 || *height<1 || *depth<1) ERRORMSG();
       }
 
    if (scalex!=NULL && scaley!=NULL && scalez!=NULL)
