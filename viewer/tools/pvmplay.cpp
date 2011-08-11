@@ -164,14 +164,14 @@ int main(int argc,char *argv[])
 
    if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components))==NULL) exit(1);
 
-  if (argc>2)
+   if (argc>2)
       {
       if (sscanf(argv[2],"%d",&frame)!=1) exit(1);
       if (frame<1 || frame>depth) exit(1);
       frame--;
       }
 
-  if (components==2)
+   if (components==2)
       {
       volume=quantize(volume,width,height,depth);
       components=1;
