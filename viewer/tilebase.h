@@ -295,8 +295,8 @@ class mipmap
                  int bricksize,float overmax);
 
    // load the volume data
-   void loadvolume(char *filename,
-                   char *gradname=NULL,
+   void loadvolume(const char *filename,
+                   const char *gradname=NULL,
                    float mx=0.0f,float my=0.0f,float mz=0.0f,
                    float sx=1.0f,float sy=1.0f,float sz=1.0f,
                    int bricksize=128,float overmax=8.0f,
@@ -307,7 +307,7 @@ class mipmap
                    int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
 
    // save the volume data as PVM
-   void savePVMvolume(char *filename);
+   void savePVMvolume(const char *filename);
 
    tfunc2D *get_tfunc() {return(TFUNC);} // return the transfer function
    histo *get_histo() {return(HISTO);} // return the histogram
@@ -378,7 +378,7 @@ class mipmap
    int *QUEUEX,*QUEUEY,*QUEUEZ;
    unsigned int QUEUEMAX,QUEUECNT,QUEUESTART,QUEUEEND;
 
-   unsigned char *readANYvolume(char *filename,
+   unsigned char *readANYvolume(const char *filename,
                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
                                 float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 

@@ -3826,7 +3826,7 @@ unsigned char *mipmap::scale(unsigned char *volume,
    }
 
 // read either PVM or DICOM identified by the * in the filename pattern
-unsigned char *mipmap::readANYvolume(char *filename,
+unsigned char *mipmap::readANYvolume(const char *filename,
                                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez)
    {
@@ -3857,8 +3857,8 @@ unsigned char *mipmap::readANYvolume(char *filename,
    }
 
 // load the volume and convert it to 8 bit
-void mipmap::loadvolume(char *filename, // filename of PVM to load
-                        char *gradname, // optional filename of gradient volume
+void mipmap::loadvolume(const char *filename, // filename of PVM to load
+                        const char *gradname, // optional filename of gradient volume
                         float mx,float my,float mz, // midpoint of volume (assumed to be fixed)
                         float sx,float sy,float sz, // size of volume (assumed to be fixed)
                         int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
@@ -3995,7 +3995,7 @@ void mipmap::loadvolume(char *filename, // filename of PVM to load
    }
 
 // save the volume data as PVM
-void mipmap::savePVMvolume(char *filename)
+void mipmap::savePVMvolume(const char *filename)
    {
    if (VOLUME==NULL) return;
 
