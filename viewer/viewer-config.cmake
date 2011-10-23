@@ -63,6 +63,10 @@ MACRO(SET_VIEWER_PATH name subdir)
                ${VIEWER_PATH}/${subdir}
                ${VIEWER_PATH}/../${subdir}
                ${VIEWER_PATH}/../../${subdir}
+               ${VIEWER_PATH}/../libmini/deps/${subdir}
+               ${VIEWER_PATH}/../libmini/WIN32/${subdir}
+               ${VIEWER_PATH}/../../libmini/deps/${subdir}
+               ${VIEWER_PATH}/../../libmini/WIN32/${subdir}
                /usr/local/${subdir}
                /usr/local
                /usr)
