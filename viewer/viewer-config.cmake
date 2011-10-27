@@ -62,21 +62,21 @@ MACRO(SET_VIEWER_PATH name subdir)
                ${VIEWER_PATH}/../..
                ${VIEWER_PATH}/${subdir}
                ${VIEWER_PATH}/../${subdir}
+               ${VIEWER_PATH}/../deps/${subdir}
                ${VIEWER_PATH}/../../${subdir}
                ${VIEWER_PATH}/../libmini/deps/${subdir}
-               ${VIEWER_PATH}/../libmini/WIN32/${subdir}
                ${VIEWER_PATH}/../../libmini/deps/${subdir}
-               ${VIEWER_PATH}/../../libmini/WIN32/${subdir}
-               /usr/local/${subdir}
-               /usr/local
-               /usr)
+               /usr/local/${subdir} /usr/local /usr
+               ${VIEWER_PATH}/../WIN32/${subdir}
+               ${VIEWER_PATH}/../libmini/WIN32/${subdir}
+               ${VIEWER_PATH}/../../libmini/WIN32/${subdir})
    IF (VIEWER_THIRDPARTY_DIR)
       SET(${name} ${${name}}
                   ${VIEWER_THIRDPARTY_DIR}
                   ${VIEWER_THIRDPARTY_DIR}/${subdir}
-                  /usr/local/${subdir}
-                  /usr/local
-                  /usr)
+                  ${VIEWER_THIRDPARTY_DIR}/deps/${subdir}
+                  /usr/local/${subdir} /usr/local /usr
+                  ${VIEWER_THIRDPARTY_DIR}/WIN32/${subdir})
    ENDIF (VIEWER_THIRDPARTY_DIR)
 ENDMACRO(SET_VIEWER_PATH)
 
