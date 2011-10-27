@@ -16,10 +16,20 @@ IF (NOT VIEWER_PATH)
    ENDIF (NOT VIEWER_PATH)
 ENDIF (NOT VIEWER_PATH)
 
+# gcc version
+IF (CMAKE_COMPILER_IS_GNUCXX)
+   EXEC_PROGRAM(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _compiler_output)
+   STRING(REGEX REPLACE ".* ([0-9]\\.[0-9]\\.[0-9]) .*" "\\1" GCC_COMPILER_VERSION ${_compiler_output})
+   MESSAGE(STATUS "gcc version: ${GCC_COMPILER_VERSION}")
+ENDIF (CMAKE_COMPILER_IS_GNUCXX)
+
 # default Unix compiler definitions
 IF (NOT CMAKE_BUILD_TYPE)
    IF (UNIX)
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -finline-functions -Wall -Wno-parentheses -Wno-unused-result")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -finline-functions -Wall -Wno-parentheses")
+      IF (GCC_COMPILER_VERSION VERSION_GREATER "4.3")
+         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result")
+      ENDIF (GCC_COMPILER_VERSION VERSION_GREATER "4.3")
    ENDIF (UNIX)
 ENDIF (NOT CMAKE_BUILD_TYPE)
 
