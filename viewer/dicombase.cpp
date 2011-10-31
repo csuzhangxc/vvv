@@ -6,10 +6,16 @@
 
 #include "dicombase.h"
 
+#ifdef VIEWER_HAVE_DCMTK
 #include <dcmtk/dcmjpeg/djdecode.h>
+#endif
 
 DicomVolume::ImageDesc::~ImageDesc()
-   {delete m_Image;}
+   {
+#ifdef VIEWER_HAVE_DCMTK
+   delete m_Image;
+#endif
+   }
 
 DicomVolume::DicomVolume():m_Voxels(0) {}
 
@@ -21,9 +27,11 @@ DicomVolume::~DicomVolume()
 
 void DicomVolume::deleteImages()
    {
+#ifdef VIEWER_HAVE_DCMTK
    int s=m_Images.size();
    for (int i=0; i<s; i++) delete m_Images[i];
    m_Images.clear();
+#endif
    }
 
 bool DicomVolume::loadImages(const char *filenamepattern)
@@ -41,6 +49,8 @@ bool DicomVolume::loadImages(const char *filenamepattern)
 
 bool DicomVolume::dicomLoad(const char *filenamepattern)
    {
+#ifdef VIEWER_HAVE_DCMTK
+
    unsigned int i,j;
 
    const char *fname;
@@ -222,6 +232,12 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
    DJDecoderRegistration::cleanup(); // deregister JPEG codecs
 
    return(true);
+
+#else
+
+   return(false);
+
+#endif
    }
 
 void DicomVolume::sortImages()

@@ -34,7 +34,7 @@ tools:
 
 depend:
 	@-(cd tools; $(MAKE) depend)
-	@-$(MAKEDEPEND) -D$(TARGET) $(SRCS) >$(MMFILE).d 2>/dev/null
+	@-$(MAKEDEPEND) $(OPTS) -D$(TARGET) $(SRCS) >$(MMFILE).d 2>/dev/null
 
 clean:
 	@-(cd tools; $(MAKE) clean)

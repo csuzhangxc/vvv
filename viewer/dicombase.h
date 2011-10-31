@@ -7,8 +7,10 @@
 
 #include "codebase.h"
 
+#ifdef VIEWER_HAVE_DCMTK
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dctk.h>
+#endif
 
 class DicomVolume
    {
@@ -16,10 +18,17 @@ class DicomVolume
       {
       public:
 
-      ImageDesc() : m_Image(0) {}
+      ImageDesc()
+#ifdef VIEWER_HAVE_DCMTK
+         : m_Image(0)
+#endif
+         {}
+
       virtual ~ImageDesc();
 
+#ifdef VIEWER_HAVE_DCMTK
       DcmFileFormat *m_Image;
+#endif
       float m_pos;
 
       private:
