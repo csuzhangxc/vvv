@@ -1,6 +1,8 @@
 # cmake build configuration for v^3
 # (c) by Stefan Roettger
 
+OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
+
 # library name
 IF (WIN32)
    SET(VIEWER_NAME "libViewer")
@@ -16,10 +18,20 @@ IF (NOT VIEWER_PATH)
    ENDIF (NOT VIEWER_PATH)
 ENDIF (NOT VIEWER_PATH)
 
+# gcc version
+IF (CMAKE_COMPILER_IS_GNUCXX)
+   EXEC_PROGRAM(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _compiler_output)
+   STRING(REGEX REPLACE ".* ([0-9]\\.[0-9]\\.[0-9]) .*" "\\1" GCC_COMPILER_VERSION ${_compiler_output})
+   MESSAGE(STATUS "gcc version: ${GCC_COMPILER_VERSION}")
+ENDIF (CMAKE_COMPILER_IS_GNUCXX)
+
 # default Unix compiler definitions
 IF (NOT CMAKE_BUILD_TYPE)
    IF (UNIX)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -finline-functions -Wall -Wno-parentheses")
+      IF (GCC_COMPILER_VERSION VERSION_GREATER "4.2")
+         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result")
+      ENDIF (GCC_COMPILER_VERSION VERSION_GREATER "4.2")
    ENDIF (UNIX)
 ENDIF (NOT CMAKE_BUILD_TYPE)
 
@@ -62,21 +74,21 @@ MACRO(SET_VIEWER_PATH name subdir)
                ${VIEWER_PATH}/../..
                ${VIEWER_PATH}/${subdir}
                ${VIEWER_PATH}/../${subdir}
+               ${VIEWER_PATH}/../deps/${subdir}
                ${VIEWER_PATH}/../../${subdir}
                ${VIEWER_PATH}/../libmini/deps/${subdir}
-               ${VIEWER_PATH}/../libmini/WIN32/${subdir}
                ${VIEWER_PATH}/../../libmini/deps/${subdir}
-               ${VIEWER_PATH}/../../libmini/WIN32/${subdir}
-               /usr/local/${subdir}
-               /usr/local
-               /usr)
+               /usr/local/${subdir} /usr/local /usr
+               ${VIEWER_PATH}/../WIN32/${subdir}
+               ${VIEWER_PATH}/../libmini/WIN32/${subdir}
+               ${VIEWER_PATH}/../../libmini/WIN32/${subdir})
    IF (VIEWER_THIRDPARTY_DIR)
       SET(${name} ${${name}}
                   ${VIEWER_THIRDPARTY_DIR}
                   ${VIEWER_THIRDPARTY_DIR}/${subdir}
-                  /usr/local/${subdir}
-                  /usr/local
-                  /usr)
+                  ${VIEWER_THIRDPARTY_DIR}/deps/${subdir}
+                  /usr/local/${subdir} /usr/local /usr
+                  ${VIEWER_THIRDPARTY_DIR}/WIN32/${subdir})
    ENDIF (VIEWER_THIRDPARTY_DIR)
 ENDMACRO(SET_VIEWER_PATH)
 
@@ -127,25 +139,31 @@ ENDIF (NOT VIEWER_LIBRARY)
 FIND_VIEWER_PATH(VIEWER_INCLUDE_DIR tfbase.h ${VIEWER_PATH})
 INCLUDE_DIRECTORIES(${VIEWER_INCLUDE_DIR})
 
-# find ZLIB dependency
-FIND_VIEWER_LIBRARY(ZLIB_LIBRARY z "${ZLIB_PATH}")
-FIND_VIEWER_LIBRARY(ZLIB_LIBRARY zlib "${WIN32_ZLIB_PATH}")
-FIND_VIEWER_PATH2(ZLIB_INCLUDE_DIR zlib.h "${ZLIB_PATH}" "${WIN32_ZLIB_PATH}")
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+IF (BUILD_WITH_DCMTK)
 
-# find DCMTK dependency
-FIND_VIEWER_LIBRARY2(DCMTK_ofstd_LIBRARY ofstd "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_dcmdata_LIBRARY dcmdata "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_dcmjpeg_LIBRARY dcmjpeg "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_ijg8_LIBRARY ijg8 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_ijg12_LIBRARY ijg12 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_ijg16_LIBRARY ijg16 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_LIBRARY2(DCMTK_dcmtls_LIBRARY dcmtls "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-FIND_VIEWER_PATH2(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
-IF (NOT WIN32)
-   ADD_DEFINITIONS(-DHAVE_CONFIG_H)
-ENDIF (NOT WIN32)
+   # find ZLIB dependency
+   FIND_VIEWER_LIBRARY(ZLIB_LIBRARY z "${ZLIB_PATH}")
+   FIND_VIEWER_LIBRARY(ZLIB_LIBRARY zlib "${WIN32_ZLIB_PATH}")
+   FIND_VIEWER_PATH2(ZLIB_INCLUDE_DIR zlib.h "${ZLIB_PATH}" "${WIN32_ZLIB_PATH}")
+   INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
+   # find DCMTK dependency
+   FIND_VIEWER_LIBRARY2(DCMTK_ofstd_LIBRARY ofstd "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmdata_LIBRARY dcmdata "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmjpeg_LIBRARY dcmjpeg "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg8_LIBRARY ijg8 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg12_LIBRARY ijg12 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg16_LIBRARY ijg16 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmtls_LIBRARY dcmtls "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_PATH2(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
+   IF (NOT WIN32)
+      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+   ENDIF (NOT WIN32)
+
+   ADD_DEFINITIONS(-DVIEWER_HAVE_DCMTK)
+
+ENDIF (BUILD_WITH_DCMTK)
 
 # find OpenGL dependency
 FIND_PACKAGE(OpenGL)
@@ -187,17 +205,22 @@ ENDIF (VIEWER_BUILD_TYPE MATCHES RELEASE)
 
 MACRO(MAKE_VIEWER_EXECUTABLE name)
    ADD_EXECUTABLE(${name} ${name}.cpp)
+   IF (BUILD_WITH_DCMTK)
+      TARGET_LINK_LIBRARIES(${name}
+         ${VIEWER_NAME}
+         ${DCMTK_dcmdata_LIBRARY}
+         ${DCMTK_dcmjpeg_LIBRARY}
+         ${DCMTK_ijg8_LIBRARY}
+         ${DCMTK_ijg12_LIBRARY}
+         ${DCMTK_ijg16_LIBRARY}
+         ${DCMTK_dcmtls_LIBRARY}
+         ${DCMTK_ofstd_LIBRARY}
+         ${ZLIB_LIBRARY}
+         )
+   ENDIF (BUILD_WITH_DCMTK)
    TARGET_LINK_LIBRARIES(${name}
       ${VIEWER_NAME}
-      ${DCMTK_dcmdata_LIBRARY}
-      ${DCMTK_dcmjpeg_LIBRARY}
-      ${DCMTK_ijg8_LIBRARY}
-      ${DCMTK_ijg12_LIBRARY}
-      ${DCMTK_ijg16_LIBRARY}
-      ${DCMTK_dcmtls_LIBRARY}
-      ${DCMTK_ofstd_LIBRARY}
       ${OPENGL_LIBRARIES}
       ${GLUT_LIBRARY}
-      ${ZLIB_LIBRARY}
       )
 ENDMACRO(MAKE_VIEWER_EXECUTABLE)
