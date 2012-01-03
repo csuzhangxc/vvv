@@ -660,7 +660,9 @@ unsigned char *readPVMvolume(const char *filename,
 
    unsigned int len1=0,len2=0,len3=0,len4=0;
 
-   if ((data=readDDSfile(filename,&bytes))==NULL) return(NULL);
+   if ((data=readDDSfile(filename,&bytes))==NULL)
+      if ((data=readRAWfile(filename,&bytes))==NULL) return(NULL);
+
    if (bytes<5) return(NULL);
 
    if ((data=(unsigned char *)realloc(data,bytes+1))==NULL) ERRORMSG();

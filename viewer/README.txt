@@ -1,5 +1,5 @@
 This package contains the V^3, the Versatile Volume Viewer.
-Copyright (c) 2003-2011 by Stefan Roettger.
+Copyright (c) 2003-2012 by Stefan Roettger.
 
 The volume viewer is licensed under the terms of the GPL (see
 http://www.gnu.org/copyleft/ for more information on the license).
