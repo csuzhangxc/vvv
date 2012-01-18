@@ -733,6 +733,17 @@ unsigned char *readPVMvolume(const char *filename,
    return(volume);
    }
 
+// check a file
+int checkfile(const char *filename)
+   {
+   FILE *file;
+
+   if ((file=fopen(filename,"rb"))==NULL) return(0);
+   fclose(file);
+
+   return(1);
+   }
+
 // simple checksum algorithm
 unsigned int checksum(unsigned char *data,unsigned int bytes)
    {

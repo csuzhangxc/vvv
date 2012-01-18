@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger
 
-#define VERSION "3.0.1 as of 3.January.2012"
+#define VERSION "3.1 as of 18.January.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -1090,11 +1090,14 @@ void parseargs(int argc,char *argv[])
       printf("version: %s\n",VERSION);
       printf("usage: %s <data.pvm> {[-]<option>=<value>}\n",argv[0]);
       printf("       options: bv | gf | hm | hf | kn | hs | rd | ld | im\n");
-      exit(1);
       }
 
+   if (argc<2)
+      if (checkfile("Bucky.pvm")) strncpy(FILENAME,"Bucky.pvm",STR_MAX);
+      else exit(1);
+   else strncpy(FILENAME,argv[1],STR_MAX);
+
    strncpy(PROGNAME,argv[0],STR_MAX);
-   strncpy(FILENAME,argv[1],STR_MAX);
    strncpy(GRADNAME,"",STR_MAX);
 
    snprintf(CONFIG,STR_MAX,"%s.sav",FILENAME);

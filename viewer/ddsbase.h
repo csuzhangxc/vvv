@@ -30,6 +30,7 @@ unsigned char *readPVMvolume(const char *filename,
                              unsigned char **parameter=NULL,
                              unsigned char **comment=NULL);
 
+int checkfile(const char *filename);
 unsigned int checksum(unsigned char *data,unsigned int bytes);
 
 void swapbytes(unsigned char *data,unsigned int bytes);
