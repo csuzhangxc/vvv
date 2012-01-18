@@ -117,10 +117,11 @@ void tile::setup(char *base)
          glGenProgramsARB(1,&PROGID[i]);
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[i]);
          glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_FORMAT_ASCII_ARB,len[i],prog[i]);
-         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 
          glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB,&errorPos);
          glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
+
+         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 
          if (errorPos==0) printf("warning: fragment programs unavailable\n");
          else
