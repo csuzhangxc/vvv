@@ -1,0 +1,15 @@
+!!ARBfp1.0
+
+TEMP tmp, col;
+
+# get data from 3D texture
+TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab
+
+# dependent 1D texture lookup
+MOV tmp.y, 0.5;
+TEX col, tmp, texture[3], 2D;   # perform 1D dependent texture lookup in transfer function
+
+# write to output register
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color
+
+END
