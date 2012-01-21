@@ -187,7 +187,11 @@ void interleave(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
 // write a Differential Data Stream
 void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip,unsigned int strip,int nofree)
    {
+   int i;
+
    int version=1;
+
+   char lookup[256];
 
    unsigned char *ptr1,*ptr2;
 
@@ -211,6 +215,16 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
 
    deinterleave(data,bytes,skip,DDS_INTERLEAVE);
 
+   for (i=-128; i<128; i++)
+      {
+      if (i<=0)
+         for (bits=0; (1<<bits)/2<-i; bits++);
+      else
+         for (bits=0; (1<<bits)/2<=i; bits++);
+
+      lookup[i+128]=bits;
+      }
+
    initbuffer();
 
    writebits(DDS_file,skip-1,2);
@@ -232,10 +246,7 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
       while (act1<-128) act1+=256;
       while (act1>127) act1-=256;
 
-      if (act1<=0)
-         for (bits=0; (1<<bits)/2<-act1; bits++);
-      else
-         for (bits=0; (1<<bits)/2<=act1; bits++);
+      bits=lookup[act1+128];
 
       bits=DDS_decode(DDS_code(bits));
 
