@@ -4,6 +4,7 @@
 
 #define DDS_MAXSTR (256)
 
+#define DDS_CACHESIZE (1<<10)
 #define DDS_BLOCKSIZE (1<<20)
 #define DDS_INTERLEAVE (1<<24)
 
@@ -15,6 +16,9 @@ FILE *DDS_file;
 
 char DDS_ID[]="DDS v3d\n";
 char DDS_ID2[]="DDS v3e\n";
+
+unsigned int DDS_cache[DDS_CACHESIZE];
+int DDS_cachepos;
 
 unsigned int DDS_buffer;
 int DDS_bufsize,DDS_bitcnt;
@@ -29,12 +33,14 @@ inline unsigned int DDS_shiftr(const unsigned int value,const int bits)
 
 void initbuffer()
    {
+   DDS_cachepos=DDS_CACHESIZE;
+
    DDS_buffer=0;
    DDS_bufsize=0;
    DDS_bitcnt=0;
    }
 
-void DDS_swapuint(unsigned int *x)
+inline void DDS_swapuint(unsigned int *x)
    {
    unsigned int tmp=*x;
 
@@ -44,12 +50,8 @@ void DDS_swapuint(unsigned int *x)
       ((tmp&0xff000000)>>24);
    }
 
-void writebits(FILE *file,unsigned int value,int bits)
+inline void writebits(FILE *file,unsigned int value,int bits)
    {
-   if (bits<0 || bits>32) ERRORMSG();
-
-   if (bits==0) return;
-
    value&=DDS_shiftl(1,bits)-1;
 
    if (DDS_bufsize+bits<32)
@@ -70,7 +72,7 @@ void writebits(FILE *file,unsigned int value,int bits)
    DDS_bitcnt+=bits;
    }
 
-void flushbits(FILE *file)
+inline void flushbits(FILE *file)
    {
    if (DDS_bufsize>0)
       {
@@ -81,13 +83,9 @@ void flushbits(FILE *file)
       }
    }
 
-unsigned int readbits(FILE *file,int bits)
+inline unsigned int readbits(FILE *file,int bits)
    {
    unsigned int value;
-
-   if (bits<0 || bits>32) ERRORMSG();
-
-   if (bits==0) return(0);
 
    if (bits<DDS_bufsize)
       {
@@ -97,8 +95,13 @@ unsigned int readbits(FILE *file,int bits)
    else
       {
       value=DDS_shiftl(DDS_buffer,bits-DDS_bufsize);
-      DDS_buffer=0;
-      fread(&DDS_buffer,1,4,file);
+      if (DDS_cachepos>=DDS_CACHESIZE)
+         {
+         memset(DDS_cache,0,4*DDS_CACHESIZE);
+         fread(DDS_cache,1,4*DDS_CACHESIZE,file);
+         DDS_cachepos=0;
+         }
+      DDS_buffer=DDS_cache[DDS_cachepos++];
       if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
       DDS_bufsize+=32-bits;
       value|=DDS_shiftr(DDS_buffer,DDS_bufsize);
@@ -389,7 +392,7 @@ unsigned char *readDDSfile(const char *filename,unsigned int *bytes)
          while (act<0) act+=256;
          while (act>255) act-=256;
 
-         if (cnt%DDS_BLOCKSIZE==0)
+         if ((cnt&(DDS_BLOCKSIZE-1))==0)
             {
             if (data==NULL)
                {if ((data=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();}
