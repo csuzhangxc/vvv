@@ -21,7 +21,7 @@ unsigned int DDS_cache[DDS_CACHESIZE];
 int DDS_cachepos;
 
 unsigned int DDS_buffer;
-int DDS_bufsize,DDS_bitcnt;
+int DDS_bufsize;
 
 unsigned short int DDS_INTEL=1;
 
@@ -37,7 +37,6 @@ void initbuffer()
 
    DDS_buffer=0;
    DDS_bufsize=0;
-   DDS_bitcnt=0;
    }
 
 inline void DDS_swapuint(unsigned int *x)
@@ -65,21 +64,26 @@ inline void writebits(FILE *file,unsigned int value,int bits)
       DDS_bufsize+=bits-32;
       DDS_buffer|=DDS_shiftr(value,DDS_bufsize);
       if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
-      if (fwrite(&DDS_buffer,4,1,file)!=1) ERRORMSG();
+      if (DDS_cachepos>=DDS_CACHESIZE) DDS_cachepos=0;
+      DDS_cache[DDS_cachepos++]=DDS_buffer;
+      if (DDS_cachepos>=DDS_CACHESIZE)
+         {
+         if (fwrite(DDS_cache,4*DDS_CACHESIZE,1,file)!=1) ERRORMSG();
+         DDS_cachepos=0;
+         }
       DDS_buffer=value&(DDS_shiftl(1,DDS_bufsize)-1);
       }
-
-   DDS_bitcnt+=bits;
    }
 
 inline void flushbits(FILE *file)
    {
+   if (fwrite(DDS_cache,4*DDS_cachepos,1,file)!=1) ERRORMSG();
+
    if (DDS_bufsize>0)
       {
       DDS_buffer=DDS_shiftl(DDS_buffer,32-DDS_bufsize);
       if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
       if (fwrite(&DDS_buffer,(DDS_bufsize+7)/8,1,file)!=1) ERRORMSG();
-      DDS_bitcnt+=(32-DDS_bufsize)&7;
       }
    }
 
@@ -108,7 +112,6 @@ inline unsigned int readbits(FILE *file,int bits)
       }
 
    DDS_buffer&=DDS_shiftl(1,DDS_bufsize)-1;
-   DDS_bitcnt+=bits;
 
    return(value);
    }
