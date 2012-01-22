@@ -4,7 +4,6 @@
 
 #define DDS_MAXSTR (256)
 
-#define DDS_CACHESIZE (1<<10)
 #define DDS_BLOCKSIZE (1<<20)
 #define DDS_INTERLEAVE (1<<24)
 
@@ -17,27 +16,79 @@ FILE *DDS_file;
 char DDS_ID[]="DDS v3d\n";
 char DDS_ID2[]="DDS v3e\n";
 
-unsigned int DDS_cache[DDS_CACHESIZE];
-int DDS_cachepos;
+unsigned char *DDS_cache;
+unsigned int DDS_cachepos,DDS_cachesize;
 
 unsigned int DDS_buffer;
-int DDS_bufsize;
+unsigned int DDS_bufsize;
 
 unsigned short int DDS_INTEL=1;
 
-inline unsigned int DDS_shiftl(const unsigned int value,const int bits)
+// write a RAW file
+void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree)
+   {
+   if (bytes<1) ERRORMSG();
+
+   if ((DDS_file=fopen(filename,"wb"))==NULL) ERRORMSG();
+   if (fwrite(data,1,bytes,DDS_file)!=bytes) ERRORMSG();
+
+   fclose(DDS_file);
+
+   if (nofree==0) free(data);
+   }
+
+unsigned char *readRAWfiled(FILE *file,unsigned int *bytes)
+   {
+   unsigned char *data;
+   unsigned int cnt,blkcnt;
+
+   data=NULL;
+   cnt=0;
+
+   do
+      {
+      if (data==NULL)
+         {if ((data=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();}
+      else
+         if ((data=(unsigned char *)realloc(data,cnt+DDS_BLOCKSIZE))==NULL) ERRORMSG();
+
+      blkcnt=fread(&data[cnt],1,DDS_BLOCKSIZE,file);
+      cnt+=blkcnt;
+      }
+   while (blkcnt==DDS_BLOCKSIZE);
+
+   if (cnt==0)
+      {
+      free(data);
+      return(NULL);
+      }
+
+   if ((data=(unsigned char *)realloc(data,cnt))==NULL) ERRORMSG();
+
+   *bytes=cnt;
+
+   return(data);
+   }
+
+// read a RAW file
+unsigned char *readRAWfile(const char *filename,unsigned int *bytes)
+   {
+   unsigned char *data;
+
+   if ((DDS_file=fopen(filename,"rb"))==NULL) return(NULL);
+
+   data=readRAWfiled(DDS_file,bytes);
+
+   fclose(DDS_file);
+
+   return(data);
+   }
+
+inline unsigned int DDS_shiftl(const unsigned int value,const unsigned int bits)
    {return((bits>=32)?0:value<<bits);}
 
-inline unsigned int DDS_shiftr(const unsigned int value,const int bits)
+inline unsigned int DDS_shiftr(const unsigned int value,const unsigned int bits)
    {return((bits>=32)?0:value>>bits);}
-
-void initbuffer()
-   {
-   DDS_cachepos=DDS_CACHESIZE;
-
-   DDS_buffer=0;
-   DDS_bufsize=0;
-   }
 
 inline void DDS_swapuint(unsigned int *x)
    {
@@ -49,7 +100,25 @@ inline void DDS_swapuint(unsigned int *x)
       ((tmp&0xff000000)>>24);
    }
 
-inline void writebits(FILE *file,unsigned int value,int bits)
+void initbuffer()
+   {
+   DDS_cache=NULL;
+
+   DDS_buffer=0;
+   DDS_bufsize=0;
+   }
+
+inline void clearbits()
+   {
+   if (DDS_cache!=NULL)
+      free(DDS_cache);
+
+   DDS_cache=NULL;
+   DDS_cachepos=0;
+   DDS_cachesize=0;
+   }
+
+inline void writebits(unsigned int value,unsigned int bits)
    {
    value&=DDS_shiftl(1,bits)-1;
 
@@ -61,33 +130,60 @@ inline void writebits(FILE *file,unsigned int value,int bits)
    else
       {
       DDS_buffer=DDS_shiftl(DDS_buffer,32-DDS_bufsize);
-      DDS_bufsize+=bits-32;
+      DDS_bufsize-=32-bits;
       DDS_buffer|=DDS_shiftr(value,DDS_bufsize);
+
+      if (DDS_cachepos+4>DDS_cachesize)
+         if (DDS_cache==NULL)
+            {
+            if ((DDS_cache=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();
+            DDS_cachesize=DDS_BLOCKSIZE;
+            }
+         else
+            {
+            if ((DDS_cache=(unsigned char *)realloc(DDS_cache,DDS_cachesize+DDS_BLOCKSIZE))==NULL) ERRORMSG();
+            DDS_cachesize+=DDS_BLOCKSIZE;
+            }
+
       if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
-      if (DDS_cachepos>=DDS_CACHESIZE) DDS_cachepos=0;
-      DDS_cache[DDS_cachepos++]=DDS_buffer;
-      if (DDS_cachepos>=DDS_CACHESIZE)
-         {
-         if (fwrite(DDS_cache,4*DDS_CACHESIZE,1,file)!=1) ERRORMSG();
-         DDS_cachepos=0;
-         }
+      *((unsigned int *)&DDS_cache[DDS_cachepos])=DDS_buffer;
+      DDS_cachepos+=4;
+
       DDS_buffer=value&(DDS_shiftl(1,DDS_bufsize)-1);
       }
    }
 
-inline void flushbits(FILE *file)
+inline void flushbits()
    {
-   if (fwrite(DDS_cache,4*DDS_cachepos,1,file)!=1) ERRORMSG();
+   unsigned int bufsize;
 
-   if (DDS_bufsize>0)
+   bufsize=DDS_bufsize;
+
+   if (bufsize>0)
       {
-      DDS_buffer=DDS_shiftl(DDS_buffer,32-DDS_bufsize);
-      if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
-      if (fwrite(&DDS_buffer,(DDS_bufsize+7)/8,1,file)!=1) ERRORMSG();
+      writebits(0,32-bufsize);
+      DDS_cachepos-=(32-bufsize)/8;
       }
    }
 
-inline unsigned int readbits(FILE *file,int bits)
+inline void savebits(FILE *file)
+   {
+   if (DDS_cache!=NULL)
+      if (fwrite(DDS_cache,DDS_cachepos,1,file)!=1) ERRORMSG();
+   }
+
+inline void loadbits(FILE *file)
+   {
+   if ((DDS_cache=readRAWfiled(file,&DDS_cachesize))==NULL) ERRORMSG();
+
+   if ((DDS_cache=(unsigned char *)realloc(DDS_cache,DDS_cachesize+4))==NULL) ERRORMSG();
+   *((unsigned int *)&DDS_cache[DDS_cachesize])=0;
+
+   DDS_cachesize=4*((DDS_cachesize+3)/4);
+   if ((DDS_cache=(unsigned char *)realloc(DDS_cache,DDS_cachesize))==NULL) ERRORMSG();
+   }
+
+inline unsigned int readbits(unsigned int bits)
    {
    unsigned int value;
 
@@ -99,14 +195,15 @@ inline unsigned int readbits(FILE *file,int bits)
    else
       {
       value=DDS_shiftl(DDS_buffer,bits-DDS_bufsize);
-      if (DDS_cachepos>=DDS_CACHESIZE)
+
+      if (DDS_cachepos>=DDS_cachesize) DDS_buffer=0;
+      else
          {
-         memset(DDS_cache,0,4*DDS_CACHESIZE);
-         fread(DDS_cache,1,4*DDS_CACHESIZE,file);
-         DDS_cachepos=0;
+         DDS_buffer=*((unsigned int *)&DDS_cache[DDS_cachepos]);
+         if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
+         DDS_cachepos+=4;
          }
-      DDS_buffer=DDS_cache[DDS_cachepos++];
-      if (DDS_ISINTEL) DDS_swapuint(&DDS_buffer);
+
       DDS_bufsize+=32-bits;
       value|=DDS_shiftr(DDS_buffer,DDS_bufsize);
       }
@@ -194,7 +291,7 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
 
    int version=1;
 
-   char lookup[256];
+   unsigned char lookup[256];
 
    unsigned char *ptr1,*ptr2;
 
@@ -230,8 +327,10 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
 
    initbuffer();
 
-   writebits(DDS_file,skip-1,2);
-   writebits(DDS_file,strip++-1,16);
+   clearbits();
+
+   writebits(skip-1,2);
+   writebits(strip++-1,16);
 
    ptr1=ptr2=data;
    pre1=pre2=0;
@@ -273,8 +372,8 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
          }
       else
          {
-         writebits(DDS_file,cnt2,DDS_RL);
-         writebits(DDS_file,DDS_code(bits2),3);
+         writebits(cnt2,DDS_RL);
+         writebits(DDS_code(bits2),3);
 
          while (cnt2-->0)
             {
@@ -286,7 +385,7 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
             while (act2<-128) act2+=256;
             while (act2>127) act2-=256;
 
-            writebits(DDS_file,act2+(1<<bits2)/2,bits2);
+            writebits(act2+(1<<bits2)/2,bits2);
             }
 
          cnt2=cnt1;
@@ -304,8 +403,8 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
       }
    else
       {
-      writebits(DDS_file,cnt2,DDS_RL);
-      writebits(DDS_file,DDS_code(bits2),3);
+      writebits(cnt2,DDS_RL);
+      writebits(DDS_code(bits2),3);
 
       while (cnt2-->0)
          {
@@ -317,7 +416,7 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
          while (act2<-128) act2+=256;
          while (act2>127) act2-=256;
 
-         writebits(DDS_file,act2+(1<<bits2)/2,bits2);
+         writebits(act2+(1<<bits2)/2,bits2);
          }
 
       cnt2=cnt1;
@@ -326,8 +425,8 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
 
    if (cnt2!=0)
       {
-      writebits(DDS_file,cnt2,DDS_RL);
-      writebits(DDS_file,DDS_code(bits2),3);
+      writebits(cnt2,DDS_RL);
+      writebits(DDS_code(bits2),3);
 
       while (cnt2-->0)
          {
@@ -339,11 +438,14 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
          while (act2<-128) act2+=256;
          while (act2>127) act2-=256;
 
-         writebits(DDS_file,act2+(1<<bits2)/2,bits2);
+         writebits(act2+(1<<bits2)/2,bits2);
          }
       }
 
-   flushbits(DDS_file);
+   flushbits();
+   savebits(DDS_file);
+   clearbits();
+
    fclose(DDS_file);
 
    if (nofree==0) free(data);
@@ -388,40 +490,47 @@ unsigned char *readDDSfile(const char *filename,unsigned int *bytes)
 
    initbuffer();
 
-   skip=readbits(DDS_file,2)+1;
-   strip=readbits(DDS_file,16)+1;
+   clearbits();
+   loadbits(DDS_file);
+
+   fclose(DDS_file);
+
+   skip=readbits(2)+1;
+   strip=readbits(16)+1;
 
    data=ptr=NULL;
    cnt=act=0;
 
-   while ((cnt1=readbits(DDS_file,DDS_RL))!=0)
+   while ((cnt1=readbits(DDS_RL))!=0)
       {
-      bits=DDS_decode(readbits(DDS_file,3));
+      bits=DDS_decode(readbits(3));
 
       for (cnt2=0; cnt2<cnt1; cnt2++)
          {
-         if (cnt<=strip) act+=readbits(DDS_file,bits)-(1<<bits)/2;
-         else act+=*(ptr-strip)-*(ptr-strip-1)+readbits(DDS_file,bits)-(1<<bits)/2;
+         if (cnt<=strip) act+=readbits(bits)-(1<<bits)/2;
+         else act+=*(ptr-strip)-*(ptr-strip-1)+readbits(bits)-(1<<bits)/2;
 
          while (act<0) act+=256;
          while (act>255) act-=256;
 
          if ((cnt&(DDS_BLOCKSIZE-1))==0)
-            {
             if (data==NULL)
-               {if ((data=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();}
+               {
+               if ((data=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();
+               ptr=data;
+               }
             else
+               {
                if ((data=(unsigned char *)realloc(data,cnt+DDS_BLOCKSIZE))==NULL) ERRORMSG();
-
-            ptr=&data[cnt];
-            }
+               ptr=&data[cnt];
+               }
 
          *ptr++=act;
          cnt++;
          }
       }
 
-   fclose(DDS_file);
+   clearbits();
 
    if (cnt==0) return(NULL);
 
@@ -429,57 +538,6 @@ unsigned char *readDDSfile(const char *filename,unsigned int *bytes)
 
    if (version==1) interleave(data,cnt,skip);
    else interleave(data,cnt,skip,DDS_INTERLEAVE);
-
-   *bytes=cnt;
-
-   return(data);
-   }
-
-// write a RAW file
-void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree)
-   {
-   if (bytes<1) ERRORMSG();
-
-   if ((DDS_file=fopen(filename,"wb"))==NULL) ERRORMSG();
-   if (fwrite(data,1,bytes,DDS_file)!=bytes) ERRORMSG();
-
-   fclose(DDS_file);
-
-   if (nofree==0) free(data);
-   }
-
-// read a RAW file
-unsigned char *readRAWfile(const char *filename,unsigned int *bytes)
-   {
-   unsigned char *data;
-   unsigned int cnt,blkcnt;
-
-   if ((DDS_file=fopen(filename,"rb"))==NULL) return(NULL);
-
-   data=NULL;
-   cnt=0;
-
-   do
-      {
-      if (data==NULL)
-         {if ((data=(unsigned char *)malloc(DDS_BLOCKSIZE))==NULL) ERRORMSG();}
-      else
-         if ((data=(unsigned char *)realloc(data,cnt+DDS_BLOCKSIZE))==NULL) ERRORMSG();
-
-      blkcnt=fread(&data[cnt],1,DDS_BLOCKSIZE,DDS_file);
-      cnt+=blkcnt;
-      }
-   while (blkcnt==DDS_BLOCKSIZE);
-
-   if (cnt==0)
-      {
-      free(data);
-      return(NULL);
-      }
-
-   if ((data=(unsigned char *)realloc(data,cnt))==NULL) ERRORMSG();
-
-   fclose(DDS_file);
 
    *bytes=cnt;
 
