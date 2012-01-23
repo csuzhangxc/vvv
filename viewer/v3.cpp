@@ -1148,6 +1148,12 @@ void initglobal(int argc,char *argv[])
 
    VOL=new mipmap(PROGNAME);
 
+   if (strlen(OUTNAME)>0)
+      {
+      loadvolume();
+      exit(0);
+      }
+
    EYE_X=0.0f;
    EYE_Y=0.0f;
    EYE_Z=3.0f;
