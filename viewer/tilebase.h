@@ -297,6 +297,7 @@ class mipmap
    // load the volume data
    void loadvolume(const char *filename,
                    const char *gradname=NULL,
+                   const char *outname=NULL,
                    float mx=0.0f,float my=0.0f,float mz=0.0f,
                    float sx=1.0f,float sy=1.0f,float sz=1.0f,
                    int bricksize=128,float overmax=8.0f,

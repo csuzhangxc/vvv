@@ -3860,6 +3860,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
 // load the volume and convert it to 8 bit
 void mipmap::loadvolume(const char *filename, // filename of PVM to load
                         const char *gradname, // optional filename of gradient volume
+                        const char *outname, // optional output file to save as PVM
                         float mx,float my,float mz, // midpoint of volume (assumed to be fixed)
                         float sx,float sy,float sz, // size of volume (assumed to be fixed)
                         int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
@@ -3874,6 +3875,7 @@ void mipmap::loadvolume(const char *filename, // filename of PVM to load
    float maxsize;
 
    if (gradname==NULL) gradname=zerostr;
+   if (outname==NULL) outname=zerostr;
    if (commands==NULL) commands=zerostr;
 
    if (VOLUME==NULL ||
@@ -3885,6 +3887,8 @@ void mipmap::loadvolume(const char *filename, // filename of PVM to load
       {
       if (VOLUME!=NULL) free(VOLUME);
       if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) exit(1);
+
+      if (strlen(outname)>0) savePVMvolume(outname);
 
       if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
       else if (COMPONENTS!=1) exit(1);
@@ -4001,7 +4005,7 @@ void mipmap::savePVMvolume(const char *filename)
    if (VOLUME==NULL) return;
 
    writePVMvolume(filename,VOLUME,
-                  WIDTH,HEIGHT,DEPTH,1,
+                  WIDTH,HEIGHT,DEPTH,COMPONENTS,
                   DSX,DSY,DSZ);
    }
 

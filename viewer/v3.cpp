@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger
 
-#define VERSION "3.1.1 as of 22.January.2012"
+#define VERSION "3.2 as of 23.January.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -39,6 +39,7 @@
 char PROGNAME[STR_MAX],
      FILENAME[STR_MAX],
      GRADNAME[STR_MAX],
+     OUTNAME[STR_MAX],
      CONFIG[STR_MAX],
      RECORD[STR_MAX];
 
@@ -158,7 +159,7 @@ int GUI_texid=0;
 
 void loadvolume()
    {
-   VOL->loadvolume(FILENAME,GRADNAME,
+   VOL->loadvolume(FILENAME,GRADNAME,OUTNAME,
                    0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
                    VOL_BRICKSIZE,VOL_OVERMAX,
                    GUI_xswap,GUI_yswap,GUI_zswap,
@@ -166,11 +167,6 @@ void loadvolume()
                    GUI_extra,GUI_commands,
                    ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
                    GUI_kneigh,GUI_histstep);
-   }
-
-void savevolume()
-   {
-   VOL->savePVMvolume("output.pvm");
    }
 
 void setupGUI();
@@ -1088,8 +1084,13 @@ void parseargs(int argc,char *argv[])
    if (argc<2)
       {
       printf("version: %s\n",VERSION);
-      printf("usage: %s <data.pvm> {[-]<option>=<value>}\n",argv[0]);
-      printf("       options: bv | gf | hm | hf | kn | hs | rd | ld | im\n");
+      printf("usage: %s <data.pvm> | <dicom*.ima> {[-]<option>=<value>}\n",argv[0]);
+      printf("       basic options: bv | gf | of | im\n");
+      printf("        option bv = blur volume for noisy data sets\n");
+      printf("        option gf = load gradient magnitude from file\n");
+      printf("        option of = save input data to pvm output file\n");
+      printf("        option im = use inverse mode for dark room\n");
+      printf("       advanced options: hm | hf | kn | hs | rd | ld\n");
       }
 
    if (argc<2)
@@ -1099,6 +1100,7 @@ void parseargs(int argc,char *argv[])
 
    strncpy(PROGNAME,argv[0],STR_MAX);
    strncpy(GRADNAME,"",STR_MAX);
+   strncpy(OUTNAME,"",STR_MAX);
 
    snprintf(CONFIG,STR_MAX,"%s.sav",FILENAME);
 
@@ -1121,6 +1123,7 @@ void parseargs(int argc,char *argv[])
 
       if (strcasecmp(str1,"bv")==0) {sscanf(str2,"%d",&tmp); GUI_blurvol=(tmp!=0);}
       else if (strcasecmp(str1,"gf")==0) strncpy(GRADNAME,str2,STR_MAX); // gradient file
+      else if (strcasecmp(str1,"of")==0) strncpy(OUTNAME,str2,STR_MAX); // output file
       else if (strcasecmp(str1,"hm")==0) sscanf(str2,"%d",&GUI_histmin); // histogram mincount
       else if (strcasecmp(str1,"hf")==0) sscanf(str2,"%f",&GUI_histfreq); // histogram frequency
       else if (strcasecmp(str1,"kn")==0) sscanf(str2,"%d",&GUI_kneigh); // histogram neighbourhood
@@ -1350,9 +1353,6 @@ void handler(float time)
                   GUI_start=gettime();
                   }
                }
-            break;
-         case 'O':
-            savevolume(); // output pvm
             break;
          case '\033': // quit application
          case 'q':
