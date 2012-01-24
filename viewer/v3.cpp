@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger
 
-#define VERSION "3.2 as of 23.January.2012"
+#define VERSION "3.2 as of 24.January.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -159,7 +159,7 @@ int GUI_texid=0;
 
 void loadvolume()
    {
-   VOL->loadvolume(FILENAME,GRADNAME,OUTNAME,
+   VOL->loadvolume(FILENAME,GRADNAME,
                    0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
                    VOL_BRICKSIZE,VOL_OVERMAX,
                    GUI_xswap,GUI_yswap,GUI_zswap,
@@ -1151,6 +1151,7 @@ void initglobal(int argc,char *argv[])
    if (strlen(OUTNAME)>0)
       {
       loadvolume();
+      VOL->savePVMvolume(OUTNAME);
       exit(0);
       }
 
