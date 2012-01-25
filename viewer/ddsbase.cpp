@@ -1017,10 +1017,14 @@ unsigned char *quantize(unsigned char *data,
 
    if (!nofree) free(data);
 
+   if (vmin==vmax) vmax=vmin+1;
+
+   if (vmax-vmin<256) linear=TRUE;
+
    err=new double[65536];
 
    if (linear)
-      for (i=0; i<65536; i++) err[i]=255*(double)i/vmax;
+      for (i=0; i<65536; i++) err[i]=255*(double)(i-vmin)/(vmax-vmin);
    else
       {
       for (i=0; i<65536; i++) err[i]=0.0;
@@ -1053,7 +1057,7 @@ unsigned char *quantize(unsigned char *data,
       for (i=1; i<65536; i++) err[i]+=err[i-1];
 
       if (err[65535]>0.0f)
-         for (i=0; i<65536; i++) err[i]*=255.0f/err[65535];
+         for (i=0; i<65536; i++) err[i]*=255.0/err[65535];
       }
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
