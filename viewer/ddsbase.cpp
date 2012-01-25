@@ -260,7 +260,7 @@ void DDS_encode(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
    DDS_clearbits();
 
    DDS_writebits(skip-1,2);
-   DDS_writebits(strip++-1,16);
+   DDS_writebits(strip-1,16);
 
    ptr1=ptr2=data;
    pre1=pre2=0;
@@ -270,10 +270,11 @@ void DDS_encode(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
 
    while (cnt++<bytes)
       {
-      tmp1=*ptr1++;
-      if (cnt<=strip) act1=tmp1-pre1;
+      tmp1=*ptr1;
+      if (strip==1 || ptr1-strip<=data) act1=tmp1-pre1;
       else act1=tmp1-pre1-*(ptr1-strip)+*(ptr1-strip-1);
       pre1=tmp1;
+      ptr1++;
 
       while (act1<-128) act1+=256;
       while (act1>127) act1-=256;
@@ -307,10 +308,11 @@ void DDS_encode(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
 
          while (cnt2-->0)
             {
-            tmp2=*ptr2++;
-            if (ptr2-strip<=data) act2=tmp2-pre2;
+            tmp2=*ptr2;
+            if (strip==1 || ptr2-strip<=data) act2=tmp2-pre2;
             else act2=tmp2-pre2-*(ptr2-strip)+*(ptr2-strip-1);
             pre2=tmp2;
+            ptr2++;
 
             while (act2<-128) act2+=256;
             while (act2>127) act2-=256;
@@ -338,10 +340,11 @@ void DDS_encode(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
 
       while (cnt2-->0)
          {
-         tmp2=*ptr2++;
-         if (ptr2-strip<=data) act2=tmp2-pre2;
+         tmp2=*ptr2;
+         if (strip==1 || ptr2-strip<=data) act2=tmp2-pre2;
          else act2=tmp2-pre2-*(ptr2-strip)+*(ptr2-strip-1);
          pre2=tmp2;
+         ptr2++;
 
          while (act2<-128) act2+=256;
          while (act2>127) act2-=256;
@@ -360,10 +363,11 @@ void DDS_encode(unsigned char *data,unsigned int bytes,unsigned int skip,unsigne
 
       while (cnt2-->0)
          {
-         tmp2=*ptr2++;
-         if (ptr2-strip<=data) act2=tmp2-pre2;
+         tmp2=*ptr2;
+         if (strip==1 || ptr2-strip<=data) act2=tmp2-pre2;
          else act2=tmp2-pre2-*(ptr2-strip)+*(ptr2-strip-1);
          pre2=tmp2;
+         ptr2++;
 
          while (act2<-128) act2+=256;
          while (act2>127) act2-=256;
@@ -407,7 +411,7 @@ void DDS_decode(unsigned char *chunk,unsigned int size,
 
       for (cnt2=0; cnt2<cnt1; cnt2++)
          {
-         if (cnt<=strip) act+=DDS_readbits(bits)-(1<<bits)/2;
+         if (strip==1 || cnt<=strip) act+=DDS_readbits(bits)-(1<<bits)/2;
          else act+=*(ptr2-strip)-*(ptr2-strip-1)+DDS_readbits(bits)-(1<<bits)/2;
 
          while (act<0) act+=256;
