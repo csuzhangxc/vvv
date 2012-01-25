@@ -5,13 +5,13 @@
 
 #include "codebase.h" // universal code base
 
-void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip=0,unsigned int strip=0,int nofree=0);
+void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip=0,unsigned int strip=0,BOOLINT nofree=FALSE);
 unsigned char *readDDSfile(const char *filename,unsigned int *bytes);
 
-void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree=0);
+void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,BOOLINT nofree=FALSE);
 unsigned char *readRAWfile(const char *filename,unsigned int *bytes);
 
-void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds=0);
+void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,BOOLINT dds=FALSE);
 unsigned char *readPNMimage(const char *filename,unsigned int *width,unsigned int *height,unsigned int *components);
 
 void writePVMvolume(const char *filename,unsigned char *volume,
@@ -39,8 +39,6 @@ void convfloat(unsigned char *data,unsigned int bytes);
 
 unsigned char *quantize(unsigned char *volume,
                         unsigned int width,unsigned int height,unsigned int depth,
-                        BOOLINT nofree=FALSE,
-                        BOOLINT linear=FALSE,
-                        BOOLINT verbose=FALSE);
+                        BOOLINT linear=FALSE,BOOLINT nofree=FALSE);
 
 #endif

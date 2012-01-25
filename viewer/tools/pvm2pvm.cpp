@@ -24,9 +24,14 @@ int main(int argc,char *argv[])
 
    if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components,&scalex,&scaley,&scalez,&desc,&cour,&scan,&comm))==NULL) exit(1);
 
+   printf("found volume with width=%d height=%d depth=%d components=%d\n",
+          width,height,depth,components);
+
    if (components==2)
       {
-      volume2=quantize(volume,width,height,depth,TRUE,FALSE,TRUE);
+      volume2=quantize(volume,width,height,depth,FALSE,TRUE);
+
+      printf("quantized 16 bit volume to 8 bit using a non-linear mapping\n");
 
       if (comm!=NULL)
          {

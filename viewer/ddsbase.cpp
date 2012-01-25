@@ -444,7 +444,7 @@ void DDS_decode(unsigned char *chunk,unsigned int size,
    }
 
 // write a RAW file
-void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,int nofree)
+void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,BOOLINT nofree)
    {
    FILE *file;
 
@@ -455,7 +455,7 @@ void writeRAWfile(const char *filename,unsigned char *data,unsigned int bytes,in
 
    fclose(file);
 
-   if (nofree==0) free(data);
+   if (!nofree) free(data);
    }
 
 // read from a RAW file
@@ -509,7 +509,7 @@ unsigned char *readRAWfile(const char *filename,unsigned int *bytes)
    }
 
 // write a Differential Data Stream
-void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip,unsigned int strip,int nofree)
+void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,unsigned int skip,unsigned int strip,BOOLINT nofree)
    {
    int version=1;
 
@@ -535,7 +535,7 @@ void writeDDSfile(const char *filename,unsigned char *data,unsigned int bytes,un
 
    fclose(file);
 
-   if (nofree==0) free(data);
+   if (!nofree) free(data);
    }
 
 // read a Differential Data Stream
@@ -601,7 +601,7 @@ void swapshort(unsigned char *ptr,unsigned int size)
    }
 
 // write an optionally compressed PNM image
-void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,int dds)
+void writePNMimage(const char *filename,unsigned char *image,unsigned int width,unsigned int height,unsigned int components,BOOLINT dds)
    {
    char str[DDS_MAXSTR];
 
@@ -622,7 +622,7 @@ void writePNMimage(const char *filename,unsigned char *image,unsigned int width,
    memcpy(data,str,strlen(str));
    memcpy(data+strlen(str),image,width*height*components);
 
-   if (dds!=0) writeDDSfile(filename,data,strlen(str)+width*height*components,components,width);
+   if (dds) writeDDSfile(filename,data,strlen(str)+width*height*components,components,width);
    else writeRAWfile(filename,data,strlen(str)+width*height*components);
    }
 
@@ -948,74 +948,76 @@ void convfloat(unsigned char *data,unsigned int bytes)
 
 // helper functions for quantize:
 
-inline int DDS_get(unsigned short int *volume,
+inline int DDS_get(unsigned short int *data,
                    unsigned int width,unsigned int height,unsigned int depth,
                    unsigned int i,unsigned int j,unsigned int k)
-   {return(volume[i+(j+k*height)*width]);}
+   {return(data[i+(j+k*height)*width]);}
 
-inline double DDS_getgrad(unsigned short int *volume,
+inline double DDS_getgrad(unsigned short int *data,
                           unsigned int width,unsigned int height,unsigned int depth,
                           unsigned int i,unsigned int j,unsigned int k)
    {
    double gx,gy,gz;
 
    if (i>0)
-      if (i<width-1) gx=(DDS_get(volume,width,height,depth,i+1,j,k)-DDS_get(volume,width,height,depth,i-1,j,k))/2.0;
-      else gx=DDS_get(volume,width,height,depth,i,j,k)-DDS_get(volume,width,height,depth,i-1,j,k);
-   else gx=DDS_get(volume,width,height,depth,i+1,j,k)-DDS_get(volume,width,height,depth,i,j,k);
+      if (i<width-1) gx=(DDS_get(data,width,height,depth,i+1,j,k)-DDS_get(data,width,height,depth,i-1,j,k))/2.0;
+      else gx=DDS_get(data,width,height,depth,i,j,k)-DDS_get(data,width,height,depth,i-1,j,k);
+   else
+      if (i<width-1) gx=DDS_get(data,width,height,depth,i+1,j,k)-DDS_get(data,width,height,depth,i,j,k);
+      else gx=0.0;
 
    if (j>0)
-      if (j<height-1) gy=(DDS_get(volume,width,height,depth,i,j+1,k)-DDS_get(volume,width,height,depth,i,j-1,k))/2.0;
-      else gy=DDS_get(volume,width,height,depth,i,j,k)-DDS_get(volume,width,height,depth,i,j-1,k);
-   else gy=DDS_get(volume,width,height,depth,i,j+1,k)-DDS_get(volume,width,height,depth,i,j,k);
+      if (j<height-1) gy=(DDS_get(data,width,height,depth,i,j+1,k)-DDS_get(data,width,height,depth,i,j-1,k))/2.0;
+      else gy=DDS_get(data,width,height,depth,i,j,k)-DDS_get(data,width,height,depth,i,j-1,k);
+   else
+      if (j<height-1) gy=DDS_get(data,width,height,depth,i,j+1,k)-DDS_get(data,width,height,depth,i,j,k);
+      else gy=0.0;
 
    if (k>0)
-      if (k<depth-1) gz=(DDS_get(volume,width,height,depth,i,j,k+1)-DDS_get(volume,width,height,depth,i,j,k-1))/2.0;
-      else gz=DDS_get(volume,width,height,depth,i,j,k)-DDS_get(volume,width,height,depth,i,j,k-1);
-   else gz=DDS_get(volume,width,height,depth,i,j,k+1)-DDS_get(volume,width,height,depth,i,j,k);
+      if (k<depth-1) gz=(DDS_get(data,width,height,depth,i,j,k+1)-DDS_get(data,width,height,depth,i,j,k-1))/2.0;
+      else gz=DDS_get(data,width,height,depth,i,j,k)-DDS_get(data,width,height,depth,i,j,k-1);
+   else
+      if (k<depth-1) gz=DDS_get(data,width,height,depth,i,j,k+1)-DDS_get(data,width,height,depth,i,j,k);
+      else gz=0.0;
 
    return(sqrt(gx*gx+gy*gy+gz*gz));
    }
 
-// quantize 16 bit volume to 8 bit using a non-linear mapping
-unsigned char *quantize(unsigned char *volume,
+// quantize 16 bit data to 8 bit using a non-linear mapping
+unsigned char *quantize(unsigned char *data,
                         unsigned int width,unsigned int height,unsigned int depth,
-                        BOOLINT nofree,
-                        BOOLINT linear,
-                        BOOLINT verbose)
+                        BOOLINT linear,BOOLINT nofree)
    {
    unsigned int i,j,k;
 
-   unsigned char *volume2;
-   unsigned short int *volume3;
+   unsigned char *data2;
+   unsigned short int *data3;
 
    int v,vmin,vmax;
 
    double *err,eint;
 
-   err=new double[65536];
-
    BOOLINT done;
 
-   if ((volume3=(unsigned short int*)malloc(width*height*depth*sizeof(unsigned short int)))==NULL) ERRORMSG();
+   if ((data3=(unsigned short int*)malloc(width*height*depth*sizeof(unsigned short int)))==NULL) ERRORMSG();
 
-   vmin=vmax=256*volume[0]+volume[1];
+   vmin=65535;
+   vmax=0;
 
    for (k=0; k<depth; k++)
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
-            v=256*volume[2*(i+(j+k*height)*width)]+volume[2*(i+(j+k*height)*width)+1];
-            volume3[i+(j+k*height)*width]=v;
+            v=256*data[2*(i+(j+k*height)*width)]+data[2*(i+(j+k*height)*width)+1];
+            data3[i+(j+k*height)*width]=v;
 
             if (v<vmin) vmin=v;
-            else if (v>vmax) vmax=v;
+            if (v>vmax) vmax=v;
             }
 
-   if (!nofree) free(volume);
+   if (!nofree) free(data);
 
-   if (verbose)
-      printf("16 bit volume has scalar range=[%d,%d]\n",vmin,vmax);
+   err=new double[65536];
 
    if (linear)
       for (i=0; i<65536; i++) err[i]=255*(double)i/vmax;
@@ -1026,7 +1028,7 @@ unsigned char *quantize(unsigned char *volume,
       for (k=0; k<depth; k++)
          for (j=0; j<height; j++)
             for (i=0; i<width; i++)
-               err[DDS_get(volume3,width,height,depth,i,j,k)]+=sqrt(DDS_getgrad(volume3,width,height,depth,i,j,k));
+               err[DDS_get(data3,width,height,depth,i,j,k)]+=sqrt(DDS_getgrad(data3,width,height,depth,i,j,k));
 
       for (i=0; i<65536; i++) err[i]=pow(err[i],1.0/3);
 
@@ -1054,18 +1056,15 @@ unsigned char *quantize(unsigned char *volume,
          for (i=0; i<65536; i++) err[i]*=255.0f/err[65535];
       }
 
-   if ((volume2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
+   if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
    for (k=0; k<depth; k++)
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
-            volume2[i+(j+k*height)*width]=(int)(err[DDS_get(volume3,width,height,depth,i,j,k)]+0.5);
+            data2[i+(j+k*height)*width]=(int)(err[DDS_get(data3,width,height,depth,i,j,k)]+0.5);
 
    delete err;
-   free(volume3);
+   free(data3);
 
-   if (verbose)
-      printf("quantized volume to 8 bit\n");
-
-   return(volume2);
+   return(data2);
    }
