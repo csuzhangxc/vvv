@@ -14,7 +14,10 @@ The author's contact address is:
 
 In order to compile the viewer under Linux simply type "build.sh" in a
 shell. If CMake is installed, type "cmake . && make". The viewer
-requires OpenGL and the GLUT library as the only dependencies.
+requires OpenGL and the GLUT library as the only dependencies. With
+cmake we can also configure whether or not to use the dcmtk library
+for reading dicom images. To do so, check the BUILD_WITH_DCMTK setting
+in the cmake configuration via "ccmake .".
 
 Under Windows either use the CMake GUI to produce a Visual C++ project
 or use cygwin in the following way:
