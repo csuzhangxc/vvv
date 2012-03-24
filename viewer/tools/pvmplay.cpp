@@ -1,4 +1,4 @@
-// (c) by Stefan Roettger
+// (c) by Stefan Roettger, licensed under GPL 2+
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling

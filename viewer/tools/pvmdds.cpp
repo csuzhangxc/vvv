@@ -1,3 +1,5 @@
+// (c) by Stefan Roettger, licensed under GPL 2+
+
 #include "ddsbase.h"
 
 int main(int argc,char *argv[])

@@ -1,3 +1,5 @@
+// (c) by Stefan Roettger, licensed under GPL 2+
+
 char inline_prog1[]=
 "\
 !!ARBfp1.0\n\

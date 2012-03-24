@@ -1,4 +1,4 @@
-// (c) by Stefan Roettger
+// (c) by Stefan Roettger, licensed under GPL 2+
 
 #define VERSION "3.2 as of 25.January.2012"
 

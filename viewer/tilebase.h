@@ -1,4 +1,4 @@
-// (c) by Stefan Roettger
+// (c) by Stefan Roettger, licensed under GPL 2+
 
 #ifndef TILEBASE_H
 #define TILEBASE_H
