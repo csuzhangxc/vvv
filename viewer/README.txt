@@ -1,6 +1,11 @@
 This package contains the V^3, the Versatile Volume Viewer.
 Copyright (c) 2003-2012 by Stefan Roettger.
 
+The Versatile Volume Viewer is a volume renderer that displays regular
+volumetric data such as medical CT or MRI scans in 3D and at
+real-time. For best rendering performance an NVIDIA GTX 560, 570 or
+580 graphics card is recommended!
+
 The volume viewer is licensed under the terms of the GPL (see
 http://www.gnu.org/copyleft/ for more information on the license).
 Any commercial use of the code or parts of it requires the explicit
