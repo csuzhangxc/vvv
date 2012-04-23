@@ -42,7 +42,7 @@ With cmake we can also configure whether or not to use the dcmtk
 library for reading DICOM images. To do so, check the BUILD_WITH_DCMTK
 setting in the cmake configuration via "ccmake .". This requires the
 dcmtk library to be installed. The recommended install procedure on
-*nix is to build and install dcmtk 3.5.4 from source:
+*nix is to build and install dcmtk 3.6.0 from source:
 
    ./configure; make; sudo make install-libs
 
