@@ -34,9 +34,12 @@ or use cygwin in the following way:
 Volume datasets can be viewed by first converting the raw data to the
 PVM format using the "raw2pvm" command line tool. PVM files can be
 converted back to raw data with the complementary "pvm2raw" tool which
-also prints information about the volume data. As an example PVM
-dataset the famous Bucky Ball is contained within the package. In
-order to view this dataset just type "v3 Bucky.pvm" on the console.
+also prints information about the volume data. The PVM files can be
+also converted to a stack of PGM images with the "pvm2pgm" tool.
+
+As an example PVM dataset the famous Bucky Ball is contained within
+the package. In order to view this dataset just type "v3 Bucky.pvm" on
+the console.
 
 With cmake we can also configure whether or not to use the dcmtk
 library for reading DICOM images. To do so, check the BUILD_WITH_DCMTK

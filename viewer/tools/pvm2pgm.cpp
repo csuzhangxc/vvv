@@ -4,8 +4,12 @@
 
 #include "ddsbase.h"
 
+#define MAX_STR 1000
+
 int main(int argc,char *argv[])
    {
+   unsigned int i;
+
    unsigned char *volume;
 
    unsigned int width,height,depth,
@@ -13,9 +17,11 @@ int main(int argc,char *argv[])
 
    float scalex,scaley,scalez;
 
-   if (argc!=2 && argc!=3)
+   char filename[MAX_STR];
+
+   if (argc!=3)
       {
-      printf("usage: %s <input.pvm> [<output.raw>]\n",argv[0]);
+      printf("usage: %s <input.pvm> <output>\n",argv[0]);
       exit(1);
       }
 
@@ -32,11 +38,12 @@ int main(int argc,char *argv[])
 
    printf("and data checksum=%08X\n",checksum(volume,width*height*depth*components));
 
-   if (argc>2)
+   for (i=0; i<depth; i++)
       {
-      writeRAWfile(argv[2],volume,width*height*depth*components,1);
+      printf("writing PGM file #%d\n",i+1);
 
-      printf("wrote RAW file with size=%d\n",width*height*depth*components);
+      snprintf(filename,MAX_STR,"%s-%04d.pgm",argv[2],i+1);
+      writePNMimage(filename,volume+i*width*height*components,width,height,components);
       }
 
    free(volume);

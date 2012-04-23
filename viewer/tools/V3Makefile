@@ -3,7 +3,7 @@ MAKE	= make -f $(MMFILE)
 
 SHELL	= sh
 
-PRGS	= raw2pvm pvm2raw pvm2pvm pvminfo pvmplay pvmdds
+PRGS	= raw2pvm pvm2raw pvm2pgm pvm2pvm pvminfo pvmplay pvmdds
 PRGS	+= dti2pvm rgb2hsv
 
 LIBS	= -L.. -lViewer -lGL -lGLU -lm
