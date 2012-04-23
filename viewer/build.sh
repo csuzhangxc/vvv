@@ -20,7 +20,7 @@ set dcmtk=""
 set dcmtklibs=""
 if ($rule == "dcmtk") then
    set dcmtk=" -DVIEWER_HAVE_DCMTK"
-   set dcmtklibs=" -lofstd -ldcmdata -ldcmtls -ldcmjpeg -lijg8 -lijg12 -lijg16"
+   set dcmtklibs=" -lofstd -loflog -ldcmdata -ldcmtls -ldcmjpeg -lijg8 -lijg12 -lijg16"
    set rule="all"
 endif
 
