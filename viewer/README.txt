@@ -19,10 +19,7 @@ The author's contact address is:
 
 In order to compile the viewer under Linux simply type "build.sh" in a
 shell. If CMake is installed, type "cmake . && make". The viewer
-requires OpenGL and the GLUT library as the only dependencies. With
-cmake we can also configure whether or not to use the dcmtk library
-for reading dicom images. To do so, check the BUILD_WITH_DCMTK setting
-in the cmake configuration via "ccmake .".
+requires OpenGL and the GLUT library as the only dependencies.
 
 Under Windows either use the CMake GUI to produce a Visual C++ project
 or use cygwin in the following way:
@@ -40,7 +37,16 @@ converted back to raw data with the complementary "pvm2raw" tool which
 also prints information about the volume data. As an example PVM
 dataset the famous Bucky Ball is contained within the package. In
 order to view this dataset just type "v3 Bucky.pvm" on the console.
-To read a stack of DICOM files type "v3 filename*.dcm".
+
+With cmake we can also configure whether or not to use the dcmtk
+library for reading DICOM images. To do so, check the BUILD_WITH_DCMTK
+setting in the cmake configuration via "ccmake .". This requires the
+dcmtk library to be installed. The recommended install procedure on
+*nix is to build and install dcmtk 3.5.4 from source:
+
+   ./configure; make; sudo make install-libs
+
+To view a stack of DICOM files, we type "v3 filename*.dcm".
 
 On platforms without a graphics accelerator the cross-section viewer
 "pvmplay" can be used alternatively.
