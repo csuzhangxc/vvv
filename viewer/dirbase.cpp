@@ -125,6 +125,10 @@ const char *findfile()
              strcasecmp(file+len,searchpost)==0)
             {
             if (searchpost==NULL && len!=pre) continue;
+
+            if (strcmp(file,".")==0) continue;
+            if (strcmp(file,"..")==0) continue;
+
             if (strcmp(searchpath,".")==0) return(file);
             snprintf(foundfile,STRING_MAX,"%s/%s",searchpath,file);
             return(foundfile);
