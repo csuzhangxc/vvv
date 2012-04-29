@@ -38,6 +38,12 @@ int main(int argc,char *argv[])
 
    printf("and data checksum=%08X\n",checksum(volume,width*height*depth*components));
 
+   if (components==2)
+      {
+      volume=quantize(volume,width,height,depth);
+      components=1;
+      }
+
    for (i=0; i<depth; i++)
       {
       printf("writing PGM file #%d\n",i+1);
