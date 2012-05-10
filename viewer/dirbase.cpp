@@ -67,6 +67,13 @@ const char *nextfile()
    if (searchstate==1)
       {
       searchdir=opendir(searchpath);
+
+      if (searchdir==NULL)
+         {
+         searchstate=0;
+         return(NULL);
+         }
+
       searchstate=2;
       }
 
