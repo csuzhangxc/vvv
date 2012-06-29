@@ -21,6 +21,11 @@ In order to compile the viewer under Linux simply type "build.sh" in a
 shell. If CMake is installed, type "cmake . && make". The viewer
 requires OpenGL and the GLUT library as the only dependencies.
 
+The installation of OpenGL and GLUT is vendor specific: On MacOS X it
+is already installed with the XCode development package, on Linux it
+comes with the "mesa" and "free-glut3-dev" package whereas on Windows
+it is usually installed with the MSVC IDE.
+
 Under Windows either use the CMake GUI to produce a Visual C++ project
 or use cygwin in the following way:
 
