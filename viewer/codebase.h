@@ -12,7 +12,7 @@
 #include <math.h>
 
 #if !defined WINOS && !defined MACOSX && !defined LINUX
-#if defined _WIN32
+#if defined _WIN32 && defined _MSC_VER
 #   define WINOS
 #elif defined __APPLE__
 #   define MACOSX
