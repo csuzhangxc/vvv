@@ -54,7 +54,9 @@ dcmtk library to be installed. The recommended install procedure on
 
    ./configure; make; sudo make install-libs
 
-To view a stack of DICOM files, we type "v3 filename*.dcm".
+To view a stack of DICOM files, we type:
+
+   v3 "filename*.dcm"
 
 On platforms without a graphics accelerator the cross-section viewer
 "pvmplay" can be used alternatively.
