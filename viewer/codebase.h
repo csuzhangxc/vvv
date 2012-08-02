@@ -12,7 +12,7 @@
 #include <math.h>
 
 #if !defined WINOS && !defined MACOSX && !defined LINUX
-#if defined _WIN32 && defined _MSC_VER
+#if defined _WIN32
 #   define WINOS
 #elif defined __APPLE__
 #   define MACOSX
@@ -194,12 +194,14 @@ inline double getclockticks()
 #define strdup _strdup
 #define snprintf _snprintf
 
+#ifndef __MINGW32__
 inline int strcasecmp(const char *str1,const char *str2)
    {
    const char *ptr1,*ptr2;
    for (ptr1=str1,ptr2=str2; tolower(*ptr1)==tolower(*ptr2) && *ptr1!='\0' && *ptr2!='\0'; ptr1++,ptr2++);
    return(*ptr2-*ptr1);
    }
+#endif
 
 inline char *strcasestr(const char *str1,const char *str2)
    {
