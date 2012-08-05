@@ -41,6 +41,8 @@ int main(int argc,char *argv[])
    if (width<1 || height<1 || depth<1) exit(1);
    if (bits!=8 && bits!=16) exit(1);
 
+   printf("found volume with dimensions %dx%dx%d\n",width,height,depth);
+
    if (fseek(file,2048,SEEK_SET)==-1) exit(1);
 
    if ((out=fopen(argv[2],"wb"))==NULL) exit(1);
