@@ -1,6 +1,6 @@
 #include "codebase.h"
 
-static const double gamma_correction=0.5;
+static const double exponent=2;
 
 int main(int argc,char *argv[])
    {
@@ -13,8 +13,8 @@ int main(int argc,char *argv[])
    unsigned int width,height,depth,bits;
 
    int v;
-   double vg;
-   unsigned char vc;
+   double m;
+   unsigned char c;
 
    if (argc!=3)
       {
@@ -52,18 +52,18 @@ int main(int argc,char *argv[])
       if (bits==8)
          {
          if (fread(&data,1,1,file)!=1) exit(1);
-         vc=data[0];
+         c=data[0];
          }
       else
          {
          if (fread(&data,1,2,file)!=2) exit(1);
 
          v=data[0]+256*data[1];
-         vg=pow(v/65535.0,gamma_correction);
-         vc=ftrc(vg*255.0+0.5);
+         m=1.0-pow(1.0-v/65535.0,exponent);
+         c=ftrc(vg*255.0+0.5);
          }
 
-      fwrite(&vc,1,1,out);
+      fwrite(&c,1,1,out);
       }
 
    fclose(file);
