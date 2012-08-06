@@ -60,7 +60,7 @@ int main(int argc,char *argv[])
 
          v=data[0]+256*data[1];
          m=1.0-pow(1.0-v/65535.0,exponent);
-         c=ftrc(vg*255.0+0.5);
+         c=ftrc(m*255.0+0.5);
          }
 
       fwrite(&c,1,1,out);
