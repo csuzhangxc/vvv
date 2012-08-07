@@ -61,6 +61,8 @@ int main(int argc,char *argv[])
 
    if (vmin>=vmax) vmax=vmin+1;
 
+   printf("found volume with normalized range [%.4g,%.4g]\n",vmin,vmax);
+
    fclose(file);
 
    if ((file=fopen(argv[1],"rb"))==NULL) exit(1);
