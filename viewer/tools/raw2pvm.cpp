@@ -16,6 +16,8 @@ int main(int argc,char *argv[])
       {
       printf("usage: %s <input.raw> <width> <height> <depth>\n",argv[0]);
       printf("       [<components> [<scalex> <scaley> <scalez>]] <output.pvm>\n");
+      printf(" input: raw volume\n");
+      printf(" output: compressed PVM volume\n");
       printf("components:\n");
       printf(" 1=8bit\n");
       printf(" 2=16bit/MSB\n");
