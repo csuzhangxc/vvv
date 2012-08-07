@@ -97,9 +97,13 @@ int main(int argc,char *argv[])
             else v=256*data[2*(j+k*width)]+data[2*(j+k*width)+1];
             if (v>thres) count++;
             }
-         if (count>0) break;
+
+         if (count>0)
+            {
+            if (j<crop_x1) crop_x1=j;
+            break;
+            }
          }
-      if (j<crop_x1) crop_x1=j;
 
       // right side
       for (j=0; j<width; j++)
@@ -110,9 +114,13 @@ int main(int argc,char *argv[])
             else v=256*data[2*((width-1-j)+k*width)]+data[2*((width-1-j)+k*width)+1];
             if (v>thres) count++;
             }
-         if (count>0) break;
+
+         if (count>0)
+            {
+            if (width-1-j>crop_x2) crop_x2=width-1-j;
+            break;
+            }
          }
-      if (width-1-j>crop_x2) crop_x2=width-1-j;
 
       // bottom side
       for (k=0; k<height; k++)
@@ -123,9 +131,13 @@ int main(int argc,char *argv[])
             else v=256*data[2*(j+k*width)]+data[2*(j+k*width)+1];
             if (v>thres) count++;
             }
-         if (count>0) break;
+
+         if (count>0)
+            {
+            if (k<crop_y1) crop_y1=k;
+            break;
+            }
          }
-      if (k<crop_y1) crop_y1=k;
 
       // top side
       for (k=0; k<width; k++)
@@ -136,9 +148,13 @@ int main(int argc,char *argv[])
             else v=256*data[2*(j+(height-1-k)*width)]+data[2*(j+(height-1-k)*width)+1];
             if (v>thres) count++;
             }
-         if (count>0) break;
+
+         if (count>0)
+            {
+            if (height-1-k>crop_y2) crop_y2=height-1-k;
+            break;
+            }
          }
-      if (height-1-k>crop_y2) crop_y2=height-1-k;
 
       // entire slice
       for (count=0,j=0; j<width; j++)
@@ -159,8 +175,14 @@ int main(int argc,char *argv[])
 
    fclose(file);
 
-   printf("non-empty volume has crop box [%d,%d]x[%d,%d]x[%d,%d]\n",
-          crop_x1,crop_x2,crop_y1,crop_y2,crop_z1,crop_z2);
+   if (crop_z1<=crop_z2)
+      printf("non-empty volume has crop box [%d,%d]x[%d,%d]x[%d,%d]\n",
+             crop_x1,crop_x2,crop_y1,crop_y2,crop_z1,crop_z2);
+   else
+      {
+      printf("found empty volume\n");
+      exit(1);
+      }
 
    if ((file=fopen(argv[1],"rb"))==NULL) exit(1);
 
