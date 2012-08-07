@@ -13,6 +13,7 @@ int main(int argc,char *argv[])
    unsigned int width,height,depth;
    int components;
 
+   double vmin,vmax;
    double exponent,norm;
 
    double v;
@@ -41,6 +42,29 @@ int main(int argc,char *argv[])
 
    if ((file=fopen(argv[1],"rb"))==NULL) exit(1);
 
+   vmin=1.0;
+   vmax=0.0;
+
+   for (i=0; i<depth; i++)
+      {
+      if (fread(data,width*height*components,1,file)!=1) exit(1);
+
+      for (j=0; j<width*height; j++)
+         {
+         if (components==1) v=data[j]/255.0;
+         else v=(256*data[2*j]+data[2*j+1])/65535.0;
+
+         if (v<vmin) vmin=v;
+         if (v>vmax) vmax=v;
+         }
+      }
+
+   if (vmin>=vmax) vmax=vmin+1;
+
+   fclose(file);
+
+   if ((file=fopen(argv[1],"rb"))==NULL) exit(1);
+
    if ((out=fopen(argv[7],"wb"))==NULL) exit(1);
 
    norm=sigmoid(1.0,exponent);
@@ -53,6 +77,8 @@ int main(int argc,char *argv[])
          {
          if (components==1) v=data[j]/255.0;
          else v=(256*data[2*j]+data[2*j+1])/65535.0;
+
+         v=(v-vmin)/(vmax-vmin);
 
          v=2.0*v-1.0;
          v=sigmoid(v,exponent)/norm;
