@@ -57,7 +57,7 @@ int main(int argc,char *argv[])
             if (components==1) v3=data2[j+k*width];
             else v3=256*data2[2*(j+k*width)]+data2[2*(j+k*width)+1];
 
-            v=ftrc(sqrt(((v1-v0)*(v1-v0)+(v2-v0)*(v2-v0)+(v3-v0)*(v3-v0))/3.0)+0.5);
+            v=ftrc(v0/65535.0*sqrt(((v1-v0)*(v1-v0)+(v2-v0)*(v2-v0)+(v3-v0)*(v3-v0))/3.0)+0.5);
 
             grad[2*((j-1)+(k-1)*(width-1))]=v/256;
             grad[2*((j-1)+(k-1)*(width-1))+1]=v%256;
