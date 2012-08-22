@@ -1402,7 +1402,7 @@ void handler(float time)
                }
             else
                {
-               GUI_clip_dist+=my-ly;
+               GUI_clip_dist-=my-ly;
 
                GUI_reduced=TRUE;
                }
