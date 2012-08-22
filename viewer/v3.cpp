@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.3 as of 3.August.2012"
+#define VERSION "3.3.1 as of 22.August.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -80,7 +80,9 @@ int GUI_hook1,
     GUI_hook23,
     GUI_hook24,
     GUI_hook25,
-    GUI_hook26;
+    GUI_hook26,
+    GUI_hook27,
+    GUI_hook28;
 
 BOOLINT GUI_wire=FALSE,
         GUI_white=TRUE,
@@ -127,9 +129,11 @@ BOOLINT GUI_gmc=FALSE,
 BOOLINT GUI_extra=FALSE,
         GUI_STF=FALSE;
 
+BOOLINT GUI_inv=FALSE,
+        GUI_clp=FALSE;
+
 int GUI_mode=0;
 char GUI_commands[STR_MAX]="";
-BOOLINT GUI_invmode=FALSE;
 
 BOOLINT GUI_blurvol=FALSE;
 int GUI_histmin=5;
@@ -769,12 +773,14 @@ void setupGUI()
    static char text29[]="XY";
    static char text30[]="YZ";
    static char text31[]="Stf";
+   static char text32[]="Inv";
+   static char text33[]="Clp";
 
    OGL_GUI.delhooks();
 
    GUI_hook1=GUI_hook2=GUI_hook3=GUI_hook4=GUI_hook5=GUI_hook6=GUI_hook7=GUI_hook8=GUI_hook9=GUI_hook10=-1;
    GUI_hook11=GUI_hook12=GUI_hook13=GUI_hook14=GUI_hook15=GUI_hook16=GUI_hook17=GUI_hook18=GUI_hook19=GUI_hook20=-1;
-   GUI_hook21=GUI_hook22=GUI_hook23=GUI_hook24=GUI_hook25=GUI_hook26=-1;
+   GUI_hook21=GUI_hook22=GUI_hook23=GUI_hook24=GUI_hook25=GUI_hook26=GUI_hook27=GUI_hook28=-1;
 
    if (GUI_hide) return;
 
@@ -1066,6 +1072,16 @@ void setupGUI()
       GUI_hook26=OGL_GUI.addhook(1.0f-0.025f-0.075f,0.25f+0.05f,0.075f,0.025f,
                                  0.0f,0.0f,0.9f,0.75f,
                                  reloadhook,&GUI_STF,GUI::pushbuttondraw,text31);
+
+      // inverse check button
+      GUI_hook27=OGL_GUI.addhook(0.025f+0.1f,1.0f-0.025f-0.05f,0.075f,0.05f,
+                                 0.0f,0.0f,0.9f,0.75f,
+                                 reloadhook,&GUI_inv,GUI::pushbuttondraw,text32);
+
+      // clip check button
+      GUI_hook28=OGL_GUI.addhook(1.0f-0.025f-0.075f-0.1f,1.0f-0.025f-0.05f,0.075f,0.05f,
+                                 0.0f,0.0f,0.9f,0.75f,
+                                 reloadhook,&GUI_clp,GUI::pushbuttondraw,text33);
       }
 
    GUI_time=gettime();
@@ -1130,7 +1146,7 @@ void parseargs(int argc,char *argv[])
       else if (strcasecmp(str1,"hs")==0) sscanf(str2,"%g",&GUI_histstep); // histogram sampling
       else if (strcasecmp(str1,"rd")==0) {sscanf(str2,"%d",&tmp); GUI_record=(tmp!=0);} // record demo
       else if (strcasecmp(str1,"ld")==0) {sscanf(str2,"%d",&tmp); GUI_loop=(tmp!=0);} // loop demo
-      else if (strcasecmp(str1,"im")==0) {sscanf(str2,"%d",&tmp); GUI_invmode=(tmp!=0);} // inverse mode
+      else if (strcasecmp(str1,"im")==0) {sscanf(str2,"%d",&tmp); GUI_inv=(tmp!=0);} // inverse mode
       }
    }
 
@@ -1291,7 +1307,7 @@ void handler(float time)
             GUI_white=!GUI_white;
             break;
          case 'B': // toggle inverse mode
-            GUI_invmode=!GUI_invmode;
+            GUI_inv=!GUI_inv;
             break;
          case 'm': // toggle premultiplied alpha
             GUI_premult=!GUI_premult;
@@ -1480,7 +1496,7 @@ void handler(float time)
    VOL->get_tfunc()->set_escale(fsqr(GUI_re_scale),fsqr(GUI_ge_scale),fsqr(GUI_be_scale));
    VOL->get_tfunc()->set_ascale(fsqr(GUI_ra_scale),fsqr(GUI_ga_scale),fsqr(GUI_ba_scale));
 
-   VOL->get_tfunc()->set_invmode(GUI_invmode);
+   VOL->get_tfunc()->set_invmode(GUI_inv);
 
    VOL->get_tfunc()->refresh(VOL_EMISSION,VOL_DENSITY,VOL->get_slab()*over,
                              GUI_premult,GUI_preint,GUI_light);
@@ -1488,7 +1504,7 @@ void handler(float time)
    VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
    if (GUI_white)
-     if (!GUI_invmode) setbackground(0.85f,0.85f,0.85f);
+     if (!GUI_inv) setbackground(0.85f,0.85f,0.85f);
      else setbackground(1.0f,1.0f,1.0f);
    else setbackground(0.0f,0.0f,0.0f);
 
