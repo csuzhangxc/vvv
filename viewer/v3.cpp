@@ -130,7 +130,7 @@ BOOLINT GUI_extra=FALSE,
         GUI_STF=FALSE;
 
 BOOLINT GUI_inv=FALSE,
-        GUI_clp=FALSE;
+        GUI_clip=FALSE;
 
 int GUI_mode=0;
 char GUI_commands[STR_MAX]="";
@@ -1081,7 +1081,7 @@ void setupGUI()
       // clip check button
       GUI_hook28=OGL_GUI.addhook(1.0f-0.025f-0.075f-0.1f,1.0f-0.025f-0.05f,0.075f,0.05f,
                                  0.0f,0.0f,0.9f,0.75f,
-                                 reloadhook,&GUI_clp,GUI::pushbuttondraw,text33);
+                                 reloadhook,&GUI_clip,GUI::pushbuttondraw,text33);
       }
 
    GUI_time=gettime();
@@ -1528,11 +1528,18 @@ void handler(float time)
                                                VOL->getsizey(),
                                                VOL->getsizez());
 
-   VOL->render(ex,ey,ez,
-               dx,dy,dz,
-               ux,uy,uz,
-               EYE_NEAR,VOL->get_slab()*over,
-               GUI_light);
+   if (!GUI_clip)
+      VOL->render(ex,ey,ez,
+                  dx,dy,dz,
+                  ux,uy,uz,
+                  EYE_NEAR,VOL->get_slab()*over,
+                  GUI_light);
+   else
+      VOL->render(ex,ey,ez,
+                  dx,dy,dz,
+                  ux,uy,uz,
+                  sqrt(ex*ex+ey*ey+ez*ez),VOL->get_slab()*over,
+                  GUI_light);
 
    glPopMatrix();
 
