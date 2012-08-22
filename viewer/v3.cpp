@@ -132,6 +132,8 @@ BOOLINT GUI_extra=FALSE,
 BOOLINT GUI_inv=FALSE,
         GUI_clip=FALSE;
 
+float GUI_clip_dist=0.0f;
+
 int GUI_mode=0;
 char GUI_commands[STR_MAX]="";
 
@@ -1391,12 +1393,19 @@ void handler(float time)
          hook=OGL_GUI.click(mx,my);
 
          if (hook==0)
-            {
-            GUI_rotx+=mx-lx;
-            GUI_roty-=my-ly;
+            if (!GUI_clip)
+               {
+               GUI_rotx+=mx-lx;
+               GUI_roty-=my-ly;
 
-            GUI_reduced=TRUE;
-            }
+               GUI_reduced=TRUE;
+               }
+            else
+               {
+               GUI_clip_dist+=my-ly;
+
+               GUI_reduced=TRUE;
+               }
          else
             if (hook!=GUI_hook1 &&
                 hook!=GUI_hook2 &&
@@ -1422,7 +1431,9 @@ void handler(float time)
                 hook!=GUI_hook23 &&
                 hook!=GUI_hook24 &&
                 hook!=GUI_hook25 &&
-                hook!=GUI_hook26) GUI_reduced=TRUE;
+                hook!=GUI_hook26 &&
+                hook!=GUI_hook27 &&
+                hook!=GUI_hook28) GUI_reduced=TRUE;
 
          GUI_time=gettime();
          }
@@ -1538,7 +1549,7 @@ void handler(float time)
       VOL->render(ex,ey,ez,
                   dx,dy,dz,
                   ux,uy,uz,
-                  sqrt(ex*ex+ey*ey+ez*ez),VOL->get_slab()*over,
+                  sqrt(ex*ex+ey*ey+ez*ez)-GUI_clip_dist,VOL->get_slab()*over,
                   GUI_light);
 
    glPopMatrix();
