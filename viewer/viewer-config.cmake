@@ -28,7 +28,7 @@ ENDIF (CMAKE_COMPILER_IS_GNUCXX)
 # default Unix compiler definitions
 IF (NOT CMAKE_BUILD_TYPE)
    IF (UNIX)
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O -finline-functions -Wall -Wno-unused-parameter -Wno-parentheses")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -finline-functions -Wall -Wno-unused-parameter -Wno-parentheses")
       IF (NOT GCC_COMPILER_VERSION VERSION_LESS "4.4.1")
          SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result")
       ENDIF (NOT GCC_COMPILER_VERSION VERSION_LESS "4.4.1")
