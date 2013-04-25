@@ -1458,7 +1458,7 @@ void volume::setup()
          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
          glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB16, GL_UNSIGNED_BYTE, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
 
          // create a renderbuffer object to store depth info
