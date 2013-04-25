@@ -49,6 +49,28 @@ static void initwglprocs()
    if ((glProgramEnvParameter4fARB=(PFNGLPROGRAMENVPARAMETER4FARBPROC)wglGetProcAddress("glProgramEnvParameter4fARB"))==NULL) ERRORMSG();
    if ((glDeleteProgramsARB=(PFNGLDELETEPROGRAMSARBPROC)wglGetProcAddress("glDeleteProgramsARB"))==NULL) ERRORMSG();
 #endif
+
+#ifdef GL_ARB_framebuffer_object
+   glGenFramebuffers                     = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
+   glDeleteFramebuffers                  = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress("glDeleteFramebuffers");
+   glBindFramebuffer                     = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
+   glCheckFramebufferStatus              = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
+   glGetFramebufferAttachmentParameteriv = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)wglGetProcAddress("glGetFramebufferAttachmentParameteriv");
+   glGenerateMipmap                      = (PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap");
+   glFramebufferTexture2D                = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
+   glFramebufferRenderbuffer             = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress("glFramebufferRenderbuffer");
+   glGenRenderbuffers                    = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress("glGenRenderbuffers");
+   glDeleteRenderbuffers                 = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress("glDeleteRenderbuffers");
+   glBindRenderbuffer                    = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress("glBindRenderbuffer");
+   glRenderbufferStorage                 = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress("glRenderbufferStorage");
+   glGetRenderbufferParameteriv          = (PFNGLGETRENDERBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetRenderbufferParameteriv");
+   glIsRenderbuffer                      = (PFNGLISRENDERBUFFERPROC)wglGetProcAddress("glIsRenderbuffer");
+
+   if (!(glGenFramebuffers && glDeleteFramebuffers && glBindFramebuffer && glCheckFramebufferStatus &&
+         glGetFramebufferAttachmentParameteriv && glGenerateMipmap && glFramebufferTexture2D && glFramebufferRenderbuffer &&
+         glGenRenderbuffers && glDeleteRenderbuffers && glBindRenderbuffer && glRenderbufferStorage &&
+         glGetRenderbufferParameteriv && glIsRenderbuffer)) ERRORMSG();
+#endif
    }
 
 #endif
@@ -330,6 +352,23 @@ PFNGLPROGRAMSTRINGARBPROC glProgramStringARB=NULL;
 PFNGLGETPROGRAMIVARBPROC glGetProgramivARB=NULL;
 PFNGLPROGRAMENVPARAMETER4FARBPROC glProgramEnvParameter4fARB=NULL;
 PFNGLDELETEPROGRAMSARBPROC glDeleteProgramsARB=NULL;
+#endif
+
+#ifdef GL_ARB_framebuffer_object
+PFNGLGENFRAMEBUFFERSPROC                     glGenFramebuffersARB = 0;                      // FBO name generation procedure
+PFNGLDELETEFRAMEBUFFERSPROC                  glDeleteFramebuffersARB = 0;                   // FBO deletion procedure
+PFNGLBINDFRAMEBUFFERPROC                     glBindFramebufferARB = 0;                      // FBO bind procedure
+PFNGLCHECKFRAMEBUFFERSTATUSPROC              glCheckFramebufferStatusARB = 0;               // FBO completeness test procedure
+PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameterivARB = 0;  // return various FBO parameters
+PFNGLGENERATEMIPMAPPROC                      glGenerateMipmapARB = 0;                       // FBO automatic mipmap generation procedure
+PFNGLFRAMEBUFFERTEXTURE2DPROC                glFramebufferTexture2DARB = 0;                 // FBO texdture attachement procedure
+PFNGLFRAMEBUFFERRENDERBUFFERPROC             glFramebufferRenderbufferARB = 0;              // FBO renderbuffer attachement procedure
+PFNGLGENRENDERBUFFERSPROC                    glGenRenderbuffersARB = 0;                     // renderbuffer generation procedure
+PFNGLDELETERENDERBUFFERSPROC                 glDeleteRenderbuffersARB = 0;                  // renderbuffer deletion procedure
+PFNGLBINDRENDERBUFFERPROC                    glBindRenderbufferARB = 0;                     // renderbuffer bind procedure
+PFNGLRENDERBUFFERSTORAGEPROC                 glRenderbufferStorageARB = 0;                  // renderbuffer memory allocation procedure
+PFNGLGETRENDERBUFFERPARAMETERIVPROC          glGetRenderbufferParameterivARB = 0;           // return various renderbuffer parameters
+PFNGLISRENDERBUFFERPROC                      glIsRenderbufferARB = 0;                       // determine renderbuffer object type
 #endif
 
 #endif

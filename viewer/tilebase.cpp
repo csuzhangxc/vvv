@@ -47,6 +47,8 @@ void brick::deletetexmap3D()
 BOOLINT tile::LOADED=FALSE;
 GLuint tile::PROGID[PROGNUM];
 
+BOOLINT tile::HASFBO=FALSE;
+
 tile::tile(tfunc2D *tf,char *base)
    {
    BRICK=new brick();
@@ -140,6 +142,55 @@ void tile::setup(char *base)
          free(prog[i]);
          }
 
+      HASFBO=FALSE;
+
+      if (strstr(GL_EXTs,"ARB_framebuffer_object")!=NULL)
+         {
+#ifdef GL_ARB_framebuffer_object
+
+         HASFBO=TRUE;
+
+         // create a texture object
+         glGenTextures(1, &textureId);
+         glBindTexture(GL_TEXTURE_2D, textureId);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0,
+                      GL_RGB, GL_UNSIGNED_BYTE, 0);
+         glBindTexture(GL_TEXTURE_2D, 0);
+
+         // create a renderbuffer object to store depth info
+         glGenRenderbuffersARB(1, &rboId);
+         glBindRenderbufferARB(GL_RENDERBUFFER, rboId);
+         glRenderbufferStorageARB(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,
+                                  TEXTURE_WIDTH, TEXTURE_HEIGHT);
+         glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+         // create a framebuffer object
+         glGenFramebuffersARB(1, &fboId);
+         glBindFramebufferARB(GL_FRAMEBUFFER, fboId);
+
+         // attach the texture to FBO color attachment point
+         glFramebufferTexture2DARB(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D, textureId, 0);
+
+         // attach the renderbuffer to depth attachment point
+         glFramebufferRenderbufferARB(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                      GL_RENDERBUFFER, rboId);
+
+         // check FBO status
+         GLenum status = glCheckFramebufferStatusARB(GL_FRAMEBUFFER);
+         if (status != GL_FRAMEBUFFER_COMPLETE) HASFBO=FALSE;
+
+         // switch back to window-system-provided framebuffer
+         glBindFramebufferARB(GL_FRAMEBUFFER, 0);
+
+#endif
+         }
+
       LOADED=TRUE;
       }
    }
@@ -157,6 +208,19 @@ void tile::destroy()
          glDeleteProgramsARB(1,&PROGID[i]);
 
       LOADED=FALSE;
+
+#ifdef GL_ARB_framebuffer_object
+
+      if (HASFBO)
+         {
+         glDeleteTextures(1, &textureId);
+         glDeleteRenderBuffers(1, rboId);
+         glDeleteFrameBuffers(1, fboId);
+         }
+
+      HASFBO=FALSE;
+
+#endif
       }
 
 #endif

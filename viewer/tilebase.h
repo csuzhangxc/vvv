@@ -192,6 +192,13 @@ class tile
 
    static void setup(char *base=NULL);
    static void destroy();
+
+   // frame buffer object:
+
+   static BOOLINT HASFBO;
+   static GLuint textureId;
+   static GLuint rboId;
+   static GLuint fboId;
    };
 
 typedef tile *tileptr;

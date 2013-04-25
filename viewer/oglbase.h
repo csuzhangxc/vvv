@@ -103,6 +103,23 @@ extern PFNGLPROGRAMENVPARAMETER4FARBPROC glProgramEnvParameter4fARB;
 extern PFNGLDELETEPROGRAMSARBPROC glDeleteProgramsARB;
 #endif
 
+#ifdef GL_ARB_framebuffer_object
+extern PFNGLGENFRAMEBUFFERSPROC                     glGenFramebuffersARB;
+extern PFNGLDELETEFRAMEBUFFERSPROC                  glDeleteFramebuffersARB;
+extern PFNGLBINDFRAMEBUFFERPROC                     glBindFramebufferARB;
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC              glCheckFramebufferStatusARB;
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameterivARB;
+extern PFNGLGENERATEMIPMAPPROC                      glGenerateMipmapARB;
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC                glFramebufferTexture2DARB;
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC             glFramebufferRenderbufferARB;
+extern PFNGLGENRENDERBUFFERSPROC                    glGenRenderbuffersARB;
+extern PFNGLDELETERENDERBUFFERSPROC                 glDeleteRenderbuffersARB;
+extern PFNGLBINDRENDERBUFFERPROC                    glBindRenderbufferARB;
+extern PFNGLRENDERBUFFERSTORAGEPROC                 glRenderbufferStorageARB;
+extern PFNGLGETRENDERBUFFERPARAMETERIVPROC          glGetRenderbufferParameterivARB;
+extern PFNGLISRENDERBUFFERPROC                      glIsRenderbufferARB;
+#endif
+
 #endif
 
 #endif
