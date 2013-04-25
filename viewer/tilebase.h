@@ -192,13 +192,6 @@ class tile
 
    static void setup(char *base=NULL);
    static void destroy();
-
-   // frame buffer object:
-
-   static BOOLINT HASFBO;
-   static GLuint textureId;
-   static GLuint rboId;
-   static GLuint fboId;
    };
 
 typedef tile *tileptr;
@@ -277,6 +270,17 @@ class volume
              float ux,float uy,float uz,
              float nearp,float slab,float rslab,
              BOOLINT lighting=FALSE);
+
+   // frame buffer object:
+
+   static void setup();
+   static void destroy();
+
+   static BOOLINT CREATED;
+   static BOOLINT HASFBO;
+   static GLuint textureId;
+   static GLuint rboId;
+   static GLuint fboId;
    };
 
 typedef volume *volumeptr;

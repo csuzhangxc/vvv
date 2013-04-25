@@ -47,11 +47,6 @@ void brick::deletetexmap3D()
 BOOLINT tile::LOADED=FALSE;
 GLuint tile::PROGID[PROGNUM];
 
-BOOLINT tile::HASFBO=FALSE;
-GLuint tile::textureId=0;
-GLuint tile::rboId=0;
-GLuint tile::fboId=0;
-
 tile::tile(tfunc2D *tf,char *base)
    {
    BRICK=new brick();
@@ -145,52 +140,6 @@ void tile::setup(char *base)
          free(prog[i]);
          }
 
-      HASFBO=FALSE;
-
-      if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
-         {
-#ifdef GL_EXT_framebuffer_object
-
-         HASFBO=TRUE;
-
-         // create a texture object
-         int width=1024,height=1024;
-         glGenTextures(1, &textureId);
-         glBindTexture(GL_TEXTURE_2D, textureId);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-         glBindTexture(GL_TEXTURE_2D, 0);
-
-         // create a renderbuffer object to store depth info
-         glGenRenderbuffersEXT(1, &rboId);
-         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
-         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
-         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-
-         // create a framebuffer object
-         glGenFramebuffersEXT(1, &fboId);
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
-
-         // attach the texture to FBO color attachment point
-         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
-
-         // attach the renderbuffer to depth attachment point
-         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
-
-         // check FBO status
-         GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-         if (status != GL_FRAMEBUFFER_COMPLETE_EXT) HASFBO=FALSE;
-
-         // switch back to window-system-provided framebuffer
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-#endif
-         }
-
       LOADED=TRUE;
       }
    }
@@ -208,19 +157,6 @@ void tile::destroy()
          glDeleteProgramsARB(1,&PROGID[i]);
 
       LOADED=FALSE;
-
-#ifdef GL_EXT_framebuffer_object
-
-      if (HASFBO)
-         {
-         glDeleteTextures(1, &textureId);
-         glDeleteRenderbuffersEXT(1, &rboId);
-         glDeleteFramebuffersEXT(1, &fboId);
-         }
-
-      HASFBO=FALSE;
-
-#endif
       }
 
 #endif
@@ -1466,6 +1402,12 @@ void tile::render(float ex,float ey,float ez,
 
 // the volume:
 
+BOOLINT volume::CREATED=FALSE;
+BOOLINT volume::HASFBO=FALSE;
+GLuint volume::textureId=0;
+GLuint volume::rboId=0;
+GLuint volume::fboId=0;
+
 volume::volume(tfunc2D *tf,char *base)
    {
    TILEMAX=TILEINC;
@@ -1476,6 +1418,8 @@ volume::volume(tfunc2D *tf,char *base)
 
    if (base==NULL) strncpy(BASE,"",MAXSTR);
    else strncpy(BASE,base,MAXSTR);
+
+   setup();
    }
 
 volume::~volume()
@@ -1484,6 +1428,88 @@ volume::~volume()
 
    for (i=0; i<TILECNT; i++) delete TILE[i];
    delete TILE;
+
+   destroy();
+   }
+
+// create fbo
+void volume::setup()
+   {
+   char *GL_EXTs;
+
+   if (!CREATED)
+      {
+      if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
+
+      if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
+         {
+#ifdef GL_EXT_framebuffer_object
+
+         HASFBO=TRUE;
+
+         // create a texture object
+         int width=1024,height=1024;
+         glGenTextures(1, &textureId);
+         glBindTexture(GL_TEXTURE_2D, textureId);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+         glBindTexture(GL_TEXTURE_2D, 0);
+
+         // create a renderbuffer object to store depth info
+         glGenRenderbuffersEXT(1, &rboId);
+         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
+         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+
+         // create a framebuffer object
+         glGenFramebuffersEXT(1, &fboId);
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+
+         // attach the texture to FBO color attachment point
+         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
+
+         // attach the renderbuffer to depth attachment point
+         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+
+         // check FBO status
+         GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+         if (status != GL_FRAMEBUFFER_COMPLETE_EXT) HASFBO=FALSE;
+
+         // switch back to window-system-provided framebuffer
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+#endif
+         }
+
+      CREATED=TRUE;
+      }
+   }
+
+// destroy fbo
+void volume::destroy()
+   {
+   if (CREATED)
+      {
+
+#ifdef GL_EXT_framebuffer_object
+
+      if (HASFBO)
+         {
+         glDeleteTextures(1, &textureId);
+         glDeleteRenderbuffersEXT(1, &rboId);
+         glDeleteFramebuffersEXT(1, &fboId);
+         }
+
+      HASFBO=FALSE;
+
+#endif
+
+      CREATED=FALSE;
+      }
    }
 
 // check brick size
@@ -1670,10 +1696,22 @@ void volume::render(float ex,float ey,float ez,
                     float nearp,float slab,float rslab,
                     BOOLINT lighting)
    {
+   // render to fbo
+   if (HASFBO)
+      {
+      //!! glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+      }
+
    sort(0,0,0,TILEX,TILEY,TILEZ,
         ex,ey,ez,dx,dy,dz,ux,uy,uz,
         nearp,slab,rslab,
         lighting);
+
+   // render from fbo
+   if (HASFBO)
+      {
+      //!! glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      }
    }
 
 // draw the surrounding wire frame box
