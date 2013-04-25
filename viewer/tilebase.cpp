@@ -1447,8 +1447,10 @@ void volume::setup()
 
          HASFBO=TRUE;
 
+         int width=getwinwidth();
+         int height=getwinheight();
+
          // create a texture object
-         int width=1024,height=1024;
          glGenTextures(1, &textureId);
          glBindTexture(GL_TEXTURE_2D, textureId);
          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
