@@ -1458,7 +1458,7 @@ void volume::setup()
          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
          glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB16, GL_UNSIGNED_BYTE, 0);
+         glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
 
          // create a renderbuffer object to store depth info
@@ -1700,9 +1700,7 @@ void volume::render(float ex,float ey,float ez,
    {
    // render to fbo
    if (HASFBO)
-      {
-      //!! glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
-      }
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
    sort(0,0,0,TILEX,TILEY,TILEZ,
         ex,ey,ez,dx,dy,dz,ux,uy,uz,
@@ -1712,7 +1710,35 @@ void volume::render(float ex,float ey,float ez,
    // render from fbo
    if (HASFBO)
       {
-      //!! glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+      glBindTexture(GL_TEXTURE_2D, textureId);
+      glEnable(GL_TEXTURE_2D);
+
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+      gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      glLoadIdentity();
+
+      glBegin(GL_QUADS);
+      glColor3f(1.0f,1.0f,1.0f);
+      glTexCoord2f(0.0f,0.0f);
+      glVertex2f(-1.0f,-1.0f);
+      glTexCoord2f(1.0f,0.0f);
+      glVertex2f(1.0f,-1.0f);
+      glTexCoord2f(1.0f,1.0f);
+      glVertex2f(1.0f,1.0f);
+      glTexCoord2f(0.0f,1.0f);
+      glVertex2f(-1.0f,1.0f);
+      glEnd();
+
+      glPopMatrix();
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
       }
    }
 
