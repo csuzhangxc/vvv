@@ -1705,7 +1705,12 @@ void volume::render(float ex,float ey,float ez,
    {
    // render to fbo
    if (HASFBO && USEFBO)
+      {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+
+      glClearColor(0,0,0,0);
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+      }
 
    sort(0,0,0,TILEX,TILEY,TILEZ,
         ex,ey,ez,dx,dy,dz,ux,uy,uz,
@@ -1719,6 +1724,14 @@ void volume::render(float ex,float ey,float ez,
 
       glBindTexture(GL_TEXTURE_2D, textureId);
       glEnable(GL_TEXTURE_2D);
+
+      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+      glAlphaFunc(GL_GREATER,0.0);
+      glEnable(GL_ALPHA_TEST);
+
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
 
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
@@ -1747,6 +1760,10 @@ void volume::render(float ex,float ey,float ez,
 
       glBindTexture(GL_TEXTURE_2D, 0);
       glDisable(GL_TEXTURE_2D);
+
+      glDisable(GL_ALPHA_TEST);
+
+      glDisable(GL_BLEND);
       }
    }
 
