@@ -2,6 +2,7 @@
 
 #define SOBEL
 #define MULTILEVEL
+#define FBO16
 
 #include "volume.h"
 
