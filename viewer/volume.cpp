@@ -334,7 +334,7 @@ void volume::render(float ex,float ey,float ez,
       glAlphaFunc(GL_GREATER,0.0);
       glEnable(GL_ALPHA_TEST);
 
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_BLEND);
 
       glMatrixMode(GL_PROJECTION);
