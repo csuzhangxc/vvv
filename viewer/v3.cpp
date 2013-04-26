@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.4.1 as of 25.April.2012"
+#define VERSION "3.4.1 as of 26.April.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -131,6 +131,8 @@ BOOLINT GUI_extra=FALSE,
 
 BOOLINT GUI_inv=FALSE,
         GUI_clip=FALSE;
+
+BOOLINT GUI_fbo=FALSE;
 
 float GUI_clip_dist=0.0f;
 
@@ -1103,11 +1105,12 @@ void parseargs(int argc,char *argv[])
       {
       printf("version: %s\n",VERSION);
       printf("usage: %s <data.pvm> | <dicom*.ima> {[-]<option>=<value>}\n",argv[0]);
-      printf("       basic options: bv | gf | of | im\n");
+      printf("       basic options: bv | gf | of | im | hi\n");
       printf("        option bv = blur volume for noisy data sets\n");
       printf("        option gf = load gradient magnitude from file\n");
       printf("        option of = save input data to pvm output file\n");
       printf("        option im = use inverse mode for dark room\n");
+      printf("        option hi = use high-accuracy fbo\n");
       printf("       advanced options: hm | hf | kn | hs | rd | ld\n");
       }
 
@@ -1149,6 +1152,7 @@ void parseargs(int argc,char *argv[])
       else if (strcasecmp(str1,"rd")==0) {sscanf(str2,"%d",&tmp); GUI_record=(tmp!=0);} // record demo
       else if (strcasecmp(str1,"ld")==0) {sscanf(str2,"%d",&tmp); GUI_loop=(tmp!=0);} // loop demo
       else if (strcasecmp(str1,"im")==0) {sscanf(str2,"%d",&tmp); GUI_inv=(tmp!=0);} // inverse mode
+      else if (strcasecmp(str1,"hi")==0) {sscanf(str2,"%d",&tmp); GUI_fbo=(tmp!=0);} // fbo mode
       }
    }
 
@@ -1529,6 +1533,8 @@ void handler(float time)
    glPushMatrix();
    glLoadIdentity();
    gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
+
+   volume::usefbo(GUI_fbo);
 
    if (GUI_wire) VOL->drawwireframe();
 

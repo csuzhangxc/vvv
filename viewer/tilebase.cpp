@@ -1404,6 +1404,7 @@ void tile::render(float ex,float ey,float ez,
 
 BOOLINT volume::CREATED=FALSE;
 BOOLINT volume::HASFBO=FALSE;
+BOOLINT volume::USEFBO=FALSE;
 GLuint volume::textureId=0;
 GLuint volume::rboId=0;
 GLuint volume::fboId=0;
@@ -1703,7 +1704,7 @@ void volume::render(float ex,float ey,float ez,
                     BOOLINT lighting)
    {
    // render to fbo
-   if (HASFBO)
+   if (HASFBO && USEFBO)
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
    sort(0,0,0,TILEX,TILEY,TILEZ,
@@ -1712,7 +1713,7 @@ void volume::render(float ex,float ey,float ez,
         lighting);
 
    // render from fbo
-   if (HASFBO)
+   if (HASFBO && USEFBO)
       {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -1783,6 +1784,10 @@ void volume::drawwireframe()
    glEnd();
    glEnable(GL_CULL_FACE);
    }
+
+// use 16-bit fbo
+void volume::usefbo(BOOLINT yes)
+   {USEFBO=yes;}
 
 // the volume hierarchy:
 

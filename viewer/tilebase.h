@@ -245,6 +245,9 @@ class volume
    float getsizey() {return(SY);}
    float getsizez() {return(SZ);}
 
+   // use 16-bit fbo
+   static void usefbo(BOOLINT yes=FALSE);
+
    protected:
 
    float MX,MY,MZ,
@@ -278,6 +281,7 @@ class volume
 
    static BOOLINT CREATED;
    static BOOLINT HASFBO;
+   static BOOLINT USEFBO;
    static GLuint textureId;
    static GLuint rboId;
    static GLuint fboId;
