@@ -6,7 +6,7 @@
 #include "oglbase.h" // OpenGL base and window handling
 #include "guibase.h" // minimalistic OpenGL GUI
 #include "tfbase.h" // transfer function handling
-#include "tilebase.h" // volume renderer
+#include "volume.h" // volume renderer
 
 // global definitions:
 
