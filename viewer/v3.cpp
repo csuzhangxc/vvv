@@ -132,7 +132,7 @@ BOOLINT GUI_extra=FALSE,
 BOOLINT GUI_inv=FALSE,
         GUI_clip=FALSE;
 
-BOOLINT GUI_fbo=FALSE;
+BOOLINT GUI_fbo=TRUE;
 
 float GUI_clip_dist=0.0f;
 
