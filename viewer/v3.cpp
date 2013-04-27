@@ -1535,6 +1535,7 @@ void handler(float time)
    gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
    volume::usefbo(GUI_fbo);
+   if (getresized()) volume::updatefbo();
 
    if (GUI_wire) VOL->drawwireframe();
 

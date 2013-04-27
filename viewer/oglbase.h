@@ -81,6 +81,7 @@ char getkey();
 int getwinwidth();
 int getwinheight();
 float getaspect();
+BOOLINT getresized();
 
 // Windows OpenGL extensions:
 

@@ -64,6 +64,9 @@ class volume
    // use 16-bit fbo
    static void usefbo(BOOLINT yes=FALSE);
 
+   // update 16-bit fbo
+   static void updatefbo();
+
    protected:
 
    float MX,MY,MZ,

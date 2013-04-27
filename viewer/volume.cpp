@@ -420,6 +420,13 @@ void volume::drawwireframe()
 void volume::usefbo(BOOLINT yes)
    {USEFBO=yes;}
 
+// update 16-bit fbo
+void volume::updatefbo()
+   {
+   destroy();
+   setup();
+   }
+
 // the volume hierarchy:
 
 mipmap::mipmap(char *base,int res)

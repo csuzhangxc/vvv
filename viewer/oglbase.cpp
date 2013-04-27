@@ -11,6 +11,7 @@ char OGL_wintitle[OGL_MAXSTR];
 char OGL_wininfo[OGL_MAXSTR];
 
 int OGL_winwidth,OGL_winheight,OGL_winid;
+BOOLINT OGL_resized=FALSE;
 float OGL_fps;
 
 typedef void OGL_proctype(float time);
@@ -215,6 +216,8 @@ void reshapefunc(int width,int height)
    {
    OGL_winwidth=width;
    OGL_winheight=height;
+
+   OGL_resized=TRUE;
    }
 
 void mousefunc(int button,int state,int mx,int my)
@@ -332,6 +335,17 @@ int getwinheight()
 
 float getaspect()
    {return((float)OGL_winwidth/OGL_winheight);}
+
+BOOLINT getresized()
+   {
+   if (OGL_resized)
+      {
+      OGL_resized=FALSE;
+      return(TRUE);
+      }
+
+   return(FALSE);
+   }
 
 // Windows OpenGL extensions:
 
