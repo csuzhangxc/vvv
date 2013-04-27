@@ -79,6 +79,7 @@ MACRO(SET_VIEWER_PATH name subdir)
                ${VIEWER_PATH}/../libmini/deps/${subdir}
                ${VIEWER_PATH}/../../libmini/deps/${subdir}
                /usr/local/${subdir} /usr/local /usr
+               /usr/include/${subdir}
                ${VIEWER_PATH}/../WIN32/${subdir}
                ${VIEWER_PATH}/../libmini/WIN32/${subdir}
                ${VIEWER_PATH}/../../libmini/WIN32/${subdir})
@@ -88,6 +89,7 @@ MACRO(SET_VIEWER_PATH name subdir)
                   ${VIEWER_THIRDPARTY_DIR}/${subdir}
                   ${VIEWER_THIRDPARTY_DIR}/deps/${subdir}
                   /usr/local/${subdir} /usr/local /usr
+                  /usr/include/${subdir}
                   ${VIEWER_THIRDPARTY_DIR}/WIN32/${subdir})
    ENDIF (VIEWER_THIRDPARTY_DIR)
 ENDMACRO(SET_VIEWER_PATH)
