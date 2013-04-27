@@ -261,7 +261,7 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
 
 void save(FILE *file)
    {
-   fprintf(file,"GUI:\n");
+   fprintf(file,"GUI2:\n");
 
    fprintf(file,"guiex=%f\n",EYE_X);
    fprintf(file,"guiey=%f\n",EYE_Y);
@@ -274,6 +274,10 @@ void save(FILE *file)
 
    fprintf(file,"guiwire=%d\n",GUI_wire);
    fprintf(file,"guiwhite=%d\n",GUI_white);
+
+   fprintf(file,"guiinv=%d\n",GUI_inv);
+   fprintf(file,"guiclip=%d\n",GUI_clip);
+   fprintf(file,"guiclipdist=%f\n",GUI_clip_dist);
 
    fprintf(file,"guislab1=%f\n",GUI_slab1);
    fprintf(file,"guislab2=%f\n",GUI_slab2);
@@ -323,9 +327,18 @@ void save(FILE *file)
 
 void load(FILE *file)
    {
+   BOOLINT version=0;
+
+   char ch;
    int v;
 
-   if (fscanf(file,"GUI:\n")!=0) return;
+   if (fscanf(file,"GUI")!=0) return;
+   version++;
+
+   if ((ch=fgetc(file))!='2') ungetc(ch,file);
+   else version++;
+
+   if (fscanf(file,":\n")!=0) return;
 
    fscanf(file,"guiex=%g\n",&EYE_X);
    fscanf(file,"guiey=%g\n",&EYE_Y);
@@ -338,6 +351,13 @@ void load(FILE *file)
 
    if (fscanf(file,"guiwire=%d\n",&v)==1) GUI_wire=v;
    if (fscanf(file,"guiwhite=%d\n",&v)==1) GUI_white=v;
+
+   if (version>=2)
+      {
+      if (fscanf(file,"guiinv=%d\n",&v)==1) GUI_inv=v;
+      if (fscanf(file,"guiclip=%d\n",&v)==1) GUI_clip=v;
+      fscanf(file,"guiclipdist=%g\n",&GUI_clip_dist);
+      }
 
    fscanf(file,"guislab1=%g\n",&GUI_slab1);
    fscanf(file,"guislab2=%g\n",&GUI_slab2);
