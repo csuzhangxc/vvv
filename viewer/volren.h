@@ -24,6 +24,35 @@ class volren
    tfunc2D *get_tfunc() {return(VOL->get_tfunc());} // return the transfer function
    histo *get_histo() {return(VOL->get_histo());} // return the histogram
 
+   // load the volume data
+   void loadvolume(const char *filename,
+                   const char *gradname=NULL,
+                   float mx=0.0f,float my=0.0f,float mz=0.0f,
+                   float sx=1.0f,float sy=1.0f,float sz=1.0f,
+                   int bricksize=128,float overmax=8.0f,
+                   BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
+                   BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
+                   BOOLINT usegrad=FALSE,
+                   char *commands=NULL,
+                   int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+      {
+      VOL->loadvolume(filename,
+                      gradname,
+                      mx,my,mz,
+                      sx,sy,sz,
+                      bricksize,overmax,
+                      xswap,yswap,zswap,
+                      xrotate,zrotate,
+                      usegrad,
+                      commands,
+                      histmin,histfreq,kneigh,histstep);
+      }
+
+   // save the volume data as PVM
+   void savePVMvolume(const char *filename)
+      {VOL->savePVMvolume(filename);}
+
+   // render the volume mipmap pyramid
    void render(float eye_x,float eye_y,float eye_z, // eye point
                float eye_dx,float eye_dy,float eye_dz, // viewing direction
                float eye_ux,float eye_uy,float eye_uz, // up vector

@@ -168,14 +168,14 @@ int GUI_texid=0;
 
 void loadvolume()
    {
-   VOLREN->get_volume()->loadvolume(FILENAME,GRADNAME,
-                                    0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
-                                    VOL_BRICKSIZE,VOL_OVERMAX,
-                                    GUI_xswap,GUI_yswap,GUI_zswap,
-                                    GUI_xrot,GUI_zrot,
-                                    GUI_extra,GUI_commands,
-                                    ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
-                                    GUI_kneigh,GUI_histstep);
+   VOLREN->loadvolume(FILENAME,GRADNAME,
+                      0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
+                      VOL_BRICKSIZE,VOL_OVERMAX,
+                      GUI_xswap,GUI_yswap,GUI_zswap,
+                      GUI_xrot,GUI_zrot,
+                      GUI_extra,GUI_commands,
+                      ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
+                      GUI_kneigh,GUI_histstep);
    }
 
 void setupGUI();
@@ -1194,7 +1194,7 @@ void initglobal(int argc,char *argv[])
    if (strlen(OUTNAME)>0)
       {
       loadvolume();
-      VOLREN->get_volume()->savePVMvolume(OUTNAME);
+      VOLREN->savePVMvolume(OUTNAME);
       exit(0);
       }
 
