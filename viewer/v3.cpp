@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.5 as of 27.April.2012"
+#define VERSION "3.5.1 as of 30.April.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -1234,6 +1234,98 @@ void initglobal(int argc,char *argv[])
       }
    }
 
+void render(mipmap *vol, // volume mipmap pyramid
+            float eye_x,float eye_y,float eye_z, // eye point
+            float eye_dx,float eye_dy,float eye_dz, // viewing direction
+            float eye_ux,float eye_uy,float eye_uz, // up vector
+            float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+            BOOLINT gfx_fbo, // use frame buffer object
+            BOOLINT gfx_resized, // resize frame buffer object
+            float vol_rot,float vol_height, // volume rotation and elevation
+            float vol_emi,float vol_att, // global volume emi and att
+            float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
+            float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
+            BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
+            BOOLINT vol_white=TRUE, // white background
+            BOOLINT vol_inv=FALSE, // inverse mode
+            float vol_over=1.0f, // oversampling
+            BOOLINT vol_light=FALSE, // lighting
+            BOOLINT vol_clip=FALSE, // view-aligned clipping
+            float vol_clip_dist=0.0f, // clipping distance relative to origin
+            BOOLINT vol_wire=FALSE, // wire frame box
+            BOOLINT vol_histo=FALSE) // histogram
+   {
+   float ex,ey,ez,
+         dx,dy,dz,
+         ux,uy,uz;
+
+   ex=fcos(vol_rot*2.0f*PI)*eye_x+fsin(vol_rot*2.0f*PI)*eye_z;
+   ey=eye_y+4.0f*(vol_height-0.5f);
+   ez=-fsin(vol_rot*2.0f*PI)*eye_x+fcos(vol_rot*2.0f*PI)*eye_z;
+
+   dx=fcos(vol_rot*2.0f*PI)*eye_dx+fsin(vol_rot*2.0f*PI)*eye_dz;
+   dy=eye_dy;
+   dz=-fsin(vol_rot*2.0f*PI)*eye_dx+fcos(vol_rot*2.0f*PI)*eye_dz;
+
+   ux=fcos(vol_rot*2.0f*PI)*eye_ux+fsin(vol_rot*2.0f*PI)*eye_uz;
+   uy=eye_uy;
+   uz=-fsin(vol_rot*2.0f*PI)*eye_ux+fcos(vol_rot*2.0f*PI)*eye_uz;
+
+   vol->get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
+   vol->get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
+
+   vol->get_tfunc()->set_invmode(vol_inv);
+
+   vol->get_tfunc()->refresh(vol_emi,vol_att,vol->get_slab()*vol_over,
+                             tf_premult,tf_preint,vol_light);
+
+   vol->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
+
+   if (vol_white)
+     if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
+     else setbackground(1.0f,1.0f,1.0f);
+   else setbackground(0.0f,0.0f,0.0f);
+
+   clearwindow();
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
+   glMatrixMode(GL_MODELVIEW);
+
+   glPushMatrix();
+   glLoadIdentity();
+   gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
+
+   volume::usefbo(gfx_fbo);
+   if (gfx_fbo)
+      if (gfx_resized) volume::updatefbo();
+
+   if (vol_wire) vol->drawwireframe();
+
+   if (vol_histo) vol->get_histo()->render2DQ(vol->getcenterx(),
+                                              vol->getcentery(),
+                                              vol->getcenterz(),
+                                              vol->getsizex(),
+                                              vol->getsizey(),
+                                              vol->getsizez());
+
+   if (!vol_clip)
+      vol->render(ex,ey,ez,
+                  dx,dy,dz,
+                  ux,uy,uz,
+                  gfx_near,vol->get_slab()*vol_over,
+                  vol_light);
+   else
+      vol->render(ex,ey,ez,
+                  dx,dy,dz,
+                  ux,uy,uz,
+                  sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,vol->get_slab()*vol_over,
+                  vol_light);
+
+   glPopMatrix();
+   }
+
 void handler(float time)
    {
    static float oldtime=0.0f;
@@ -1249,10 +1341,6 @@ void handler(float time)
    BOOLINT update;
 
    int hook;
-
-   float ex,ey,ez,
-         dx,dy,dz,
-         ux,uy,uz;
 
    float over;
 
@@ -1491,18 +1579,6 @@ void handler(float time)
       EYE_Z+=EYE_DZ*EYE_SPEED*time;
       }
 
-   ex=fcos(GUI_rot*2.0f*PI)*EYE_X+fsin(GUI_rot*2.0f*PI)*EYE_Z;
-   ey=EYE_Y+4.0f*(GUI_height-0.5f);
-   ez=-fsin(GUI_rot*2.0f*PI)*EYE_X+fcos(GUI_rot*2.0f*PI)*EYE_Z;
-
-   dx=fcos(GUI_rot*2.0f*PI)*EYE_DX+fsin(GUI_rot*2.0f*PI)*EYE_DZ;
-   dy=EYE_DY;
-   dz=-fsin(GUI_rot*2.0f*PI)*EYE_DX+fcos(GUI_rot*2.0f*PI)*EYE_DZ;
-
-   ux=fcos(GUI_rot*2.0f*PI)*EYE_UX+fsin(GUI_rot*2.0f*PI)*EYE_UZ;
-   uy=EYE_UY;
-   uz=-fsin(GUI_rot*2.0f*PI)*EYE_UX+fcos(GUI_rot*2.0f*PI)*EYE_UZ;
-
    if (!GUI_reduced)
       if (gettime()-GUI_time>VOL_DELAY2) over=VOL_OVERMIN;
       else
@@ -1528,58 +1604,23 @@ void handler(float time)
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
 
-   VOL->get_tfunc()->set_escale(fsqr(GUI_re_scale),fsqr(GUI_ge_scale),fsqr(GUI_be_scale));
-   VOL->get_tfunc()->set_ascale(fsqr(GUI_ra_scale),fsqr(GUI_ga_scale),fsqr(GUI_ba_scale));
-
-   VOL->get_tfunc()->set_invmode(GUI_inv);
-
-   VOL->get_tfunc()->refresh(VOL_EMISSION,VOL_DENSITY,VOL->get_slab()*over,
-                             GUI_premult,GUI_preint,GUI_light);
-
-   VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
-
-   if (GUI_white)
-     if (!GUI_inv) setbackground(0.85f,0.85f,0.85f);
-     else setbackground(1.0f,1.0f,1.0f);
-   else setbackground(0.0f,0.0f,0.0f);
-
-   clearwindow();
-
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluPerspective(EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR);
-   glMatrixMode(GL_MODELVIEW);
-
-   glPushMatrix();
-   glLoadIdentity();
-   gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
-
-   volume::usefbo(GUI_fbo);
-   if (getresized()) volume::updatefbo();
-
-   if (GUI_wire) VOL->drawwireframe();
-
-   if (GUI_points) VOL->get_histo()->render2DQ(VOL->getcenterx(),
-                                               VOL->getcentery(),
-                                               VOL->getcenterz(),
-                                               VOL->getsizex(),
-                                               VOL->getsizey(),
-                                               VOL->getsizez());
-
-   if (!GUI_clip)
-      VOL->render(ex,ey,ez,
-                  dx,dy,dz,
-                  ux,uy,uz,
-                  EYE_NEAR,VOL->get_slab()*over,
-                  GUI_light);
-   else
-      VOL->render(ex,ey,ez,
-                  dx,dy,dz,
-                  ux,uy,uz,
-                  sqrt(ex*ex+ey*ey+ez*ez)-GUI_clip_dist,VOL->get_slab()*over,
-                  GUI_light);
-
-   glPopMatrix();
+   render(VOL,
+          EYE_X,EYE_Y,EYE_Z,
+          EYE_DX,EYE_DY,EYE_DZ,
+          EYE_UX,EYE_UY,EYE_UZ,
+          EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR,
+          GUI_fbo,getresized(),
+          GUI_rot,GUI_height,
+          VOL_EMISSION,VOL_DENSITY,
+          GUI_re_scale,GUI_ge_scale,GUI_be_scale,
+          GUI_ra_scale,GUI_ga_scale,GUI_ba_scale,
+          GUI_premult,GUI_preint,
+          GUI_white,GUI_inv,
+          over,
+          GUI_light,
+          GUI_clip,GUI_clip_dist,
+          GUI_wire,
+          GUI_points);
 
    OGL_GUI.refresh();
 
