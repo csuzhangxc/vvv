@@ -35,8 +35,6 @@
 #define VOL_DELAY1 (2.0f)
 #define VOL_DELAY2 (600.0f)
 
-#define VOL VOLREN->get_volume()
-
 // global variables:
 
 char PROGNAME[STR_MAX],
@@ -170,14 +168,14 @@ int GUI_texid=0;
 
 void loadvolume()
    {
-   VOL->loadvolume(FILENAME,GRADNAME,
-                   0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
-                   VOL_BRICKSIZE,VOL_OVERMAX,
-                   GUI_xswap,GUI_yswap,GUI_zswap,
-                   GUI_xrot,GUI_zrot,
-                   GUI_extra,GUI_commands,
-                   ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
-                   GUI_kneigh,GUI_histstep);
+   VOLREN->get_volume()->loadvolume(FILENAME,GRADNAME,
+                                    0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
+                                    VOL_BRICKSIZE,VOL_OVERMAX,
+                                    GUI_xswap,GUI_yswap,GUI_zswap,
+                                    GUI_xrot,GUI_zrot,
+                                    GUI_extra,GUI_commands,
+                                    ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
+                                    GUI_kneigh,GUI_histstep);
    }
 
 void setupGUI();
@@ -203,8 +201,8 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
       GUI_extra=FALSE;
       loadvolume();
 
-      VOL->get_tfunc()->set_num(1);
-      VOL->get_tfunc()->set_mode(GUI_mode=0);
+      VOLREN->get_tfunc()->set_num(1);
+      VOLREN->get_tfunc()->set_mode(GUI_mode=0);
       }
 
    if (GUI_grad || GUI_light)
@@ -222,13 +220,13 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
 
       GUI::deletetexmap(GUI_texid);
 
-      if (GUI_STF) GUI_texid=GUI::buildtexmap2DRGBA(VOL->get_hist2DQRGBA(),256,256);
-      else GUI_texid=GUI::buildtexmap2DL(VOL->get_hist2D(),256,256);
+      if (GUI_STF) GUI_texid=GUI::buildtexmap2DRGBA(VOLREN->get_volume()->get_hist2DQRGBA(),256,256);
+      else GUI_texid=GUI::buildtexmap2DL(VOLREN->get_volume()->get_hist2D(),256,256);
 
       if (GUI_grad)
          {
-         if (GUI_STF || GUI_mat) VOL->get_tfunc()->set_num(64);
-         else VOL->get_tfunc()->set_num(32);
+         if (GUI_STF || GUI_mat) VOLREN->get_tfunc()->set_num(64);
+         else VOLREN->get_tfunc()->set_num(32);
 
          if (GUI_mat)
             if (GUI_mod) GUI_mode=9;
@@ -245,19 +243,19 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
                   if (GUI_mod) GUI_mode=3;
                   else GUI_mode=1;
 
-         VOL->get_tfunc()->set_mode(GUI_mode);
+         VOLREN->get_tfunc()->set_mode(GUI_mode);
          }
       else
          {
-         VOL->get_tfunc()->set_num(2);
-         VOL->get_tfunc()->set_mode(GUI_mode=0);
+         VOLREN->get_tfunc()->set_num(2);
+         VOLREN->get_tfunc()->set_mode(GUI_mode=0);
          }
       }
 
    if (GUI_STF)
-      if (!GUI_grad) VOL->get_tfunc()->copy_tfRGB(VOL->get_histRGBA(),256,1);
-      else if (!GUI_mod) VOL->get_tfunc()->copy_2DTFRGB(VOL->get_hist2DTFRGBA(),256,256,1);
-      else VOL->get_tfunc()->copy_2DTFRGBA(VOL->get_hist2DTFRGBA(),256,256,0);
+      if (!GUI_grad) VOLREN->get_tfunc()->copy_tfRGB(VOLREN->get_volume()->get_histRGBA(),256,1);
+      else if (!GUI_mod) VOLREN->get_tfunc()->copy_2DTFRGB(VOLREN->get_volume()->get_hist2DTFRGBA(),256,256,1);
+      else VOLREN->get_tfunc()->copy_2DTFRGBA(VOLREN->get_volume()->get_hist2DTFRGBA(),256,256,0);
 
    setupGUI();
    }
@@ -425,11 +423,11 @@ void savehook(float x=0.0f,float y=0.0f)
 
    if ((file=fopen(CONFIG,"wb"))==NULL) ERRORMSG();
 
-   VOL->get_tfunc()->save(file);
+   VOLREN->get_tfunc()->save(file);
 
    save(file);
 
-   VOL->get_histo()->save(file);
+   VOLREN->get_histo()->save(file);
 
    fclose(file);
    }
@@ -441,16 +439,16 @@ void loadhook(float x=0.0f,float y=0.0f)
    if ((file=fopen(CONFIG,"rb"))==NULL) reloadhook();
    else
       {
-      VOL->get_tfunc()->load(file);
+      VOLREN->get_tfunc()->load(file);
 
       load(file);
       reloadhook();
 
-      VOL->get_histo()->load(file);
+      VOLREN->get_histo()->load(file);
       reloadhook();
 
-      VOL->get_tfunc()->get_escale(&GUI_re_scale,&GUI_ge_scale,&GUI_be_scale);
-      VOL->get_tfunc()->get_ascale(&GUI_ra_scale,&GUI_ga_scale,&GUI_ba_scale);
+      VOLREN->get_tfunc()->get_escale(&GUI_re_scale,&GUI_ge_scale,&GUI_be_scale);
+      VOLREN->get_tfunc()->get_ascale(&GUI_ra_scale,&GUI_ga_scale,&GUI_ba_scale);
 
       GUI_re_scale=fsqrt(GUI_re_scale);
       GUI_ge_scale=fsqrt(GUI_ge_scale);
@@ -495,13 +493,13 @@ void zswaphook(float x=0.0f,float y=0.0f)
    }
 
 void randhook(float x=0.0f,float y=0.0f)
-   {VOL->get_tfunc()->randomize();}
+   {VOLREN->get_tfunc()->randomize();}
 
 BOOLINT checktf(float *tf)
    {
    int i;
 
-   for (i=0; i<VOL->get_tfunc()->get_res(); i++)
+   for (i=0; i<VOLREN->get_tfunc()->get_res(); i++)
       if (tf[i]>0.0f) return(FALSE);
 
    return(TRUE);
@@ -512,50 +510,50 @@ void clearhook(float x=0.0f,float y=0.0f)
    if (GUI_grad && GUI_STF) return;
 
    if (GUI_re_mod)
-      if (checktf(VOL->get_tfunc()->get_re()))
-         VOL->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOL->get_tfunc()->get_re());
+      if (checktf(VOLREN->get_tfunc()->get_re()))
+         VOLREN->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_re());
       else
-         VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_re());
+         VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOLREN->get_tfunc()->get_re());
 
    if (GUI_ge_mod)
-      if (checktf(VOL->get_tfunc()->get_ge()))
-         VOL->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOL->get_tfunc()->get_ge());
+      if (checktf(VOLREN->get_tfunc()->get_ge()))
+         VOLREN->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_ge());
       else
-         VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ge());
+         VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOLREN->get_tfunc()->get_ge());
 
    if (GUI_be_mod)
-      if (checktf(VOL->get_tfunc()->get_be()))
-         VOL->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOL->get_tfunc()->get_be());
+      if (checktf(VOLREN->get_tfunc()->get_be()))
+         VOLREN->get_tfunc()->set_line(0.0f,1.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_be());
       else
-         VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_be());
+         VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOLREN->get_tfunc()->get_be());
    }
 
 void cyclehook(float x=0.0f,float y=0.0f)
    {
-   GUI_cycle+=1.0f/VOL->get_tfunc()->get_num();
+   GUI_cycle+=1.0f/VOLREN->get_tfunc()->get_num();
    if (GUI_cycle>1.0f) GUI_cycle-=1.0f;
-   VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
+   VOLREN->get_tfunc()->set_imp(GUI_cycle,GUI_range);
    }
 
 void recyclehook(float x=0.0f,float y=0.0f)
    {
-   GUI_cycle-=1.0f/VOL->get_tfunc()->get_num();
+   GUI_cycle-=1.0f/VOLREN->get_tfunc()->get_num();
    if (GUI_cycle<0.0f) GUI_cycle+=1.0f;
-   VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
+   VOLREN->get_tfunc()->set_imp(GUI_cycle,GUI_range);
    }
 
 void incrangehook(float x=0.0f,float y=0.0f)
    {
-   GUI_range+=1.0f/VOL->get_tfunc()->get_num();
+   GUI_range+=1.0f/VOLREN->get_tfunc()->get_num();
    if (GUI_range>1.0f) GUI_range=1.0f;
-   VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
+   VOLREN->get_tfunc()->set_imp(GUI_cycle,GUI_range);
    }
 
 void decrangehook(float x=0.0f,float y=0.0f)
    {
-   GUI_range-=1.0f/VOL->get_tfunc()->get_num();
+   GUI_range-=1.0f/VOLREN->get_tfunc()->get_num();
    if (GUI_range<0.0f) GUI_range=0.0f;
-   VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
+   VOLREN->get_tfunc()->set_imp(GUI_cycle,GUI_range);
    }
 
 void acchook(float x=0.0f,float y=0.0f)
@@ -583,7 +581,7 @@ void tfEhook(float x,float y,void *data)
          GUI_histtweak=y;
          }
       else
-         VOL->get_histo()->click(x,y,0.01f);
+         VOLREN->get_histo()->click(x,y,0.01f);
 
       reloadhook();
       }
@@ -594,15 +592,15 @@ void tfEhook(float x,float y,void *data)
          {
          if (!GUI_re_mod && !GUI_ge_mod && !GUI_be_mod)
             {
-            VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_re());
-            VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_ge());
-            VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_be());
+            VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_re());
+            VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ge());
+            VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_be());
             }
          else
             {
-            if (GUI_re_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_re());
-            if (GUI_ge_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_ge());
-            if (GUI_be_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_be());
+            if (GUI_re_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_re());
+            if (GUI_ge_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_ge());
+            if (GUI_be_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_be());
             }
 
          clicked=TRUE;
@@ -610,15 +608,15 @@ void tfEhook(float x,float y,void *data)
       else
          if (!GUI_re_mod && !GUI_ge_mod && !GUI_be_mod)
             {
-            VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_re());
-            VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_ge());
-            VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_be());
+            VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_re());
+            VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ge());
+            VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_be());
             }
          else
             {
-            if (GUI_re_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_re());
-            if (GUI_ge_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_ge());
-            if (GUI_be_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_be());
+            if (GUI_re_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_re());
+            if (GUI_ge_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_ge());
+            if (GUI_be_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_be());
             }
 
       lx=x;
@@ -644,15 +642,15 @@ void tfAhook(float x,float y,void *data)
       {
       if (!GUI_ra_mod && !GUI_ga_mod && !GUI_ba_mod)
          {
-         VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_ra());
-         VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_ga());
-         VOL->get_tfunc()->set_line(x,0.0f,x,0.0f,VOL->get_tfunc()->get_ba());
+         VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ra());
+         VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ga());
+         VOLREN->get_tfunc()->set_line(x,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ba());
          }
       else
          {
-         if (GUI_ra_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_ra());
-         if (GUI_ga_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_ga());
-         if (GUI_ba_mod) VOL->get_tfunc()->set_line(x,y,x,y,VOL->get_tfunc()->get_ba());
+         if (GUI_ra_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_ra());
+         if (GUI_ga_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_ga());
+         if (GUI_ba_mod) VOLREN->get_tfunc()->set_line(x,y,x,y,VOLREN->get_tfunc()->get_ba());
          }
 
       clicked=TRUE;
@@ -660,15 +658,15 @@ void tfAhook(float x,float y,void *data)
    else
       if (!GUI_ra_mod && !GUI_ga_mod && !GUI_ba_mod)
          {
-         VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_ra());
-         VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_ga());
-         VOL->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOL->get_tfunc()->get_ba());
+         VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ra());
+         VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ga());
+         VOLREN->get_tfunc()->set_line(lx,0.0f,x,0.0f,VOLREN->get_tfunc()->get_ba());
          }
       else
          {
-         if (GUI_ra_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_ra());
-         if (GUI_ga_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_ga());
-         if (GUI_ba_mod) VOL->get_tfunc()->set_line(lx,ly,x,y,VOL->get_tfunc()->get_ba());
+         if (GUI_ra_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_ra());
+         if (GUI_ga_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_ga());
+         if (GUI_ba_mod) VOLREN->get_tfunc()->set_line(lx,ly,x,y,VOLREN->get_tfunc()->get_ba());
          }
 
    lx=x;
@@ -701,12 +699,12 @@ void drawhist(BOOLINT colored=TRUE)
 
    for (i=0; i<256; i++)
       if (!colored)
-         GUI::drawquad((float)i/256,0.0f,1.0f/256,VOL->get_hist()[i],
+         GUI::drawquad((float)i/256,0.0f,1.0f/256,VOLREN->get_volume()->get_hist()[i],
                        0.0f,0.0f,0.5f,0.5f);
       else
-         GUI::drawquadRGBA((float)i/256,0.0f,1.0f/256,VOL->get_hist()[i],
-                           VOL->get_histRGBA()[4*i],VOL->get_histRGBA()[4*i+1],VOL->get_histRGBA()[4*i+2],
-                           0.5f*VOL->get_histRGBA()[4*i+3]);
+         GUI::drawquadRGBA((float)i/256,0.0f,1.0f/256,VOLREN->get_volume()->get_hist()[i],
+                           VOLREN->get_volume()->get_histRGBA()[4*i],VOLREN->get_volume()->get_histRGBA()[4*i+1],VOLREN->get_volume()->get_histRGBA()[4*i+2],
+                           0.5f*VOLREN->get_volume()->get_histRGBA()[4*i+3]);
    }
 
 void drawhist2D()
@@ -730,9 +728,9 @@ void tfEdraw(void *data1,void *data2)
    {
    if (!GUI_grad || !GUI_STF)
       {
-      drawtfunc(VOL->get_tfunc()->get_re(),VOL->get_tfunc()->get_res(),0.0f);
-      drawtfunc(VOL->get_tfunc()->get_ge(),VOL->get_tfunc()->get_res(),120.0f);
-      drawtfunc(VOL->get_tfunc()->get_be(),VOL->get_tfunc()->get_res(),240.0f);
+      drawtfunc(VOLREN->get_tfunc()->get_re(),VOLREN->get_tfunc()->get_res(),0.0f);
+      drawtfunc(VOLREN->get_tfunc()->get_ge(),VOLREN->get_tfunc()->get_res(),120.0f);
+      drawtfunc(VOLREN->get_tfunc()->get_be(),VOLREN->get_tfunc()->get_res(),240.0f);
       drawhist();
       }
    else
@@ -743,9 +741,9 @@ void tfEdraw(void *data1,void *data2)
 
 void tfAdraw(void *data1,void *data2)
    {
-   drawtfunc(VOL->get_tfunc()->get_ra(),VOL->get_tfunc()->get_res(),0.0f);
-   drawtfunc(VOL->get_tfunc()->get_ga(),VOL->get_tfunc()->get_res(),120.0f);
-   drawtfunc(VOL->get_tfunc()->get_ba(),VOL->get_tfunc()->get_res(),240.0f);
+   drawtfunc(VOLREN->get_tfunc()->get_ra(),VOLREN->get_tfunc()->get_res(),0.0f);
+   drawtfunc(VOLREN->get_tfunc()->get_ga(),VOLREN->get_tfunc()->get_res(),120.0f);
+   drawtfunc(VOLREN->get_tfunc()->get_ba(),VOLREN->get_tfunc()->get_res(),240.0f);
    drawhist2D();
    }
 
@@ -1196,7 +1194,7 @@ void initglobal(int argc,char *argv[])
    if (strlen(OUTNAME)>0)
       {
       loadvolume();
-      VOL->savePVMvolume(OUTNAME);
+      VOLREN->get_volume()->savePVMvolume(OUTNAME);
       exit(0);
       }
 
@@ -1206,15 +1204,15 @@ void initglobal(int argc,char *argv[])
 
    EYE_SPEED=0.0f;
 
-   VOL->get_tfunc()->set_line(0.0f,0.0f,0.33f,1.0f,VOL->get_tfunc()->get_be());
-   VOL->get_tfunc()->set_line(0.33f,1.0f,0.67f,0.0f,VOL->get_tfunc()->get_be());
-   VOL->get_tfunc()->set_line(0.33f,0.0f,0.67f,1.0f,VOL->get_tfunc()->get_ge());
-   VOL->get_tfunc()->set_line(0.67f,1.0f,1.0f,0.0f,VOL->get_tfunc()->get_ge());
-   VOL->get_tfunc()->set_line(0.67f,0.0f,1.0f,1.0f,VOL->get_tfunc()->get_re());
+   VOLREN->get_tfunc()->set_line(0.0f,0.0f,0.33f,1.0f,VOLREN->get_tfunc()->get_be());
+   VOLREN->get_tfunc()->set_line(0.33f,1.0f,0.67f,0.0f,VOLREN->get_tfunc()->get_be());
+   VOLREN->get_tfunc()->set_line(0.33f,0.0f,0.67f,1.0f,VOLREN->get_tfunc()->get_ge());
+   VOLREN->get_tfunc()->set_line(0.67f,1.0f,1.0f,0.0f,VOLREN->get_tfunc()->get_ge());
+   VOLREN->get_tfunc()->set_line(0.67f,0.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_re());
 
-   VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOL->get_tfunc()->get_ra());
-   VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOL->get_tfunc()->get_ga());
-   VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOL->get_tfunc()->get_ba());
+   VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_ra());
+   VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_ga());
+   VOLREN->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,VOLREN->get_tfunc()->get_ba());
 
    loadhook();
 
@@ -1376,10 +1374,10 @@ void handler(float time)
             decrangehook();
             break;
          case '0': // disable gradient selection
-            VOL->get_tfunc()->unset_imp();
+            VOLREN->get_tfunc()->unset_imp();
             break;
          case '1': // enable gradient selection
-            VOL->get_tfunc()->set_imp(GUI_cycle,GUI_range);
+            VOLREN->get_tfunc()->set_imp(GUI_cycle,GUI_range);
             break;
          case 'C': // toggle coupling
             GUI_coupled=!GUI_coupled;
