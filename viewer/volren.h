@@ -3,7 +3,9 @@
 #ifndef VOLREN_H
 #define VOLREN_H
 
-#include "volume.h"
+#include "codebase.h" // universal code base
+#include "oglbase.h" // OpenGL base and window handling
+#include "volume.h" // volume mipmap pyramid
 
 // the volume renderer
 class volren
