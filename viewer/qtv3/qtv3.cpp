@@ -91,11 +91,19 @@ protected:
                   EYE_UX,EYE_UY,EYE_UZ,
                   EYE_FOVY,aspect,EYE_NEAR,EYE_FAR,
                   TRUE,resized,
-                  0.0, // rotation
-                  0.0f,0.0,0.0f, // translation
-                  VOL_EMISSION,VOL_DENSITY,
-                  re_scale,ge_scale,be_scale,
-                  ra_scale,ga_scale,ba_scale);
+                  0.0, // volume rotation
+                  0.0f,0.0,0.0f, // volume translation
+                  VOL_EMISSION,VOL_DENSITY, // emi and att
+                  re_scale,ge_scale,be_scale, // emi scale
+                  ra_scale,ga_scale,ba_scale, // att scale
+                  TRUE,TRUE, // pre-multiplication and pre-integration
+                  TRUE, // white background
+                  FALSE, // inverse mode
+                  1.0, // oversampling
+                  FALSE, // lighting
+                  FALSE, // view-aligned clipping
+                  0.0, // clipping distance relative to origin
+                  TRUE); // wire frame box
    }
 
    void timerEvent(QTimerEvent *)
