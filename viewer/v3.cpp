@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.5.1 as of 30.April.2012"
+#define VERSION "3.5.1 as of 15.May.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base and window handling
@@ -1518,7 +1518,8 @@ void handler(float time)
                   EYE_UX,EYE_UY,EYE_UZ,
                   EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR,
                   GUI_fbo,getresized(),
-                  GUI_rot,GUI_height,
+                  GUI_rot,
+                  0.0f,4.0f*(GUI_height-0.5f),0.0f,
                   VOL_EMISSION,VOL_DENSITY,
                   GUI_re_scale,GUI_ge_scale,GUI_be_scale,
                   GUI_ra_scale,GUI_ga_scale,GUI_ba_scale,

@@ -59,7 +59,8 @@ class volren
                float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                BOOLINT gfx_fbo, // use frame buffer object
                BOOLINT gfx_resized, // resize frame buffer object
-               float vol_rot,float vol_height, // volume rotation and elevation
+               float vol_rot, // volume rotation
+               float vol_dx,float vol_dy,float vol_dz, // volume translation
                float vol_emi,float vol_att, // global volume emi and att
                float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
                float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
@@ -77,9 +78,9 @@ class volren
             dx,dy,dz,
             ux,uy,uz;
 
-      ex=fcos(vol_rot*2.0f*PI)*eye_x+fsin(vol_rot*2.0f*PI)*eye_z;
-      ey=eye_y+4.0f*(vol_height-0.5f);
-      ez=-fsin(vol_rot*2.0f*PI)*eye_x+fcos(vol_rot*2.0f*PI)*eye_z;
+      ex=fcos(vol_rot*2.0f*PI)*eye_x+fsin(vol_rot*2.0f*PI)*eye_z+vol_dx;
+      ey=eye_y+vol_dy;
+      ez=-fsin(vol_rot*2.0f*PI)*eye_x+fcos(vol_rot*2.0f*PI)*eye_z+vol_dz;
 
       dx=fcos(vol_rot*2.0f*PI)*eye_dx+fsin(vol_rot*2.0f*PI)*eye_dz;
       dy=eye_dy;
