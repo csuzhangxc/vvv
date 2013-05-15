@@ -17,9 +17,7 @@ public:
    {
       setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::StencilBuffer));
 
-      vr_ = new volren();
-
-      vr_->loadvolume("Bucky.pvm");
+      vr_ = NULL;
 
       startTimer((int)(1000.0/fps)); // ms=1000/fps
    }
@@ -27,7 +25,8 @@ public:
    //! dtor
    ~MyQGLWidget()
    {
-      delete vr_;
+      if (vr_)
+         delete vr_;
    }
 
    //! return preferred minimum window size
@@ -48,6 +47,12 @@ protected:
 
    void initializeGL()
    {
+      if (!vr_)
+      {
+         vr_ = new volren();
+         vr_->loadvolume("../Bucky.pvm");
+      }
+
       qglClearColor(Qt::black);
       glEnable(GL_DEPTH_TEST);
       glDisable(GL_CULL_FACE);
