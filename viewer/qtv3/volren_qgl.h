@@ -53,7 +53,7 @@ protected:
       if (!vr_)
       {
          vr_ = new volren();
-         vr_->loadvolume("../Bucky.pvm");
+         vr_->loadvolume("Bucky.pvm");
       }
 
       qglClearColor(Qt::white);
