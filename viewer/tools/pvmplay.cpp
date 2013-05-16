@@ -1,7 +1,8 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
 #include "codebase.h" // universal code base
-#include "oglbase.h" // OpenGL base and window handling
+#include "oglbase.h" // OpenGL base rendering
+#include "glutbase.h" // GLUT window handling
 #include "ddsbase.h" // volume file reader
 
 #define STR_MAX (256)

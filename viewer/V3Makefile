@@ -4,7 +4,7 @@ MAKE	= make -f $(MMFILE)
 SHELL	= sh
 
 PRG	= v3
-MODS	= ddsbase dicombase dirbase oglbase guibase tfbase tilebase volume
+MODS	= ddsbase dicombase dirbase oglbase glutbase guibase tfbase tilebase volume
 
 LIBS	= -lGL -lGLU -lm
 

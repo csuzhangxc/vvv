@@ -20,12 +20,10 @@
 #if defined(LINUX) || defined(WINOS)
 #include <GL/glext.h>
 #endif
-#include <GL/glut.h>
 #else
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
-#include <GLUT/glut.h>
 #endif
 
 // OpenGL 1.0 workaround:
@@ -56,32 +54,10 @@
 #endif
 #endif
 
-// window handling prototypes:
-
-void clearwindow();
-void invertwindow();
-void swapbuffers();
-void openwindow(int width,int height,float fps,char *title);
+void initogl();
 void setbackground(float R,float G,float B);
-void setwindowinfo(char *info);
-void addhandler(void workproc(float time));
-void closewindow();
-
-// event handling prototypes:
-
-BOOLINT getbutton1();
-BOOLINT getbutton2();
-BOOLINT getbutton3();
-float getmousex();
-float getmousey();
-char getkey();
-
-// window query prototypes:
-
-int getwinwidth();
-int getwinheight();
-float getaspect();
-BOOLINT getresized();
+void clearbuffer();
+void invertbuffer();
 
 // Windows OpenGL extensions:
 

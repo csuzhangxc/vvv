@@ -54,8 +54,10 @@ void volume::setup()
 
          HASFBO=TRUE;
 
-         int width=getwinwidth();
-         int height=getwinheight();
+         GLint viewport[4];
+         glGetIntegerv(GL_VIEWPORT,viewport);
+         int width=viewport[2];
+         int height=viewport[3];
 
          // create a texture object
          glGenTextures(1, &textureId);
@@ -2865,7 +2867,7 @@ void mipmap::render(float ex,float ey,float ez,
                     1.0f/get_slab(),
                     lighting);
 
-   if (TFUNC->get_invmode()) invertwindow();
+   if (TFUNC->get_invmode()) invertbuffer();
    }
 
 // draw the surrounding wire frame box

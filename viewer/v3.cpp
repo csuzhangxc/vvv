@@ -1,9 +1,10 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.5.1 as of 15.May.2012"
+#define VERSION "3.5.2 as of 16.May.2012"
 
 #include "codebase.h" // universal code base
-#include "oglbase.h" // OpenGL base and window handling
+#include "oglbase.h" // OpenGL base rendering
+#include "glutbase.h" // GLUT window handling
 #include "guibase.h" // minimalistic OpenGL GUI
 #include "tfbase.h" // transfer function handling
 #include "volume.h" // volume mipmap pyramid
