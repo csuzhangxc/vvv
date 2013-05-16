@@ -4,13 +4,16 @@
 
 #include "mainwindow.h"
 
+#define APP_NAME "QTV3"
+#define APP_VERSION "0.1"
+
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
 {
    createMenus();
    createWidgets();
 
-   setWindowTitle(tr("QTV3"));
+   setWindowTitle(APP_NAME" "APP_VERSION);
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -62,7 +65,9 @@ QSize QTV3MainWindow::sizeHint() const
 void QTV3MainWindow::about()
 {
    QMessageBox::about(this, tr("About this program"),
-                      tr("Qt V^3 Volume Renderer\n"
-                         "licensed under GPL2+\n"
-                         "(c) by Stefan Roettger"));
+                      APP_NAME" "APP_VERSION
+                      "\n"
+                      "\n(c) by Stefan Roettger"
+                      "\nmailto:snroettg@googlemail.com"
+                      "\nlicensed under GPL 2.0+");
 }
