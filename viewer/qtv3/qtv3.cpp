@@ -2,6 +2,7 @@
 #include <QtGui/QWidget>
 
 #include "volren_qgl.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +10,8 @@ int main(int argc, char *argv[])
 
    if (!QGLFormat::hasOpenGL()) return(1);
 
-   QGLVolRenWidget vr;
-   vr.show();
+   QTV3MainWindow main;
+   main.show();
 
    return(app.exec());
 }

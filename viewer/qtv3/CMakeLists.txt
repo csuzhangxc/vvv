@@ -1,6 +1,6 @@
 # cmake build file
 
-PROJECT(MyQtApp)
+PROJECT(QTV3VolumeRenderer)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
@@ -24,9 +24,29 @@ FIND_PATH(VOLREN_PATH volren.h ..)
 FIND_LIBRARY(VOLREN_LIBRARY Viewer PATHS .. PATH_SUFFIXES lib)
 INCLUDE_DIRECTORIES(${VOLREN_PATH})
 
+# header list
+SET(LIB_HDRS
+   volren_qgl.h
+   mainwindow.h
+   )
+
+# module list
+SET(LIB_SRCS
+   mainwindow.cpp
+   )
+
+# moc
+QT4_WRAP_CPP(MOC_OUTFILES ${LIB_HDRS})
+
+# library
+SET(LIB_NAME ${PROJECT_NAME})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+ADD_LIBRARY(${LIB_NAME} ${LIB_SRCS} ${LIB_HDRS} ${MOC_OUTFILES})
+
 # executable
 ADD_EXECUTABLE(qtv3 qtv3.cpp)
 TARGET_LINK_LIBRARIES(qtv3
+   ${LIB_NAME}
    ${QT_LIBRARIES}
    ${VOLREN_LIBRARY}
    ${GLUT_LIBRARIES}
