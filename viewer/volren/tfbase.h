@@ -112,6 +112,9 @@ class tfunc
    // check whether or not the absorption is equal for all channels
    BOOLINT checkRGBA();
 
+   // get pre-multiplication of tables
+   BOOLINT get_premult() {return(LAST_MLT);}
+
    // get dimension of tables (FALSE=1D/TRUE=2D)
    BOOLINT get_dim() {return(LAST_DIM);}
 
@@ -297,6 +300,9 @@ class tfunc2D
 
    int get_eid() {return(EID);} // get texture id of pre-integrated emission
    int get_aid() {return(AID);} // get texture id of pre-integrated absorption
+
+   // get pre-multiplication of tables
+   BOOLINT get_premult() {return(TF[0]->get_premult());}
 
    // get dimension of textures (FALSE=1D/TRUE=2D)
    BOOLINT get_dim() {return(TF[0]->get_dim());}

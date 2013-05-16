@@ -332,10 +332,22 @@ void volume::render(float ex,float ey,float ez,
       glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
       }
 
+   // enable alpha test for pre-multiplied tfs
+   if (get_tfunc()->get_premult())
+      {
+      glAlphaFunc(GL_GREATER,0.0);
+      glEnable(GL_ALPHA_TEST);
+      }
+
+   // render tiles in back-to-front sorted order
    sort(0,0,0,TILEX,TILEY,TILEZ,
         ex,ey,ez,dx,dy,dz,ux,uy,uz,
         nearp,slab,rslab,
         lighting);
+
+   // disable alpha test for pre-multiplied tfs
+   if (get_tfunc()->get_premult())
+      glDisable(GL_ALPHA_TEST);
 
    // render from fbo
    if (HASFBO && USEFBO)
