@@ -53,7 +53,7 @@ protected:
          vr_->loadvolume("../Bucky.pvm");
       }
 
-      qglClearColor(Qt::black);
+      qglClearColor(Qt::white);
       glEnable(GL_DEPTH_TEST);
       glDisable(GL_CULL_FACE);
    }
