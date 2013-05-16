@@ -81,7 +81,7 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool gfx_fbo=false; //!!
+      bool gfx_fbo=true;
       bool gfx_resized=resized_;
       resized_=false;
 

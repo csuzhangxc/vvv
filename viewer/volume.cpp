@@ -46,69 +46,73 @@ void volume::setup()
 
    if (!CREATED)
       {
+      CREATED=TRUE;
+
       if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
 
       if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
          {
 #ifdef GL_EXT_framebuffer_object
 
-         HASFBO=TRUE;
-
          GLint viewport[4];
          glGetIntegerv(GL_VIEWPORT,viewport);
          int width=viewport[2];
          int height=viewport[3];
 
-         // create a texture object
-         glGenTextures(1, &textureId);
-         glBindTexture(GL_TEXTURE_2D, textureId);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         if (width==0 || height==0) CREATED=FALSE;
+         else
+            {
+            HASFBO=TRUE;
+
+            // create a texture object
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifdef FBOMM
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 #else
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 #endif
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef FBOMM
-         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
 #else
-         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
 #endif
 #ifdef FBO16
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
 #else
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 #endif
-         glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
 
-         // create a renderbuffer object to store depth info
-         glGenRenderbuffersEXT(1, &rboId);
-         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
-         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
-         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+            // create a renderbuffer object to store depth info
+            glGenRenderbuffersEXT(1, &rboId);
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 
-         // create a framebuffer object
-         glGenFramebuffersEXT(1, &fboId);
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+            // create a framebuffer object
+            glGenFramebuffersEXT(1, &fboId);
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
-         // attach the texture to FBO color attachment point
-         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
+            // attach the texture to FBO color attachment point
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
 
-         // attach the renderbuffer to depth attachment point
-         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+            // attach the renderbuffer to depth attachment point
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
 
-         // check FBO status
-         GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-         if (status != GL_FRAMEBUFFER_COMPLETE_EXT) HASFBO=FALSE;
+            // check FBO status
+            GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+            if (status != GL_FRAMEBUFFER_COMPLETE_EXT) HASFBO=FALSE;
 
-         // switch back to window-system-provided framebuffer
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+            // switch back to window-system-provided framebuffer
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 #endif
+            }
          }
-
-      CREATED=TRUE;
       }
    }
 
