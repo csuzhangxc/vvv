@@ -19,8 +19,10 @@ public:
 
       vr_ = NULL;
 
-      fps=30.0;
-      startTimer((int)(1000.0/fps)); // ms=1000/fps
+      fps_=30.0;
+      startTimer((int)(1000.0/fps_)); // ms=1000/fps
+
+      resized_=false;
    }
 
    //! dtor
@@ -46,7 +48,8 @@ protected:
 
    volren *vr_;
 
-   double fps; // animated frames per second
+   double fps_; // animated frames per second
+   bool resized_; // viewport resized?
 
    void initializeGL()
    {
@@ -64,6 +67,7 @@ protected:
    void resizeGL(int, int)
    {
       glViewport(0, 0, width(), height());
+      resized_=true;
    }
 
    void paintGL()
@@ -77,8 +81,9 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool gfx_fbo=false;
-      bool gfx_resized=false;
+      bool gfx_fbo=true;
+      bool gfx_resized=resized_;
+      resized_=false;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -119,7 +124,7 @@ protected:
                   TRUE, // wire frame box
                   TRUE); // histogram
 
-      angle+=omega/fps;
+      angle+=omega/fps_;
    }
 
    void timerEvent(QTimerEvent *)
