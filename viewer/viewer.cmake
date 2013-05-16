@@ -1,11 +1,17 @@
 # v^3 header and module list
 
 SET(VOLREN_HDRS
-   ddsbase.h dicombase.h dirbase.h oglbase.h tfbase.h tilebase.h volume.h volren.h
+   volren/ddsbase.h volren/dicombase.h
+   volren/dirbase.h volren/oglbase.h
+   volren/tfbase.h volren/tilebase.h
+   volren/volume.h volren/volren.h
    )
 
 SET(VOLREN_SRCS
-   ddsbase.cpp dicombase.cpp dirbase.cpp oglbase.cpp tfbase.cpp tilebase.cpp volume.cpp
+   volren/ddsbase.cpp volren/dicombase.cpp
+   volren/dirbase.cpp volren/oglbase.cpp
+   volren/tfbase.cpp volren/tilebase.cpp
+   volren/volume.cpp
    )
 
 SET(VIEWER_HDRS

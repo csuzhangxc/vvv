@@ -4,7 +4,10 @@ MAKE	= make -f $(MMFILE)
 SHELL	= sh
 
 PRG	= v3
-MODS	= ddsbase dicombase dirbase oglbase glutbase guibase tfbase tilebase volume
+MODS	= volren/ddsbase volren/dicombase\
+	  volren/dirbase volren/oglbase\
+	  volren/tfbase volren/tilebase volren/volume\
+	  glutbase guibase
 
 LIBS	= -lGL -lGLU -lm
 
@@ -19,7 +22,7 @@ ZIP	= zip -qr9
 .SUFFIXES: .cpp
 
 .cpp.o:
-	$(COMPILER) $(OPTS) -c -D$(TARGET) $*.cpp
+	$(COMPILER) $(OPTS) -Ivolren -c -D$(TARGET) $*.cpp
 
 trap:
 
