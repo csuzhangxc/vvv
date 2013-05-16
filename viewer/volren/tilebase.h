@@ -97,7 +97,8 @@ class tile
                float dx,float dy,float dz,
                float ux,float uy,float uz,
                float nearp,float slab,float rslab,
-               BOOLINT lighting=FALSE);
+               BOOLINT lighting=FALSE,
+               BOOLINT depth=TRUE);
 
    protected:
 

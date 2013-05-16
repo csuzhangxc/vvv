@@ -1055,7 +1055,8 @@ void tile::render(float ex,float ey,float ez,
                   float dx,float dy,float dz,
                   float ux,float uy,float uz,
                   float nearp,float slab,float rslab,
-                  BOOLINT lighting)
+                  BOOLINT lighting,
+                  BOOLINT depth)
    {
    EX=ex; EY=ey; EZ=ez;
    DX=dx; DY=dy; DZ=dz;
@@ -1073,7 +1074,7 @@ void tile::render(float ex,float ey,float ez,
 
    glDisable(GL_CULL_FACE);
 
-   glDepthMask(GL_FALSE);
+   if (!depth) glDepthMask(GL_FALSE);
 
    if (EXTRA==NULL || TFUNC->get_num()==1)
       if (TFUNC->get_dim())
@@ -1390,7 +1391,7 @@ void tile::render(float ex,float ey,float ez,
          bindtexmaps3D(0,0,0,0,0.0f);
          }
 
-   glDepthMask(GL_TRUE);
+   if (!depth) glDepthMask(GL_TRUE);
 
    glEnable(GL_CULL_FACE);
 
