@@ -86,7 +86,7 @@ protected:
       double vol_over=1.0;
 
       static double angle=0.0; // rotation angle in degrees
-      static const double omega=180.0; // rotation speed in degrees/s
+      static const double omega=90.0; // rotation speed in degrees/s
 
       // tf emission (emi)
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
@@ -101,7 +101,7 @@ protected:
                   eye_ux,eye_uy,eye_uz, // up vector
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                   gfx_fbo,gfx_resized, // use fbo
-                  angle, // volume rotation
+                  angle, // volume rotation in degrees
                   0.0f,0.0,0.0f, // volume translation
                   vol_emission,vol_density, // global emi and att
                   tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale

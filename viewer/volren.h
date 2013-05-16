@@ -59,7 +59,7 @@ class volren
                float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                BOOLINT gfx_fbo, // use frame buffer object
                BOOLINT gfx_resized, // resize frame buffer object
-               float vol_rot, // volume rotation
+               float vol_rot, // volume rotation in degrees
                float vol_dx,float vol_dy,float vol_dz, // volume translation
                float vol_emi,float vol_att, // global volume emi and att
                float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
@@ -78,17 +78,19 @@ class volren
             dx,dy,dz,
             ux,uy,uz;
 
-      ex=fcos(vol_rot*2.0f*PI)*eye_x+fsin(vol_rot*2.0f*PI)*eye_z+vol_dx;
+      vol_rot*=PI/180.0f;
+
+      ex=fcos(vol_rot)*eye_x+fsin(vol_rot)*eye_z+vol_dx;
       ey=eye_y+vol_dy;
-      ez=-fsin(vol_rot*2.0f*PI)*eye_x+fcos(vol_rot*2.0f*PI)*eye_z+vol_dz;
+      ez=-fsin(vol_rot)*eye_x+fcos(vol_rot)*eye_z+vol_dz;
 
-      dx=fcos(vol_rot*2.0f*PI)*eye_dx+fsin(vol_rot*2.0f*PI)*eye_dz;
+      dx=fcos(vol_rot)*eye_dx+fsin(vol_rot)*eye_dz;
       dy=eye_dy;
-      dz=-fsin(vol_rot*2.0f*PI)*eye_dx+fcos(vol_rot*2.0f*PI)*eye_dz;
+      dz=-fsin(vol_rot)*eye_dx+fcos(vol_rot)*eye_dz;
 
-      ux=fcos(vol_rot*2.0f*PI)*eye_ux+fsin(vol_rot*2.0f*PI)*eye_uz;
+      ux=fcos(vol_rot)*eye_ux+fsin(vol_rot)*eye_uz;
       uy=eye_uy;
-      uz=-fsin(vol_rot*2.0f*PI)*eye_ux+fcos(vol_rot*2.0f*PI)*eye_uz;
+      uz=-fsin(vol_rot)*eye_ux+fcos(vol_rot)*eye_uz;
 
       VOL->get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
       VOL->get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
