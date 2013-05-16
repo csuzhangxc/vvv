@@ -121,8 +121,7 @@ protected:
                   FALSE, // lighting
                   FALSE, // view-aligned clipping
                   0.0, // clipping distance relative to origin
-                  TRUE, // wire frame box
-                  TRUE); // histogram
+                  TRUE); // wire frame box
 
       angle+=omega/fps_;
    }

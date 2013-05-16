@@ -72,7 +72,7 @@ class volren
                BOOLINT vol_clip=FALSE, // view-aligned clipping
                float vol_clip_dist=0.0f, // clipping distance relative to origin
                BOOLINT vol_wire=FALSE, // wire frame box
-               BOOLINT vol_histo=FALSE) // histogram
+               BOOLINT vol_histo=FALSE) // spatialized histogram
       {
       float ex,ey,ez,
             dx,dy,dz,
