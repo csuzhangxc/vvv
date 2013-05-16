@@ -129,9 +129,9 @@ void volume::destroy()
          glDeleteTextures(1, &textureId);
          glDeleteRenderbuffersEXT(1, &rboId);
          glDeleteFramebuffersEXT(1, &fboId);
-         }
 
-      HASFBO=FALSE;
+         HASFBO=FALSE;
+         }
 
 #endif
 
