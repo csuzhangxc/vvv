@@ -15,7 +15,7 @@ public:
    MyQGLWidget(QWidget *parent = 0)
       : QGLWidget(parent)
    {
-      setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::StencilBuffer));
+      setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
 
       vr_ = NULL;
 
@@ -65,45 +65,55 @@ protected:
 
    void paintGL()
    {
-      double EYE_X=0,EYE_Y=0,EYE_Z=3;
-      double EYE_DX=0,EYE_DY=0,EYE_DZ=-1;
-      double EYE_UX=0,EYE_UY=1,EYE_UZ=0;
+      double eye_x=0,eye_y=0,eye_z=3;
+      double eye_dx=0,eye_dy=0,eye_dz=-1;
+      double eye_ux=0,eye_uy=1,eye_uz=0;
 
-      double EYE_FOVY=60.0;
-      double EYE_NEAR=0.01;
-      double EYE_FAR=10.0;
+      double gfx_fovy=60.0;
+      double gfx_aspect=(double)width()/height();
+      double gfx_near=0.01;
+      double gfx_far=10.0;
 
-      double VOL_EMISSION=1000.0;
-      double VOL_DENSITY=1000.0;
+      bool gfx_fbo=false;
+      bool gfx_resized=false;
 
-      double re_scale=0.25,
-             ge_scale=0.25,
-             be_scale=0.25;
-      double ra_scale=0.25,
-             ga_scale=0.25,
-             ba_scale=0.25;
+      double vol_emission=1000.0;
+      double vol_density=1000.0;
 
-      double aspect=(double)width()/height();
-      bool resized=false;
+      double tf_re_scale=0.25,tf_ge_scale=0.25,tf_be_scale=0.25;
+      double tf_ra_scale=0.25,tf_ga_scale=0.25,tf_ba_scale=0.25;
 
-      vr_->render(EYE_X,EYE_Y,EYE_Z,
-                  EYE_DX,EYE_DY,EYE_DZ,
-                  EYE_UX,EYE_UY,EYE_UZ,
-                  EYE_FOVY,aspect,EYE_NEAR,EYE_FAR,
-                  TRUE,resized,
+      double vol_over=1.0;
+
+      vr_->get_tfunc()->set_line(0.0f,0.0f,0.33f,1.0f,vr_->get_tfunc()->get_be());
+      vr_->get_tfunc()->set_line(0.33f,1.0f,0.67f,0.0f,vr_->get_tfunc()->get_be());
+      vr_->get_tfunc()->set_line(0.33f,0.0f,0.67f,1.0f,vr_->get_tfunc()->get_ge());
+      vr_->get_tfunc()->set_line(0.67f,1.0f,1.0f,0.0f,vr_->get_tfunc()->get_ge());
+      vr_->get_tfunc()->set_line(0.67f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_re());
+
+      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ra());
+      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ga());
+      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ba());
+
+      vr_->render(eye_x,eye_y,eye_z, // view point
+                  eye_dx,eye_dy,eye_dz, // viewing direction
+                  eye_ux,eye_uy,eye_uz, // up vector
+                  gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                  gfx_fbo,gfx_resized, // use fbo
                   0.0, // volume rotation
                   0.0f,0.0,0.0f, // volume translation
-                  VOL_EMISSION,VOL_DENSITY, // emi and att
-                  re_scale,ge_scale,be_scale, // emi scale
-                  ra_scale,ga_scale,ba_scale, // att scale
+                  vol_emission,vol_density, // emi and att
+                  tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                  tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
                   TRUE,TRUE, // pre-multiplication and pre-integration
                   TRUE, // white background
                   FALSE, // inverse mode
-                  1.0, // oversampling
+                  vol_over, // oversampling
                   FALSE, // lighting
                   FALSE, // view-aligned clipping
                   0.0, // clipping distance relative to origin
-                  TRUE); // wire frame box
+                  TRUE, // wire frame box
+                  TRUE); // histogram
    }
 
    void timerEvent(QTimerEvent *)
