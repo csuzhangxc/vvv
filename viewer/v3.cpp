@@ -1513,6 +1513,8 @@ void handler(float time)
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
 
+   clearwindow();
+
    VOLREN->render(EYE_X,EYE_Y,EYE_Z,
                   EYE_DX,EYE_DY,EYE_DZ,
                   EYE_UX,EYE_UY,EYE_UZ,

@@ -85,12 +85,13 @@ protected:
 
       double vol_over=1.0;
 
-      vr_->get_tfunc()->set_line(0.0f,0.0f,0.33f,1.0f,vr_->get_tfunc()->get_be());
-      vr_->get_tfunc()->set_line(0.33f,1.0f,0.67f,0.0f,vr_->get_tfunc()->get_be());
-      vr_->get_tfunc()->set_line(0.33f,0.0f,0.67f,1.0f,vr_->get_tfunc()->get_ge());
-      vr_->get_tfunc()->set_line(0.67f,1.0f,1.0f,0.0f,vr_->get_tfunc()->get_ge());
-      vr_->get_tfunc()->set_line(0.67f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_re());
+      static double angle=0.0; // rotation angle in degrees
+      static const double omega=180.0; // rotation speed in degrees/s
 
+      // tf emission (emi)
+      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
+
+      // tf absorption (att)
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ra());
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ga());
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ba());
@@ -100,9 +101,9 @@ protected:
                   eye_ux,eye_uy,eye_uz, // up vector
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                   gfx_fbo,gfx_resized, // use fbo
-                  0.0, // volume rotation
+                  angle, // volume rotation
                   0.0f,0.0,0.0f, // volume translation
-                  vol_emission,vol_density, // emi and att
+                  vol_emission,vol_density, // global emi and att
                   tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
                   tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
                   TRUE,TRUE, // pre-multiplication and pre-integration
@@ -114,6 +115,8 @@ protected:
                   0.0, // clipping distance relative to origin
                   TRUE, // wire frame box
                   TRUE); // histogram
+
+      angle+=omega/fps;
    }
 
    void timerEvent(QTimerEvent *)
