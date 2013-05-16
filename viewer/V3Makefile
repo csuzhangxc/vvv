@@ -22,14 +22,14 @@ ZIP	= zip -qr9
 .SUFFIXES: .cpp
 
 .cpp.o:
-	$(COMPILER) $(OPTS) -Ivolren -c -D$(TARGET) $*.cpp
+	$(COMPILER) $(OPTS) -I. -Ivolren -c -D$(TARGET) $*.cpp -o $*.o
 
 trap:
 
 all:	$(OBJS)
 	@-$(AR) libViewer.a $(OBJS)
 	@-(cd tools; $(MAKE) all)
-	$(COMPILER) $(OPTS) -D$(TARGET) $(PRG).cpp -o $(PRG) libViewer.a $(LINK) $(LIBS) $(LINK)
+	$(COMPILER) $(OPTS) -I. -Ivolren -D$(TARGET) $(PRG).cpp -o $(PRG) libViewer.a $(LINK) $(LIBS) $(LINK)
 	@-if [ -e $(PRG) ]; then strip $(PRG); fi
 
 tools:

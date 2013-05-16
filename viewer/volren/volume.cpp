@@ -23,8 +23,8 @@ volume::volume(tfunc2D *tf,char *base)
 
    TFUNC=tf;
 
-   if (base==NULL) strncpy(BASE,"",MAXSTR);
-   else strncpy(BASE,base,MAXSTR);
+   if (base==NULL) strncpy(BASE,"volren",MAXSTR);
+   else snprintf(BASE,MAXSTR,"%s/volren",base);
 
    setup();
    }

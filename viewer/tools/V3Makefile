@@ -17,7 +17,7 @@ RM	= rm -rf
 .SUFFIXES: .cpp
 
 .cpp.o:
-	$(COMPILER) $(OPTS) -c -D$(TARGET) -I.. $*.cpp
+	$(COMPILER) $(OPTS) -c -D$(TARGET) -I.. -I../volren $*.cpp
 	$(COMPILER) $(OPTS) -o $* $*.o $(LINK) $(LIBS) $(LINK)
 	@-if [ -e $* ]; then strip $*; fi
 
