@@ -58,7 +58,6 @@ class volren
                float eye_ux,float eye_uy,float eye_uz, // up vector
                float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                BOOLINT gfx_fbo, // use frame buffer object
-               BOOLINT gfx_resized, // resize frame buffer object
                float vol_rot, // volume rotation in degrees
                float vol_dx,float vol_dy,float vol_dz, // volume translation
                float vol_emi,float vol_att, // global volume emi and att
@@ -102,6 +101,8 @@ class volren
 
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
+      volume::usefbo(gfx_fbo);
+
       if (vol_white)
          if (!vol_inv) glClearColor(0.85f,0.85f,0.85f,1.0f);
          else glClearColor(1.0f,1.0f,1.0f,1.0f);
@@ -117,10 +118,6 @@ class volren
       glPushMatrix();
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
-
-      volume::usefbo(gfx_fbo);
-      if (gfx_fbo)
-         if (gfx_resized) volume::updatefbo();
 
       if (vol_wire) VOL->drawwireframe();
 

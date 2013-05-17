@@ -41,6 +41,5 @@ char getkey();
 int getwinwidth();
 int getwinheight();
 float getaspect();
-BOOLINT getresized();
 
 #endif

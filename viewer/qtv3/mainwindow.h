@@ -30,7 +30,7 @@ public:
 
 private:
 
-   QGLVolRenWidget *vr_;
+   QGLVolRenWidget *vrw_;
 
    void createMenus();
    void createWidgets();

@@ -65,9 +65,6 @@ class volume
    // use 16-bit fbo
    static void usefbo(BOOLINT yes=FALSE);
 
-   // update 16-bit fbo
-   static void updatefbo();
-
    protected:
 
    float MX,MY,MZ,
@@ -94,14 +91,17 @@ class volume
              float nearp,float slab,float rslab,
              BOOLINT lighting=FALSE);
 
+   static void updatefbo();
+
    // frame buffer object:
 
-   static void setup();
+   static void setup(int width,int heigth);
    static void destroy();
 
    static BOOLINT CREATED;
    static BOOLINT HASFBO;
    static BOOLINT USEFBO;
+   static int fboWidth,fboHeight;
    static GLuint textureId;
    static GLuint rboId;
    static GLuint fboId;

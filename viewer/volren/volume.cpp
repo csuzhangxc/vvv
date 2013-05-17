@@ -11,6 +11,7 @@
 BOOLINT volume::CREATED=FALSE;
 BOOLINT volume::HASFBO=FALSE;
 BOOLINT volume::USEFBO=FALSE;
+int volume::fboWidth=0,volume::fboHeight=0;
 GLuint volume::textureId=0;
 GLuint volume::rboId=0;
 GLuint volume::fboId=0;
@@ -25,8 +26,6 @@ volume::volume(tfunc2D *tf,char *base)
 
    if (base==NULL) strncpy(BASE,"volren",MAXSTR);
    else snprintf(BASE,MAXSTR,"%s/volren",base);
-
-   setup();
    }
 
 volume::~volume()
@@ -40,7 +39,7 @@ volume::~volume()
    }
 
 // create fbo
-void volume::setup()
+void volume::setup(int width,int height)
    {
    char *GL_EXTs;
 
@@ -53,11 +52,6 @@ void volume::setup()
       if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
          {
 #ifdef GL_EXT_framebuffer_object
-
-         GLint viewport[4];
-         glGetIntegerv(GL_VIEWPORT,viewport);
-         int width=viewport[2];
-         int height=viewport[3];
 
          if (width==0 || height==0) CREATED=FALSE;
          else
@@ -323,6 +317,9 @@ void volume::render(float ex,float ey,float ez,
                     float nearp,float slab,float rslab,
                     BOOLINT lighting)
    {
+   // update fbo
+   updatefbo();
+
    // render to fbo
    if (HASFBO && USEFBO)
       {
@@ -453,8 +450,22 @@ void volume::usefbo(BOOLINT yes)
 // update 16-bit fbo
 void volume::updatefbo()
    {
-   destroy();
-   setup();
+   GLint viewport[4];
+   glGetIntegerv(GL_VIEWPORT,viewport);
+   int width=viewport[2];
+   int height=viewport[3];
+
+   if (USEFBO)
+      if (!HASFBO) setup(width,height);
+      else
+         if (width!=fboWidth || height!=fboHeight)
+            {
+            destroy();
+            setup(width,height);
+            }
+
+   fboWidth=width;
+   fboHeight=height;
    }
 
 // the volume hierarchy:

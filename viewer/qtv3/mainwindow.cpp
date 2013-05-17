@@ -18,12 +18,12 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
 QTV3MainWindow::~QTV3MainWindow()
 {
-   delete vr_;
+   delete vrw_;
 }
 
 void QTV3MainWindow::loadvolume(const char *filename)
 {
-   vr_->loadvolume(filename);
+   vrw_->loadvolume(filename);
 }
 
 void QTV3MainWindow::createMenus()
@@ -50,8 +50,8 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *mainGroup = new QGroupBox;
    QVBoxLayout *layout = new QVBoxLayout;
 
-   vr_ = new QGLVolRenWidget;
-   layout->addWidget(vr_);
+   vrw_ = new QGLVolRenWidget;
+   layout->addWidget(vrw_);
 
    mainGroup->setLayout(layout);
    setCentralWidget(mainGroup);
