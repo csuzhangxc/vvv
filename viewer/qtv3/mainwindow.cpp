@@ -5,13 +5,16 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.1"
+#define APP_VERSION "0.2"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
 {
    createMenus();
    createWidgets();
+
+   // accept drag and drop
+   setAcceptDrops(true);
 
    setWindowTitle(APP_NAME" "APP_VERSION);
 }
@@ -65,6 +68,45 @@ QSize QTV3MainWindow::minimumSizeHint() const
 QSize QTV3MainWindow::sizeHint() const
 {
    return(QSize(512, 512));
+}
+
+void QTV3MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+   event->acceptProposedAction();
+}
+
+void QTV3MainWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+   event->acceptProposedAction();
+}
+
+void QTV3MainWindow::dropEvent(QDropEvent *event)
+{
+   const QMimeData *mimeData = event->mimeData();
+
+   if (mimeData->hasUrls())
+   {
+      event->acceptProposedAction();
+
+      QList<QUrl> urlList = mimeData->urls();
+
+      if (urlList.size()==1)
+      {
+         QUrl qurl = urlList.at(0);
+         QString url = qurl.toString();
+
+         if (url.startsWith("file://"))
+         {
+            url = url.remove("file://");
+            vrw_->loadvolume(url.toStdString().c_str());
+         }
+      }
+   }
+}
+
+void QTV3MainWindow::dragLeaveEvent(QDragLeaveEvent *event)
+{
+   event->accept();
 }
 
 void QTV3MainWindow::about()

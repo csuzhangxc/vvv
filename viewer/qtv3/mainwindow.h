@@ -35,6 +35,16 @@ private:
    void createMenus();
    void createWidgets();
 
+protected:
+
+   void dragEnterEvent(QDragEnterEvent *event);
+   void dragMoveEvent(QDragMoveEvent *event);
+   void dragLeaveEvent(QDragLeaveEvent *event);
+
+public:
+
+   void dropEvent(QDropEvent *event);
+
 protected slots:
 
    void about();

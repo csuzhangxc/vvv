@@ -11,7 +11,12 @@ int main(int argc, char *argv[])
    if (!QGLFormat::hasOpenGL()) return(1);
 
    QTV3MainWindow main;
-   main.loadvolume("Bucky.pvm");
+
+   QStringList args = QCoreApplication::arguments();
+
+   if (args.size()>1)
+      main.loadvolume(args[1].toStdString().c_str());
+
    main.show();
 
    return(app.exec());
