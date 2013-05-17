@@ -8,7 +8,6 @@
 
 #include "volume.h"
 
-BOOLINT volume::CREATED=FALSE;
 BOOLINT volume::HASFBO=FALSE;
 BOOLINT volume::USEFBO=FALSE;
 int volume::fboWidth=0,volume::fboHeight=0;
@@ -43,18 +42,15 @@ void volume::setup(int width,int height)
    {
    char *GL_EXTs;
 
-   if (!CREATED)
-      {
-      CREATED=TRUE;
+   if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
 
-      if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
-
-      if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
-         {
-         if (width==0 || height==0) CREATED=FALSE;
-         else
+   if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
+      if (width>0 && height>0)
+         if (!HASFBO || width!=fboWidth || height!=fboHeight)
             {
 #ifdef GL_EXT_framebuffer_object
+
+            destroy();
 
             HASFBO=TRUE;
 
@@ -110,32 +106,24 @@ void volume::setup(int width,int height)
 
 #endif
             }
-         }
-      }
    }
 
 // destroy fbo
 void volume::destroy()
    {
-   if (CREATED)
-      {
-
 #ifdef GL_EXT_framebuffer_object
 
-      if (textureId!=0) glDeleteTextures(1, &textureId);
-      if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
-      if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
+   if (textureId!=0) glDeleteTextures(1, &textureId);
+   if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
+   if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
 
-      textureId=0;
-      rboId=0;
-      fboId=0;
+   textureId=0;
+   rboId=0;
+   fboId=0;
 
-      HASFBO=FALSE;
+   HASFBO=FALSE;
 
 #endif
-
-      CREATED=FALSE;
-      }
    }
 
 // check brick size
@@ -462,13 +450,7 @@ void volume::updatefbo()
       int width=viewport[2];
       int height=viewport[3];
 
-      if (!HASFBO) setup(width,height);
-      else
-         if (width!=fboWidth || height!=fboHeight)
-            {
-            destroy();
-            setup(width,height);
-            }
+      setup(width,height);
       }
    }
 

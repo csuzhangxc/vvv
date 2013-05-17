@@ -98,7 +98,6 @@ class volume
    static void setup(int width,int heigth);
    static void destroy();
 
-   static BOOLINT CREATED;
    static BOOLINT HASFBO;
    static BOOLINT USEFBO;
    static int fboWidth,fboHeight;
