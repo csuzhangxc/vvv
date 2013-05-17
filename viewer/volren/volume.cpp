@@ -313,7 +313,9 @@ void volume::render(float ex,float ey,float ez,
                     BOOLINT lighting)
    {
    // update fbo
-   updatefbo();
+   static BOOLINT first=FALSE;
+   if (!first) first=TRUE;
+   else updatefbo();
 
    // render to fbo
    if (HASFBO && USEFBO)
