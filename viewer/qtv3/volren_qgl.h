@@ -18,6 +18,7 @@ public:
       setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
 
       vr_ = NULL;
+      toload_ = NULL;
 
       fps_=30.0;
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
@@ -30,6 +31,13 @@ public:
    {
       if (vr_)
          delete vr_;
+   }
+
+   //! load a volume
+   void loadvolume(const char *filename)
+   {
+      if (toload_) free(toload_);
+      toload_ = strdup(filename);
    }
 
    //! return preferred minimum window size
@@ -47,6 +55,7 @@ public:
 protected:
 
    volren *vr_;
+   char *toload_;
 
    double fps_; // animated frames per second
    bool resized_; // viewport resized?
@@ -67,10 +76,14 @@ protected:
    void paintGL()
    {
       if (!vr_)
-      {
          vr_ = new volren();
-         vr_->loadvolume("Bucky.pvm");
-      }
+
+      if (toload_)
+         {
+         vr_->loadvolume(toload_);
+         free(toload_);
+         toload_=NULL;
+         }
 
       double eye_x=0,eye_y=0,eye_z=2.5;
       double eye_dx=0,eye_dy=0,eye_dz=-1;

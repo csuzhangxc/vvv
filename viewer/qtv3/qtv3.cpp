@@ -13,5 +13,7 @@ int main(int argc, char *argv[])
    QTV3MainWindow main;
    main.show();
 
+   main.loadvolume("Bucky.pvm");
+
    return(app.exec());
 }

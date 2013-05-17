@@ -25,9 +25,12 @@ public:
    //! return preferred window size
    QSize sizeHint() const;
 
+   //! load a volume
+   void loadvolume(const char *filename);
+
 private:
 
-   QGLVolRenWidget *vr;
+   QGLVolRenWidget *vr_;
 
    void createMenus();
    void createWidgets();
