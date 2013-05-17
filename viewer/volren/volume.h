@@ -49,7 +49,8 @@ class volume
                BOOLINT lighting=FALSE);
 
    // render the wire frame
-   void drawwireframe();
+   static void drawwireframe(float mx=0.0f,float my=0.0f,float mz=0.0f,
+                             float sx=1.0f,float sy=1.0f,float sz=1.0f);
 
    // return center of bounding box
    float getcenterx() {return(MX);}
@@ -153,6 +154,7 @@ class mipmap
    float *get_hist2DQRGBA(); // return the quantized scatter plot
    float *get_hist2DTFRGBA(); // return the quantized transfer function
 
+   BOOLINT has_data(); // check whether or not the hierarchy has volume data
    float get_slab(); // return the slab thickness
 
    // set ambient/diffuse/specular lighting coefficients

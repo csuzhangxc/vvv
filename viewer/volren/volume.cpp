@@ -400,38 +400,50 @@ void volume::render(float ex,float ey,float ez,
    }
 
 // draw the surrounding wire frame box
-void volume::drawwireframe()
+void volume::drawwireframe(float mx,float my,float mz,
+                           float sx,float sy,float sz)
    {
+   float sx2,sy2,sz2;
+
+   sx2=0.5f*sx;
+   sy2=0.5f*sy;
+   sz2=0.5f*sz;
+
+   glPushMatrix();
+   glTranslatef(mx,my,mz);
+
    glColor3f(0.5f,0.5f,0.5f);
    glBegin(GL_LINES);
-   glVertex3f(-0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(-0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(-0.5f*SX,0.5f*SY,0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,0.5f*SZ);
-   glVertex3f(-0.5f*SX,0.5f*SY,0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(-0.5f*SX,-0.5f*SY,-0.5f*SZ);
-   glVertex3f(-0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,-0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,-0.5f*SY,0.5f*SZ);
-   glVertex3f(0.5f*SX,0.5f*SY,0.5f*SZ);
-   glVertex3f(-0.5f*SX,-0.5f*SY,0.5f*SZ);
-   glVertex3f(-0.5f*SX,0.5f*SY,0.5f*SZ);
+   glVertex3f(-sx2,sy2,-sz2);
+   glVertex3f(sx2,sy2,-sz2);
+   glVertex3f(-sx2,sy2,-sz2);
+   glVertex3f(-sx2,sy2,sz2);
+   glVertex3f(sx2,sy2,sz2);
+   glVertex3f(-sx2,sy2,sz2);
+   glVertex3f(sx2,sy2,sz2);
+   glVertex3f(sx2,sy2,-sz2);
+   glVertex3f(-sx2,-sy2,-sz2);
+   glVertex3f(-sx2,sy2,-sz2);
+   glVertex3f(sx2,-sy2,-sz2);
+   glVertex3f(sx2,sy2,-sz2);
+   glVertex3f(sx2,-sy2,sz2);
+   glVertex3f(sx2,sy2,sz2);
+   glVertex3f(-sx2,-sy2,sz2);
+   glVertex3f(-sx2,sy2,sz2);
    glEnd();
 
    glDisable(GL_CULL_FACE);
    glColor3f(0.25f,0.25f,0.25f);
    glBegin(GL_TRIANGLE_FAN);
-   glVertex3f(-0.5f*SX,-0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,-0.5f*SY,-0.5f*SZ);
-   glVertex3f(0.5f*SX,-0.5f*SY,0.5f*SZ);
-   glVertex3f(-0.5f*SX,-0.5f*SY,0.5f*SZ);
-   glVertex3f(-0.5f*SX,-0.5f*SY,-0.5f*SZ);
+   glVertex3f(-sx2,-sy2,-sz2);
+   glVertex3f(sx2,-sy2,-sz2);
+   glVertex3f(sx2,-sy2,sz2);
+   glVertex3f(-sx2,-sy2,sz2);
+   glVertex3f(-sx2,-sy2,-sz2);
    glEnd();
    glEnable(GL_CULL_FACE);
+
+   glPopMatrix();
    }
 
 // use 16-bit fbo
@@ -2806,50 +2818,54 @@ void mipmap::savePVMvolume(const char *filename)
 // return the histogram
 float *mipmap::get_hist()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_hist());
    }
 
 // return the colored histogram
 float *mipmap::get_histRGBA()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_histRGBA());
    }
 
 // return the scatter plot
 float *mipmap::get_hist2D()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_hist2D());
    }
 
 // return the colored scatter plot
 float *mipmap::get_hist2DRGBA()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_hist2DRGBA());
    }
 
 // return the quantized scatter plot
 float *mipmap::get_hist2DQRGBA()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_hist2DQRGBA());
    }
 
 // return the quantized transfer function
 float *mipmap::get_hist2DTFRGBA()
    {
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return(NULL);
    return(HISTO->get_hist2DTFRGBA());
    }
+
+// check whether or not the hierarchy has volume data
+BOOLINT mipmap::has_data()
+   {return(VOLCNT!=0);}
 
 // return the slab thickness
 float mipmap::get_slab()
    {
-   if (VOLCNT==0) ERRORMSG();
-   return(VOL[0]->get_slab());
+   if (VOLCNT==0) return(0.0f);
+   else return(VOL[0]->get_slab());
    }
 
 // set ambient/diffuse/specular lighting coefficients
@@ -2857,7 +2873,7 @@ void mipmap::set_light(float noise,float ambnt,float difus,float specl,float spe
    {
    int i;
 
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return;
 
    for (i=0; i<VOLCNT; i++) VOL[i]->set_light(noise,ambnt,difus,specl,specx);
    }
@@ -2871,7 +2887,7 @@ void mipmap::render(float ex,float ey,float ez,
    {
    int map=0;
 
-   if (VOLCNT==0) ERRORMSG();
+   if (VOLCNT==0) return;
 
    if (TFUNC->get_imode())
       while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
@@ -2889,6 +2905,8 @@ void mipmap::render(float ex,float ey,float ez,
 // draw the surrounding wire frame box
 void mipmap::drawwireframe()
    {
-   if (VOLCNT==0) ERRORMSG();
-   VOL[0]->drawwireframe();
+   if (VOLCNT==0) volume::drawwireframe();
+   else
+      volume::drawwireframe(VOL[0]->getcenterx(),VOL[0]->getcentery(),VOL[0]->getcenterz(),
+                            VOL[0]->getsizex(),VOL[0]->getsizey(),VOL[0]->getsizez());
    }

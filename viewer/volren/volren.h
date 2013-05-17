@@ -124,25 +124,29 @@ class volren
 
       if (vol_wire) VOL->drawwireframe();
 
-      if (vol_histo) VOL->get_histo()->render2DQ(VOL->getcenterx(),
-                                                 VOL->getcentery(),
-                                                 VOL->getcenterz(),
-                                                 VOL->getsizex(),
-                                                 VOL->getsizey(),
-                                                 VOL->getsizez());
+      if (VOL->has_data())
+         {
+         if (vol_histo)
+            VOL->get_histo()->render2DQ(VOL->getcenterx(),
+                                        VOL->getcentery(),
+                                        VOL->getcenterz(),
+                                        VOL->getsizex(),
+                                        VOL->getsizey(),
+                                        VOL->getsizez());
 
-      if (!vol_clip)
-         VOL->render(ex,ey,ez,
-                     dx,dy,dz,
-                     ux,uy,uz,
-                     gfx_near,VOL->get_slab()*vol_over,
-                     vol_light);
-      else
-         VOL->render(ex,ey,ez,
-                     dx,dy,dz,
-                     ux,uy,uz,
-                     sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
-                     vol_light);
+         if (!vol_clip)
+            VOL->render(ex,ey,ez,
+                        dx,dy,dz,
+                        ux,uy,uz,
+                        gfx_near,VOL->get_slab()*vol_over,
+                        vol_light);
+         else
+            VOL->render(ex,ey,ez,
+                        dx,dy,dz,
+                        ux,uy,uz,
+                        sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
+                        vol_light);
+         }
 
       glPopMatrix();
       }
