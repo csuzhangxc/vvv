@@ -51,12 +51,16 @@ void volume::setup(int width,int height)
 
       if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
          {
-#ifdef GL_EXT_framebuffer_object
-
          if (width==0 || height==0) CREATED=FALSE;
          else
             {
+#ifdef GL_EXT_framebuffer_object
+
             HASFBO=TRUE;
+
+            // save actual size
+            fboWidth=width;
+            fboHeight=height;
 
             // create a texture object
             glGenTextures(1, &textureId);
@@ -118,14 +122,15 @@ void volume::destroy()
 
 #ifdef GL_EXT_framebuffer_object
 
-      if (HASFBO)
-         {
-         glDeleteTextures(1, &textureId);
-         glDeleteRenderbuffersEXT(1, &rboId);
-         glDeleteFramebuffersEXT(1, &fboId);
+      if (textureId!=0) glDeleteTextures(1, &textureId);
+      if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
+      if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
 
-         HASFBO=FALSE;
-         }
+      textureId=0;
+      rboId=0;
+      fboId=0;
+
+      HASFBO=FALSE;
 
 #endif
 
@@ -450,12 +455,13 @@ void volume::usefbo(BOOLINT yes)
 // update 16-bit fbo
 void volume::updatefbo()
    {
-   GLint viewport[4];
-   glGetIntegerv(GL_VIEWPORT,viewport);
-   int width=viewport[2];
-   int height=viewport[3];
-
    if (USEFBO)
+      {
+      GLint viewport[4];
+      glGetIntegerv(GL_VIEWPORT,viewport);
+      int width=viewport[2];
+      int height=viewport[3];
+
       if (!HASFBO) setup(width,height);
       else
          if (width!=fboWidth || height!=fboHeight)
@@ -463,9 +469,7 @@ void volume::updatefbo()
             destroy();
             setup(width,height);
             }
-
-   fboWidth=width;
-   fboHeight=height;
+      }
    }
 
 // the volume hierarchy:

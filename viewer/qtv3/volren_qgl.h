@@ -22,8 +22,6 @@ public:
 
       fps_=30.0;
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
-
-      resized_=false;
    }
 
    //! dtor
@@ -58,7 +56,6 @@ protected:
    char *toload_;
 
    double fps_; // animated frames per second
-   bool resized_; // viewport resized?
 
    void initializeGL()
    {
@@ -70,7 +67,6 @@ protected:
    void resizeGL(int, int)
    {
       glViewport(0, 0, width(), height());
-      resized_=true;
    }
 
    void paintGL()
@@ -95,8 +91,6 @@ protected:
       double gfx_far=10.0;
 
       bool gfx_fbo=true;
-      bool gfx_resized=resized_;
-      resized_=false;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -121,7 +115,7 @@ protected:
                   eye_dx,eye_dy,eye_dz, // viewing direction
                   eye_ux,eye_uy,eye_uz, // up vector
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
-                  gfx_fbo,gfx_resized, // use fbo
+                  gfx_fbo, // use fbo
                   angle, // volume rotation in degrees
                   0.0f,0.0,0.0f, // volume translation
                   vol_emission,vol_density, // global emi and att
