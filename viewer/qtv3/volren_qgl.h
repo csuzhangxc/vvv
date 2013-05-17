@@ -90,7 +90,7 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool gfx_fbo=true;
+      bool gfx_fbo=false; //!!
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -111,6 +111,7 @@ protected:
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ga());
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ba());
 
+      // call volume renderer
       vr_->render(eye_x,eye_y,eye_z, // view point
                   eye_dx,eye_dy,eye_dz, // viewing direction
                   eye_ux,eye_uy,eye_uz, // up vector
