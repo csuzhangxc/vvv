@@ -102,8 +102,6 @@ void openwindow(int width,int height,float fps,char *title)
    OGL_frame=0;
    OGL_time=OGL_otime=OGL_atime=0.0;
    OGL_tcount=0;
-
-   initogl();
    }
 
 void setwindowinfo(char *info)

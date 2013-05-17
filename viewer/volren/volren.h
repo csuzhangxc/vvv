@@ -101,14 +101,16 @@ class volren
 
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
+      initogl();
+
       volume::usefbo(gfx_fbo);
 
       if (vol_white)
-         if (!vol_inv) glClearColor(0.85f,0.85f,0.85f,1.0f);
-         else glClearColor(1.0f,1.0f,1.0f,1.0f);
-      else glClearColor(0.0f,0.0f,0.0f,1.0f);
+         if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
+         else setbackground(1.0f,1.0f,1.0f);
+      else setbackground(0.0f,0.0f,0.0f);
 
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      clearbuffer();
 
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
