@@ -91,18 +91,20 @@ void volume::setup(int width,int height)
             glGenFramebuffersEXT(1, &fboId);
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
-            // attach the texture to FBO color attachment point
+            // attach the texture to fbo color attachment point
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
 
             // attach the renderbuffer to depth attachment point
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
 
-            // check FBO status
+            // get fbo status
             GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-            if (status != GL_FRAMEBUFFER_COMPLETE_EXT) HASFBO=FALSE;
 
             // switch back to window-system-provided framebuffer
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+            // check fbo status
+            if (status != GL_FRAMEBUFFER_COMPLETE_EXT) destroy();
 
 #endif
             }
