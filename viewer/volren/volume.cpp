@@ -227,9 +227,9 @@ void volume::set_data(unsigned char *data,
    SY=sy*(height-1+2*border)/(height-1);
    SZ=sz*(depth-1+2*border)/(depth-1);
 
-   BX=sx*width/(width-1);
-   BY=sy*height/(height-1);
-   BZ=sz*depth/(depth-1);
+   BX=sx*(width+1)/(width-1);
+   BY=sy*(height+1)/(height-1);
+   BZ=sz*(depth+1)/(depth-1);
 
    SLAB=fmin(sx/(width-1),fmin(sy/(height-1),sz/(depth-1)));
    }
