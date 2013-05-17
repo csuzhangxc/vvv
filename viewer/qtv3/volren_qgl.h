@@ -94,7 +94,7 @@ protected:
       double vol_over=1.0;
 
       static double angle=0.0; // rotation angle in degrees
-      static const double omega=90.0; // rotation speed in degrees/s
+      static const double omega=30.0; // rotation speed in degrees/s
 
       // tf emission (emi)
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
