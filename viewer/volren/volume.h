@@ -58,9 +58,9 @@ class volume
    float getcenterz() {return(MZ);}
 
    // return size of bounding box
-   float getsizex() {return(SX);}
-   float getsizey() {return(SY);}
-   float getsizez() {return(SZ);}
+   float getsizex() {return(BX);}
+   float getsizey() {return(BY);}
+   float getsizez() {return(BZ);}
 
    // use 16-bit fbo
    static void usefbo(BOOLINT yes=FALSE);
@@ -68,7 +68,8 @@ class volume
    protected:
 
    float MX,MY,MZ,
-         SX,SY,SZ;
+         SX,SY,SZ,
+         BX,BY,BZ;
 
    float SLAB;
 

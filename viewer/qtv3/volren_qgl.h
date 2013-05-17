@@ -81,7 +81,7 @@ protected:
          toload_=NULL;
          }
 
-      double eye_x=0,eye_y=0,eye_z=2.5;
+      double eye_x=0,eye_y=0,eye_z=2;
       double eye_dx=0,eye_dy=0,eye_dz=-1;
       double eye_ux=0,eye_uy=1,eye_uz=0;
 
