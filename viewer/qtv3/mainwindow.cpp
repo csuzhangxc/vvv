@@ -51,12 +51,15 @@ void QTV3MainWindow::createMenus()
 void QTV3MainWindow::createWidgets()
 {
    QGroupBox *mainGroup = new QGroupBox;
-   QVBoxLayout *layout = new QVBoxLayout;
+   layout_ = new QVBoxLayout;
 
    vrw_ = new QGLVolRenWidget;
-   layout->addWidget(vrw_);
+   layout_->addWidget(vrw_);
 
-   mainGroup->setLayout(layout);
+   layout_->addWidget(new QLabel("Drag and drop a volume file (suffix .pvm) here to show it in the volume renderer!"));
+   layout_->itemAt(1)->setAlignment(Qt::AlignHCenter);
+
+   mainGroup->setLayout(layout_);
    setCentralWidget(mainGroup);
 }
 
@@ -99,6 +102,8 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
          {
             url = url.remove("file://");
             vrw_->loadvolume(url.toStdString().c_str());
+
+            layout_->removeItem(layout_->itemAt(1));
          }
       }
    }

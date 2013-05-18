@@ -30,6 +30,7 @@ public:
 
 private:
 
+   QVBoxLayout *layout_;
    QGLVolRenWidget *vrw_;
 
    void createMenus();
