@@ -31,16 +31,24 @@ void QTV3MainWindow::loadvolume(const char *filename)
 {
    vrw_->loadvolume(filename);
 
-   layout_->removeItem(layout_->itemAt(1));
-   delete label_;
+   if (label_)
+   {
+      layout_->removeItem(layout_->itemAt(1));
+      delete label_;
+      label_=NULL;
+   }
 }
 
 void QTV3MainWindow::loadseries(const std::vector<std::string> list)
 {
    vrw_->loadseries(list);
 
-   layout_->removeItem(layout_->itemAt(1));
-   delete label_;
+   if (label_)
+   {
+      layout_->removeItem(layout_->itemAt(1));
+      delete label_;
+      label_=NULL;
+   }
 }
 
 void QTV3MainWindow::setrotation(double omega)
