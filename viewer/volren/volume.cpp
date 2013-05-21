@@ -2641,35 +2641,69 @@ unsigned char *mipmap::scale(unsigned char *volume,
    return(volume2);
    }
 
-// read either PVM or DICOM identified by the * in the filename pattern
+// read a volume by trying any known format
 unsigned char *mipmap::readANYvolume(const char *filename,
                                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez)
    {
+   if (strchr(filename,'*')!=NULL)
+      // read a DICOM series identified by the * in the filename pattern
+      return(readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
+   else
+      // read a PVM volume
+      return(readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
+   }
+
+// read a DICOM series identified by the * in the filename pattern
+unsigned char *mipmap::readDICOMvolume(const char *filename,
+                                       unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                       float *scalex,float *scaley,float *scalez)
+   {
    DicomVolume data;
    unsigned char *chunk;
 
-   if (strchr(filename,'*')==NULL)
-      return(readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
-   else
-      {
-      if (!data.loadImages(filename)) ERRORMSG();
+   if (!data.loadImages(filename)) return(NULL);
 
-      if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
-      memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
 
-      *width=data.getCols();
-      *height=data.getRows();
-      *depth=data.getSlis();
+   *width=data.getCols();
+   *height=data.getRows();
+   *depth=data.getSlis();
 
-      *components=1;
+   *components=1;
 
-      if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
-      if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
-      if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
+   if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
+   if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
+   if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
 
-      return(chunk);
-      }
+   return(chunk);
+   }
+
+// read a DICOM series from a file name list
+unsigned char *mipmap::readDICOMvolume(const std::vector<std::string> list,
+                                       unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                       float *scalex,float *scaley,float *scalez)
+   {
+   DicomVolume data;
+   unsigned char *chunk;
+
+   if (!data.loadImages(list)) return(NULL);
+
+   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+
+   *width=data.getCols();
+   *height=data.getRows();
+   *depth=data.getSlis();
+
+   *components=1;
+
+   if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
+   if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
+   if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
+
+   return(chunk);
    }
 
 // load the volume and convert it to 8 bit
@@ -2807,6 +2841,62 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
 
    if (!upload && (hmvalue!=histmin || hfvalue!=histfreq || kneigh!=knvalue || histstep!=hsvalue))
       HISTO->inithist2DQ(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,FALSE);
+
+   hmvalue=histmin;
+   hfvalue=histfreq;
+   knvalue=kneigh;
+   hsvalue=histstep;
+
+   return(TRUE);
+   }
+
+// load a DICOM series
+BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series to load
+                           float mx,float my,float mz, // midpoint of volume (assumed to be fixed)
+                           float sx,float sy,float sz, // size of volume (assumed to be fixed)
+                           int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
+                           BOOLINT xswap,BOOLINT yswap,BOOLINT zswap, // swap volume flags
+                           BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
+                           int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
+   {
+   float maxsize;
+
+   if (VOLUME!=NULL) free(VOLUME);
+   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) return(FALSE);
+
+   if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
+   else if (COMPONENTS!=1)
+      {
+      free(VOLUME);
+      return(FALSE);
+      }
+
+   VOLUME=swap(VOLUME,
+               &WIDTH,&HEIGHT,&DEPTH,
+               &DSX,&DSY,&DSZ,
+               xswap,yswap,zswap,
+               xrotate,zrotate);
+
+   strncpy(filestr,"",MAXSTR);
+   strncpy(gradstr,"",MAXSTR);
+   strncpy(commstr,"",MAXSTR);
+
+   xsflag=xswap;
+   ysflag=yswap;
+   zsflag=zswap;
+
+   xrflag=xrotate;
+   zrflag=zrotate;
+
+   maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
+
+   set_data(VOLUME,NULL,
+            WIDTH,HEIGHT,DEPTH,
+            mx,my,mz,
+            sx*DSX*(WIDTH-1)/maxsize,sy*DSY*(HEIGHT-1)/maxsize,sz*DSZ*(DEPTH-1)/maxsize,
+            bricksize,overmax);
+
+   HISTO->set_histograms(VOLUME,NULL,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep);
 
    hmvalue=histmin;
    hfvalue=histfreq;

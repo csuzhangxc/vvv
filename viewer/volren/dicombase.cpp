@@ -47,11 +47,22 @@ bool DicomVolume::loadImages(const char *filenamepattern)
    return(true);
    }
 
+bool DicomVolume::loadImages(const std::vector<std::string> list)
+   {
+   if (m_Images.size()!=0) deleteImages();
+
+   if (!dicomLoad(list))
+      {
+      deleteImages();
+      return(false);
+      }
+
+   return(true);
+   }
+
 bool DicomVolume::dicomLoad(const char *filenamepattern)
    {
 #ifdef VIEWER_HAVE_DCMTK
-
-   unsigned int i,j;
 
    const char *fname;
 
@@ -81,6 +92,55 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
       fname=findfile();
       }
    while (fname);
+
+   return(dicomProcess());
+
+#else
+
+   return(false);
+
+#endif
+   }
+
+bool DicomVolume::dicomLoad(const std::vector<std::string> list)
+   {
+#ifdef VIEWER_HAVE_DCMTK
+
+   unsigned int i;
+
+   const char *fname;
+
+   for (i=0; i<list.size(); i++)
+      {
+      ImageDesc *desc=new ImageDesc();
+      desc->m_Image=new DcmFileFormat();
+
+      fname=list.at(i).c_str();
+
+      printf("load DICOM file %s\n",fname);
+
+      if (desc->m_Image->loadFile(fname).bad()) return(false);
+
+      desc->m_Image->getDataset()->loadAllDataIntoMemory();
+
+      // add to image vector
+      m_Images.push_back(desc);
+      }
+
+   return(dicomProcess());
+
+#else
+
+   return(false);
+
+#endif
+   }
+
+bool DicomVolume::dicomProcess()
+   {
+#ifdef VIEWER_HAVE_DCMTK
+
+   unsigned int i,j;
 
    if (m_Images.size()<2) return(false);
 

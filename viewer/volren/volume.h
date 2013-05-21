@@ -3,6 +3,9 @@
 #ifndef VOLUME_H
 #define VOLUME_H
 
+#include <vector>
+#include <string>
+
 #include "codebase.h" // universal code base
 #include "ddsbase.h" // volume file reader
 #include "dicombase.h" // dicom file reader
@@ -141,6 +144,15 @@ class mipmap
                       char *commands=NULL,
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
 
+   // load a DICOM series
+   BOOLINT loadseries(const std::vector<std::string> list,
+                      float mx=0.0f,float my=0.0f,float mz=0.0f,
+                      float sx=1.0f,float sy=1.0f,float sz=1.0f,
+                      int bricksize=128,float overmax=8.0f,
+                      BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
+                      BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
+
    // save the volume data as PVM
    void savePVMvolume(const char *filename);
 
@@ -217,6 +229,14 @@ class mipmap
    unsigned char *readANYvolume(const char *filename,
                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
                                 float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+
+   unsigned char *readDICOMvolume(const char *filename,
+                                  unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                                  float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+
+   unsigned char *readDICOMvolume(const std::vector<std::string> list,
+                                  unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                  float *scalex,float *scaley,float *scalez);
 
    unsigned char *reduce(unsigned char *data,
                          unsigned int width,unsigned int height,unsigned int depth);

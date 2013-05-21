@@ -4,6 +4,7 @@
 #define DICOMBASE_H
 
 #include <vector>
+#include <string>
 
 #include "codebase.h"
 
@@ -43,6 +44,7 @@ class DicomVolume
    virtual ~DicomVolume();
 
    bool loadImages(const char *filenamepattern);
+   bool loadImages(const std::vector<std::string> list);
 
    unsigned char *getVoxelData() {return(m_Voxels);}
    int getVoxelNum() {return(getCols()*getRows()*getSlis());}
@@ -56,6 +58,9 @@ class DicomVolume
    private:
 
    bool dicomLoad(const char *filenamepattern);
+   bool dicomLoad(const std::vector<std::string> list);
+
+   bool dicomProcess();
 
    void deleteImages();
    void sortImages();
