@@ -17,6 +17,9 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    setAcceptDrops(true);
 
    setWindowTitle(APP_NAME" "APP_VERSION);
+
+   vrw_->loadvolume("Drop.pvm");
+   vrw_->setrotation(30.0);
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -27,6 +30,9 @@ QTV3MainWindow::~QTV3MainWindow()
 void QTV3MainWindow::loadvolume(const char *filename)
 {
    vrw_->loadvolume(filename);
+
+   layout_->removeItem(layout_->itemAt(1));
+   delete label_;
 }
 
 void QTV3MainWindow::setrotation(double omega)
@@ -107,10 +113,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
          if (url.startsWith("file://"))
          {
             url = url.remove("file://");
-            vrw_->loadvolume(url.toStdString().c_str());
-
-            layout_->removeItem(layout_->itemAt(1));
-            delete label_;
+            loadvolume(url.toStdString().c_str());
          }
       }
    }
