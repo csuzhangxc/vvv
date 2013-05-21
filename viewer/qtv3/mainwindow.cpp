@@ -130,7 +130,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 
          for (int i=0; i<urlList.size(); i++)
          {
-            QUrl qurl = urlList.at(0);
+            QUrl qurl = urlList.at(i);
             QString url = qurl.toString();
 
             if (url.startsWith("file://"))
