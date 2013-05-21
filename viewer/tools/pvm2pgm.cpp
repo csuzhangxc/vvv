@@ -21,7 +21,9 @@ int main(int argc,char *argv[])
 
    if (argc!=3)
       {
-      printf("usage: %s <input.pvm> <output>\n",argv[0]);
+      printf("usage: %s <input.pvm> <output.pgm>\n",argv[0]);
+      printf(" input: compressed PVM volume\n");
+      printf(" output: pgm image series containing the volume slices\n");
       exit(1);
       }
 
