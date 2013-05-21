@@ -32,9 +32,9 @@ int main(int argc,char *argv[])
       memcpy(&data[j*width*components],&image[(height-1-j)*width*components],width*components);
    free(image);
 
-   for (i=2; i<depth; i++)
+   for (i=1; i<depth; i++)
       {
-      if ((image=readPNMimage(argv[i],&width2,&height2,&components2))==NULL) exit(1);
+      if ((image=readPNMimage(argv[i+1],&width2,&height2,&components2))==NULL) exit(1);
       if (components2!=components || width2!=width || height2!=height) exit(1);
 
       for (j=0; j<height; j++)
