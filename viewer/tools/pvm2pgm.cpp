@@ -8,7 +8,7 @@
 
 int main(int argc,char *argv[])
    {
-   unsigned int i;
+   unsigned int i,j;
 
    unsigned char *volume;
 
@@ -16,6 +16,8 @@ int main(int argc,char *argv[])
                 components;
 
    float scalex,scaley,scalez;
+
+   unsigned char *image;
 
    char filename[MAX_STR];
 
@@ -46,13 +48,20 @@ int main(int argc,char *argv[])
       components=1;
       }
 
+   if ((image=(unsigned char *)malloc(width*height*components))==NULL) exit(1);
+
    for (i=0; i<depth; i++)
       {
       printf("writing PGM file #%d\n",i+1);
 
+      for (j=0; j<height; j++)
+         memcpy(&image[(height-1-j)*width*components],&volume[i*width*height*components+j*width*components],width*components);
+
       snprintf(filename,MAX_STR,"%s-%04d.pgm",argv[2],i+1);
-      writePNMimage(filename,volume+i*width*height*components,width,height,components);
+      writePNMimage(filename,image,width,height,components);
       }
+
+   free(image);
 
    free(volume);
 

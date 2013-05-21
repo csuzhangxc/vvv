@@ -180,8 +180,14 @@ int main(int argc,char *argv[])
 
    if (argc==4)
       {
-      writePNMimage(argv[3],&volume[frame*width*height*components],width,height,components);
+      if ((image=(unsigned char *)malloc(width*height*components))==NULL) exit(1);
+
+      for (i=0; i<height; i++)
+         memcpy(&image[(height-1-i)*width*components],&volume[frame*width*height*components+i*width*components],width*components);
       free(volume);
+
+      writePNMimage(argv[3],image,width,height,components);
+      free(image);
       }
    else
       {
