@@ -40,6 +40,12 @@ public:
       toload_ = strdup(filename);
    }
 
+   //! load a DICOM series
+   void loadseries(const std::vector<std::string> list)
+   {
+      series_ = list;
+   }
+
    //! set volume rotation speed
    void setrotation(double omega=30.0)
       {omega_=omega;}
@@ -60,6 +66,7 @@ protected:
 
    volren *vr_;
    char *toload_;
+   std::vector<std::string> series_;
 
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
@@ -87,6 +94,12 @@ protected:
          vr_->loadvolume(toload_);
          free(toload_);
          toload_=NULL;
+         }
+
+      if (series_.size()>0)
+         {
+         vr_->loadseries(series_);
+         series_.clear();
          }
 
       double eye_x=0,eye_y=0,eye_z=2;

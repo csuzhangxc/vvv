@@ -35,6 +35,14 @@ void QTV3MainWindow::loadvolume(const char *filename)
    delete label_;
 }
 
+void QTV3MainWindow::loadseries(const std::vector<std::string> list)
+{
+   vrw_->loadseries(list);
+
+   layout_->removeItem(layout_->itemAt(1));
+   delete label_;
+}
+
 void QTV3MainWindow::setrotation(double omega)
 {
    vrw_->setrotation(omega);
@@ -115,6 +123,24 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
             url = url.remove("file://");
             loadvolume(url.toStdString().c_str());
          }
+      }
+      else
+      {
+         std::vector<std::string> list;
+
+         for (int i=0; i<urlList.size(); i++)
+         {
+            QUrl qurl = urlList.at(0);
+            QString url = qurl.toString();
+
+            if (url.startsWith("file://"))
+            {
+               url = url.remove("file://");
+               list.push_back(url.toStdString());
+            }
+         }
+
+         loadseries(list);
       }
    }
 }

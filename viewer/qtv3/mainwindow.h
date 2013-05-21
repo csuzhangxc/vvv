@@ -28,6 +28,9 @@ public:
    //! load a volume
    void loadvolume(const char *filename);
 
+   //! load a DICOM series
+   void loadseries(const std::vector<std::string> list);
+
    //! set volume rotation speed
    void setrotation(double omega);
 

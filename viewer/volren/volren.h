@@ -48,6 +48,24 @@ class volren
                              histmin,histfreq,kneigh,histstep));
       }
 
+   // load a DICOM series
+   BOOLINT loadseries(const std::vector<std::string> list,
+                      float mx=0.0f,float my=0.0f,float mz=0.0f,
+                      float sx=1.0f,float sy=1.0f,float sz=1.0f,
+                      int bricksize=128,float overmax=8.0f,
+                      BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
+                      BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+      {
+      return(VOL->loadseries(list,
+                             mx,my,mz,
+                             sx,sy,sz,
+                             bricksize,overmax,
+                             xswap,yswap,zswap,
+                             xrotate,zrotate,
+                             histmin,histfreq,kneigh,histstep));
+      }
+
    // save the volume data as PVM
    void savePVMvolume(const char *filename)
       {VOL->savePVMvolume(filename);}
