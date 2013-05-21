@@ -21,6 +21,8 @@ public:
       toload_ = NULL;
 
       fps_=30.0;
+      angle_=omega_=0.0;
+
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
 
@@ -37,6 +39,10 @@ public:
       if (toload_) free(toload_);
       toload_ = strdup(filename);
    }
+
+   //! set volume rotation speed
+   void setrotation(double omega=30.0)
+      {omega_=omega;}
 
    //! return preferred minimum window size
    QSize minimumSizeHint() const
@@ -56,6 +62,8 @@ protected:
    char *toload_;
 
    double fps_; // animated frames per second
+   double omega_; // rotation speed in degrees/s
+   double angle_; // rotation angle in degrees
 
    void initializeGL()
    {
@@ -100,9 +108,6 @@ protected:
 
       double vol_over=1.0;
 
-      static double angle=0.0; // rotation angle in degrees
-      static const double omega=30.0; // rotation speed in degrees/s
-
       // tf emission (emi)
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
 
@@ -117,7 +122,7 @@ protected:
                   eye_ux,eye_uy,eye_uz, // up vector
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                   gfx_fbo, // use fbo
-                  angle, // volume rotation in degrees
+                  angle_, // volume rotation in degrees
                   0.0f,0.0,0.0f, // volume translation
                   vol_emission,vol_density, // global emi and att
                   tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
@@ -131,7 +136,7 @@ protected:
                   0.0, // clipping distance relative to origin
                   TRUE); // wire frame box
 
-      angle+=omega/fps_;
+      angle_+=omega_/fps_;
    }
 
    void timerEvent(QTimerEvent *)

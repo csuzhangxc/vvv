@@ -130,16 +130,16 @@ class mipmap
                  int bricksize,float overmax);
 
    // load the volume data
-   void loadvolume(const char *filename,
-                   const char *gradname=NULL,
-                   float mx=0.0f,float my=0.0f,float mz=0.0f,
-                   float sx=1.0f,float sy=1.0f,float sz=1.0f,
-                   int bricksize=128,float overmax=8.0f,
-                   BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
-                   BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
-                   BOOLINT usegrad=FALSE,
-                   char *commands=NULL,
-                   int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
+   BOOLINT loadvolume(const char *filename,
+                      const char *gradname=NULL,
+                      float mx=0.0f,float my=0.0f,float mz=0.0f,
+                      float sx=1.0f,float sy=1.0f,float sz=1.0f,
+                      int bricksize=128,float overmax=8.0f,
+                      BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
+                      BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
+                      BOOLINT usegrad=FALSE,
+                      char *commands=NULL,
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
 
    // save the volume data as PVM
    void savePVMvolume(const char *filename);

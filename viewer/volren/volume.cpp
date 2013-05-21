@@ -2673,16 +2673,16 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    }
 
 // load the volume and convert it to 8 bit
-void mipmap::loadvolume(const char *filename, // filename of PVM to load
-                        const char *gradname, // optional filename of gradient volume
-                        float mx,float my,float mz, // midpoint of volume (assumed to be fixed)
-                        float sx,float sy,float sz, // size of volume (assumed to be fixed)
-                        int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
-                        BOOLINT xswap,BOOLINT yswap,BOOLINT zswap, // swap volume flags
-                        BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
-                        BOOLINT usegrad, // use gradient volume
-                        char *commands, // filter commands
-                        int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
+BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
+                           const char *gradname, // optional filename of gradient volume
+                           float mx,float my,float mz, // midpoint of volume (assumed to be fixed)
+                           float sx,float sy,float sz, // size of volume (assumed to be fixed)
+                           int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
+                           BOOLINT xswap,BOOLINT yswap,BOOLINT zswap, // swap volume flags
+                           BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
+                           BOOLINT usegrad, // use gradient volume
+                           char *commands, // filter commands
+                           int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
    {
    BOOLINT upload=FALSE;
 
@@ -2699,10 +2699,14 @@ void mipmap::loadvolume(const char *filename, // filename of PVM to load
        xrotate!=xrflag || zrotate!=zrflag)
       {
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) exit(1);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) return(FALSE);
 
       if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
-      else if (COMPONENTS!=1) exit(1);
+      else if (COMPONENTS!=1)
+         {
+         free(VOLUME);
+         return(FALSE);
+         }
 
       VOLUME=swap(VOLUME,
                   &WIDTH,&HEIGHT,&DEPTH,
@@ -2808,6 +2812,8 @@ void mipmap::loadvolume(const char *filename, // filename of PVM to load
    hfvalue=histfreq;
    knvalue=kneigh;
    hsvalue=histstep;
+
+   return(TRUE);
    }
 
 // save the volume data as PVM

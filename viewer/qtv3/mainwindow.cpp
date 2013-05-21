@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.2"
+#define APP_VERSION "0.3"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
@@ -29,6 +29,11 @@ void QTV3MainWindow::loadvolume(const char *filename)
    vrw_->loadvolume(filename);
 }
 
+void QTV3MainWindow::setrotation(double omega)
+{
+   vrw_->setrotation(omega);
+}
+
 void QTV3MainWindow::createMenus()
 {
    QAction *quitAction = new QAction(tr("Q&uit"), this);
@@ -50,14 +55,15 @@ void QTV3MainWindow::createMenus()
 
 void QTV3MainWindow::createWidgets()
 {
-   QGroupBox *mainGroup = new QGroupBox;
-   layout_ = new QVBoxLayout;
+   QGroupBox *mainGroup = new QGroupBox(this);
+   layout_ = new QVBoxLayout(mainGroup);
 
-   vrw_ = new QGLVolRenWidget;
+   vrw_ = new QGLVolRenWidget(mainGroup);
    layout_->addWidget(vrw_);
 
-   layout_->addWidget(new QLabel("Drag and drop a volume file (suffix .pvm) here to show it in the volume renderer!"));
-   layout_->itemAt(1)->setAlignment(Qt::AlignHCenter);
+   label_ = new QLabel("Drag and drop a volume file (suffix .pvm) here to show it in the volume renderer!");
+   label_->setAlignment(Qt::AlignHCenter);
+   layout_->addWidget(label_);
 
    mainGroup->setLayout(layout_);
    setCentralWidget(mainGroup);
@@ -104,6 +110,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
             vrw_->loadvolume(url.toStdString().c_str());
 
             layout_->removeItem(layout_->itemAt(1));
+            delete label_;
          }
       }
    }

@@ -28,10 +28,14 @@ public:
    //! load a volume
    void loadvolume(const char *filename);
 
+   //! set volume rotation speed
+   void setrotation(double omega);
+
 private:
 
    QVBoxLayout *layout_;
    QGLVolRenWidget *vrw_;
+   QLabel *label_;
 
    void createMenus();
    void createWidgets();

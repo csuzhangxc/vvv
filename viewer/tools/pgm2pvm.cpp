@@ -4,7 +4,7 @@
 
 int main(int argc,char *argv[])
    {
-   unsigned int i;
+   unsigned int i,j;
 
    unsigned char *data,*image;
    unsigned int width,height,depth;
@@ -28,7 +28,8 @@ int main(int argc,char *argv[])
 
    data=(unsigned char *)malloc(width*height*depth*components);
 
-   memcpy(data,image,width*height*components);
+   for (j=0; j<height; j++)
+      memcpy(&data[j*width*components],&image[(height-1-j)*width*components],width*components);
    free(image);
 
    for (i=2; i<depth; i++)
@@ -36,7 +37,8 @@ int main(int argc,char *argv[])
       if ((image=readPNMimage(argv[i],&width2,&height2,&components2))==NULL) exit(1);
       if (components2!=components || width2!=width || height2!=height) exit(1);
 
-      memcpy(&data[i*width*height*components],image,width*height*components);
+      for (j=0; j<height; j++)
+         memcpy(&data[i*width*height*components+j*width*components],&image[(height-1-j)*width*components],width*components);
       free(image);
       }
 
