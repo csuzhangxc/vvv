@@ -169,14 +169,14 @@ int GUI_texid=0;
 
 void loadvolume()
    {
-   VOLREN->loadvolume(FILENAME,GRADNAME,
-                      0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
-                      VOL_BRICKSIZE,VOL_OVERMAX,
-                      GUI_xswap,GUI_yswap,GUI_zswap,
-                      GUI_xrot,GUI_zrot,
-                      GUI_extra,GUI_commands,
-                      ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
-                      GUI_kneigh,GUI_histstep);
+   if (!VOLREN->loadvolume(FILENAME,GRADNAME,
+                           0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,
+                           VOL_BRICKSIZE,VOL_OVERMAX,
+                           GUI_xswap,GUI_yswap,GUI_zswap,
+                           GUI_xrot,GUI_zrot,
+                           GUI_extra,GUI_commands,
+                           ftrc(2.0f*GUI_histtweak*GUI_histmin)+1,2.0f*GUI_histslide*GUI_histfreq,
+                           GUI_kneigh,GUI_histstep)) exit(1);
    }
 
 void setupGUI();
