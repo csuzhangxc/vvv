@@ -249,8 +249,8 @@ MACRO(MAKE_VIEWER_EXECUTABLE name)
          ${DCMTK_ijg12_LIBRARY}
          ${DCMTK_ijg16_LIBRARY}
          ${DCMTK_dcmtls_LIBRARY}
-         ${DCMTK_ofstd_LIBRARY}
          ${DCMTK_oflog_LIBRARY}
+         ${DCMTK_ofstd_LIBRARY}
          ${ZLIB_LIBRARY}
          )
    ENDIF (BUILD_WITH_DCMTK)

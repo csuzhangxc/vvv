@@ -74,7 +74,7 @@ TARGET_LINK_LIBRARIES(qtv3
    ${DCMTK_ijg12_LIBRARY}
    ${DCMTK_ijg16_LIBRARY}
    ${DCMTK_dcmtls_LIBRARY}
-   ${DCMTK_ofstd_LIBRARY}
    ${DCMTK_oflog_LIBRARY}
+   ${DCMTK_ofstd_LIBRARY}
    ${ZLIB_LIBRARY}
    )
