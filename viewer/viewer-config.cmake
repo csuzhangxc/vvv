@@ -1,7 +1,7 @@
 # cmake build configuration for v^3
 # (c) by Stefan Roettger
 
-OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
+OPTION(BUILD_WITH_DCMTK "Build with DICOM support." ON)
 
 # volren library name
 IF (WIN32)
