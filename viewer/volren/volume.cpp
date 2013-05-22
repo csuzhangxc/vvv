@@ -2656,12 +2656,20 @@ unsigned char *mipmap::readANYvolume(const char *filename,
                                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez)
    {
+   unsigned char *volume;
+
    if (strchr(filename,'*')!=NULL)
       // read a DICOM series identified by the * in the filename pattern
-      return(readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
+      volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
    else
+      {
       // read a PVM volume
-      return(readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez));
+      if ((volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez))==NULL)
+         // read a REK volume
+         volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+      }
+
+   return(volume);
    }
 
 // load the volume and convert it to 8 bit
