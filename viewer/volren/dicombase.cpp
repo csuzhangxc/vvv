@@ -325,3 +325,55 @@ int DicomVolume::compareFunc(const void* elem1,const void* elem2)
 
    return(1);
    }
+
+// read a DICOM series identified by the * in the filename pattern
+unsigned char *readDICOMvolume(const char *filename,
+                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               float *scalex,float *scaley,float *scalez)
+   {
+   DicomVolume data;
+   unsigned char *chunk;
+
+   if (!data.loadImages(filename)) return(NULL);
+
+   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+
+   *width=data.getCols();
+   *height=data.getRows();
+   *depth=data.getSlis();
+
+   *components=1;
+
+   if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
+   if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
+   if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
+
+   return(chunk);
+   }
+
+// read a DICOM series from a file name list
+unsigned char *readDICOMvolume(const std::vector<std::string> list,
+                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               float *scalex,float *scaley,float *scalez)
+   {
+   DicomVolume data;
+   unsigned char *chunk;
+
+   if (!data.loadImages(list)) return(NULL);
+
+   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+
+   *width=data.getCols();
+   *height=data.getRows();
+   *depth=data.getSlis();
+
+   *components=1;
+
+   if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
+   if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
+   if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
+
+   return(chunk);
+   }

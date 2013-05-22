@@ -13,9 +13,6 @@
 #include "tfbase.h" // transfer functions
 #include "tilebase.h" // volume tiles and bricks
 
-#define TILEINC 1000
-#define QUEUEINC 1000
-
 // the volume
 class volume
    {
@@ -229,14 +226,6 @@ class mipmap
    unsigned char *readANYvolume(const char *filename,
                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
                                 float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
-
-   unsigned char *readDICOMvolume(const char *filename,
-                                  unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
-                                  float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
-
-   unsigned char *readDICOMvolume(const std::vector<std::string> list,
-                                  unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
-                                  float *scalex,float *scaley,float *scalez);
 
    unsigned char *reduce(unsigned char *data,
                          unsigned int width,unsigned int height,unsigned int depth);

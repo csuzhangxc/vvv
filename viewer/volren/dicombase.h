@@ -84,4 +84,14 @@ class DicomVolume
    static int compareFunc(const void *elem1,const void *elem2);
    };
 
+// read a DICOM series identified by the * in the filename pattern
+unsigned char *readDICOMvolume(const char *filename,
+                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               float *scalex,float *scaley,float *scalez);
+
+// read a DICOM series from a file name list
+unsigned char *readDICOMvolume(const std::vector<std::string> list,
+                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               float *scalex,float *scaley,float *scalez);
+
 #endif
