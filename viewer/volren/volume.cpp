@@ -42,6 +42,14 @@ void volume::setup(int width,int height)
    {
    char *GL_EXTs;
 
+   if (fboWidth==0 && fboHeight==0)
+      {
+      fboWidth=width;
+      fboHeight=height;
+
+      return;
+      }
+
    if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
 
    if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
@@ -119,6 +127,7 @@ void volume::destroy()
    if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
    if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
 
+   fboWidth=fboHeight=0;
    textureId=0;
    rboId=0;
    fboId=0;
@@ -317,9 +326,7 @@ void volume::render(float ex,float ey,float ez,
                     BOOLINT lighting)
    {
    // update fbo
-   static BOOLINT first=FALSE;
-   if (!first) first=TRUE;
-   else updatefbo();
+   updatefbo();
 
    // render to fbo
    if (HASFBO && USEFBO)
