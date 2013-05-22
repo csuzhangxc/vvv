@@ -42,7 +42,7 @@ void volume::setup(int width,int height)
    {
    char *GL_EXTs;
 
-   if (fboWidth==0 && fboHeight==0)
+   if (!HASFBO && fboWidth==0 && fboHeight==0)
       {
       fboWidth=width;
       fboHeight=height;
@@ -127,12 +127,12 @@ void volume::destroy()
    if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
    if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
 
-   fboWidth=fboHeight=0;
    textureId=0;
    rboId=0;
    fboId=0;
 
    HASFBO=FALSE;
+   fboWidth=fboHeight=0;
 
 #endif
    }
