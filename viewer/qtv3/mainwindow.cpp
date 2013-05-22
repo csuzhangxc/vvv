@@ -126,6 +126,18 @@ QStringList QTV3MainWindow::browse(QString path,
    return(files);
 }
 
+QSlider *QTV3MainWindow::createSlider(int minimum, int maximum, int value)
+{
+   QSlider *slider = new QSlider(Qt::Horizontal);
+   slider->setRange(minimum * 16, maximum * 16);
+   slider->setSingleStep(16);
+   slider->setPageStep((maximum - minimum) / 10 * 16);
+   slider->setTickInterval((maximum - minimum) / 10 * 16);
+   slider->setTickPosition(QSlider::TicksBelow);
+   slider->setValue(value * 16);
+   return(slider);
+}
+
 QSize QTV3MainWindow::minimumSizeHint() const
 {
    return(QSize(100, 100));

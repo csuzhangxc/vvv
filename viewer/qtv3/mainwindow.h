@@ -46,6 +46,8 @@ private:
    QStringList browse(QString path="",
                       bool newfile=false);
 
+   QSlider *createSlider(int minimum, int maximum, int value);
+
 protected:
 
    void dragEnterEvent(QDragEnterEvent *event);
