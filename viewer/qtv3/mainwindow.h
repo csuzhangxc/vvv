@@ -43,6 +43,9 @@ private:
    void createMenus();
    void createWidgets();
 
+   QStringList browse(QString path="",
+                      bool newfile=false);
+
 protected:
 
    void dragEnterEvent(QDragEnterEvent *event);
@@ -55,6 +58,7 @@ public:
 
 protected slots:
 
+   void open();
    void about();
 };
 

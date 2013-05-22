@@ -63,7 +63,13 @@ void QTV3MainWindow::createMenus()
    quitAction->setStatusTip(tr("Quit the application"));
    connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
 
+   QAction *openAction = new QAction(tr("O&pen"), this);
+   openAction->setShortcuts(QKeySequence::Open);
+   openAction->setStatusTip(tr("Open volume"));
+   connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
+
    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+   fileMenu->addAction(openAction);
    fileMenu->addAction(quitAction);
 
    QAction *aboutAction = new QAction(tr("&About"), this);
@@ -89,6 +95,35 @@ void QTV3MainWindow::createWidgets()
 
    mainGroup->setLayout(layout_);
    setCentralWidget(mainGroup);
+}
+
+QStringList QTV3MainWindow::browse(QString path,
+                                   bool newfile)
+{
+   QFileDialog* fd = new QFileDialog(this, "File Selector Dialog");
+
+   if (!newfile) fd->setFileMode(QFileDialog::ExistingFiles);
+   else fd->setFileMode(QFileDialog::AnyFile);
+   fd->setViewMode(QFileDialog::List);
+   if (newfile) fd->setAcceptMode(QFileDialog::AcceptSave);
+   fd->setFilter("All Files (*.*);;GIF Files (*.gif);;JPEG Files (*.jpg);;TIFF Files(*.tif *.tiff)");
+
+   if (path!="") fd->setDirectory(path);
+
+   QStringList files;
+
+   if (fd->exec() == QDialog::Accepted)
+      for (int i=0; i<fd->selectedFiles().size(); i++)
+      {
+         QString fileName = fd->selectedFiles().at(i);
+
+         if (!fileName.isNull())
+            files += fileName;
+      }
+
+   delete fd;
+
+   return(files);
 }
 
 QSize QTV3MainWindow::minimumSizeHint() const
@@ -156,6 +191,27 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 void QTV3MainWindow::dragLeaveEvent(QDragLeaveEvent *event)
 {
    event->accept();
+}
+
+void QTV3MainWindow::open()
+{
+   QStringList files = browse();
+
+   if (files.size()==1)
+   {
+      loadvolume(files.at(0).toStdString().c_str());
+   }
+   else
+   {
+      std::vector<std::string> list;
+
+      for (int i=0; i<files.size(); i++)
+      {
+         list.push_back(files.at(i).toStdString());
+      }
+
+      loadseries(list);
+   }
 }
 
 void QTV3MainWindow::about()
