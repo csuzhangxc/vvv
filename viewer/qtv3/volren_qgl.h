@@ -50,6 +50,13 @@ public:
    void setrotation(double omega=30.0)
       {omega_=omega;}
 
+   //! set volume rotation angle
+   void setangle(double angle=0.0)
+   {
+      omega_=0.0;
+      angle_=angle;
+   }
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {

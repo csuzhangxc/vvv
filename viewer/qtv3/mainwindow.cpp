@@ -93,6 +93,23 @@ void QTV3MainWindow::createWidgets()
    label_->setAlignment(Qt::AlignHCenter);
    layout_->addWidget(label_);
 
+   QTV3Slider *s1=createSlider(0,100,50,true);
+   QTV3Slider *s2=createSlider(-180,180,0,false);
+   QTV3Slider *s3=createSlider(0,100,50,true);
+   QTV3Slider *s4=createSlider(0,100,50,true);
+
+   connect(s2, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
+
+   QGroupBox *sliderGroup = new QGroupBox(mainGroup);
+   QHBoxLayout *sliderLayout = new QHBoxLayout(sliderGroup);
+
+   sliderLayout->addWidget(s1);
+   sliderLayout->addWidget(s2);
+   sliderLayout->addWidget(s3);
+   sliderLayout->addWidget(s4);
+   sliderGroup->setLayout(sliderLayout);
+   layout_->addWidget(sliderGroup);
+
    mainGroup->setLayout(layout_);
    setCentralWidget(mainGroup);
 }
@@ -126,9 +143,10 @@ QStringList QTV3MainWindow::browse(QString path,
    return(files);
 }
 
-QSlider *QTV3MainWindow::createSlider(int minimum, int maximum, int value)
+QTV3Slider *QTV3MainWindow::createSlider(int minimum, int maximum, int value,
+                                         bool vertical)
 {
-   QSlider *slider = new QSlider(Qt::Horizontal);
+   QTV3Slider *slider = new QTV3Slider(vertical?Qt::Vertical:Qt::Horizontal);
    slider->setRange(minimum * 16, maximum * 16);
    slider->setSingleStep(16);
    slider->setPageStep((maximum - minimum) / 10 * 16);
@@ -224,6 +242,12 @@ void QTV3MainWindow::open()
 
       loadseries(list);
    }
+}
+
+void QTV3MainWindow::rotate(int v)
+{
+   double angle = v / 16.0;
+   vrw_->setangle(angle);
 }
 
 void QTV3MainWindow::about()

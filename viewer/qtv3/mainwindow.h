@@ -7,6 +7,21 @@
 
 #include "volren_qgl.h"
 
+class QTV3Slider: public QSlider
+{
+public:
+
+   QTV3Slider(Qt::Orientation orientation, QWidget * parent = 0)
+      : QSlider(orientation, parent)
+   {}
+
+   //! return preferred minimum window size
+   QSize minimumSizeHint() const
+   {
+      return(QSize(150, 50));
+   }
+};
+
 class QTV3MainWindow: public QMainWindow
 {
    Q_OBJECT; // Qt Metacall object for signal/slot connections
@@ -46,7 +61,8 @@ private:
    QStringList browse(QString path="",
                       bool newfile=false);
 
-   QSlider *createSlider(int minimum, int maximum, int value);
+   QTV3Slider *createSlider(int minimum, int maximum, int value,
+                            bool vertical=false);
 
 protected:
 
@@ -61,6 +77,7 @@ public:
 protected slots:
 
    void open();
+   void rotate(int v);
    void about();
 };
 
