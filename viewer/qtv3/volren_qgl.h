@@ -124,7 +124,7 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool gfx_fbo=false; //!!
+      bool gfx_fbo=true;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
