@@ -43,11 +43,13 @@ class volume
    void set_light(float noise,float ambnt,float difus,float specl,float specx);
 
    // render the volume
-   void render(float ex,float ey,float ez,
-               float dx,float dy,float dz,
-               float ux,float uy,float uz,
-               float nearp,float slab,float rslab,
-               BOOLINT lighting=FALSE);
+   BOOLINT render(float ex,float ey,float ez,
+                  float dx,float dy,float dz,
+                  float ux,float uy,float uz,
+                  float nearp,float slab,float rslab,
+                  BOOLINT lighting=FALSE,
+                  BOOLINT (*abort)(void *abortdata)=NULL,
+                  void *abortdata=NULL);
 
    // render the wire frame
    static void drawwireframe(float mx=0.0f,float my=0.0f,float mz=0.0f,
@@ -85,13 +87,15 @@ class volume
 
    char BASE[MAXSTR];
 
-   void sort(int x,int y,int z,
-             int sx,int sy,int sz,
-             float ex,float ey,float ez,
-             float dx,float dy,float dz,
-             float ux,float uy,float uz,
-             float nearp,float slab,float rslab,
-             BOOLINT lighting=FALSE);
+   BOOLINT sort(int x,int y,int z,
+                int sx,int sy,int sz,
+                float ex,float ey,float ez,
+                float dx,float dy,float dz,
+                float ux,float uy,float uz,
+                float nearp,float slab,float rslab,
+                BOOLINT lighting=FALSE,
+                BOOLINT (*abort)(void *abortdata)=NULL,
+                void *abortdata=NULL);
 
    static void updatefbo();
 
@@ -171,11 +175,13 @@ class mipmap
    void set_light(float noise,float ambnt,float difus,float specl,float specx);
 
    // render the volume
-   void render(float ex,float ey,float ez,
-               float dx,float dy,float dz,
-               float ux,float uy,float uz,
-               float nearp,float slab,
-               BOOLINT lighting=FALSE);
+   BOOLINT render(float ex,float ey,float ez,
+                  float dx,float dy,float dz,
+                  float ux,float uy,float uz,
+                  float nearp,float slab,
+                  BOOLINT lighting=FALSE,
+                  BOOLINT (*abort)(void *abortdata)=NULL,
+                  void *abortdata=NULL);
 
    // render the wire frame
    void drawwireframe();

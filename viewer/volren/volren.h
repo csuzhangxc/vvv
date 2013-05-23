@@ -71,26 +71,30 @@ class volren
       {VOL->savePVMvolume(filename);}
 
    // render the volume mipmap pyramid
-   void render(float eye_x,float eye_y,float eye_z, // eye point
-               float eye_dx,float eye_dy,float eye_dz, // viewing direction
-               float eye_ux,float eye_uy,float eye_uz, // up vector
-               float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
-               BOOLINT gfx_fbo, // use frame buffer object
-               float vol_rot, // volume rotation in degrees
-               float vol_dx,float vol_dy,float vol_dz, // volume translation
-               float vol_emi,float vol_att, // global volume emi and att
-               float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
-               float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
-               BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
-               BOOLINT vol_white=TRUE, // white background
-               BOOLINT vol_inv=FALSE, // inverse mode
-               float vol_over=1.0f, // oversampling
-               BOOLINT vol_light=FALSE, // lighting
-               BOOLINT vol_clip=FALSE, // view-aligned clipping
-               float vol_clip_dist=0.0f, // clipping distance relative to origin
-               BOOLINT vol_wire=FALSE, // wire frame box
-               BOOLINT vol_histo=FALSE) // spatialized histogram
+   BOOLINT render(float eye_x,float eye_y,float eye_z, // eye point
+                  float eye_dx,float eye_dy,float eye_dz, // viewing direction
+                  float eye_ux,float eye_uy,float eye_uz, // up vector
+                  float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+                  BOOLINT gfx_fbo, // use frame buffer object
+                  float vol_rot, // volume rotation in degrees
+                  float vol_dx,float vol_dy,float vol_dz, // volume translation
+                  float vol_emi,float vol_att, // global volume emi and att
+                  float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
+                  float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
+                  BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
+                  BOOLINT vol_white=TRUE, // white background
+                  BOOLINT vol_inv=FALSE, // inverse mode
+                  float vol_over=1.0f, // oversampling
+                  BOOLINT vol_light=FALSE, // lighting
+                  BOOLINT vol_clip=FALSE, // view-aligned clipping
+                  float vol_clip_dist=0.0f, // clipping distance relative to origin
+                  BOOLINT vol_wire=FALSE, // wire frame box
+                  BOOLINT vol_histo=FALSE, // spatialized histogram
+                  BOOLINT (*abort)(void *abortdata)=NULL,
+                  void *abortdata=NULL)
       {
+      BOOLINT aborted=FALSE;
+
       float ex,ey,ez,
             dx,dy,dz,
             ux,uy,uz;
@@ -152,20 +156,24 @@ class volren
                                         VOL->getsizez());
 
          if (!vol_clip)
-            VOL->render(ex,ey,ez,
-                        dx,dy,dz,
-                        ux,uy,uz,
-                        gfx_near,VOL->get_slab()*vol_over,
-                        vol_light);
+            aborted=VOL->render(ex,ey,ez,
+                                dx,dy,dz,
+                                ux,uy,uz,
+                                gfx_near,VOL->get_slab()*vol_over,
+                                vol_light,
+                                abort,abortdata);
          else
-            VOL->render(ex,ey,ez,
-                        dx,dy,dz,
-                        ux,uy,uz,
-                        sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
-                        vol_light);
+            aborted=VOL->render(ex,ey,ez,
+                                dx,dy,dz,
+                                ux,uy,uz,
+                                sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
+                                vol_light,
+                                abort,abortdata);
          }
 
       glPopMatrix();
+
+      return(aborted);
       }
 
    protected:

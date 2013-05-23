@@ -255,14 +255,18 @@ void volume::set_light(float noise,float ambnt,float difus,float specl,float spe
    }
 
 // sort tiles
-void volume::sort(int x,int y,int z,
-                  int sx,int sy,int sz,
-                  float ex,float ey,float ez,
-                  float dx,float dy,float dz,
-                  float ux,float uy,float uz,
-                  float nearp,float slab,float rslab,
-                  BOOLINT lighting)
+BOOLINT volume::sort(int x,int y,int z,
+                     int sx,int sy,int sz,
+                     float ex,float ey,float ez,
+                     float dx,float dy,float dz,
+                     float ux,float uy,float uz,
+                     float nearp,float slab,float rslab,
+                     BOOLINT lighting,
+                     BOOLINT (*abort)(void *abortdata),
+                     void *abortdata)
    {
+   BOOLINT aborted=FALSE;
+
    tileptr t1,t2;
 
    if (sx>1)
@@ -272,13 +276,13 @@ void volume::sort(int x,int y,int z,
 
       if ((t1->get_mx()+t2->get_mx())/2.0f>ex)
          {
-         sort(x+sx/2,y,z,sx-sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x,y,z,sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x+sx/2,y,z,sx-sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x,y,z,sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       else
          {
-         sort(x,y,z,sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x+sx/2,y,z,sx-sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x,y,z,sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x+sx/2,y,z,sx-sx/2,sy,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       }
    else if (sy>1)
@@ -288,13 +292,13 @@ void volume::sort(int x,int y,int z,
 
       if ((t1->get_my()+t2->get_my())/2.0f>ey)
          {
-         sort(x,y+sy/2,z,sx,sy-sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x,y,z,sx,sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x,y+sy/2,z,sx,sy-sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x,y,z,sx,sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       else
          {
-         sort(x,y,z,sx,sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x,y+sy/2,z,sx,sy-sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x,y,z,sx,sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x,y+sy/2,z,sx,sy-sy/2,sz,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       }
    else if (sz>1)
@@ -304,30 +308,40 @@ void volume::sort(int x,int y,int z,
 
       if ((t1->get_mz()+t2->get_mz())/2.0f>ez)
          {
-         sort(x,y,z+sz/2,sx,sy,sz-sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x,y,z,sx,sy,sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x,y,z+sz/2,sx,sy,sz-sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x,y,z,sx,sy,sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       else
          {
-         sort(x,y,z,sx,sy,sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
-         sort(x,y,z+sz/2,sx,sy,sz-sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting);
+         aborted=sort(x,y,z,sx,sy,sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
+         if (!aborted) aborted=sort(x,y,z+sz/2,sx,sy,sz-sz/2,ex,ey,ez,dx,dy,dz,ux,uy,uz,nearp,slab,rslab,lighting,abort,abortdata);
          }
       }
    else
+      {
       TILE[x+(y+z*TILEY)*TILEX]->render(ex,ey,ez,
                                         dx,dy,dz,
                                         ux,uy,uz,
                                         nearp,slab,rslab,
                                         lighting);
+
+      if (abort!=NULL) aborted=abort(abortdata);
+      }
+
+   return(aborted);
    }
 
 // render the volume
-void volume::render(float ex,float ey,float ez,
-                    float dx,float dy,float dz,
-                    float ux,float uy,float uz,
-                    float nearp,float slab,float rslab,
-                    BOOLINT lighting)
+BOOLINT volume::render(float ex,float ey,float ez,
+                       float dx,float dy,float dz,
+                       float ux,float uy,float uz,
+                       float nearp,float slab,float rslab,
+                       BOOLINT lighting,
+                       BOOLINT (*abort)(void *abortdata),
+                       void *abortdata)
    {
+   BOOLINT aborted;
+
    // update fbo
    updatefbo();
 
@@ -348,10 +362,11 @@ void volume::render(float ex,float ey,float ez,
       }
 
    // render tiles in back-to-front sorted order
-   sort(0,0,0,TILEX,TILEY,TILEZ,
-        ex,ey,ez,dx,dy,dz,ux,uy,uz,
-        nearp,slab,rslab,
-        lighting);
+   aborted=sort(0,0,0,TILEX,TILEY,TILEZ,
+                ex,ey,ez,dx,dy,dz,ux,uy,uz,
+                nearp,slab,rslab,
+                lighting,
+                abort,abortdata);
 
    // disable alpha test for pre-multiplied tfs
    if (get_tfunc()->get_premult())
@@ -405,6 +420,8 @@ void volume::render(float ex,float ey,float ez,
 
       glDisable(GL_BLEND);
       }
+
+   return(aborted);
    }
 
 // draw the surrounding wire frame box
@@ -2946,27 +2963,34 @@ void mipmap::set_light(float noise,float ambnt,float difus,float specl,float spe
    }
 
 // render the volume
-void mipmap::render(float ex,float ey,float ez,
-                    float dx,float dy,float dz,
-                    float ux,float uy,float uz,
-                    float nearp,float slab,
-                    BOOLINT lighting)
+BOOLINT mipmap::render(float ex,float ey,float ez,
+                       float dx,float dy,float dz,
+                       float ux,float uy,float uz,
+                       float nearp,float slab,
+                       BOOLINT lighting,
+                       BOOLINT (*abort)(void *abortdata),
+                       void *abortdata)
    {
+   BOOLINT aborted;
+
    int map=0;
 
-   if (VOLCNT==0) return;
+   if (VOLCNT==0) return(FALSE);
 
    if (TFUNC->get_imode())
       while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
 
-   VOL[map]->render(ex,ey,ez,
-                    dx,dy,dz,
-                    ux,uy,uz,
-                    nearp,slab,
-                    1.0f/get_slab(),
-                    lighting);
+   aborted=VOL[map]->render(ex,ey,ez,
+                            dx,dy,dz,
+                            ux,uy,uz,
+                            nearp,slab,
+                            1.0f/get_slab(),
+                            lighting,
+                            abort,abortdata);
 
    if (TFUNC->get_invmode()) invertbuffer();
+
+   return(aborted);
    }
 
 // draw the surrounding wire frame box
