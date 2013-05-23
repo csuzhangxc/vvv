@@ -95,11 +95,13 @@ void QTV3MainWindow::createWidgets()
 
    QTV3Slider *s1=createSlider(0,100,0,true);
    QTV3Slider *s2=createSlider(-180,180,0,false);
-   QTV3Slider *s3=createSlider(0,100,50,true);
-   QTV3Slider *s4=createSlider(0,100,50,true);
+   QTV3Slider *s3=createSlider(0,100,25,true);
+   QTV3Slider *s4=createSlider(0,100,25,true);
 
    connect(s1, SIGNAL(valueChanged(int)), this, SLOT(clip(int)));
    connect(s2, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
+   connect(s3, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
+   connect(s4, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
 
    QGroupBox *sliderGroup = new QGroupBox(mainGroup);
    QHBoxLayout *sliderLayout = new QHBoxLayout(sliderGroup);
@@ -270,16 +272,28 @@ void QTV3MainWindow::open()
    }
 }
 
+void QTV3MainWindow::rotate(int v)
+{
+   double angle = v / 16.0;
+   vrw_->setangle(angle);
+}
+
 void QTV3MainWindow::clip(int v)
 {
    double dist = v / 16.0 / 100.0;
    vrw_->setclipdist(1.0-2*dist);
 }
 
-void QTV3MainWindow::rotate(int v)
+void QTV3MainWindow::emission(int v)
 {
-   double angle = v / 16.0;
-   vrw_->setangle(angle);
+   double emi = v / 16.0 / 100.0;
+   vrw_->setemission(emi);
+}
+
+void QTV3MainWindow::absorption(int v)
+{
+   double att = v / 16.0 / 100.0;
+   vrw_->setabsorption(att);
 }
 
 void QTV3MainWindow::about()

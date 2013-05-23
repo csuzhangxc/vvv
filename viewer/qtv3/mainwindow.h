@@ -86,6 +86,8 @@ protected slots:
    void open();
    void rotate(int v);
    void clip(int v);
+   void emission(int v);
+   void absorption(int v);
    void about();
 };
 

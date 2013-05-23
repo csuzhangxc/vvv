@@ -23,6 +23,8 @@ public:
       fps_=30.0;
       angle_=omega_=0.0;
       dist_=1.0;
+      emi_=0.25;
+      att_=0.25;
 
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
@@ -62,6 +64,14 @@ public:
    void setclipdist(double dist=0.0)
       {dist_=dist;}
 
+   //! set emission
+   void setemission(double emi=0.0)
+      {emi_=emi;}
+
+   //! set absorption
+   void setabsorption(double att=0.0)
+      {att_=att;}
+
    //! return volume renderer
    volren *get_vr()
       {return(vr_);}
@@ -88,6 +98,8 @@ protected:
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
    double dist_; // clipping distance
+   double emi_; // volume emission
+   double att_; // volume absorption
 
    void initializeGL()
    {
@@ -133,8 +145,8 @@ protected:
       double vol_emission=1000.0;
       double vol_density=1000.0;
 
-      double tf_re_scale=0.25,tf_ge_scale=0.25,tf_be_scale=0.25;
-      double tf_ra_scale=0.25,tf_ga_scale=0.25,tf_ba_scale=0.25;
+      double tf_re_scale=emi_,tf_ge_scale=emi_,tf_be_scale=emi_;
+      double tf_ra_scale=att_,tf_ga_scale=att_,tf_ba_scale=att_;
 
       double vol_over=1.0;
 
