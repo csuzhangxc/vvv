@@ -13,13 +13,20 @@ public:
 
    QTV3Slider(Qt::Orientation orientation, QWidget * parent = 0)
       : QSlider(orientation, parent)
-   {}
+   {o_=orientation;}
 
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
-      return(QSize(150, 50));
+      if (o_==Qt::Horizontal)
+         return(QSize(150, 50));
+      else
+         return(QSize(50, 100));
    }
+
+private:
+
+   Qt::Orientation o_;
 };
 
 class QTV3MainWindow: public QMainWindow
