@@ -22,6 +22,7 @@ public:
 
       fps_=30.0;
       angle_=omega_=0.0;
+      dist_=1.0;
 
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
@@ -57,6 +58,10 @@ public:
       angle_=angle;
    }
 
+   //! set clipping distance
+   void setclipdist(double dist=0.0)
+      {dist_=dist;}
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
@@ -78,6 +83,7 @@ protected:
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
+   double dist_; // clipping distance
 
    void initializeGL()
    {
@@ -118,7 +124,7 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool gfx_fbo=true;
+      bool gfx_fbo=false; //!!
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -152,8 +158,8 @@ protected:
                   FALSE, // inverse mode
                   vol_over, // oversampling
                   FALSE, // lighting
-                  FALSE, // view-aligned clipping
-                  0.0, // clipping distance relative to origin
+                  TRUE, // view-aligned clipping
+                  dist_, // clipping distance relative to origin
                   TRUE); // wire frame box
 
       angle_+=omega_/fps_;
