@@ -103,10 +103,35 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *sliderGroup = new QGroupBox(mainGroup);
    QHBoxLayout *sliderLayout = new QHBoxLayout(sliderGroup);
 
-   sliderLayout->addWidget(s1);
-   sliderLayout->addWidget(s2);
-   sliderLayout->addWidget(s3);
-   sliderLayout->addWidget(s4);
+   QVBoxLayout *l1 = new QVBoxLayout;
+   l1->addWidget(s1);
+   QLabel *ll1=new QLabel("Clipping");
+   ll1->setAlignment(Qt::AlignHCenter);
+   l1->addWidget(ll1);
+   sliderLayout->addLayout(l1);
+
+   QVBoxLayout *l2 = new QVBoxLayout;
+   l2->addWidget(s2);
+   l2->addStretch(1000);
+   QLabel *ll2=new QLabel("Rotation");
+   ll2->setAlignment(Qt::AlignHCenter);
+   l2->addWidget(ll2);
+   sliderLayout->addLayout(l2);
+
+   QVBoxLayout *l3 = new QVBoxLayout;
+   l3->addWidget(s3);
+   QLabel *ll3=new QLabel("Emission");
+   ll3->setAlignment(Qt::AlignHCenter);
+   l3->addWidget(ll3);
+   sliderLayout->addLayout(l3);
+
+   QVBoxLayout *l4 = new QVBoxLayout;
+   l4->addWidget(s4);
+   QLabel *ll4=new QLabel("Absorption");
+   ll4->setAlignment(Qt::AlignHCenter);
+   l4->addWidget(ll4);
+   sliderLayout->addLayout(l4);
+
    sliderGroup->setLayout(sliderLayout);
    layout_->addWidget(sliderGroup);
 
