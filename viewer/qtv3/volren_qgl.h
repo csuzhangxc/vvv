@@ -62,6 +62,10 @@ public:
    void setclipdist(double dist=0.0)
       {dist_=dist;}
 
+   //! return volume renderer
+   volren *get_vr()
+      {return(vr_);}
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
