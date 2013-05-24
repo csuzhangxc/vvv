@@ -14,8 +14,14 @@ int main(int argc, char *argv[])
 
    QStringList args = QCoreApplication::arguments();
 
-   if (args.size()>1)
-      main.loadvolume(args[1].toStdString().c_str());
+   if (args.size()==2)
+      main.loadVolume(args[1].toStdString().c_str());
+   else if (args.size()>2)
+   {
+      std::vector<std::string> list;
+      for (unsigned int i=1; i<list.size(); i++) list.push_back(args[i].toStdString());
+      main.loadSeries(list);
+   }
 
    main.show();
 

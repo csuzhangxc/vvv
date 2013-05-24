@@ -39,57 +39,57 @@ public:
    }
 
    //! load a volume
-   void loadvolume(const char *filename)
+   void loadVolume(const char *filename)
    {
       if (toload_) free(toload_);
       toload_ = strdup(filename);
    }
 
    //! load a DICOM series
-   void loadseries(const std::vector<std::string> list)
+   void loadSeries(const std::vector<std::string> list)
    {
       series_ = list;
    }
 
    //! set volume rotation speed
-   void setrotation(double omega=30.0)
+   void setRotation(double omega=30.0)
       {omega_=omega;}
 
    //! set volume rotation angle
-   void setangle(double angle=0.0)
+   void setAngle(double angle=0.0)
    {
       omega_=0.0;
       angle_=angle;
    }
 
    //! set volume tilt angle
-   void settilt(double tilt=0.0)
+   void setTilt(double tilt=0.0)
    {
       if (tilt>=-90 && tilt<=90)
          tilt_=tilt;
    }
 
    //! set zoom factor
-   void setzoom(double zoom=0.0)
+   void setZoom(double zoom=0.0)
    {
       if (zoom>=0.0 && zoom<=1.0)
          zoom_=zoom;
    }
 
    //! set clipping distance
-   void setclipdist(double dist=0.0)
+   void setClipDist(double dist=0.0)
       {dist_=dist;}
 
    //! set emission
-   void setemission(double emi=0.0)
+   void setEmission(double emi=0.0)
       {emi_=emi;}
 
    //! set absorption
-   void setabsorption(double att=0.0)
+   void setAbsorption(double att=0.0)
       {att_=att;}
 
    //! return volume renderer
-   volren *get_vr()
+   volren *getVR()
       {return(vr_);}
 
    //! return preferred minimum window size

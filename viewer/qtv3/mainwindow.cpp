@@ -18,8 +18,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    setWindowTitle(APP_NAME" "APP_VERSION);
 
-   vrw_->loadvolume("Drop.pvm");
-   vrw_->setrotation(30.0);
+   vrw_->loadVolume("Drop.pvm");
+   vrw_->setRotation(30.0);
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -27,9 +27,9 @@ QTV3MainWindow::~QTV3MainWindow()
    delete vrw_;
 }
 
-void QTV3MainWindow::loadvolume(const char *filename)
+void QTV3MainWindow::loadVolume(const char *filename)
 {
-   vrw_->loadvolume(filename);
+   vrw_->loadVolume(filename);
 
    if (label_)
    {
@@ -39,9 +39,9 @@ void QTV3MainWindow::loadvolume(const char *filename)
    }
 }
 
-void QTV3MainWindow::loadseries(const std::vector<std::string> list)
+void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 {
-   vrw_->loadseries(list);
+   vrw_->loadSeries(list);
 
    if (label_)
    {
@@ -51,9 +51,9 @@ void QTV3MainWindow::loadseries(const std::vector<std::string> list)
    }
 }
 
-void QTV3MainWindow::setrotation(double omega)
+void QTV3MainWindow::setRotation(double omega)
 {
-   vrw_->setrotation(omega);
+   vrw_->setRotation(omega);
 }
 
 void QTV3MainWindow::createMenus()
@@ -222,7 +222,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
          if (url.startsWith("file://"))
          {
             url = url.remove("file://");
-            loadvolume(url.toStdString().c_str());
+            loadVolume(url.toStdString().c_str());
          }
       }
       else
@@ -241,7 +241,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
             }
          }
 
-         loadseries(list);
+         loadSeries(list);
       }
    }
 }
@@ -257,7 +257,7 @@ void QTV3MainWindow::open()
 
    if (files.size()==1)
    {
-      loadvolume(files.at(0).toStdString().c_str());
+      loadVolume(files.at(0).toStdString().c_str());
    }
    else
    {
@@ -268,32 +268,32 @@ void QTV3MainWindow::open()
          list.push_back(files.at(i).toStdString());
       }
 
-      loadseries(list);
+      loadSeries(list);
    }
 }
 
 void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
-   vrw_->setangle(angle);
+   vrw_->setAngle(angle);
 }
 
 void QTV3MainWindow::clip(int v)
 {
    double dist = v / 16.0 / 100.0;
-   vrw_->setclipdist(1.0-2*dist);
+   vrw_->setClipDist(1.0-2*dist);
 }
 
 void QTV3MainWindow::emission(int v)
 {
    double emi = v / 16.0 / 100.0;
-   vrw_->setemission(emi);
+   vrw_->setEmission(emi);
 }
 
 void QTV3MainWindow::absorption(int v)
 {
    double att = v / 16.0 / 100.0;
-   vrw_->setabsorption(att);
+   vrw_->setAbsorption(att);
 }
 
 void QTV3MainWindow::about()

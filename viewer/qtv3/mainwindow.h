@@ -48,13 +48,13 @@ public:
    QSize sizeHint() const;
 
    //! load a volume
-   void loadvolume(const char *filename);
+   void loadVolume(const char *filename);
 
    //! load a DICOM series
-   void loadseries(const std::vector<std::string> list);
+   void loadSeries(const std::vector<std::string> list);
 
    //! set volume rotation speed
-   void setrotation(double omega);
+   void setRotation(double omega);
 
 private:
 
