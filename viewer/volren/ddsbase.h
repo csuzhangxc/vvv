@@ -39,6 +39,7 @@ void convfloat(unsigned char *data,unsigned int bytes);
 
 unsigned char *quantize(unsigned char *volume,
                         unsigned int width,unsigned int height,unsigned int depth,
+                        BOOLINT msb=TRUE,
                         BOOLINT linear=FALSE,BOOLINT nofree=FALSE);
 
 #endif

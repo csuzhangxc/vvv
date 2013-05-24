@@ -986,12 +986,14 @@ inline double DDS_getgrad(unsigned short int *data,
 // quantize 16 bit data to 8 bit using a non-linear mapping
 unsigned char *quantize(unsigned char *data,
                         unsigned int width,unsigned int height,unsigned int depth,
+                        BOOLINT msb,
                         BOOLINT linear,BOOLINT nofree)
    {
    unsigned int i,j,k;
 
    unsigned char *data2;
    unsigned short int *data3;
+   unsigned int idx;
 
    int v,vmin,vmax;
 
@@ -1008,8 +1010,13 @@ unsigned char *quantize(unsigned char *data,
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
-            v=256*data[2*(i+(j+k*height)*width)]+data[2*(i+(j+k*height)*width)+1];
-            data3[i+(j+k*height)*width]=v;
+            idx=i+(j+k*height)*width;
+
+            if (msb)
+               v=256*data[2*idx]+data[2*idx+1];
+            else
+               v=data[2*idx]+256*data[2*idx+1];
+            data3[idx]=v;
 
             if (v<vmin) vmin=v;
             if (v>vmax) vmax=v;
@@ -1065,7 +1072,10 @@ unsigned char *quantize(unsigned char *data,
    for (k=0; k<depth; k++)
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
-            data2[i+(j+k*height)*width]=(int)(err[DDS_get(data3,width,height,depth,i,j,k)]+0.5);
+            {
+            idx=i+(j+k*height)*width;
+            data2[idx]=(int)(err[data3[idx]]+0.5);
+            }
 
    delete err;
    free(data3);

@@ -2671,9 +2671,13 @@ unsigned char *mipmap::scale(unsigned char *volume,
 // read a volume by trying any known format
 unsigned char *mipmap::readANYvolume(const char *filename,
                                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
-                                     float *scalex,float *scaley,float *scalez)
+                                     float *scalex,float *scaley,float *scalez,
+                                     BOOLINT *msb)
    {
    unsigned char *volume;
+   BOOLINT order;
+
+   order=TRUE;
 
    if (strchr(filename,'*')!=NULL)
       // read a DICOM series identified by the * in the filename pattern
@@ -2681,10 +2685,15 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    else
       {
       // read a PVM volume
-      if ((volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez))==NULL)
-         // read a REK volume
-         volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+      volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+
+      // read a REK volume
+      if (volume==NULL)
+         if ((volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+            order=FALSE;
       }
+
+   if (msb!=NULL) *msb=order;
 
    return(volume);
    }
@@ -2701,9 +2710,12 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
                            char *commands, // filter commands
                            int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
    {
-   BOOLINT upload=FALSE;
+   BOOLINT msb;
+   BOOLINT upload;
 
    float maxsize;
+
+   upload=FALSE;
 
    if (gradname==NULL) gradname=zerostr;
    if (commands==NULL) commands=zerostr;
@@ -2716,9 +2728,9 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
        xrotate!=xrflag || zrotate!=zrflag)
       {
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) return(FALSE);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb))==NULL) return(FALSE);
 
-      if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
+      if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH,msb);
       else if (COMPONENTS!=1)
          {
          free(VOLUME);

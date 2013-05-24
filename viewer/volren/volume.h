@@ -232,7 +232,8 @@ class mipmap
 
    unsigned char *readANYvolume(const char *filename,
                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
-                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
+                                BOOLINT *msb=NULL);
 
    unsigned char *reduce(unsigned char *data,
                          unsigned int width,unsigned int height,unsigned int depth);
