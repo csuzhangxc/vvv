@@ -3,6 +3,9 @@
 
 OPTION(BUILD_WITH_DCMTK "Build with DICOM support." ON)
 
+# path to custom cmake modules
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
+
 # volren library name
 IF (WIN32)
    SET(VOLREN_NAME "libVolRen")
