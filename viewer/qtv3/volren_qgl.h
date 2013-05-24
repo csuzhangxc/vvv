@@ -22,6 +22,8 @@ public:
 
       fps_=30.0;
       angle_=omega_=0.0;
+      tilt_=0.0;
+      zoom_=0.0;
       dist_=1.0;
       emi_=0.25;
       att_=0.25;
@@ -58,6 +60,20 @@ public:
    {
       omega_=0.0;
       angle_=angle;
+   }
+
+   //! set volume tilt angle
+   void settilt(double tilt=0.0)
+   {
+      if (tilt>=-90 && tilt<=90)
+         tilt_=tilt;
+   }
+
+   //! set zoom factor
+   void setzoom(double zoom=0.0)
+   {
+      if (zoom>=0.0 && zoom<=1.0)
+         zoom_=zoom;
    }
 
    //! set clipping distance
@@ -97,6 +113,8 @@ protected:
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
+   double tilt_; // tile angle in degrees
+   double zoom_; // zoom into volume
    double dist_; // clipping distance
    double emi_; // volume emission
    double att_; // volume absorption
@@ -150,6 +168,20 @@ protected:
 
       double vol_over=1.0;
 
+      // zoom
+      eye_z=(1.0-zoom_)*eye_z+zoom_*0.5;
+
+      // tilt
+      double eye_tx=eye_x;
+      double eye_ty=cos(tilt_*PI/180)*eye_y+sin(tilt_*PI/180)*eye_z;
+      double eye_tz=-sin(tilt_*PI/180)*eye_y+cos(tilt_*PI/180)*eye_z;
+      double eye_tdx=eye_dx;
+      double eye_tdy=cos(tilt_*PI/180)*eye_dy+sin(tilt_*PI/180)*eye_dz;
+      double eye_tdz=-sin(tilt_*PI/180)*eye_dy+cos(tilt_*PI/180)*eye_dz;
+      double eye_tux=eye_ux;
+      double eye_tuy=cos(tilt_*PI/180)*eye_uy+sin(tilt_*PI/180)*eye_uz;
+      double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
+
       // tf emission (emi)
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
 
@@ -159,9 +191,9 @@ protected:
       vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ba());
 
       // call volume renderer
-      vr_->render(eye_x,eye_y,eye_z, // view point
-                  eye_dx,eye_dy,eye_dz, // viewing direction
-                  eye_ux,eye_uy,eye_uz, // up vector
+      vr_->render(eye_tx,eye_ty,eye_tz, // view point
+                  eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                  eye_tux,eye_tuy,eye_tuz, // up vector
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                   gfx_fbo, // use fbo
                   angle_, // volume rotation in degrees
