@@ -2684,13 +2684,13 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
    else
       {
-      // read a PVM volume
-      volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
-
       // read a REK volume
+      if ((volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+         order=FALSE;
+
+      // read a PVM volume
       if (volume==NULL)
-         if ((volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
-            order=FALSE;
+         volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
       }
 
    if (msb!=NULL) *msb=order;
