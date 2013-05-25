@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.3"
+#define APP_VERSION "0.4"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
@@ -94,14 +94,18 @@ void QTV3MainWindow::createWidgets()
    layout_->addWidget(label_);
 
    QTV3Slider *s1=createSlider(0,100,0,true);
-   QTV3Slider *s2=createSlider(-180,180,0,false);
-   QTV3Slider *s3=createSlider(0,100,25,true);
-   QTV3Slider *s4=createSlider(0,100,25,true);
+   QTV3Slider *s2=createSlider(0,100,0,true);
+   QTV3Slider *s3=createSlider(-180,180,0,false);
+   QTV3Slider *s4=createSlider(-90,90,0,true);
+   QTV3Slider *s5=createSlider(0,100,25,true);
+   QTV3Slider *s6=createSlider(0,100,25,true);
 
    connect(s1, SIGNAL(valueChanged(int)), this, SLOT(clip(int)));
-   connect(s2, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
-   connect(s3, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
-   connect(s4, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
+   connect(s2, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
+   connect(s3, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
+   connect(s4, SIGNAL(valueChanged(int)), this, SLOT(tilt(int)));
+   connect(s5, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
+   connect(s6, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
 
    QGroupBox *sliderGroup = new QGroupBox(mainGroup);
    QHBoxLayout *sliderLayout = new QHBoxLayout(sliderGroup);
@@ -113,27 +117,51 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    sliderLayout->addLayout(l1);
 
+   QFrame* line1 = new QFrame();
+   line1->setFrameShape(QFrame::VLine);
+   line1->setFrameShadow(QFrame::Raised);
+   sliderLayout->addWidget(line1);
+
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
-   l2->addStretch(1000);
-   QLabel *ll2=new QLabel("Rotation");
+   QLabel *ll2=new QLabel("Zoom");
    ll2->setAlignment(Qt::AlignHCenter);
    l2->addWidget(ll2);
    sliderLayout->addLayout(l2);
 
    QVBoxLayout *l3 = new QVBoxLayout;
    l3->addWidget(s3);
-   QLabel *ll3=new QLabel("Emission");
+   l3->addStretch(1000);
+   QLabel *ll3=new QLabel("Rotation");
    ll3->setAlignment(Qt::AlignHCenter);
    l3->addWidget(ll3);
    sliderLayout->addLayout(l3);
 
    QVBoxLayout *l4 = new QVBoxLayout;
    l4->addWidget(s4);
-   QLabel *ll4=new QLabel("Absorption");
+   QLabel *ll4=new QLabel("Tilt");
    ll4->setAlignment(Qt::AlignHCenter);
    l4->addWidget(ll4);
    sliderLayout->addLayout(l4);
+
+   QFrame* line2 = new QFrame();
+   line2->setFrameShape(QFrame::VLine);
+   line2->setFrameShadow(QFrame::Raised);
+   sliderLayout->addWidget(line2);
+
+   QVBoxLayout *l5 = new QVBoxLayout;
+   l5->addWidget(s5);
+   QLabel *ll5=new QLabel("Emission");
+   ll5->setAlignment(Qt::AlignHCenter);
+   l5->addWidget(ll5);
+   sliderLayout->addLayout(l5);
+
+   QVBoxLayout *l6 = new QVBoxLayout;
+   l6->addWidget(s6);
+   QLabel *ll6=new QLabel("Absorption");
+   ll6->setAlignment(Qt::AlignHCenter);
+   l6->addWidget(ll6);
+   sliderLayout->addLayout(l6);
 
    sliderGroup->setLayout(sliderLayout);
    layout_->addWidget(sliderGroup);
@@ -272,10 +300,22 @@ void QTV3MainWindow::open()
    }
 }
 
+void QTV3MainWindow::zoom(int v)
+{
+   double zoom = v / 16.0 / 100.0;
+   vrw_->setZoom(zoom);
+}
+
 void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
    vrw_->setAngle(angle);
+}
+
+void QTV3MainWindow::tilt(int v)
+{
+   double tilt = v / 16.0;
+   vrw_->setTilt(tilt);
 }
 
 void QTV3MainWindow::clip(int v)

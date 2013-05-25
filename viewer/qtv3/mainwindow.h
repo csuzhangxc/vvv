@@ -84,7 +84,9 @@ public:
 protected slots:
 
    void open();
+   void zoom(int v);
    void rotate(int v);
+   void tilt(int v);
    void clip(int v);
    void emission(int v);
    void absorption(int v);
