@@ -130,6 +130,7 @@ void QTV3MainWindow::createWidgets()
    sliderLayout->addLayout(l2);
 
    QVBoxLayout *l3 = new QVBoxLayout;
+   l3->addStretch(1000);
    l3->addWidget(s3);
    l3->addStretch(1000);
    QLabel *ll3=new QLabel("Rotation");
