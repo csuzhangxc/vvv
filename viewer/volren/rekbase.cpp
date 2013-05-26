@@ -2,10 +2,12 @@
 
 #include "codebase.h"
 
+#include "rekbase.h"
+
 // analyze 2048 byte REK header
 BOOLINT readREKheader(FILE *file,
-                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
-                      float *scalex=NULL,float *scaley=NULL,float *scalez=NULL)
+                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                      float *scalex,float *scaley,float *scalez)
    {
    int i;
 
@@ -75,7 +77,7 @@ unsigned char *readREKvolume(const char *filename,
    FILE *file;
 
    unsigned char *volume;
-   unsigned int bytes;
+   unsigned long long bytes;
 
    // open REK file
    if ((file=fopen(filename,"rb"))==NULL) return(NULL);
@@ -92,6 +94,7 @@ unsigned char *readREKvolume(const char *filename,
 
    if ((volume=(unsigned char *)malloc(bytes))==NULL) return(NULL);
 
+   // read volume
    if (fread(volume,bytes,1,file)!=1)
       {
       free(volume);
@@ -106,8 +109,8 @@ unsigned char *readREKvolume(const char *filename,
 
 // read REK file format header
 BOOLINT readREKheader(const char *filename,
-                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
-                      float *scalex=NULL,float *scaley=NULL,float *scalez=NULL)
+                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                      float *scalex,float *scaley,float *scalez)
    {
    FILE *file;
 

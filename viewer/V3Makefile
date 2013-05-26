@@ -4,7 +4,7 @@ MAKE	= make -f $(MMFILE)
 SHELL	= sh
 
 PRG	= v3
-MODS	= volren/ddsbase volren/dicombase volren/rekbase\
+MODS	= volren/ddsbase volren/dicombase volren/rekbase volren/rawbase\
 	  volren/dirbase volren/oglbase\
 	  volren/tfbase volren/tilebase volren/volume\
 	  glutbase guibase
