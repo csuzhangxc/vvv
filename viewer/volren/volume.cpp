@@ -2675,6 +2675,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
                                      BOOLINT *msb)
    {
    unsigned char *volume;
+   unsigned int steps;
    BOOLINT order;
 
    order=TRUE;
@@ -2685,7 +2686,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    else
       {
       // read a RAW volume
-         volume=readRAWvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+      volume=readRAWvolume(filename,width,height,depth,&steps,components,NULL,scalex,scaley,scalez);
 
       // read a REK volume
       if (volume==NULL)
