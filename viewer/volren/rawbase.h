@@ -24,13 +24,25 @@
 //   default modifiers = u1m
 unsigned char *readRAWvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
-                             unsigned int *components=NULL,unsigned int *bits=NULL,
+                             unsigned int *components=NULL,unsigned int *bits=NULL,BOOLINT *sign=NULL,BOOLINT *msb=NULL,
                              float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
                     unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
-                    unsigned int *components=NULL,unsigned int *bits=NULL,
+                    unsigned int *components=NULL,unsigned int *bits=NULL,BOOLINT *sign=NULL,BOOLINT *msb=NULL,
                     float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+
+// define RAW file format
+char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                  unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
+                  int scalex=1,int scaley=1,int scalez=1);
+
+// write a RAW volume
+BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
+                       unsigned char *volume,
+                       unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                       unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
+                       int scalex=1,int scaley=1,int scalez=1);
 
 #endif

@@ -7,11 +7,11 @@
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
                     unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
-                    unsigned int *components,unsigned int *bits,
+                    unsigned int *components,unsigned int *bits,BOOLINT *sign,BOOLINT *msb,
                     float *scalex,float *scaley,float *scalez)
    {
    unsigned int rawcomps=1;
-   BOOLINT rawsigned=FALSE;
+   BOOLINT rawsign=FALSE;
    BOOLINT rawbits=8;
    BOOLINT rawmsb=TRUE;
    int rawscalex=1,rawscaley=1,rawscalez=1;
@@ -75,16 +75,17 @@ BOOLINT readRAWinfo(char *filename,
          switch (*dotdot)
             {
             case '1': rawcomps=1; rawbits=8; break; // char
-            case '2': rawcomps=2; rawbits=8; break; // short
+            case '2': rawcomps=1; rawbits=16; break; // short
             case '3': rawcomps=3; rawbits=8; break; // rgb
             case '4': rawcomps=4; rawbits=8; break; // rgba
             case '6': rawcomps=3; rawbits=16; break; // rgb 16-bit
             case '8': rawcomps=4; rawbits=16; break; // rgba 16-bit
             case 'f': rawcomps=1; rawbits=32; break; // float 32-bit
-            case 'u': rawsigned=FALSE; break; // unsigned
-            case 's': rawsigned=TRUE; break; // signed
+            case 'u': rawsign=FALSE; break; // unsigned
+            case 's': rawsign=TRUE; break; // signed
             case 'm': rawmsb=TRUE; break; // MSB
             case 'l': rawmsb=FALSE; break; // LSB
+            default: return(FALSE);
             }
       }
 
@@ -108,11 +109,22 @@ BOOLINT readRAWinfo(char *filename,
 
    if (*dotdot!='.') return(FALSE);
 
+   if (bits==NULL)
+      if (rawcomps==1 && rawbits==16)
+         {
+         rawcomps=2;
+         rawbits=8;
+         }
+
    if (rawcomps!=1 && components==NULL) return(FALSE);
    if (rawbits!=8 && bits==NULL) return(FALSE);
+   if (rawsign!=FALSE && sign==NULL) return(FALSE);
+   if (rawmsb!=TRUE && msb==NULL) return(FALSE);
 
-   if (components!=0) *components=rawcomps;
-   if (bits!=0) *bits=rawbits;
+   if (components!=NULL) *components=rawcomps;
+   if (bits!=NULL) *bits=rawbits;
+   if (sign!=NULL) *sign=rawsign;
+   if (msb!=NULL) *msb=rawmsb;
 
    if (rawscalex>rawmaxscale) rawmaxscale=rawscalex;
    if (rawscaley>rawmaxscale) rawmaxscale=rawscaley;
@@ -125,10 +137,55 @@ BOOLINT readRAWinfo(char *filename,
    return(TRUE);
    }
 
+// define RAW file format
+char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                  unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                  int scalex,int scaley,int scalez)
+   {
+   static const int maxlen=100;
+
+   char info[maxlen];
+
+   snprintf(info,maxlen,".%dx%dx",width,height);
+   if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",depth);
+   if (steps>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",steps);
+
+   if (components!=1 || bits!=8 || sign!=FALSE || msb!=TRUE ||
+       scalex!=1.0f || scaley!=1.0f || scalez!=1.0f)
+      {
+      snprintf(&info[strlen(info)],maxlen-strlen(info),"_");
+
+      if (components==1 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"1");
+      else if (components==1 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"2");
+      else if (components==2 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"2");
+      else if (components==3 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"3");
+      else if (components==4 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"4");
+      else if (components==3 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"6");
+      else if (components==4 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"8");
+      else return(NULL);
+
+      if (sign==FALSE) snprintf(&info[strlen(info)],maxlen-strlen(info),"u");
+      else snprintf(&info[strlen(info)],maxlen-strlen(info),"s");
+
+      if (msb==TRUE) snprintf(&info[strlen(info)],maxlen-strlen(info),"m");
+      else snprintf(&info[strlen(info)],maxlen-strlen(info),"l");
+
+      if (scalex!=1.0f || scaley!=1.0f || scalez!=1.0f)
+         {
+         snprintf(&info[strlen(info)],maxlen-strlen(info),"_%dx%dx",scalex,scaley);
+         if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",scalez);
+         }
+      }
+
+   snprintf(&info[strlen(info)],maxlen-strlen(info),".raw");
+
+   return(strdup(info));
+   }
+
 // read a RAW volume
 unsigned char *readRAWvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
-                             unsigned int *components,unsigned int *bits,
+                             unsigned int *components,unsigned int *bits,BOOLINT *sign,BOOLINT *msb,
                              float *scalex,float *scaley,float *scalez)
    {
    FILE *file;
@@ -145,7 +202,7 @@ unsigned char *readRAWvolume(const char *filename,
    name=strdup(filename);
    if (!readRAWinfo(name,
                     width,height,depth,steps,
-                    components,bits,
+                    components,bits,sign,msb,
                     scalex,scaley,scalez))
       {
       free(name);
@@ -172,4 +229,52 @@ unsigned char *readRAWvolume(const char *filename,
    fclose(file);
 
    return(volume);
+   }
+
+// write a RAW volume
+BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
+                       unsigned char *volume,
+                       unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                       unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                       int scalex,int scaley,int scalez)
+   {
+   FILE *file;
+
+   char *info,*filename2;
+   unsigned long long bytes;
+
+   // define info
+   info=makeRAWinfo(width,height,depth,steps,
+                    components,bits,sign,msb,
+                    scalex,scaley,scalez);
+
+   if (info==NULL) return(FALSE);
+
+   // append info to filename
+   filename2=strdup2(filename,info);
+   free(info);
+
+   // open RAW file
+   if ((file=fopen(filename2,"wb"))==NULL)
+      {
+      free(filename2);
+      return(FALSE);
+      }
+
+   free(filename2);
+
+   bytes=width*height*depth*components*steps;
+
+   if (bits==16) bytes*=2;
+
+   // write volume
+   if (fwrite(volume,bytes,1,file)!=1)
+      {
+      fclose(file);
+      return(FALSE);
+      }
+
+   fclose(file);
+
+   return(TRUE);
    }
