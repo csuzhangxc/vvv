@@ -89,7 +89,9 @@ void QTV3MainWindow::createWidgets()
    vrw_ = new QGLVolRenWidget(mainGroup);
    layout_->addWidget(vrw_);
 
-   label_ = new QLabel("Drag and drop a volume file (.pvm) here\nto display it with the volume renderer!");
+   label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) here\n"
+                       "to display it with the volume renderer!");
+
    label_->setAlignment(Qt::AlignHCenter);
    layout_->addWidget(label_);
 
