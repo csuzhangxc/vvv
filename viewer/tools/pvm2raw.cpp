@@ -38,7 +38,7 @@ int main(int argc,char *argv[])
       printf("writing RAW file with size=%d\n",width*height*depth*components);
 
       if (!writeRAWvolume(argv[2],volume,
-                          width,height,depth,
+                          width,height,depth,1,
                           components,8,FALSE,TRUE,
                           scalex,scaley,scalez))
          printf("write error\n");
