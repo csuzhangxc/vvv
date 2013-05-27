@@ -253,7 +253,8 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
    {
    FILE *file;
 
-   char *info,*filename2;
+   char *filename2;
+   char *dot,*info,*output;
    unsigned long long bytes;
 
    // define info
@@ -263,18 +264,25 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
 
    if (info==NULL) return(FALSE);
 
+   // remove suffix
+   filename2=strdup(filename);
+   dot=strrchr(filename2,'.');
+   if (dot!=NULL)
+      if (strcmp(dot,".raw")==0) *dot='\0';
+
    // append info to filename
-   filename2=strdup2(filename,info);
+   output=strdup2(filename2,info);
+   free(filename2);
    free(info);
 
    // open RAW file
-   if ((file=fopen(filename2,"wb"))==NULL)
+   if ((file=fopen(output,"wb"))==NULL)
       {
-      free(filename2);
+      free(output);
       return(FALSE);
       }
 
-   free(filename2);
+   free(output);
 
    bytes=width*height*depth*components*steps;
 

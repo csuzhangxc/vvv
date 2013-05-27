@@ -3,6 +3,7 @@
 #include "codebase.h"
 
 #include "ddsbase.h"
+#include "rawbase.h"
 
 int main(int argc,char *argv[])
    {
@@ -34,9 +35,13 @@ int main(int argc,char *argv[])
 
    if (argc>2)
       {
-      writeRAWfile(argv[2],volume,width*height*depth*components,1);
+      printf("writing RAW file with size=%d\n",width*height*depth*components);
 
-      printf("wrote RAW file with size=%d\n",width*height*depth*components);
+      if (!writeRAWvolume(argv[2],volume,
+                          width,height,depth,
+                          components,8,FALSE,TRUE,
+                          scalex,scaley,scalez))
+         printf("write error\n");
       }
 
    free(volume);
