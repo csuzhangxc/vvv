@@ -130,6 +130,8 @@ BOOLINT readRAWinfo(char *filename,
    if (rawscaley>rawmaxscale) rawmaxscale=rawscaley;
    if (rawscalez>rawmaxscale) rawmaxscale=rawscalez;
 
+   if (rawmaxscale==0.0f) return(FALSE);
+
    if (scalex!=NULL) *scalex=rawscalex/rawmaxscale;
    if (scaley!=NULL) *scaley=rawscaley/rawmaxscale;
    if (scalez!=NULL) *scalez=rawscalez/rawmaxscale;
@@ -140,11 +142,12 @@ BOOLINT readRAWinfo(char *filename,
 // define RAW file format
 char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
                   unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                  int scalex,int scaley,int scalez)
+                  float scalex,float scaley,float scalez)
    {
    static const int maxlen=100;
 
    char info[maxlen];
+   float maxscale=1.0f;
 
    snprintf(info,maxlen,".%dx%dx",width,height);
    if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",depth);
@@ -170,10 +173,20 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
       if (msb==TRUE) snprintf(&info[strlen(info)],maxlen-strlen(info),"m");
       else snprintf(&info[strlen(info)],maxlen-strlen(info),"l");
 
+      if (scalex>maxscale) maxscale=scalex;
+      if (scaley>maxscale) maxscale=scaley;
+      if (scalez>maxscale) maxscale=scalez;
+
+      if (maxscale==0.0f) return(NULL);
+
+      scalex/=maxscale;
+      scaley/=maxscale;
+      scalez/=maxscale;
+
       if (scalex!=1.0f || scaley!=1.0f || scalez!=1.0f)
          {
-         snprintf(&info[strlen(info)],maxlen-strlen(info),"_%dx%dx",scalex,scaley);
-         if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",scalez);
+         snprintf(&info[strlen(info)],maxlen-strlen(info),"_%dx%dx",int(1000.0f*scalex+0.5f),int(1000.0f*scaley+0.5f));
+         if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",int(1000.0f*scalez+0.5f));
          }
       }
 
@@ -236,7 +249,7 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
                        unsigned char *volume,
                        unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                       int scalex,int scaley,int scalez)
+                       float scalex,float scaley,float scalez)
    {
    FILE *file;
 

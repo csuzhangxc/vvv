@@ -36,13 +36,13 @@ BOOLINT readRAWinfo(char *filename,
 // define RAW file format
 char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
                   unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
-                  int scalex=1,int scaley=1,int scalez=1);
+                  float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
 // write a RAW volume
 BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
                        unsigned char *volume,
                        unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
                        unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
-                       int scalex=1,int scaley=1,int scalez=1);
+                       float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
 #endif
