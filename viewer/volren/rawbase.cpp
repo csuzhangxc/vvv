@@ -4,6 +4,23 @@
 
 #include "rawbase.h"
 
+unsigned short int RAW_INTEL=1;
+
+#define RAW_ISINTEL (*((unsigned char *)(&RAW_INTEL)+1)==0)
+
+inline void RAW_swapuint(unsigned int *x)
+   {
+   unsigned int tmp=*x;
+
+   *x=((tmp&0xff)<<24)|
+      ((tmp&0xff00)<<8)|
+      ((tmp&0xff0000)>>8)|
+      ((tmp&0xff000000)>>24);
+   }
+
+inline void RAW_swapfloat(float *x)
+   {RAW_swapuint((unsigned int *)x);}
+
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
                     unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
@@ -228,6 +245,7 @@ unsigned char *readRAWvolume(const char *filename,
 
    if (bits!=NULL)
       if (*bits==16) bytes*=2;
+      else if (*bits==32) bytes*=4;
 
    if ((volume=(unsigned char *)malloc(bytes))==NULL) return(NULL);
 
@@ -287,6 +305,7 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
    bytes=width*height*depth*components*steps;
 
    if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
 
    // write volume
    if (fwrite(volume,bytes,1,file)!=1)
@@ -296,6 +315,133 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
       }
 
    fclose(file);
+
+   return(TRUE);
+   }
+
+// convert a RAW array to a float array
+void convert2float(unsigned char *source,float *floats,unsigned long long cells,
+                   unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb)
+   {
+   unsigned long long i;
+
+   if (components==1)
+      {
+      if (bits==8)
+         if (sign)
+            for (i=0; i<cells; i++) floats[i]=source[i]/128.0f;
+         else
+            for (i=0; i<cells; i++) floats[i]=source[i]/255.0f;
+      else if (bits==16)
+         if (msb)
+            if (sign)
+               for (i=0; i<cells; i++) floats[i]=(signed short)(256*source[i<<2]+source[(i<<2)+1])/32768.0f;
+            else
+               for (i=0; i<cells; i++) floats[i]=(unsigned short)(256*source[i<<2]+source[(i<<2)+1])/65535.0f;
+         else
+            if (sign)
+               for (i=0; i<cells; i++) floats[i]=(signed short)(source[i<<2]+256*source[(i<<2)+1])/32768.0;
+            else
+               for (i=0; i<cells; i++) floats[i]=(unsigned short)(source[i<<2]+256*source[(i<<2)+1])/65535.0;
+      else if (bits==32)
+         if (msb)
+            if (RAW_ISINTEL)
+               for (i=0; i<cells; i++)
+                  {
+                  floats[i]=*(float*)(&source[4*i]);
+                  RAW_swapfloat(&floats[i]);
+                  }
+            else
+               for (i=0; i<cells; i++) floats[i]=*(float*)(&source[4*i]);
+         else
+            if (RAW_ISINTEL)
+               for (i=0; i<cells; i++) floats[i]=*(float*)(&source[4*i]);
+            else
+               for (i=0; i<cells; i++)
+                  {
+                  floats[i]=*(float*)(&source[4*i]);
+                  RAW_swapfloat(&floats[i]);
+                  }
+      }
+   else if (components==2)
+      {
+      if (msb)
+         if (sign)
+            for (i=0; i<cells; i++) floats[i]=(signed short)(256*source[i<<2]+source[(i<<2)+1])/32768.0f;
+         else
+            for (i=0; i<cells; i++) floats[i]=(unsigned short)(256*source[i<<2]+source[(i<<2)+1])/65535.0f;
+      else
+         if (sign)
+            for (i=0; i<cells; i++) floats[i]=(signed short)(source[i<<2]+256*source[(i<<2)+1])/32768.0f;
+         else
+            for (i=0; i<cells; i++) floats[i]=(unsigned short)(source[i<<2]+256*source[(i<<2)+1])/65535.0f;
+      }
+   else ERRORMSG();
+   }
+
+// quantize a float array to a char array
+void convert2char(float *floats,unsigned char *chars,unsigned long long cells)
+   {
+   unsigned long long i;
+
+   for (i=0; i<cells; i++)
+      chars[i]=(int)ffloor(255.0f*floats[i]+0.5f);
+   }
+
+// copy a RAW volume with out-of-core linear quantization
+BOOLINT copyRAWvolume(FILE *file, // source file
+                      FILE *output, // destination file
+                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb)
+   {
+   unsigned int i,j;
+
+   unsigned char *slice;
+   unsigned long long cells;
+   unsigned long long bytes;
+
+   float *floats;
+   unsigned char *chars;
+
+   cells=bytes=width*height*components;
+
+   if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
+
+   if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+   if ((floats=(float *)malloc(cells*sizeof(float)))==NULL) return(NULL);
+   if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
+
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            free(floats);
+            free(chars);
+
+            return(FALSE);
+            }
+
+         convert2float(slice,floats,cells,
+                       components,bits,sign,msb);
+
+         convert2char(floats,chars,cells);
+
+         if (fwrite(chars,cells,1,output)!=1)
+            {
+            free(slice);
+            free(floats);
+            free(chars);
+
+            return(FALSE);
+            }
+         }
+
+   free(slice);
+   free(floats);
+   free(chars);
 
    return(TRUE);
    }
