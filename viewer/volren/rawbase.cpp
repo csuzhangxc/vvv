@@ -212,6 +212,37 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
    return(strdup(info));
    }
 
+// append RAW file format suffix
+char *appendRAWinfo(const char *filename,
+                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                    float scalex,float scaley,float scalez)
+   {
+   char *filename2;
+   char *info,*dot;
+   char *filename3;
+
+   // define info
+   info=makeRAWinfo(width,height,depth,steps,
+                    components,bits,sign,msb,
+                    scalex,scaley,scalez);
+
+   if (info==NULL) return(NULL);
+
+   // remove suffix
+   filename2=strdup(filename);
+   dot=strrchr(filename2,'.');
+   if (dot!=NULL)
+      if (strcmp(dot,".raw")==0) *dot='\0';
+
+   // append info to filename
+   filename3=strdup2(filename2,info);
+   free(filename2);
+   free(info);
+
+   return(filename3);
+   }
+
 // read a RAW volume
 unsigned char *readRAWvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
@@ -271,29 +302,18 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
    {
    FILE *file;
 
-   char *filename2;
-   char *dot,*info,*output;
+   char *output;
    unsigned long long bytes;
 
-   // define info
-   info=makeRAWinfo(width,height,depth,steps,
-                    components,bits,sign,msb,
-                    scalex,scaley,scalez);
+   // make info
+   output=appendRAWinfo(filename,
+                        width,height,depth,steps,
+                        components,bits,sign,msb,
+                        scalex,scaley,scalez);
 
-   if (info==NULL) return(FALSE);
+   if (output==NULL) return(FALSE);
 
-   // remove suffix
-   filename2=strdup(filename);
-   dot=strrchr(filename2,'.');
-   if (dot!=NULL)
-      if (strcmp(dot,".raw")==0) *dot='\0';
-
-   // append info to filename
-   output=strdup2(filename2,info);
-   free(filename2);
-   free(info);
-
-   // open RAW file
+   // open RAW output file
    if ((file=fopen(output,"wb"))==NULL)
       {
       free(output);
@@ -415,9 +435,10 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
 
 // copy a RAW volume with out-of-core linear quantization
 BOOLINT copyRAWvolume(FILE *file, // source file
-                      FILE *output, // destination file
+                      char *output, // destination file name /wo .raw
                       unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb)
+                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                      float scalex,float scaley,float scalez)
    {
    unsigned int i,j;
 
@@ -432,15 +453,21 @@ BOOLINT copyRAWvolume(FILE *file, // source file
 
    unsigned short int maxval0,maxval;
 
+   char *outname;
+   FILE *outfile;
+
+   // compute total number of cells
    cells=bytes=width*height*components;
 
+   // compute total number of bytes
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
 
+   // remember seek position
    tellpos=ftell(file);
 
+   // scan for maximum value
    maxval0=0;
-
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
@@ -461,8 +488,27 @@ BOOLINT copyRAWvolume(FILE *file, // source file
          if (maxval>maxval0) maxval0=maxval;
          }
 
+   // seek back to start
    if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
 
+   // make info
+   outname=appendRAWinfo(output,
+                         width,height,depth,steps,
+                         components,bits,sign,msb,
+                         scalex,scaley,scalez);
+
+   if (outname==NULL) return(FALSE);
+
+   // open RAW output file
+   if ((outfile=fopen(outname,"wb"))==NULL)
+      {
+      free(outname);
+      return(FALSE);
+      }
+
+   free(outname);
+
+   // quantize slice by slice
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
@@ -480,7 +526,7 @@ BOOLINT copyRAWvolume(FILE *file, // source file
          chars=convert2char(shorts,cells,maxval0);
          free(shorts);
 
-         if (fwrite(chars,cells,1,output)!=1)
+         if (fwrite(chars,cells,1,outfile)!=1)
             {
             free(chars);
             return(FALSE);
