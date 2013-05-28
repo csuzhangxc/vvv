@@ -175,6 +175,9 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
       {
       snprintf(&info[strlen(info)],maxlen-strlen(info),"_");
 
+      if (sign==FALSE) snprintf(&info[strlen(info)],maxlen-strlen(info),"u");
+      else snprintf(&info[strlen(info)],maxlen-strlen(info),"s");
+
       if (components==1 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"1");
       else if (components==1 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"2");
       else if (components==2 && bits==8) snprintf(&info[strlen(info)],maxlen-strlen(info),"2");
@@ -183,9 +186,6 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
       else if (components==3 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"6");
       else if (components==4 && bits==16) snprintf(&info[strlen(info)],maxlen-strlen(info),"8");
       else return(NULL);
-
-      if (sign==FALSE) snprintf(&info[strlen(info)],maxlen-strlen(info),"u");
-      else snprintf(&info[strlen(info)],maxlen-strlen(info),"s");
 
       if (msb==TRUE) snprintf(&info[strlen(info)],maxlen-strlen(info),"m");
       else snprintf(&info[strlen(info)],maxlen-strlen(info),"l");
