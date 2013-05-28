@@ -339,6 +339,70 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
    return(TRUE);
    }
 
+// copy a RAW volume
+BOOLINT copyRAWvolume(FILE *file, // source file desc
+                      const char *output, // destination file name /wo .raw
+                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                      float scalex,float scaley,float scalez)
+   {
+   unsigned int i,j;
+
+   unsigned char *slice;
+   unsigned long long cells;
+   unsigned long long bytes;
+
+   char *outname;
+   FILE *outfile;
+
+   // compute total number of cells
+   cells=bytes=width*height*components;
+
+   // compute total number of bytes
+   if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
+
+   // make RAW info
+   outname=appendRAWinfo(output,
+                         width,height,depth,steps,
+                         components,bits,sign,msb,
+                         scalex,scaley,scalez);
+
+   if (outname==NULL) return(FALSE);
+
+   // open RAW output file
+   if ((outfile=fopen(outname,"wb"))==NULL)
+      {
+      free(outname);
+      return(FALSE);
+      }
+
+   free(outname);
+
+   if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+   // process out-of-core slice by slice
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+
+         if (fwrite(slice,bytes,1,outfile)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+         }
+
+   free(slice);
+
+   return(TRUE);
+   }
+
 // convert a RAW array to a 16-bit unsigned array
 unsigned short int *convert2short(unsigned char *source,unsigned long long cells,
                                   unsigned int bits,BOOLINT sign,BOOLINT msb)
@@ -433,72 +497,8 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
    return(chars);
    }
 
-// copy a RAW volume
-BOOLINT copyRAWvolume(FILE *file, // source file
-                      const char *output, // destination file name /wo .raw
-                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                      float scalex,float scaley,float scalez)
-   {
-   unsigned int i,j;
-
-   unsigned char *slice;
-   unsigned long long cells;
-   unsigned long long bytes;
-
-   char *outname;
-   FILE *outfile;
-
-   // compute total number of cells
-   cells=bytes=width*height*components;
-
-   // compute total number of bytes
-   if (bits==16) bytes*=2;
-   else if (bits==32) bytes*=4;
-
-   // make RAW info
-   outname=appendRAWinfo(output,
-                         width,height,depth,steps,
-                         components,bits,sign,msb,
-                         scalex,scaley,scalez);
-
-   if (outname==NULL) return(FALSE);
-
-   // open RAW output file
-   if ((outfile=fopen(outname,"wb"))==NULL)
-      {
-      free(outname);
-      return(FALSE);
-      }
-
-   free(outname);
-
-   if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
-
-   // process out-of-core slice by slice
-   for (i=0; i<steps; i++)
-      for (j=0; j<depth; j++)
-         {
-         if (fread(slice,bytes,1,file)!=1)
-            {
-            free(slice);
-            return(FALSE);
-            }
-
-         if (fwrite(slice,bytes,1,outfile)!=1)
-            {
-            free(slice);
-            return(FALSE);
-            }
-         }
-
-   free(slice);
-
-   return(TRUE);
-   }
-
 // copy a RAW volume with out-of-core linear quantization
-BOOLINT copyRAWvolume_linear(FILE *file, // source file
+BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
                              const char *output, // destination file name /wo .raw
                              unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
                              unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
