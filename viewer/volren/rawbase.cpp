@@ -349,14 +349,13 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
    unsigned int i,j;
 
    unsigned char *slice;
-   unsigned long long cells;
    unsigned long long bytes;
 
    char *outname;
    FILE *outfile;
 
    // compute total number of cells
-   cells=bytes=width*height*components;
+   bytes=width*height*components;
 
    // compute total number of bytes
    if (bits==16) bytes*=2;

@@ -140,7 +140,7 @@ BOOLINT copyREKvolume(const char *filename,const char *output)
    float scalex,scaley,scalez;
 
    // open REK file
-   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
+   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
 
    // analyze REK header
    if (!readREKheader(file,&width,&height,&depth,&components,
