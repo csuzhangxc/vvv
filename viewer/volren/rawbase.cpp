@@ -436,7 +436,7 @@ BOOLINT copyRAWvolume(const char *filename, // source file
       }
    free(name);
 
-   success=copyRAWvolume(file,filename,
+   success=copyRAWvolume(file,output,
                          rawwidth,rawheight,rawdepth,rawsteps,
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez);
@@ -675,7 +675,7 @@ BOOLINT copyRAWvolume_linear(const char *filename, // source file
       }
    free(name);
 
-   success=copyRAWvolume_linear(file,filename,
+   success=copyRAWvolume_linear(file,output,
                                 rawwidth,rawheight,rawdepth,rawsteps,
                                 rawcomps,rawbits,rawsign,rawmsb,
                                 rawscalex,rawscaley,rawscalez);
@@ -957,7 +957,7 @@ BOOLINT cropRAWvolume(const char *filename, // source file
       }
    free(name);
 
-   success=cropRAWvolume(file,filename,
+   success=cropRAWvolume(file,output,
                          rawwidth,rawheight,rawdepth,rawsteps,
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez,
