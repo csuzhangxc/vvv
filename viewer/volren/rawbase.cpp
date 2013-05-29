@@ -354,10 +354,10 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
-   // compute total number of cells
+   // compute total number of cells per slice
    bytes=width*height*components;
 
-   // compute total number of bytes
+   // compute total number of bytes per slice
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
 
@@ -519,10 +519,10 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
-   // compute total number of cells
+   // compute total number of cells per slice
    cells=bytes=width*height*components;
 
-   // compute total number of bytes
+   // compute total number of bytes per slice
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
 
@@ -596,6 +596,247 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
             }
 
          free(chars);
+         }
+
+   return(TRUE);
+   }
+
+// populate histogram from short array
+void convert2histogram(unsigned short int *shorts,unsigned long long cells,unsigned int *histo)
+   {
+   unsigned long long i;
+
+   for (i=0; i<cells; i++)
+      histo[shorts[i]]++;
+   }
+
+// compute boundaries of volume crop box
+void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int height,unsigned int slice,
+                      unsigned int thres,
+                      unsigned int &crop_x1,unsigned int &crop_x2,
+                      unsigned int &crop_y1,unsigned int &crop_y2,
+                      unsigned int &crop_z1,unsigned int &crop_z2)
+   {
+   unsigned int i,j;
+
+   unsigned int count;
+
+   // left side
+   for (i=0; i<width; i++)
+      {
+      for (count=0,j=0; j<height; j++)
+         if (shorts[i+j*width]>thres) count++;
+
+      if (count>0)
+         {
+         if (i<crop_x1) crop_x1=i;
+         break;
+         }
+      }
+
+   // right side
+   for (i=0; i<width; i++)
+      {
+      for (count=0,j=0; j<height; j++)
+         if (shorts[i+j*width]>thres) count++;
+
+      if (count>0)
+         {
+         if (width-1-i>crop_x2) crop_x2=width-1-i;
+         break;
+         }
+      }
+
+   // bottom side
+   for (j=0; j<height; j++)
+      {
+      for (count=0,i=0; i<width; i++)
+         if (shorts[i+j*width]>thres) count++;
+
+      if (count>0)
+         {
+         if (j<crop_y1) crop_y1=j;
+         break;
+         }
+      }
+
+   // top side
+   for (j=0; j<width; j++)
+      {
+      for (count=0,i=0; i<height; i++)
+         if (shorts[i+j*width]>thres) count++;
+
+      if (count>0)
+         {
+         if (height-1-j>crop_y2) crop_y2=height-1-j;
+         break;
+         }
+      }
+
+   // entire slice
+   for (count=0,i=0; i<width; i++)
+      for (j=0; j<height; j++)
+         if (shorts[i+j*width]>thres) count++;
+
+   // front slice
+   if (count==0)
+      if (slice==crop_z1) crop_z1=slice+1;
+
+   // back slice
+   if (count!=0) crop_z2=slice;
+   }
+
+// copy a RAW volume with out-of-core cropping
+BOOLINT cropRAWvolume(FILE *file, // source file desc
+                      const char *output, // destination file name /wo .raw
+                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                      float scalex,float scaley,float scalez,
+                      double ratio)
+   {
+   unsigned int i,j,k;
+
+   unsigned char *slice;
+   unsigned long long cells;
+   unsigned long long bytes;
+
+   unsigned short int *shorts;
+
+   unsigned long long tellpos;
+
+   unsigned int histo[65536];
+
+   double tsum,wsum;
+
+   unsigned int thres;
+
+   unsigned int crop_x1,crop_y1;
+   unsigned int crop_x2,crop_y2;
+   unsigned int crop_z1,crop_z2;
+
+   char *outname;
+   FILE *outfile;
+
+   // compute total number of cells per slice
+   cells=bytes=width*height*components;
+
+   // compute total number of bytes per slice
+   if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
+
+   // remember seek position
+   tellpos=ftell(file);
+
+   // initialize histogram
+   for (i=0; i<65536; i++) histo[i]=0;
+
+   // populate histogram
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+
+         shorts=convert2short(slice,cells,bits,sign,msb);
+         free(slice);
+
+         convert2histogram(shorts,cells,histo);
+         free(shorts);
+         }
+
+   // integrate histogram
+   tsum=0.0;
+   for (i=0; i<65536; i++)
+      tsum+=histo[i]*i/65535.0;
+
+   // compute threshold from integrated histogram
+   wsum=0.0;
+   for (thres=0; thres<65536; thres++)
+      {
+      wsum+=histo[thres]*thres/65535.0;
+      if (wsum>ratio*tsum) break;
+      }
+
+   // seek back to start
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+
+   crop_x1=width-1;
+   crop_x2=0;
+
+   crop_y1=height-1;
+   crop_y2=0;
+
+   crop_z1=0;
+   crop_z2=depth-1;
+
+   // compute crop boundaries
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+
+         shorts=convert2short(slice,cells,bits,sign,msb);
+         free(slice);
+
+         convert2boundary(shorts,width,height,j,thres,crop_x1,crop_x2,crop_y1,crop_y2,crop_z1,crop_z2);
+         free(shorts);
+         }
+
+   // seek back to start
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+
+   // make RAW info
+   outname=appendRAWinfo(output,
+                         width,height,depth,steps,
+                         2,8,FALSE,!RAW_ISINTEL,
+                         scalex,scaley,scalez);
+
+   if (outname==NULL) return(FALSE);
+
+   // open RAW output file
+   if ((outfile=fopen(outname,"wb"))==NULL)
+      {
+      free(outname);
+      return(FALSE);
+      }
+
+   free(outname);
+
+   // process out-of-core slice by slice
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+
+         shorts=convert2short(slice,cells,bits,sign,msb);
+         free(slice);
+
+         if (j>=crop_z1 && j<=crop_z2)
+            for (k=crop_y1; k<=crop_y2; k++)
+               if (fwrite(&shorts[crop_x1+k*width],2*(crop_x2-crop_x1+1),1,outfile)!=1)
+                  {
+                  free(shorts);
+                  return(FALSE);
+                  }
+
+         free(shorts);
          }
 
    return(TRUE);
