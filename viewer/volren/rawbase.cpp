@@ -349,6 +349,12 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
+   if (components==2 && bits==8)
+      {
+      components=1;
+      bits=16;
+      }
+
    // compute total number of cells per slice
    bytes=width*height*components;
 
@@ -553,6 +559,12 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
 
    char *outname;
    FILE *outfile;
+
+   if (components==2 && bits==8)
+      {
+      components=1;
+      bits=16;
+      }
 
    // compute total number of cells per slice
    cells=bytes=width*height*components;
@@ -791,6 +803,12 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
 
    char *outname;
    FILE *outfile;
+
+   if (components==2 && bits==8)
+      {
+      components=1;
+      bits=16;
+      }
 
    // compute total number of cells per slice
    cells=bytes=width*height*components;
