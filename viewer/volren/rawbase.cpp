@@ -70,15 +70,6 @@ BOOLINT readRAWinfo(char *filename,
       {
       dotdot++;
 
-      if (sscanf(dotdot,"%d%n",depth,&count)!=1) return(FALSE);
-
-      dotdot+=count;
-      }
-
-   if (*dotdot=='x')
-      {
-      dotdot++;
-
       if (sscanf(dotdot,"%d%n",steps,&count)!=1) return(FALSE);
 
       dotdot+=count;
