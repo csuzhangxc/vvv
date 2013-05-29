@@ -67,6 +67,17 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
 BOOLINT copyRAWvolume_linear(const char *filename, // source file
                              const char *output); // destination file name /wo suffix .raw
 
+// copy a RAW volume with out-of-core non-linear quantization
+BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
+                                const char *output, // destination file name /wo suffix .raw
+                                unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                                unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
+                                float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
+
+// copy a RAW volume with out-of-core non-linear quantization
+BOOLINT copyRAWvolume_nonlinear(const char *filename, // source file
+                                const char *output); // destination file name /wo suffix .raw
+
 // copy a RAW volume with out-of-core cropping
 BOOLINT cropRAWvolume(FILE *file, // source file desc
                       const char *output, // destination file name /wo suffix .raw

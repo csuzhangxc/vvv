@@ -349,12 +349,6 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
-   if (components==2 && bits==8)
-      {
-      components=1;
-      bits=16;
-      }
-
    // compute total number of cells per slice
    bytes=width*height*components;
 
@@ -444,14 +438,22 @@ BOOLINT copyRAWvolume(const char *filename, // source file
    }
 
 // convert a RAW array to a 16-bit unsigned array
-unsigned short int *convert2short(unsigned char *source,unsigned long long cells,
-                                  unsigned int bits,BOOLINT sign,BOOLINT msb)
+unsigned short int *convert2short(unsigned char *source,unsigned long long cells,unsigned int &components,
+                                  unsigned int &bits,BOOLINT sign,BOOLINT msb)
    {
    unsigned long long i;
 
    unsigned short int *shorts;
 
    float v;
+
+   if (components==2 && bits==8)
+      {
+      components=1;
+      bits=16;
+      }
+
+   cells*=components;
 
    if ((shorts=(unsigned short int *)malloc(cells*sizeof(unsigned short int)))==NULL) return(NULL);
 
@@ -506,11 +508,13 @@ unsigned short int *convert2short(unsigned char *source,unsigned long long cells
    }
 
 // compute maximum 16-bit unsigned value
-unsigned short int convert2maxval(unsigned short int *shorts,unsigned long long cells)
+unsigned short int convert2maxval(unsigned short int *shorts,unsigned long long cells,unsigned int components)
    {
    unsigned long long i;
 
    unsigned short maxval;
+
+   cells*=components;
 
    maxval=0;
    for (i=0; i<cells; i++)
@@ -520,7 +524,7 @@ unsigned short int convert2maxval(unsigned short int *shorts,unsigned long long 
    }
 
 // quantize a 16-bit unsigned array to a char array
-unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
+unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,unsigned int components,
                             unsigned short maxval)
    {
    unsigned long long i;
@@ -528,6 +532,8 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
    unsigned char *chars;
 
    if (maxval==0) maxval++;
+
+   cells*=components;
 
    if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
 
@@ -560,16 +566,11 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
-   if (components==2 && bits==8)
-      {
-      components=1;
-      bits=16;
-      }
-
    // compute total number of cells per slice
-   cells=bytes=width*height*components;
+   cells=bytes=width*height;
 
    // compute total number of bytes per slice
+   bytes*=components;
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
 
@@ -589,10 +590,10 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
             return(FALSE);
             }
 
-         shorts=convert2short(slice,cells,bits,sign,msb);
+         shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         maxval=convert2maxval(shorts,cells);
+         maxval=convert2maxval(shorts,cells,components);
          free(shorts);
 
          if (maxval>maxval0) maxval0=maxval;
@@ -604,7 +605,7 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
    // make RAW info
    outname=appendRAWinfo(output,
                          width,height,depth,steps,
-                         1,8,FALSE,TRUE,
+                         components,8,FALSE,TRUE,
                          scalex,scaley,scalez);
 
    if (outname==NULL) return(FALSE);
@@ -630,13 +631,13 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
             return(FALSE);
             }
 
-         shorts=convert2short(slice,cells,bits,sign,msb);
+         shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         chars=convert2char(shorts,cells,maxval0);
+         chars=convert2char(shorts,cells,components,maxval0);
          free(shorts);
 
-         if (fwrite(chars,cells,1,outfile)!=1)
+         if (fwrite(chars,cells*components,1,outfile)!=1)
             {
             free(chars);
             return(FALSE);
@@ -688,17 +689,211 @@ BOOLINT copyRAWvolume_linear(const char *filename, // source file
    return(success);
    }
 
+// copy a RAW volume with out-of-core non-linear quantization
+BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
+                                const char *output, // destination file name /wo .raw
+                                unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                                unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                                float scalex,float scaley,float scalez)
+   {
+   unsigned int i,j;
+
+   unsigned char *slice;
+   unsigned long long cells;
+   unsigned long long bytes;
+
+   unsigned short int *shorts[3];
+   unsigned char *chars;
+
+   unsigned long long tellpos;
+
+   unsigned short int maxval0,maxval;
+
+   char *outname;
+   FILE *outfile;
+
+   // compute total number of cells per slice
+   cells=bytes=width*height;
+
+   // compute total number of bytes per slice
+   bytes*=components;
+   if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
+
+   // remember seek position
+   tellpos=ftell(file);
+
+   shorts[0]=shorts[1]=shorts[2]=NULL;
+
+   // scan for maximum value
+   maxval0=0;
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if (j==0)
+            {
+            if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+            if (fread(slice,bytes,1,file)!=1)
+               {
+               free(slice);
+               return(FALSE);
+               }
+
+            shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
+            free(slice);
+            }
+
+         if (shorts[0]!=NULL) free(shorts[0]);
+
+         shorts[0]=shorts[1];
+         shorts[1]=shorts[2];
+
+         if (j<depth-1)
+            {
+            if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+            if (fread(slice,bytes,1,file)!=1)
+               {
+               free(slice);
+               if (shorts[0]!=NULL) free(shorts[0]);
+               if (shorts[1]!=NULL) free(shorts[1]);
+               return(FALSE);
+               }
+
+            shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
+            free(slice);
+            }
+
+         maxval=convert2maxval(shorts[1],cells,components);
+
+         if (maxval>maxval0) maxval0=maxval;
+         }
+
+   if (shorts[0]!=NULL) free(shorts[0]);
+   if (shorts[1]!=NULL) free(shorts[1]);
+
+   // seek back to start
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+
+   // make RAW info
+   outname=appendRAWinfo(output,
+                         width,height,depth,steps,
+                         components,8,FALSE,TRUE,
+                         scalex,scaley,scalez);
+
+   if (outname==NULL) return(FALSE);
+
+   // open RAW output file
+   if ((outfile=fopen(outname,"wb"))==NULL)
+      {
+      free(outname);
+      return(FALSE);
+      }
+
+   free(outname);
+
+   // process out-of-core slice by slice
+   for (i=0; i<steps; i++)
+      for (j=0; j<depth; j++)
+         {
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+         if (fread(slice,bytes,1,file)!=1)
+            {
+            free(slice);
+            return(FALSE);
+            }
+
+         shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
+         free(slice);
+
+         chars=convert2char(shorts[1],cells,components,maxval0);
+         free(shorts[1]);
+
+         if (fwrite(chars,cells*components,1,outfile)!=1)
+            {
+            free(chars);
+            return(FALSE);
+            }
+
+         free(chars);
+         }
+
+   return(TRUE);
+   }
+
+// copy a RAW volume with out-of-core non-linear quantization
+BOOLINT copyRAWvolume_nonlinear(const char *filename, // source file
+                                const char *output) // destination file name /wo suffix .raw
+   {
+   FILE *file;
+
+   char *name;
+
+   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   BOOLINT rawsign,rawmsb;
+   float rawscalex,rawscaley,rawscalez;
+
+   BOOLINT success;
+
+   // open RAW file
+   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+
+   // analyze RAW info
+   name=strdup(filename);
+   if (!readRAWinfo(name,
+                    &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                    &rawcomps,&rawbits,&rawsign,&rawmsb,
+                    &rawscalex,&rawscaley,&rawscalez))
+      {
+      free(name);
+      fclose(file);
+      return(FALSE);
+      }
+   free(name);
+
+   success=copyRAWvolume_nonlinear(file,output,
+                                   rawwidth,rawheight,rawdepth,rawsteps,
+                                   rawcomps,rawbits,rawsign,rawmsb,
+                                   rawscalex,rawscaley,rawscalez);
+
+   fclose(file);
+
+   return(success);
+   }
+
 // populate histogram from short array
-void convert2histogram(unsigned short int *shorts,unsigned long long cells,unsigned int *histo)
+void convert2histogram(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+                       unsigned int *histo)
    {
    unsigned long long i;
+
+   cells*=components;
 
    for (i=0; i<cells; i++)
       histo[shorts[i]]++;
    }
 
-// compute boundaries of volume crop box
-void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int height,unsigned int slice,
+// check whether or not a cell exceeds the threshold to be a boundary cell
+inline BOOLINT isboundary(unsigned short int *shorts,unsigned int columns,unsigned int components,
+                          unsigned int x,unsigned int y,
+                          unsigned int thres)
+   {
+   unsigned int i;
+
+   unsigned int idx;
+
+   idx=(x+y*columns)*components;
+
+   for (i=0; i<components; i++)
+      if (shorts[idx+i]>thres) return(TRUE);
+
+   return(FALSE);
+   }
+
+// compute boundary of volume crop box
+void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int height,unsigned int slice,unsigned int components,
                       unsigned int thres,
                       unsigned int &crop_x1,unsigned int &crop_x2,
                       unsigned int &crop_y1,unsigned int &crop_y2,
@@ -712,7 +907,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    for (i=0; i<width; i++)
       {
       for (count=0,j=0; j<height; j++)
-         if (shorts[i+j*width]>thres) count++;
+         if (isboundary(shorts,width,components,i,j,thres)) count++;
 
       if (count>0)
          {
@@ -725,7 +920,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    for (i=0; i<width; i++)
       {
       for (count=0,j=0; j<height; j++)
-         if (shorts[i+j*width]>thres) count++;
+         if (isboundary(shorts,width,components,i,j,thres)) count++;
 
       if (count>0)
          {
@@ -738,7 +933,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    for (j=0; j<height; j++)
       {
       for (count=0,i=0; i<width; i++)
-         if (shorts[i+j*width]>thres) count++;
+         if (isboundary(shorts,width,components,i,j,thres)) count++;
 
       if (count>0)
          {
@@ -751,7 +946,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    for (j=0; j<width; j++)
       {
       for (count=0,i=0; i<height; i++)
-         if (shorts[i+j*width]>thres) count++;
+         if (isboundary(shorts,width,components,i,j,thres)) count++;
 
       if (count>0)
          {
@@ -763,7 +958,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    // entire slice
    for (count=0,i=0; i<width; i++)
       for (j=0; j<height; j++)
-         if (shorts[i+j*width]>thres) count++;
+         if (isboundary(shorts,width,components,i,j,thres)) count++;
 
    // front slice
    if (count==0)
@@ -804,16 +999,11 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
    char *outname;
    FILE *outfile;
 
-   if (components==2 && bits==8)
-      {
-      components=1;
-      bits=16;
-      }
-
    // compute total number of cells per slice
-   cells=bytes=width*height*components;
+   cells=bytes=width*height;
 
    // compute total number of bytes per slice
+   bytes*=components;
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
 
@@ -835,10 +1025,10 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
             return(FALSE);
             }
 
-         shorts=convert2short(slice,cells,bits,sign,msb);
+         shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         convert2histogram(shorts,cells,histo);
+         convert2histogram(shorts,cells,components,histo);
          free(shorts);
          }
 
@@ -867,7 +1057,7 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
    crop_z1=0;
    crop_z2=depth-1;
 
-   // compute crop boundaries
+   // compute crop boundary
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
@@ -879,10 +1069,10 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
             return(FALSE);
             }
 
-         shorts=convert2short(slice,cells,bits,sign,msb);
+         shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         convert2boundary(shorts,width,height,j,thres,crop_x1,crop_x2,crop_y1,crop_y2,crop_z1,crop_z2);
+         convert2boundary(shorts,width,height,j,components,thres,crop_x1,crop_x2,crop_y1,crop_y2,crop_z1,crop_z2);
          free(shorts);
          }
 
@@ -902,7 +1092,7 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
    // make RAW info
    outname=appendRAWinfo(output,
                          crop_x2-crop_x1+1,crop_y2-crop_y1+1,crop_z2-crop_z1+1,steps,
-                         2,8,FALSE,!RAW_ISINTEL,
+                         components,16,FALSE,!RAW_ISINTEL,
                          scalex,scaley,scalez);
 
    if (outname==NULL) return(FALSE);
@@ -928,12 +1118,12 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
             return(FALSE);
             }
 
-         shorts=convert2short(slice,cells,bits,sign,msb);
+         shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
          if (j>=crop_z1 && j<=crop_z2)
             for (k=crop_y1; k<=crop_y2; k++)
-               if (fwrite(&shorts[crop_x1+k*width],2*(crop_x2-crop_x1+1),1,outfile)!=1)
+               if (fwrite(&shorts[(crop_x1+k*width)*components],2*(crop_x2-crop_x1+1)*components,1,outfile)!=1)
                   {
                   free(shorts);
                   return(FALSE);
