@@ -466,40 +466,40 @@ unsigned short int *convert2short(unsigned char *source,unsigned long long cells
    else if (bits==16)
       if (msb)
          if (sign)
-            for (i=0; i<cells; i++) shorts[i]=(signed short)(256*source[i<<2]+source[(i<<2)+1])+32768;
+            for (i=0; i<cells; i++) shorts[i]=(signed short)(256*source[i<<1]+source[(i<<1)+1])+32768;
          else
-            for (i=0; i<cells; i++) shorts[i]=(unsigned short)(256*source[i<<2]+source[(i<<2)+1]);
+            for (i=0; i<cells; i++) shorts[i]=(unsigned short)(256*source[i<<1]+source[(i<<1)+1]);
       else
          if (sign)
-            for (i=0; i<cells; i++) shorts[i]=(signed short)(source[i<<2]+256*source[(i<<2)+1])+32768;
+            for (i=0; i<cells; i++) shorts[i]=(signed short)(source[i<<1]+256*source[(i<<1)+1])+32768;
          else
-            for (i=0; i<cells; i++) shorts[i]=(unsigned short)(source[i<<2]+256*source[(i<<2)+1]);
+            for (i=0; i<cells; i++) shorts[i]=(unsigned short)(source[i<<1]+256*source[(i<<1)+1]);
    else if (bits==32)
       if (msb)
          if (RAW_ISINTEL)
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[4*i]));
+               v=fabs(*(float*)(&source[i<<2]));
                RAW_swapfloat(&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
          else
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[4*i]));
+               v=fabs(*(float*)(&source[i<<2]));
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
       else
          if (RAW_ISINTEL)
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[4*i]));
+               v=fabs(*(float*)(&source[i<<2]));
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
          else
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[4*i]));
+               v=fabs(*(float*)(&source[i<<2]));
                RAW_swapfloat(&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
@@ -877,12 +877,22 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
          free(shorts);
          }
 
+   // check bounding box
+   if (crop_x1==crop_x2 || crop_y1==crop_y2)
+      {
+      crop_x1=0;
+      crop_x2=width-1;
+
+      crop_y1=0;
+      crop_y2=height-1;
+      }
+
    // seek back to start
    if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
 
    // make RAW info
    outname=appendRAWinfo(output,
-                         width,height,depth,steps,
+                         crop_x2-crop_x1+1,crop_y2-crop_y1+1,crop_z2-crop_z1+1,steps,
                          2,8,FALSE,!RAW_ISINTEL,
                          scalex,scaley,scalez);
 
