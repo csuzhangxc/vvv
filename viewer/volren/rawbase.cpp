@@ -89,6 +89,7 @@ BOOLINT readRAWinfo(char *filename,
       dotdot++;
 
       while (*dotdot!='.' && *dotdot!='_')
+         {
          switch (*dotdot)
             {
             case '1': rawcomps=1; rawbits=8; break; // char
@@ -104,6 +105,9 @@ BOOLINT readRAWinfo(char *filename,
             case 'l': rawmsb=FALSE; break; // LSB
             default: return(FALSE);
             }
+
+         dotdot++;
+         }
       }
 
    if (*dotdot=='_')
