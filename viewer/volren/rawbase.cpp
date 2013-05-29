@@ -507,38 +507,43 @@ unsigned short int *convert2short(unsigned char *source,unsigned long long cells
    return(shorts);
    }
 
-// compute maximum 16-bit unsigned value
-unsigned short int convert2maxval(unsigned short int *shorts,unsigned long long cells,unsigned int components)
+// compute minimum and maximum 16-bit unsigned value
+void convert2minmax(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+                    unsigned int &minval,unsigned int &maxval)
    {
    unsigned long long i;
 
-   unsigned short maxval;
+   unsigned int v;
 
    cells*=components;
 
+   minval=65535;
    maxval=0;
-   for (i=0; i<cells; i++)
-      if (shorts[i]>maxval) maxval=shorts[i];
 
-   return(maxval);
+   for (i=0; i<cells; i++)
+      {
+      v=shorts[i];
+      if (v<minval) minval=v;
+      if (v>maxval) maxval=v;
+      }
    }
 
 // quantize a 16-bit unsigned array to a char array
 unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,unsigned int components,
-                            unsigned short maxval)
+                            unsigned int minval,unsigned int maxval)
    {
    unsigned long long i;
 
    unsigned char *chars;
 
-   if (maxval==0) maxval++;
+   if (minval==maxval) maxval++;
 
    cells*=components;
 
    if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
 
    for (i=0; i<cells; i++)
-      chars[i]=(int)ffloor(255.0f*shorts[i]/maxval+0.5f);
+      chars[i]=(int)ffloor(255.0f*(shorts[i]-minval)/(maxval-minval)+0.5f);
 
    return(chars);
    }
@@ -561,7 +566,8 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
 
    unsigned long long tellpos;
 
-   unsigned short int maxval0,maxval;
+   unsigned int minval0,minval;
+   unsigned int maxval0,maxval;
 
    char *outname;
    FILE *outfile;
@@ -577,8 +583,10 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
    // remember seek position
    tellpos=ftell(file);
 
-   // scan for maximum value
+   minval0=65535;
    maxval0=0;
+
+   // scan for minimum and maximum value
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
@@ -593,9 +601,10 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
          shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         maxval=convert2maxval(shorts,cells,components);
+         convert2minmax(shorts,cells,components,minval,maxval);
          free(shorts);
 
+         if (minval<minval0) minval0=minval;
          if (maxval>maxval0) maxval0=maxval;
          }
 
@@ -634,7 +643,7 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
          shorts=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         chars=convert2char(shorts,cells,components,maxval0);
+         chars=convert2char(shorts,cells,components,minval0,maxval0);
          free(shorts);
 
          if (fwrite(chars,cells*components,1,outfile)!=1)
@@ -689,6 +698,117 @@ BOOLINT copyRAWvolume_linear(const char *filename, // source file
    return(success);
    }
 
+// helper to get a short value from 3 consecutive slices
+inline int getshort(unsigned short int *shorts[],
+                    unsigned int width,unsigned int height,unsigned int components,
+                    unsigned int i,unsigned int j,int k=0)
+   {
+   unsigned int c;
+
+   unsigned int idx;
+   unsigned int value;
+
+   idx=(i+j*width)*components;
+   for (value=0,c=0; c<components; c++) value+=shorts[k+1][idx+c];
+
+   return(value/components);
+   }
+
+// helper to get a short gradient value from 3 consecutive slices
+inline double getgrad(unsigned short int *shorts[],
+                      unsigned int width,unsigned int height,unsigned int components,
+                      unsigned int i,unsigned int j)
+   {
+   double gx,gy,gz;
+
+   if (i>0)
+      if (i<width-1) gx=(getshort(shorts,width,height,components,i+1,j,0)-getshort(shorts,width,height,components,i-1,j,0))/2.0;
+      else gx=getshort(shorts,width,height,components,i,j,0)-getshort(shorts,width,height,components,i-1,j,0);
+   else
+      if (i<width-1) gx=getshort(shorts,width,height,components,i+1,j,0)-getshort(shorts,width,height,components,i,j,0);
+      else gx=0.0;
+
+   if (j>0)
+      if (j<height-1) gy=(getshort(shorts,width,height,components,i,j+1,0)-getshort(shorts,width,height,components,i,j-1,0))/2.0;
+      else gy=getshort(shorts,width,height,components,i,j,0)-getshort(shorts,width,height,components,i,j-1,0);
+   else
+      if (j<height-1) gy=getshort(shorts,width,height,components,i,j+1,0)-getshort(shorts,width,height,components,i,j,0);
+      else gy=0.0;
+
+   if (shorts[0]!=NULL)
+      if (shorts[2]!=NULL) gz=(getshort(shorts,width,height,components,i,j,1)-getshort(shorts,width,height,components,i,j,-1))/2.0;
+      else gz=getshort(shorts,width,height,components,i,j,0)-getshort(shorts,width,height,components,i,j,-1);
+   else
+      if (shorts[2]!=NULL) gz=getshort(shorts,width,height,components,i,j,1)-getshort(shorts,width,height,components,i,j,0);
+      else gz=0.0;
+
+   return(sqrt(gx*gx+gy*gy+gz*gz));
+   }
+
+// update error table
+void convert2error(unsigned short int *shorts[],unsigned int width,unsigned int height,unsigned int components,
+                   double *err)
+   {
+   unsigned int i,j;
+
+   for (i=0; i<width; i++)
+      for (j=0; j<height; j++)
+         err[getshort(shorts,width,height,components,i,j)]+=sqrt(getgrad(shorts,width,height,components,i,j));
+   }
+
+// integrate error table
+void integrate(double *err,unsigned int maxval,unsigned int minval)
+   {
+   unsigned int i,k;
+
+   double eint;
+
+   BOOLINT done;
+
+   for (i=0; i<65536; i++) err[i]=pow(err[i],1.0/3);
+
+   err[minval]=err[maxval]=0.0;
+
+   for (k=0; k<256; k++)
+      {
+      for (eint=0.0,i=0; i<65536; i++) eint+=err[i];
+
+      done=TRUE;
+
+      for (i=0; i<65536; i++)
+         if (err[i]>eint/256)
+            {
+            err[i]=eint/256;
+            done=FALSE;
+            }
+
+      if (done) break;
+      }
+
+   for (i=1; i<65536; i++) err[i]+=err[i-1];
+
+   if (err[65535]>0.0f)
+      for (i=0; i<65536; i++) err[i]*=255.0/err[65535];
+   }
+
+// quantize a 16-bit unsigned array to a char array using an integrated error table
+unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+                            double *err)
+   {
+   unsigned long long i;
+
+   unsigned char *chars;
+
+   cells*=components;
+
+   if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
+
+   for (i=0; i<cells; i++)
+      chars[i]=(int)(err[shorts[i]]+0.5);
+
+   return(chars);
+   }
+
 // copy a RAW volume with out-of-core non-linear quantization
 BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
                                 const char *output, // destination file name /wo .raw
@@ -707,7 +827,12 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
 
    unsigned long long tellpos;
 
-   unsigned short int maxval0,maxval;
+   unsigned int minval0,minval;
+   unsigned int maxval0,maxval;
+
+   BOOLINT linear;
+
+   double *err;
 
    char *outname;
    FILE *outfile;
@@ -723,55 +848,95 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
    // remember seek position
    tellpos=ftell(file);
 
-   shorts[0]=shorts[1]=shorts[2]=NULL;
-
-   // scan for maximum value
+   minval0=65535;
    maxval0=0;
+
+   // scan for minimum and maximum value
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if (j==0)
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+         if (fread(slice,bytes,1,file)!=1)
             {
-            if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
-
-            if (fread(slice,bytes,1,file)!=1)
-               {
-               free(slice);
-               return(FALSE);
-               }
-
-            shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
             free(slice);
+            return(FALSE);
             }
 
-         if (shorts[0]!=NULL) free(shorts[0]);
+         shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
+         free(slice);
 
-         shorts[0]=shorts[1];
-         shorts[1]=shorts[2];
+         convert2minmax(shorts[1],cells,components,minval,maxval);
+         free(shorts[1]);
 
-         if (j<depth-1)
-            {
-            if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
-
-            if (fread(slice,bytes,1,file)!=1)
-               {
-               free(slice);
-               if (shorts[0]!=NULL) free(shorts[0]);
-               if (shorts[1]!=NULL) free(shorts[1]);
-               return(FALSE);
-               }
-
-            shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
-            free(slice);
-            }
-
-         maxval=convert2maxval(shorts[1],cells,components);
-
+         if (minval<minval0) minval0=minval;
          if (maxval>maxval0) maxval0=maxval;
          }
 
-   if (shorts[0]!=NULL) free(shorts[0]);
-   if (shorts[1]!=NULL) free(shorts[1]);
+   // seek back to start
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+
+   if (minval0==maxval0) maxval0=minval0+1;
+
+   if (maxval0-minval0<256) linear=TRUE;
+
+   err=new double[65536];
+
+   // populate error table
+   if (linear)
+      for (i=0; i<65536; i++) err[i]=255*(double)(i-minval0)/(maxval0-minval0);
+   else
+      {
+      for (i=0; i<65536; i++) err[i]=0.0;
+
+      shorts[0]=shorts[1]=shorts[2]=NULL;
+
+      for (i=0; i<steps; i++)
+         for (j=0; j<depth; j++)
+            {
+            if (j==0)
+               {
+               if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+               if (fread(slice,bytes,1,file)!=1)
+                  {
+                  free(slice);
+                  return(FALSE);
+                  }
+
+               shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
+               free(slice);
+               }
+
+            if (shorts[0]!=NULL) free(shorts[0]);
+
+            shorts[0]=shorts[1];
+            shorts[1]=shorts[2];
+
+            if (j<depth-1)
+               {
+               if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+
+               if (fread(slice,bytes,1,file)!=1)
+                  {
+                  free(slice);
+                  if (shorts[0]!=NULL) free(shorts[0]);
+                  if (shorts[1]!=NULL) free(shorts[1]);
+                  return(FALSE);
+                  }
+
+               shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
+               free(slice);
+               }
+
+            convert2error(shorts,width,height,components,err);
+            }
+
+      if (shorts[0]!=NULL) free(shorts[0]);
+      if (shorts[1]!=NULL) free(shorts[1]);
+
+      integrate(err,minval0,maxval0);
+      }
 
    // seek back to start
    if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
@@ -808,7 +973,7 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
          shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
          free(slice);
 
-         chars=convert2char(shorts[1],cells,components,maxval0);
+         chars=convert2char(shorts[1],cells,components,err);
          free(shorts[1]);
 
          if (fwrite(chars,cells*components,1,outfile)!=1)
