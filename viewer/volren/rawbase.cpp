@@ -166,7 +166,7 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
    char info[maxlen];
    float maxscale=1.0f;
 
-   snprintf(info,maxlen,".%dx%dx",width,height);
+   snprintf(info,maxlen,".%dx%d",width,height);
    if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",depth);
    if (steps>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",steps);
 
@@ -202,7 +202,7 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
 
       if (scalex!=1.0f || scaley!=1.0f || scalez!=1.0f)
          {
-         snprintf(&info[strlen(info)],maxlen-strlen(info),"_%dx%dx",int(1000.0f*scalex+0.5f),int(1000.0f*scaley+0.5f));
+         snprintf(&info[strlen(info)],maxlen-strlen(info),"_%dx%d",int(1000.0f*scalex+0.5f),int(1000.0f*scaley+0.5f));
          if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",int(1000.0f*scalez+0.5f));
          }
       }
