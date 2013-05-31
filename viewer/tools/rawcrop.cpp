@@ -5,6 +5,8 @@ static const double ratio=0.5;
 
 int main(int argc,char *argv[])
    {
+   char *output;
+
    if (argc!=3)
       {
       printf("usage: %s <input.raw> <output.raw>\n",argv[0]);
@@ -13,7 +15,13 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
-   cropRAWvolume(argv[1],argv[2]);
+   output=cropRAWvolume(argv[1],argv[2]);
+
+   if (output)
+      {
+      printf("wrote %s\n",output);
+      free(output);
+      }
 
    return(0);
    }

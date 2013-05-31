@@ -22,6 +22,6 @@ BOOLINT readREKheader(const char *filename,
                       float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // copy a REK volume to a RAW volume
-BOOLINT copyREKvolume(const char *filename,const char *output);
+char *copyREKvolume(const char *filename,const char *output);
 
 #endif

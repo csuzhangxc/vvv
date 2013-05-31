@@ -41,7 +41,7 @@ BOOLINT readRAWinfo(char *filename,
 
    if (dot==NULL) return(FALSE);
 
-   if (strcmp(dot,".raw")!=0) return(FALSE);
+   if (strcasecmp(dot,".raw")!=0) return(FALSE);
 
    *dot='\0';
    dotdot=strrchr(filename,'.');
@@ -207,6 +207,34 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
    return(strdup(info));
    }
 
+// remove .raw suffix
+char *removeRAWsuffix(const char *filename)
+   {
+   char *filename2,*dot;
+
+   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   BOOLINT rawsign,rawmsb;
+   float rawscalex,rawscaley,rawscalez;
+
+   filename2=strdup(filename);
+
+   if (readRAWinfo(filename2,
+                   &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                   &rawcomps,&rawbits,&rawsign,&rawmsb,
+                   &rawscalex,&rawscaley,&rawscalez))
+      {
+      dot=strrchr(filename2,'.');
+      if (dot!=NULL)
+         {
+         *dot='\0';
+         dot=strrchr(filename2,'.');
+         if (dot!=NULL) *dot='\0';
+         }
+      }
+
+   return(filename2);
+   }
+
 // append RAW file format suffix
 char *appendRAWinfo(const char *filename,
                     unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
@@ -214,7 +242,7 @@ char *appendRAWinfo(const char *filename,
                     float scalex,float scaley,float scalez)
    {
    char *filename2;
-   char *info,*dot;
+   char *info;
    char *filename3;
 
    // define RAW info
@@ -225,10 +253,7 @@ char *appendRAWinfo(const char *filename,
    if (info==NULL) return(NULL);
 
    // remove suffix
-   filename2=strdup(filename);
-   dot=strrchr(filename2,'.');
-   if (dot!=NULL)
-      if (strcmp(dot,".raw")==0) *dot='\0';
+   filename2=removeRAWsuffix(filename);
 
    // append RAW info to filename
    filename3=strdup2(filename2,info);
@@ -335,11 +360,11 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
    }
 
 // copy a RAW volume
-BOOLINT copyRAWvolume(FILE *file, // source file desc
-                      const char *output, // destination file name /wo .raw
-                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                      float scalex,float scaley,float scalez)
+char *copyRAWvolume(FILE *file, // source file desc
+                    const char *output, // destination file name /wo .raw
+                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                    float scalex,float scaley,float scalez)
    {
    unsigned int i,j;
 
@@ -362,18 +387,20 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
                          components,bits,sign,msb,
                          scalex,scaley,scalez);
 
-   if (outname==NULL) return(FALSE);
+   if (outname==NULL) return(NULL);
 
    // open RAW output file
    if ((outfile=fopen(outname,"wb"))==NULL)
       {
       free(outname);
-      return(FALSE);
+      return(NULL);
       }
 
-   free(outname);
-
-   if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+   if ((slice=(unsigned char *)malloc(bytes))==NULL)
+      {
+      free(outname);
+      return(NULL);
+      }
 
    // process out-of-core slice by slice
    for (i=0; i<steps; i++)
@@ -382,24 +409,26 @@ BOOLINT copyRAWvolume(FILE *file, // source file desc
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          if (fwrite(slice,bytes,1,outfile)!=1)
             {
             free(slice);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
          }
 
    free(slice);
 
-   return(TRUE);
+   return(outname);
    }
 
 // copy a RAW volume
-BOOLINT copyRAWvolume(const char *filename, // source file
-                      const char *output) // destination file name /wo suffix .raw
+char *copyRAWvolume(const char *filename, // source file
+                    const char *output) // destination file name /wo suffix .raw
    {
    FILE *file;
 
@@ -409,7 +438,7 @@ BOOLINT copyRAWvolume(const char *filename, // source file
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
-   BOOLINT success;
+   char *outname;
 
    // open RAW file
    if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
@@ -423,18 +452,18 @@ BOOLINT copyRAWvolume(const char *filename, // source file
       {
       free(name);
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
    free(name);
 
-   success=copyRAWvolume(file,output,
+   outname=copyRAWvolume(file,output,
                          rawwidth,rawheight,rawdepth,rawsteps,
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez);
 
    fclose(file);
 
-   return(success);
+   return(outname);
    }
 
 // convert a RAW array to a 16-bit unsigned array
@@ -549,11 +578,11 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
    }
 
 // copy a RAW volume with out-of-core linear quantization
-BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
-                             const char *output, // destination file name /wo .raw
-                             unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                             unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                             float scalex,float scaley,float scalez)
+char *copyRAWvolume_linear(FILE *file, // source file desc
+                           const char *output, // destination file name /wo .raw
+                           unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                           unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                           float scalex,float scaley,float scalez)
    {
    unsigned int i,j;
 
@@ -590,12 +619,12 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
 
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            return(NULL);
             }
 
          shorts=convert2short(slice,cells,components,bits,sign,msb);
@@ -609,7 +638,7 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
          }
 
    // seek back to start
-   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(NULL);
 
    // make RAW info
    outname=appendRAWinfo(output,
@@ -617,27 +646,30 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
                          components,8,FALSE,TRUE,
                          scalex,scaley,scalez);
 
-   if (outname==NULL) return(FALSE);
+   if (outname==NULL) return(NULL);
 
    // open RAW output file
    if ((outfile=fopen(outname,"wb"))==NULL)
       {
       free(outname);
-      return(FALSE);
+      return(NULL);
       }
-
-   free(outname);
 
    // process out-of-core slice by slice
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL)
+            {
+            free(outname);
+            return(NULL);
+            }
 
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          shorts=convert2short(slice,cells,components,bits,sign,msb);
@@ -649,18 +681,19 @@ BOOLINT copyRAWvolume_linear(FILE *file, // source file desc
          if (fwrite(chars,cells*components,1,outfile)!=1)
             {
             free(chars);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          free(chars);
          }
 
-   return(TRUE);
+   return(outname);
    }
 
 // copy a RAW volume with out-of-core linear quantization
-BOOLINT copyRAWvolume_linear(const char *filename, // source file
-                             const char *output) // destination file name /wo suffix .raw
+char *copyRAWvolume_linear(const char *filename, // source file
+                           const char *output) // destination file name /wo suffix .raw
    {
    FILE *file;
 
@@ -670,7 +703,7 @@ BOOLINT copyRAWvolume_linear(const char *filename, // source file
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
-   BOOLINT success;
+   char *outname;
 
    // open RAW file
    if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
@@ -688,14 +721,14 @@ BOOLINT copyRAWvolume_linear(const char *filename, // source file
       }
    free(name);
 
-   success=copyRAWvolume_linear(file,output,
+   outname=copyRAWvolume_linear(file,output,
                                 rawwidth,rawheight,rawdepth,rawsteps,
                                 rawcomps,rawbits,rawsign,rawmsb,
                                 rawscalex,rawscaley,rawscalez);
 
    fclose(file);
 
-   return(success);
+   return(outname);
    }
 
 // helper to get a short value from 3 consecutive slices
@@ -810,11 +843,11 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
    }
 
 // copy a RAW volume with out-of-core non-linear quantization
-BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
-                                const char *output, // destination file name /wo .raw
-                                unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                                unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                                float scalex,float scaley,float scalez)
+char *copyRAWvolume_nonlinear(FILE *file, // source file desc
+                              const char *output, // destination file name /wo .raw
+                              unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                              unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                              float scalex,float scaley,float scalez)
    {
    unsigned int i,j;
 
@@ -855,12 +888,12 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
 
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            return(NULL);
             }
 
          shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
@@ -896,12 +929,17 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
             {
             if (j==0)
                {
-               if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+               if ((slice=(unsigned char *)malloc(bytes))==NULL)
+                  {
+                  delete err;
+                  return(NULL);
+                  }
 
                if (fread(slice,bytes,1,file)!=1)
                   {
+                  delete err;
                   free(slice);
-                  return(FALSE);
+                  return(NULL);
                   }
 
                shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
@@ -915,14 +953,19 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
 
             if (j<depth-1)
                {
-               if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+               if ((slice=(unsigned char *)malloc(bytes))==NULL)
+                  {
+                  delete err;
+                  return(NULL);
+                  }
 
                if (fread(slice,bytes,1,file)!=1)
                   {
+                  delete err;
                   free(slice);
                   if (shorts[0]!=NULL) free(shorts[0]);
                   if (shorts[1]!=NULL) free(shorts[1]);
-                  return(FALSE);
+                  return(NULL);
                   }
 
                shorts[2]=convert2short(slice,cells,components,bits,sign,msb);
@@ -939,7 +982,11 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
       }
 
    // seek back to start
-   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,tellpos,SEEK_SET)==-1)
+      {
+      delete err;
+      return(NULL);
+      }
 
    // make RAW info
    outname=appendRAWinfo(output,
@@ -947,27 +994,37 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
                          components,8,FALSE,TRUE,
                          scalex,scaley,scalez);
 
-   if (outname==NULL) return(FALSE);
+   if (outname==NULL)
+      {
+      delete err;
+      return(NULL);
+      }
 
    // open RAW output file
    if ((outfile=fopen(outname,"wb"))==NULL)
       {
+      delete err;
       free(outname);
-      return(FALSE);
+      return(NULL);
       }
-
-   free(outname);
 
    // process out-of-core slice by slice
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL)
+            {
+            delete err;
+            free(outname);
+            return(NULL);
+            }
 
          if (fread(slice,bytes,1,file)!=1)
             {
+            delete err;
             free(slice);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
@@ -978,19 +1035,23 @@ BOOLINT copyRAWvolume_nonlinear(FILE *file, // source file desc
 
          if (fwrite(chars,cells*components,1,outfile)!=1)
             {
+            delete err;
             free(chars);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          free(chars);
          }
 
-   return(TRUE);
+   delete err;
+
+   return(outname);
    }
 
 // copy a RAW volume with out-of-core non-linear quantization
-BOOLINT copyRAWvolume_nonlinear(const char *filename, // source file
-                                const char *output) // destination file name /wo suffix .raw
+char *copyRAWvolume_nonlinear(const char *filename, // source file
+                              const char *output) // destination file name /wo suffix .raw
    {
    FILE *file;
 
@@ -1000,7 +1061,7 @@ BOOLINT copyRAWvolume_nonlinear(const char *filename, // source file
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
-   BOOLINT success;
+   char *outname;
 
    // open RAW file
    if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
@@ -1018,19 +1079,19 @@ BOOLINT copyRAWvolume_nonlinear(const char *filename, // source file
       }
    free(name);
 
-   success=copyRAWvolume_nonlinear(file,output,
+   outname=copyRAWvolume_nonlinear(file,output,
                                    rawwidth,rawheight,rawdepth,rawsteps,
                                    rawcomps,rawbits,rawsign,rawmsb,
                                    rawscalex,rawscaley,rawscalez);
 
    fclose(file);
 
-   return(success);
+   return(outname);
    }
 
 // populate histogram from short array
 void convert2histogram(unsigned short int *shorts,unsigned long long cells,unsigned int components,
-                       unsigned int *histo)
+                       double *histo)
    {
    unsigned long long i;
 
@@ -1134,12 +1195,12 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    }
 
 // copy a RAW volume with out-of-core cropping
-BOOLINT cropRAWvolume(FILE *file, // source file desc
-                      const char *output, // destination file name /wo .raw
-                      unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
-                      unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                      float scalex,float scaley,float scalez,
-                      double ratio)
+char *cropRAWvolume(FILE *file, // source file desc
+                    const char *output, // destination file name /wo .raw
+                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                    float scalex,float scaley,float scalez,
+                    double ratio) // crop volume ratio
    {
    unsigned int i,j,k;
 
@@ -1151,7 +1212,7 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
 
    unsigned long long tellpos;
 
-   unsigned int histo[65536];
+   double *histo;
 
    double tsum,wsum;
 
@@ -1175,19 +1236,26 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
    // remember seek position
    tellpos=ftell(file);
 
+   histo=new double[65536];
+
    // initialize histogram
-   for (i=0; i<65536; i++) histo[i]=0;
+   for (i=0; i<65536; i++) histo[i]=0.0;
 
    // populate histogram
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL)
+            {
+            delete histo;
+            return(NULL);
+            }
 
          if (fread(slice,bytes,1,file)!=1)
             {
+            delete histo;
             free(slice);
-            return(FALSE);
+            return(NULL);
             }
 
          shorts=convert2short(slice,cells,components,bits,sign,msb);
@@ -1210,8 +1278,10 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
       if (wsum>ratio*tsum) break;
       }
 
+   delete histo;
+
    // seek back to start
-   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(NULL);
 
    crop_x1=width-1;
    crop_x2=0;
@@ -1226,12 +1296,12 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
 
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            return(NULL);
             }
 
          shorts=convert2short(slice,cells,components,bits,sign,msb);
@@ -1252,7 +1322,7 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
       }
 
    // seek back to start
-   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(NULL);
 
    // make RAW info
    outname=appendRAWinfo(output,
@@ -1260,27 +1330,30 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
                          components,16,FALSE,!RAW_ISINTEL,
                          scalex,scaley,scalez);
 
-   if (outname==NULL) return(FALSE);
+   if (outname==NULL) return(NULL);
 
    // open RAW output file
    if ((outfile=fopen(outname,"wb"))==NULL)
       {
       free(outname);
-      return(FALSE);
+      return(NULL);
       }
-
-   free(outname);
 
    // process out-of-core slice by slice
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(FALSE);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL)
+            {
+            free(outname);
+            return(NULL);
+            }
 
          if (fread(slice,bytes,1,file)!=1)
             {
             free(slice);
-            return(FALSE);
+            free(outname);
+            return(NULL);
             }
 
          shorts=convert2short(slice,cells,components,bits,sign,msb);
@@ -1291,19 +1364,20 @@ BOOLINT cropRAWvolume(FILE *file, // source file desc
                if (fwrite(&shorts[(crop_x1+k*width)*components],2*(crop_x2-crop_x1+1)*components,1,outfile)!=1)
                   {
                   free(shorts);
-                  return(FALSE);
+                  free(outname);
+                  return(NULL);
                   }
 
          free(shorts);
          }
 
-   return(TRUE);
+   return(outname);
    }
 
 // copy a RAW volume with out-of-core cropping
-BOOLINT cropRAWvolume(const char *filename, // source file
-                      const char *output, // destination file name /wo suffix .raw
-                      double ratio)
+char *cropRAWvolume(const char *filename, // source file
+                    const char *output, // destination file name /wo suffix .raw
+                    double ratio) // crop volume ratio
    {
    FILE *file;
 
@@ -1313,7 +1387,7 @@ BOOLINT cropRAWvolume(const char *filename, // source file
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
-   BOOLINT success;
+   char *outname;
 
    // open RAW file
    if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
@@ -1331,7 +1405,7 @@ BOOLINT cropRAWvolume(const char *filename, // source file
       }
    free(name);
 
-   success=cropRAWvolume(file,output,
+   outname=cropRAWvolume(file,output,
                          rawwidth,rawheight,rawdepth,rawsteps,
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez,
@@ -1339,5 +1413,41 @@ BOOLINT cropRAWvolume(const char *filename, // source file
 
    fclose(file);
 
-   return(success);
+   return(outname);
+   }
+
+// process a RAW volume with out-of-core cropping and non-linear quantization
+char *processRAWvolume(const char *filename, // source file
+                       double ratio) // crop volume ratio
+   {
+   char *outname=NULL;
+
+   char *filename2,*filename3,*filename4,*filename5,*filename6;
+
+   // remove suffix
+   filename2=removeRAWsuffix(filename);
+
+   // append crop suffix to filename
+   filename3=strdup2(filename2,"_crop");
+   free(filename2);
+
+   // crop
+   if (filename4=cropRAWvolume(filename,filename3))
+      {
+      // remove suffix
+      filename5=removeRAWsuffix(filename4);
+
+      // append quantize suffix to filename
+      filename6=strdup2(filename5,"_quant");
+      free(filename5);
+
+      // quantize
+      outname=copyRAWvolume_nonlinear(filename4,filename6);
+      free(filename4);
+      free(filename6);
+      }
+
+   free(filename3);
+
+   return(outname);
    }

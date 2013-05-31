@@ -132,12 +132,14 @@ BOOLINT readREKheader(const char *filename,
    }
 
 // copy a REK volume to a RAW volume
-BOOLINT copyREKvolume(const char *filename,const char *output)
+char *copyREKvolume(const char *filename,const char *output)
    {
    FILE *file;
 
    unsigned int width,height,depth,components;
    float scalex,scaley,scalez;
+
+   char *outname;
 
    // open REK file
    if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
@@ -151,10 +153,10 @@ BOOLINT copyREKvolume(const char *filename,const char *output)
       }
 
    // copy REK data to RAW file
-   if (!copyRAWvolume(file,output,
-                      width,height,depth,1,
-                      components,8,FALSE,FALSE,
-                      scalex,scaley,scalez))
+   if (!(outname=copyRAWvolume(file,output,
+                               width,height,depth,1,
+                               components,8,FALSE,FALSE,
+                               scalex,scaley,scalez)))
       {
       fclose(file);
       return(FALSE);
@@ -162,5 +164,5 @@ BOOLINT copyREKvolume(const char *filename,const char *output)
 
    fclose(file);
 
-   return(TRUE);
+   return(outname);
    }
