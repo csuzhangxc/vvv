@@ -441,7 +441,7 @@ char *copyRAWvolume(const char *filename, // source file
    char *outname;
 
    // open RAW file
-   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
 
    // analyze RAW info
    name=strdup(filename);
@@ -706,7 +706,7 @@ char *copyRAWvolume_linear(const char *filename, // source file
    char *outname;
 
    // open RAW file
-   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
 
    // analyze RAW info
    name=strdup(filename);
@@ -717,7 +717,7 @@ char *copyRAWvolume_linear(const char *filename, // source file
       {
       free(name);
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
    free(name);
 
@@ -907,7 +907,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
          }
 
    // seek back to start
-   if (fseek(file,tellpos,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,tellpos,SEEK_SET)==-1) return(NULL);
 
    if (minval0==maxval0) maxval0=minval0+1;
 
@@ -1064,7 +1064,7 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
    char *outname;
 
    // open RAW file
-   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
 
    // analyze RAW info
    name=strdup(filename);
@@ -1075,7 +1075,7 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
       {
       free(name);
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
    free(name);
 
@@ -1390,7 +1390,7 @@ char *cropRAWvolume(const char *filename, // source file
    char *outname;
 
    // open RAW file
-   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
 
    // analyze RAW info
    name=strdup(filename);
@@ -1401,7 +1401,7 @@ char *cropRAWvolume(const char *filename, // source file
       {
       free(name);
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
    free(name);
 
@@ -1420,9 +1420,11 @@ char *cropRAWvolume(const char *filename, // source file
 char *processRAWvolume(const char *filename, // source file
                        double ratio) // crop volume ratio
    {
-   char *outname=NULL;
+   char *outname;
 
    char *filename2,*filename3,*filename4,*filename5,*filename6;
+
+   outname=NULL;
 
    // remove suffix
    filename2=removeRAWsuffix(filename);
