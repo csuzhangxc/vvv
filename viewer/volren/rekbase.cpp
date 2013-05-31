@@ -142,14 +142,14 @@ char *copyREKvolume(const char *filename,const char *output)
    char *outname;
 
    // open REK file
-   if ((file=fopen(filename,"rb"))==NULL) return(FALSE);
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
 
    // analyze REK header
    if (!readREKheader(file,&width,&height,&depth,&components,
                       &scalex,&scaley,&scalez))
       {
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
 
    // copy REK data to RAW file
@@ -159,10 +159,44 @@ char *copyREKvolume(const char *filename,const char *output)
                                scalex,scaley,scalez)))
       {
       fclose(file);
-      return(FALSE);
+      return(NULL);
       }
 
    fclose(file);
 
    return(outname);
+   }
+
+// read a REK volume out-of-core
+unsigned char *readREKvolume_ooc(const char *filename,
+                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                 float *scalex,float *scaley,float *scalez)
+   {
+   char *rawname,*outname;
+
+   unsigned char *volume;
+   unsigned int steps;
+
+   volume=NULL;
+
+   rawname=copyREKvolume(filename,filename);
+
+   if (rawname!=NULL)
+      {
+      outname=processRAWvolume(rawname);
+
+      if (outname!=NULL)
+         {
+         volume=readRAWvolume(outname,
+                              width,height,depth,&steps,
+                              components,NULL,NULL,NULL,
+                              scalex,scaley,scalez);
+
+         free(outname);
+         }
+
+      free(rawname);
+      }
+
+   return(volume);
    }

@@ -24,4 +24,9 @@ BOOLINT readREKheader(const char *filename,
 // copy a REK volume to a RAW volume
 char *copyREKvolume(const char *filename,const char *output);
 
+// read a REK volume out-of-core
+unsigned char *readREKvolume_ooc(const char *filename,
+                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                                 float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+
 #endif

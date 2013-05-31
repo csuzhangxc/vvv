@@ -2688,6 +2688,10 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       // read a RAW volume
       volume=readRAWvolume(filename,width,height,depth,&steps,components,NULL,NULL,&order,scalex,scaley,scalez);
 
+      // read a REK volume out-of-core
+      if (volume==NULL)
+         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez);
+
       // read a REK volume
       if (volume==NULL)
          if ((volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
