@@ -399,6 +399,7 @@ char *copyRAWvolume(FILE *file, // source file desc
    if ((slice=(unsigned char *)malloc(bytes))==NULL)
       {
       free(outname);
+      fclose(outfile);
       return(NULL);
       }
 
@@ -410,6 +411,7 @@ char *copyRAWvolume(FILE *file, // source file desc
             {
             free(slice);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -417,11 +419,13 @@ char *copyRAWvolume(FILE *file, // source file desc
             {
             free(slice);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
          }
 
    free(slice);
+   fclose(outfile);
 
    return(outname);
    }
@@ -484,7 +488,7 @@ unsigned short int *convert2short(unsigned char *source,unsigned long long cells
 
    cells*=components;
 
-   if ((shorts=(unsigned short int *)malloc(cells*sizeof(unsigned short int)))==NULL) return(NULL);
+   if ((shorts=(unsigned short int *)malloc(cells*sizeof(unsigned short int)))==NULL) ERRORMSG();
 
    if (bits==8)
       if (sign)
@@ -569,7 +573,7 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
 
    cells*=components;
 
-   if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
+   if ((chars=(unsigned char *)malloc(cells))==NULL) ERRORMSG();
 
    for (i=0; i<cells; i++)
       chars[i]=(int)ffloor(255.0f*(shorts[i]-minval)/(maxval-minval)+0.5f);
@@ -662,6 +666,7 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
          if ((slice=(unsigned char *)malloc(bytes))==NULL)
             {
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -669,6 +674,7 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
             {
             free(slice);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -682,11 +688,14 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
             {
             free(chars);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
          free(chars);
          }
+
+   fclose(outfile);
 
    return(outname);
    }
@@ -834,7 +843,7 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
 
    cells*=components;
 
-   if ((chars=(unsigned char *)malloc(cells))==NULL) return(NULL);
+   if ((chars=(unsigned char *)malloc(cells))==NULL) ERRORMSG();
 
    for (i=0; i<cells; i++)
       chars[i]=(int)(err[shorts[i]]+0.5);
@@ -1016,6 +1025,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
             {
             delete err;
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -1024,6 +1034,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
             delete err;
             free(slice);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -1038,6 +1049,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
             delete err;
             free(chars);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -1045,6 +1057,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
          }
 
    delete err;
+   fclose(outfile);
 
    return(outname);
    }
@@ -1346,6 +1359,7 @@ char *cropRAWvolume(FILE *file, // source file desc
          if ((slice=(unsigned char *)malloc(bytes))==NULL)
             {
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -1353,6 +1367,7 @@ char *cropRAWvolume(FILE *file, // source file desc
             {
             free(slice);
             free(outname);
+            fclose(outfile);
             return(NULL);
             }
 
@@ -1365,11 +1380,14 @@ char *cropRAWvolume(FILE *file, // source file desc
                   {
                   free(shorts);
                   free(outname);
+                  fclose(outfile);
                   return(NULL);
                   }
 
          free(shorts);
          }
+
+   fclose(outfile);
 
    return(outname);
    }
