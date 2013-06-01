@@ -4,12 +4,13 @@
 #include "oglbase.h" // OpenGL base rendering
 #include "glutbase.h" // GLUT window handling
 #include "ddsbase.h" // volume file reader
+#include "rawbase.h" // raw file reader
 
 #define STR_MAX (256)
 
 unsigned char *volume,*volume2;
 
-unsigned int width,height,depth,
+unsigned int width,height,depth,steps,
              components;
 
 unsigned int frame=0;
@@ -163,7 +164,8 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
-   if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components))==NULL) exit(1);
+   if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components))!=NULL) depth*=steps;
+   else if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components))==NULL) exit(1);
 
    if (argc>2)
       {
