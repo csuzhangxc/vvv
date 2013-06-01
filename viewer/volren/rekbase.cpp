@@ -167,35 +167,64 @@ char *copyREKvolume(const char *filename,const char *output)
    return(outname);
    }
 
+// copy a REK volume to a RAW volume with out-of-core cropping and non-linear quantization
+char *processREKvolume(const char *filename,const char *output)
+   {
+   FILE *file;
+
+   unsigned int width,height,depth,components;
+   float scalex,scaley,scalez;
+
+   char *outname;
+
+   // open REK file
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
+
+   // analyze REK header
+   if (!readREKheader(file,&width,&height,&depth,&components,
+                      &scalex,&scaley,&scalez))
+      {
+      fclose(file);
+      return(NULL);
+      }
+
+   // copy REK data to RAW file
+   if (!(outname=processRAWvolume(file,output,
+                                  width,height,depth,1,
+                                  components,8,FALSE,FALSE,
+                                  scalex,scaley,scalez)))
+      {
+      fclose(file);
+      return(NULL);
+      }
+
+   fclose(file);
+
+   return(outname);
+   }
+
 // read a REK volume out-of-core
 unsigned char *readREKvolume_ooc(const char *filename,
                                  unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
                                  float *scalex,float *scaley,float *scalez)
    {
-   char *rawname,*outname;
+   char *outname;
 
    unsigned char *volume;
    unsigned int steps;
 
    volume=NULL;
 
-   rawname=copyREKvolume(filename,filename);
+   outname=processREKvolume(filename,filename);
 
-   if (rawname!=NULL)
+   if (outname!=NULL)
       {
-      outname=processRAWvolume(rawname);
+      volume=readRAWvolume(outname,
+                           width,height,depth,&steps,
+                           components,NULL,NULL,NULL,
+                           scalex,scaley,scalez);
 
-      if (outname!=NULL)
-         {
-         volume=readRAWvolume(outname,
-                              width,height,depth,&steps,
-                              components,NULL,NULL,NULL,
-                              scalex,scaley,scalez);
-
-         free(outname);
-         }
-
-      free(rawname);
+      free(outname);
       }
 
    return(volume);

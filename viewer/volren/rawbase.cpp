@@ -1213,7 +1213,7 @@ char *cropRAWvolume(FILE *file, // source file desc
                     unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
                     unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                     float scalex,float scaley,float scalez,
-                    double ratio) // crop volume ratio
+                    float ratio) // crop volume ratio
    {
    unsigned int i,j,k;
 
@@ -1395,7 +1395,7 @@ char *cropRAWvolume(FILE *file, // source file desc
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(const char *filename, // source file
                     const char *output, // destination file name /wo suffix .raw
-                    double ratio) // crop volume ratio
+                    float ratio) // crop volume ratio
    {
    FILE *file;
 
@@ -1435,8 +1435,54 @@ char *cropRAWvolume(const char *filename, // source file
    }
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
+char *processRAWvolume(FILE *file, // source file desc
+                       const char *output, // destination file name
+                       unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                       unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                       float scalex,float scaley,float scalez,
+                       float ratio) // crop volume ratio
+   {
+   char *outname;
+
+   char *filename2,*filename3,*filename4,*filename5,*filename6;
+
+   outname=NULL;
+
+   // remove suffix
+   filename2=removeRAWsuffix(output);
+
+   // append crop suffix to filename
+   filename3=strdup2(filename2,"_crop");
+   free(filename2);
+
+   // crop
+   if (filename4=cropRAWvolume(file,filename3,
+                               width,height,depth,steps,
+                               components,bits,sign,msb,
+                               scalex,scaley,scalez,
+                               ratio))
+      {
+      // remove suffix
+      filename5=removeRAWsuffix(filename4);
+
+      // append quantize suffix to filename
+      filename6=strdup2(filename5,"_quant");
+      free(filename5);
+
+      // quantize
+      outname=copyRAWvolume_nonlinear(filename4,filename6);
+      free(filename4);
+      free(filename6);
+      }
+
+   free(filename3);
+
+   return(outname);
+   }
+
+// process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
-                       double ratio) // crop volume ratio
+                       float ratio) // crop volume ratio
    {
    char *outname;
 
@@ -1452,7 +1498,7 @@ char *processRAWvolume(const char *filename, // source file
    free(filename2);
 
    // crop
-   if (filename4=cropRAWvolume(filename,filename3))
+   if (filename4=cropRAWvolume(filename,filename3,ratio))
       {
       // remove suffix
       filename5=removeRAWsuffix(filename4);

@@ -1,7 +1,7 @@
 #include "codebase.h"
 #include "rawbase.h"
 
-static const double ratio=0.5;
+static const float ratio=0.5f;
 
 int main(int argc,char *argv[])
    {
@@ -15,7 +15,7 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
-   output=cropRAWvolume(argv[1],argv[2]);
+   output=cropRAWvolume(argv[1],argv[2],ratio);
 
    if (output)
       {
