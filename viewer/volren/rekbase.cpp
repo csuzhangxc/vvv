@@ -93,7 +93,7 @@ unsigned char *readREKvolume(const char *filename,
 
    bytes=(*width)*(*height)*(*depth)*(*components);
 
-   if ((volume=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+   if ((volume=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
    // read volume
    if (fread(volume,bytes,1,file)!=1)
