@@ -236,7 +236,7 @@ char *removeRAWsuffix(const char *filename)
       {
       dot=strrchr(filename2,'.');
       if (dot!=NULL)
-         if (strcasecmp(dot,".raw")!=0) *dot='\0';
+         if (strcasecmp(dot,".raw")==0) *dot='\0';
       }
 
    return(filename2);
