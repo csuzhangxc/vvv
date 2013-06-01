@@ -921,7 +921,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
 
    if (minval0==maxval0) maxval0=minval0+1;
 
-   if (maxval0-minval0<256) linear=TRUE;
+   linear=(maxval0-minval0<256);
 
    err=new double[65536];
 
