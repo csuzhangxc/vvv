@@ -1471,8 +1471,11 @@ char *processRAWvolume(FILE *file, // source file desc
 
       // quantize
       outname=copyRAWvolume_nonlinear(filename4,filename6);
-      free(filename4);
       free(filename6);
+
+      // remove crop volume
+      removefile(filename4);
+      free(filename4);
       }
 
    free(filename3);
@@ -1509,8 +1512,11 @@ char *processRAWvolume(const char *filename, // source file
 
       // quantize
       outname=copyRAWvolume_nonlinear(filename4,filename6);
-      free(filename4);
       free(filename6);
+
+      // remove crop volume
+      removefile(filename4);
+      free(filename4);
       }
 
    free(filename3);

@@ -242,4 +242,16 @@ inline char *strdup2(const char *str1,const char *str2)
    return(str);
    }
 
+#ifdef _WIN32
+#include <stdio.h>
+#include <direct.h>
+inline int removefile(const char *file) {return(remove(file));}
+inline int removedir(const char *dir) {return(_rmdir(dir));}
+#else
+#include <stdio.h>
+#include <unistd.h>
+inline int removefile(const char *file) {return(remove(file));}
+inline int removedir(const char *dir) {return(rmdir(dir));}
+#endif
+
 #endif
