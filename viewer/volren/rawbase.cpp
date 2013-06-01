@@ -305,7 +305,7 @@ unsigned char *readRAWvolume(const char *filename,
       if (*bits==16) bytes*=2;
       else if (*bits==32) bytes*=4;
 
-   if ((volume=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+   if ((volume=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
    // read RAW volume
    if (fread(volume,bytes,1,file)!=1)
@@ -403,12 +403,7 @@ char *copyRAWvolume(FILE *file, // source file desc
       return(NULL);
       }
 
-   if ((slice=(unsigned char *)malloc(bytes))==NULL)
-      {
-      free(outname);
-      fclose(outfile);
-      return(NULL);
-      }
+   if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
    // process out-of-core slice by slice
    for (i=0; i<steps; i++)
@@ -630,7 +625,7 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -670,12 +665,7 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL)
-            {
-            free(outname);
-            fclose(outfile);
-            return(NULL);
-            }
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -904,7 +894,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -945,11 +935,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
             {
             if (j==0)
                {
-               if ((slice=(unsigned char *)malloc(bytes))==NULL)
-                  {
-                  delete err;
-                  return(NULL);
-                  }
+               if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
                if (fread(slice,bytes,1,file)!=1)
                   {
@@ -969,11 +955,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
 
             if (j<depth-1)
                {
-               if ((slice=(unsigned char *)malloc(bytes))==NULL)
-                  {
-                  delete err;
-                  return(NULL);
-                  }
+               if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
                if (fread(slice,bytes,1,file)!=1)
                   {
@@ -1028,13 +1010,7 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL)
-            {
-            delete err;
-            free(outname);
-            fclose(outfile);
-            return(NULL);
-            }
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -1265,11 +1241,7 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL)
-            {
-            delete histo;
-            return(NULL);
-            }
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -1316,7 +1288,7 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL) return(NULL);
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
@@ -1363,12 +1335,7 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
-         if ((slice=(unsigned char *)malloc(bytes))==NULL)
-            {
-            free(outname);
-            fclose(outfile);
-            return(NULL);
-            }
+         if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
             {
