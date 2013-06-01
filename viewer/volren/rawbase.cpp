@@ -1,6 +1,7 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
 #include "codebase.h"
+#include "dirbase.h"
 
 #include "rawbase.h"
 
@@ -1443,6 +1444,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        float ratio) // crop volume ratio
    {
    char *outname;
+   const char *preoutname;
 
    char *filename2,*filename3,*filename4,*filename5,*filename6;
 
@@ -1450,6 +1452,19 @@ char *processRAWvolume(FILE *file, // source file desc
 
    // remove suffix
    filename2=removeRAWsuffix(output);
+
+   // search for existing crop volume
+   filename3=strdup2(filename2,"_crop_quant.*.raw");
+   filesearch(filename3);
+   free(filename3);
+   preoutname=findfile();
+
+   // check for pre-processed file
+   if (preoutname!=NULL)
+      {
+      free(filename2);
+      return(strdup(preoutname));
+      }
 
    // append crop suffix to filename
    filename3=strdup2(filename2,"_crop");
@@ -1488,6 +1503,7 @@ char *processRAWvolume(const char *filename, // source file
                        float ratio) // crop volume ratio
    {
    char *outname;
+   const char *preoutname;
 
    char *filename2,*filename3,*filename4,*filename5,*filename6;
 
@@ -1495,6 +1511,19 @@ char *processRAWvolume(const char *filename, // source file
 
    // remove suffix
    filename2=removeRAWsuffix(filename);
+
+   // search for existing crop volume
+   filename3=strdup2(filename2,"_crop_quant.*.raw");
+   filesearch(filename3);
+   free(filename3);
+   preoutname=findfile();
+
+   // check for pre-processed file
+   if (preoutname!=NULL)
+      {
+      free(filename2);
+      return(strdup(preoutname));
+      }
 
    // append crop suffix to filename
    filename3=strdup2(filename2,"_crop");
