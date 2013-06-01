@@ -182,13 +182,9 @@ protected:
       double eye_tuy=cos(tilt_*PI/180)*eye_uy+sin(tilt_*PI/180)*eye_uz;
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
 
-      // tf emission (emi)
-      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_be());
-
-      // tf absorption (att)
-      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ra());
-      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ga());
-      vr_->get_tfunc()->set_line(0.0f,0.0f,1.0f,1.0f,vr_->get_tfunc()->get_ba());
+      // linear blue transfer function
+      vr_->set_tfunc(0.5f,1.0f,
+                     0.0f,0.0f,1.0f);
 
       // call volume renderer
       vr_->render(eye_tx,eye_ty,eye_tz, // view point

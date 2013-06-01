@@ -802,27 +802,33 @@ void tfunc::set_line(float x1,float y1,float x2,float y2,float *tf)
 
    float y;
 
-   c1=min(ftrc(RES*x1),RES-1);
-   c2=min(ftrc(RES*x2),RES-1);
+   c1=ftrc(RES*x1);
+   c2=ftrc(RES*x2);
 
    y=y1;
 
    if (c1<=c2)
+      {
       for (i=c1; i<=c2; i++)
-         {
-         if (fabs(y-tf[i])>tolerance) CHANGED=TRUE;
+         if (i>=0 && i<=RES-1)
+            {
+            if (fabs(y-tf[i])>tolerance) CHANGED=TRUE;
 
-         tf[i]=y;
-         y+=(y2-y1)/(c2-c1+1);
-         }
+            tf[i]=y;
+            y+=(y2-y1)/(c2-c1+1);
+            }
+      }
    else
+      {
       for (i=c1; i>=c2; i--)
-         {
-         if (fabs(y-tf[i])>tolerance) CHANGED=TRUE;
+         if (i>=0 && i<=RES-1)
+            {
+            if (fabs(y-tf[i])>tolerance) CHANGED=TRUE;
 
-         tf[i]=y;
-         y+=(y2-y1)/(c1-c2+1);
-         }
+            tf[i]=y;
+            y+=(y2-y1)/(c1-c2+1);
+            }
+      }
    }
 
 // cubic interpolation

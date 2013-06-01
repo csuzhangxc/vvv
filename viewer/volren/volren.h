@@ -70,6 +70,30 @@ class volren
    void savePVMvolume(const char *filename)
       {VOL->savePVMvolume(filename);}
 
+   // use linear transfer function
+   void set_tfunc(float center=0.5f,float size=1.0f,
+                  float r=1.0f,float g=1.0f,float b=1.0f)
+      {
+      float x1=center-0.5f*size;
+      float x2=center+0.5f*size;
+
+      // tf emission (emi)
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_re());
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ge());
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_be());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,r,VOL->get_tfunc()->get_re());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,g,VOL->get_tfunc()->get_ge());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,b,VOL->get_tfunc()->get_be());
+
+      // tf absorption (att)
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ra());
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ga());
+      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ba());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ra());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ga());
+      VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ba());
+      }
+
    // render the volume mipmap pyramid
    BOOLINT render(float eye_x,float eye_y,float eye_z, // eye point
                   float eye_dx,float eye_dy,float eye_dz, // viewing direction
