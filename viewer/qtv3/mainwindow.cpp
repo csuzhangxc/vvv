@@ -250,10 +250,20 @@ void QTV3MainWindow::mouseReleaseEvent(QMouseEvent *event)
    bRightButtonDown = false;
 }
 
+void QTV3MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+   if (vrw_->getRotation()==0.0)
+      vrw_->setRotation(10.0);
+   else
+      vrw_->setRotation(0.0);
+}
+
 void QTV3MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
    float x = (float)(event->x())/width();
    float y = (float)(event->y())/height();
+
+   printf("%g %g\n",x,y); //!!
 
    if (bLeftButtonDown)
       vrw_->set_tfunc(x,y,0,0,1);

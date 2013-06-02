@@ -5,6 +5,10 @@
 
 #include <QtOpenGL/qgl.h>
 
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QWheelEvent>
+
 #include "volren.h"
 
 class QGLVolRenWidget: public QGLWidget
@@ -32,7 +36,7 @@ public:
    }
 
    //! dtor
-   ~QGLVolRenWidget()
+   virtual ~QGLVolRenWidget()
    {
       if (vr_)
          delete vr_;
@@ -54,6 +58,10 @@ public:
    //! set volume rotation speed
    void setRotation(double omega=30.0)
       {omega_=omega;}
+
+   //! get volume rotation speed
+   double getRotation()
+      {return(omega_);}
 
    //! set volume rotation angle
    void setAngle(double angle=0.0)
@@ -224,6 +232,15 @@ protected:
       repaint();
    }
 
+   void mousePressEvent(QMouseEvent *event) {event->ignore();}
+   void mouseReleaseEvent(QMouseEvent *event) {event->ignore();}
+   void mouseDoubleClickEvent(QMouseEvent *event) {event->ignore();}
+   void mouseMoveEvent(QMouseEvent *event) {event->ignore();}
+
+   void keyPressEvent(QKeyEvent *event) {event->ignore();}
+   void keyReleaseEvent(QKeyEvent *event) {event->ignore();}
+
+   void wheelEvent(QWheelEvent *event) {event->ignore();}
 };
 
 #endif
