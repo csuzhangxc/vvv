@@ -1603,7 +1603,7 @@ char *processRAWvolume(FILE *file, // source file desc
    filename2=removeRAWsuffix(output);
 
    // search for existing crop volume
-   filename3=strdup2(filename2,"_crop*_quant.*.raw");
+   filename3=strdup2(filename2,"_crop*.raw");
    filesearch(filename3);
    free(filename3);
    preoutname=findfile();
@@ -1693,7 +1693,7 @@ char *processRAWvolume(const char *filename, // source file
    filename2=removeRAWsuffix(filename);
 
    // search for existing crop volume
-   filename3=strdup2(filename2,"_crop*_quant.*.raw");
+   filename3=strdup2(filename2,"_crop*.raw");
    filesearch(filename3);
    free(filename3);
    preoutname=findfile();
