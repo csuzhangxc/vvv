@@ -1,6 +1,9 @@
 #include "codebase.h"
 #include "rawbase.h"
 
+static const float ratio=0.5f;
+static const long long maxcells=250000000;
+
 int main(int argc,char *argv[])
    {
    char *output;
@@ -11,7 +14,7 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
-   output=processRAWvolume(argv[1]);
+   output=processRAWvolume(argv[1],ratio,maxcells);
 
    if (output)
       {
