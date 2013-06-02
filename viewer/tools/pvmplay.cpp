@@ -4,19 +4,23 @@
 #include "oglbase.h" // OpenGL base rendering
 #include "glutbase.h" // GLUT window handling
 #include "ddsbase.h" // volume file reader
+#include "rekbase.h" // rek file reader
 #include "rawbase.h" // raw file reader
 
 #define STR_MAX (256)
+
+float fps=25.0f;
 
 unsigned char *volume;
 
 unsigned int width,height,depth,steps,
              components;
 
+BOOLINT msb=TRUE;
+
 unsigned int frame=0;
 
 unsigned char *image;
-
 unsigned int imgwidth,imgheight;
 
 void handler(float time)
@@ -160,28 +164,27 @@ int main(int argc,char *argv[])
    {
    unsigned int i;
 
-   float fps=25.0f;
-
    if (argc<2 || argc>4)
       {
       printf("usage: %s <movie.pvm> [<frame number> [<output.pnm>]]\n",argv[0]);
       exit(1);
       }
 
-   if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components))!=NULL) depth*=steps;
+   if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components,NULL,NULL,&msb))!=NULL) depth*=steps;
+   else if ((volume=readREKvolume(argv[1],&width,&height,&depth,&components))!=NULL) msb=FALSE;
    else if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components))==NULL) exit(1);
+
+   if (components==2)
+      {
+      volume=quantize(volume,width,height,depth,msb);
+      components=1;
+      }
 
    if (argc>2)
       {
       if (sscanf(argv[2],"%d",&frame)!=1) exit(1);
       if (frame<1 || frame>depth) exit(1);
       frame--;
-      }
-
-   if (components==2)
-      {
-      volume=quantize(volume,width,height,depth);
-      components=1;
       }
 
    if (argc==4)
