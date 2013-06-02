@@ -6,7 +6,6 @@
 #include <QtOpenGL/qgl.h>
 
 #include <QMouseEvent>
-#include <QKeyEvent>
 #include <QWheelEvent>
 
 #include "volren.h"
@@ -277,19 +276,6 @@ protected:
          set_tfunc(x,1.0f-y,0,0,1);
       else
          event->ignore();
-   }
-
-   void keyPressEvent(QKeyEvent *event)
-   {
-      if (event->key() == Qt::Key_Q)
-         emit close();
-
-      QGLWidget::keyPressEvent(event);
-   }
-
-   void keyReleaseEvent(QKeyEvent *event)
-   {
-      QGLWidget::keyReleaseEvent(event);
    }
 
    void wheelEvent(QWheelEvent *event)

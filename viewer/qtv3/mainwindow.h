@@ -73,6 +73,19 @@ private:
 
 protected:
 
+   void keyPressEvent(QKeyEvent *event)
+   {
+      if (event->key() == Qt::Key_Q)
+         emit close();
+
+      QMainWindow::keyPressEvent(event);
+   }
+
+   void keyReleaseEvent(QKeyEvent *event)
+   {
+      QMainWindow::keyReleaseEvent(event);
+   }
+
    void dragEnterEvent(QDragEnterEvent *event);
    void dragMoveEvent(QDragMoveEvent *event);
    void dragLeaveEvent(QDragLeaveEvent *event);
