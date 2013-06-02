@@ -1584,12 +1584,18 @@ char *processRAWvolume(FILE *file, // source file desc
                        unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                        float scalex,float scaley,float scalez,
-                       float ratio) // crop volume ratio
+                       float ratio,  // crop volume ratio
+                       long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
 
-   char *filename2,*filename3,*filename4,*filename5,*filename6;
+   char *filename2,*filename3,*filename4,*filename5,*filename6,*filename7,*filename8,*filename9;
+
+   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   BOOLINT rawsign,rawmsb;
+
+   long long cells;
 
    outname=NULL;
 
@@ -1597,7 +1603,7 @@ char *processRAWvolume(FILE *file, // source file desc
    filename2=removeRAWsuffix(output);
 
    // search for existing crop volume
-   filename3=strdup2(filename2,"_crop_quant.*.raw");
+   filename3=strdup2(filename2,"_crop*_quant.*.raw");
    filesearch(filename3);
    free(filename3);
    preoutname=findfile();
@@ -1620,20 +1626,45 @@ char *processRAWvolume(FILE *file, // source file desc
                                scalex,scaley,scalez,
                                ratio))
       {
+      if (!readRAWinfo(filename4,
+                       &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                       &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
+
+      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+
+      if (cells>maxcells)
+         {
+         // remove suffix
+         filename5=removeRAWsuffix(filename4);
+
+         // append down-size suffix to filename
+         filename6=strdup2(filename5,"_down");
+         free(filename5);
+
+         // down-size
+         filename7=downsizeRAWvolume(filename4,filename6);
+         free(filename6);
+
+         // remove crop volume
+         removefile(filename4);
+         free(filename4);
+         }
+      else filename7=filename4;
+
       // remove suffix
-      filename5=removeRAWsuffix(filename4);
+      filename8=removeRAWsuffix(filename7);
 
       // append quantize suffix to filename
-      filename6=strdup2(filename5,"_quant");
-      free(filename5);
+      filename9=strdup2(filename8,"_quant");
+      free(filename8);
 
       // quantize
-      outname=copyRAWvolume_nonlinear(filename4,filename6);
-      free(filename6);
+      outname=copyRAWvolume_nonlinear(filename7,filename9);
+      free(filename9);
 
-      // remove crop volume
-      removefile(filename4);
-      free(filename4);
+      // remove down-size volume
+      removefile(filename7);
+      free(filename7);
       }
 
    free(filename3);
@@ -1643,12 +1674,18 @@ char *processRAWvolume(FILE *file, // source file desc
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
-                       float ratio) // crop volume ratio
+                       float ratio, // crop volume ratio
+                       long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
 
-   char *filename2,*filename3,*filename4,*filename5,*filename6;
+   char *filename2,*filename3,*filename4,*filename5,*filename6,*filename7,*filename8,*filename9;
+
+   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   BOOLINT rawsign,rawmsb;
+
+   long long cells;
 
    outname=NULL;
 
@@ -1656,7 +1693,7 @@ char *processRAWvolume(const char *filename, // source file
    filename2=removeRAWsuffix(filename);
 
    // search for existing crop volume
-   filename3=strdup2(filename2,"_crop_quant.*.raw");
+   filename3=strdup2(filename2,"_crop*_quant.*.raw");
    filesearch(filename3);
    free(filename3);
    preoutname=findfile();
@@ -1675,20 +1712,45 @@ char *processRAWvolume(const char *filename, // source file
    // crop
    if (filename4=cropRAWvolume(filename,filename3,ratio))
       {
+      if (!readRAWinfo(filename4,
+                       &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                       &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
+
+      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+
+      if (cells>maxcells)
+         {
+         // remove suffix
+         filename5=removeRAWsuffix(filename4);
+
+         // append down-size suffix to filename
+         filename6=strdup2(filename5,"_down");
+         free(filename5);
+
+         // down-size
+         filename7=downsizeRAWvolume(filename4,filename6);
+         free(filename6);
+
+         // remove crop volume
+         removefile(filename4);
+         free(filename4);
+         }
+      else filename7=filename4;
+
       // remove suffix
-      filename5=removeRAWsuffix(filename4);
+      filename8=removeRAWsuffix(filename7);
 
       // append quantize suffix to filename
-      filename6=strdup2(filename5,"_quant");
-      free(filename5);
+      filename9=strdup2(filename8,"_quant");
+      free(filename8);
 
       // quantize
-      outname=copyRAWvolume_nonlinear(filename4,filename6);
-      free(filename6);
+      outname=copyRAWvolume_nonlinear(filename7,filename9);
+      free(filename9);
 
-      // remove crop volume
-      removefile(filename4);
-      free(filename4);
+      // remove down-size volume
+      removefile(filename7);
+      free(filename7);
       }
 
    free(filename3);
