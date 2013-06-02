@@ -8,7 +8,7 @@
 
 #define STR_MAX (256)
 
-unsigned char *volume,*volume2;
+unsigned char *volume;
 
 unsigned int width,height,depth,steps,
              components;
@@ -71,13 +71,17 @@ void handler(float time)
    clearwindow();
 
    for (i=0; i<height; i++)
-      memcpy(&image[i*3*imgwidth],&volume[frame*3*width*height+i*3*width],3*width);
+      memcpy(&image[i*components*imgwidth],
+             &volume[frame*components*width*height+i*components*width],components*width);
 
    glGenTextures(1,&texid);
    glBindTexture(GL_TEXTURE_2D,texid);
 
    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-   glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,imgwidth,imgheight,0,GL_RGB,GL_UNSIGNED_BYTE,image);
+   if (components==1) glTexImage2D(GL_TEXTURE_2D,0,GL_LUMINANCE,imgwidth,imgheight,0,GL_LUMINANCE,GL_UNSIGNED_BYTE,image);
+   else if (components==3) glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,imgwidth,imgheight,0,GL_RGB,GL_UNSIGNED_BYTE,image);
+   else if (components==4) glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,imgwidth,imgheight,0,GL_RGBA,GL_UNSIGNED_BYTE,image);
+   else ERRORMSG();
 
    glDepthMask(GL_FALSE);
    glDisable(GL_DEPTH_TEST);
@@ -185,7 +189,9 @@ int main(int argc,char *argv[])
       if ((image=(unsigned char *)malloc(width*height*components))==NULL) exit(1);
 
       for (i=0; i<height; i++)
-         memcpy(&image[(height-1-i)*width*components],&volume[frame*width*height*components+i*width*components],width*components);
+         memcpy(&image[(height-1-i)*width*components],
+                &volume[frame*width*height*components+i*width*components],width*components);
+
       free(volume);
 
       writePNMimage(argv[3],image,width,height,components);
@@ -193,23 +199,11 @@ int main(int argc,char *argv[])
       }
    else
       {
-      if (components==1)
-         {
-         if ((volume2=(unsigned char *)malloc(3*width*height*depth))==NULL) exit(1);
-
-         for (i=0; i<width*height*depth; i++)
-            volume2[3*i]=volume2[3*i+1]=volume2[3*i+2]=volume[i];
-
-         free(volume);
-         volume=volume2;
-         }
-      else if (components!=3) exit(1);
-
       for (imgwidth=2; imgwidth<width; imgwidth*=2);
       for (imgheight=2; imgheight<height; imgheight*=2);
 
-      if ((image=(unsigned char *)malloc(3*imgwidth*imgheight))==NULL) exit(1);
-      memset(image,0,3*imgwidth*imgheight);
+      if ((image=(unsigned char *)malloc(components*imgwidth*imgheight))==NULL) exit(1);
+      memset(image,0,components*imgwidth*imgheight);
 
       openwindow(width,height,fps,argv[1]);
       addhandler(handler);
