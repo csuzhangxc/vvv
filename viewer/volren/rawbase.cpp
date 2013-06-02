@@ -1350,7 +1350,7 @@ char *cropRAWvolume(FILE *file, // source file desc
 
          if (j>=crop_z1 && j<=crop_z2)
             for (k=crop_y1; k<=crop_y2; k++)
-               if (fwrite(&shorts[(crop_x1+k*width)*components],2*(crop_x2-crop_x1+1)*components,1,outfile)!=1)
+               if (fwrite(&shorts[(crop_x1+k*width)*components],(crop_x2-crop_x1+1)*components*sizeof(unsigned short int),1,outfile)!=1)
                   {
                   free(shorts);
                   free(outname);
@@ -1402,6 +1402,176 @@ char *cropRAWvolume(const char *filename, // source file
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez,
                          ratio);
+
+   fclose(file);
+
+   return(outname);
+   }
+
+// average and down-size two slices
+unsigned short int *convert2down(unsigned short int *shorts[],unsigned int width,unsigned int height,unsigned int components)
+   {
+   unsigned int i,j,k;
+
+   unsigned short int *down;
+
+   if ((down=(unsigned short int *)malloc(width*height*components*sizeof(unsigned short int)))==NULL) ERRORMSG();
+
+   for (i=0; i<(width>>1); i++)
+      for (j=0; j<(height>>1); j++)
+         for (k=0; k<components; k++)
+            down[(i+j*(width>>1))*components+k]=(shorts[0][((i<<1)+(j<<1)*width)*components+k]+
+                                                 shorts[0][(((i<<1)+1)+(j<<1)*width)*components+k]+
+                                                 shorts[0][((i<<1)+((j<<1)+1)*width)*components+k]+
+                                                 shorts[0][(((i<<1)+1)+((j<<1)+1)*width)*components+k]+
+                                                 shorts[1][((i<<1)+(j<<1)*width)*components+k]+
+                                                 shorts[1][(((i<<1)+1)+(j<<1)*width)*components+k]+
+                                                 shorts[1][((i<<1)+((j<<1)+1)*width)*components+k]+
+                                                 shorts[1][(((i<<1)+1)+((j<<1)+1)*width)*components+k]+4)/8;
+
+   return(down);
+   }
+
+// copy a RAW volume with out-of-core down-sizing
+char *downsizeRAWvolume(FILE *file, // source file desc
+                        const char *output, // destination file name /wo .raw
+                        unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
+                        float scalex,float scaley,float scalez)
+   {
+   unsigned int i,j;
+
+   unsigned char *slice;
+   unsigned long long cells;
+   unsigned long long bytes;
+
+   unsigned short int *shorts[2];
+   unsigned short int *down;
+
+   unsigned int sizex,sizey,sizez;
+
+   char *outname;
+   FILE *outfile;
+
+   // compute total number of cells per slice
+   cells=bytes=width*height;
+
+   // compute total number of bytes per slice
+   bytes*=components;
+   if (bits==16) bytes*=2;
+   else if (bits==32) bytes*=4;
+
+   sizex=width>>1;
+   sizey=height>>1;
+   sizez=depth>>1;
+
+   if (sizex<1 || sizey<1 || sizez<1) return(NULL);
+
+   // make RAW info
+   outname=appendRAWinfo(output,
+                         sizex,sizey,sizez,steps,
+                         components,16,FALSE,!RAW_ISINTEL,
+                         scalex,scaley,scalez);
+
+   if (outname==NULL) return(NULL);
+
+   // open RAW output file
+   if ((outfile=fopen(outname,"wb"))==NULL)
+      {
+      free(outname);
+      return(NULL);
+      }
+
+   // process out-of-core slice by slice
+   for (i=0; i<steps; i++)
+      {
+      for (j=0; j<depth; j++)
+         {
+         if (j%2==0)
+            {
+            if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
+
+            if (fread(slice,bytes,1,file)!=1)
+               {
+               free(slice);
+               free(outname);
+               fclose(outfile);
+               return(NULL);
+               }
+
+            shorts[0]=convert2short(slice,cells,components,bits,sign,msb);
+            free(slice);
+            }
+         else
+            {
+            if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
+
+            if (fread(slice,bytes,1,file)!=1)
+               {
+               free(slice);
+               free(outname);
+               fclose(outfile);
+               return(NULL);
+               }
+
+            shorts[1]=convert2short(slice,cells,components,bits,sign,msb);
+            free(slice);
+
+            down=convert2down(shorts,width,height,components);
+            free(shorts[0]);
+            free(shorts[1]);
+
+            if (fwrite(down,sizex*sizey*components*sizeof(unsigned short int),1,outfile)!=1)
+               {
+               free(outname);
+               fclose(outfile);
+               return(NULL);
+               }
+            }
+         }
+
+      if (j%2==1) free(shorts[0]);
+      }
+
+   fclose(outfile);
+
+   return(outname);
+   }
+
+// copy a RAW volume with out-of-core down-sizing
+char *downsizeRAWvolume(const char *filename, // source file
+                        const char *output) // destination file name /wo suffix .raw
+   {
+   FILE *file;
+
+   char *name;
+
+   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   BOOLINT rawsign,rawmsb;
+   float rawscalex,rawscaley,rawscalez;
+
+   char *outname;
+
+   // open RAW file
+   if ((file=fopen(filename,"rb"))==NULL) return(NULL);
+
+   // analyze RAW info
+   name=strdup(filename);
+   if (!readRAWinfo(name,
+                    &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                    &rawcomps,&rawbits,&rawsign,&rawmsb,
+                    &rawscalex,&rawscaley,&rawscalez))
+      {
+      free(name);
+      fclose(file);
+      return(NULL);
+      }
+   free(name);
+
+   outname=downsizeRAWvolume(file,output,
+                             rawwidth,rawheight,rawdepth,rawsteps,
+                             rawcomps,rawbits,rawsign,rawmsb,
+                             rawscalex,rawscaley,rawscalez);
 
    fclose(file);
 
