@@ -255,14 +255,8 @@ void QTV3MainWindow::mouseMoveEvent(QMouseEvent *event)
    float x = (float)(event->x())/width();
    float y = (float)(event->y())/height();
 
-   // a left button click
    if (bLeftButtonDown)
-   {
-   }
-   // a right button click
-   else if (bRightButtonDown)
-   {
-   }
+      vrw_->set_tfunc(x,y,0,0,1);
    else
       event->ignore();
 }

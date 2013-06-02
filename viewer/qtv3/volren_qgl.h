@@ -88,6 +88,14 @@ public:
    void setAbsorption(double att=0.0)
       {att_=att;}
 
+   //! use linear transfer function
+   void set_tfunc(float center=0.5f,float size=1.0f,
+                  float r=1.0f,float g=1.0f,float b=1.0f)
+      {
+      if (vr_)
+         vr_->set_tfunc(center,size,r,g,b);
+      }
+
    //! return volume renderer
    volren *getVR()
       {return(vr_);}
@@ -134,7 +142,13 @@ protected:
    void paintGL()
    {
       if (!vr_)
+         {
          vr_ = new volren();
+
+         // linear blue transfer function
+         vr_->set_tfunc(0.5f,1.0f,
+                        0.0f,0.0f,1.0f);
+         }
 
       if (toload_)
          {
@@ -181,10 +195,6 @@ protected:
       double eye_tux=eye_ux;
       double eye_tuy=cos(tilt_*PI/180)*eye_uy+sin(tilt_*PI/180)*eye_uz;
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
-
-      // linear blue transfer function
-      vr_->set_tfunc(0.5f,1.0f,
-                     0.0f,0.0f,1.0f);
 
       // call volume renderer
       vr_->render(eye_tx,eye_ty,eye_tz, // view point
