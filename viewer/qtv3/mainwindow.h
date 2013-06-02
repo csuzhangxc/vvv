@@ -73,18 +73,6 @@ private:
 
 protected:
 
-   bool bLeftButtonDown,bRightButtonDown;
-
-   void mousePressEvent(QMouseEvent *event);
-   void mouseReleaseEvent(QMouseEvent *event);
-   void mouseDoubleClickEvent(QMouseEvent *event);
-   void mouseMoveEvent(QMouseEvent *event);
-
-   void keyPressEvent(QKeyEvent *event);
-   void keyReleaseEvent(QKeyEvent *event);
-
-   void wheelEvent(QWheelEvent *event);
-
    void dragEnterEvent(QDragEnterEvent *event);
    void dragMoveEvent(QDragMoveEvent *event);
    void dragLeaveEvent(QDragLeaveEvent *event);

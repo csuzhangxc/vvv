@@ -32,6 +32,10 @@ public:
       emi_=0.25;
       att_=0.25;
 
+
+      bLeftButtonDown = false;
+      bRightButtonDown = false;
+
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
 
@@ -232,15 +236,69 @@ protected:
       repaint();
    }
 
-   void mousePressEvent(QMouseEvent *event) {event->ignore();}
-   void mouseReleaseEvent(QMouseEvent *event) {event->ignore();}
-   void mouseDoubleClickEvent(QMouseEvent *event) {event->ignore();}
-   void mouseMoveEvent(QMouseEvent *event) {event->ignore();}
+   bool bLeftButtonDown,bRightButtonDown;
 
-   void keyPressEvent(QKeyEvent *event) {event->ignore();}
-   void keyReleaseEvent(QKeyEvent *event) {event->ignore();}
+   void mousePressEvent(QMouseEvent *event)
+   {
+      if (event->buttons() & Qt::LeftButton)
+         if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
+             QApplication::keyboardModifiers() & Qt::AltModifier)
+            bRightButtonDown = true;
+         else
+            bLeftButtonDown = true;
+      else if (event->buttons() & Qt::RightButton)
+         bRightButtonDown = true;
+      else
+         event->ignore();
+   }
 
-   void wheelEvent(QWheelEvent *event) {event->ignore();}
+   void mouseReleaseEvent(QMouseEvent *event)
+   {
+      mouseMoveEvent(event);
+
+      bLeftButtonDown = false;
+      bRightButtonDown = false;
+   }
+
+   void mouseDoubleClickEvent(QMouseEvent *event)
+   {
+      if (getRotation()==0.0)
+         setRotation(10.0);
+      else
+         setRotation(0.0);
+   }
+
+   void mouseMoveEvent(QMouseEvent *event)
+   {
+      float x = (float)(event->x())/width();
+      float y = (float)(event->y())/height();
+
+      if (bLeftButtonDown)
+         set_tfunc(x,1.0f-y,0,0,1);
+      else
+         event->ignore();
+   }
+
+   void keyPressEvent(QKeyEvent *event)
+   {
+      if (event->key() == Qt::Key_Q)
+         emit close();
+
+      QGLWidget::keyPressEvent(event);
+   }
+
+   void keyReleaseEvent(QKeyEvent *event)
+   {
+      QGLWidget::keyReleaseEvent(event);
+   }
+
+   void wheelEvent(QWheelEvent *event)
+   {
+      double numDegrees = event->delta()/8.0;
+
+      event->accept();
+   }
+
 };
 
 #endif

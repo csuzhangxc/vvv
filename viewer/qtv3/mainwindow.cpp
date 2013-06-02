@@ -20,9 +20,6 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    vrw_->loadVolume("Drop.pvm");
    vrw_->setRotation(30.0);
-
-   bLeftButtonDown = false;
-   bRightButtonDown = false;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -226,69 +223,6 @@ QSize QTV3MainWindow::minimumSizeHint() const
 QSize QTV3MainWindow::sizeHint() const
 {
    return(QSize(512, 512));
-}
-
-void QTV3MainWindow::mousePressEvent(QMouseEvent *event)
-{
-   if (event->buttons() & Qt::LeftButton)
-      if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
-          QApplication::keyboardModifiers() & Qt::AltModifier)
-         bRightButtonDown = true;
-      else
-         bLeftButtonDown = true;
-   else if (event->buttons() & Qt::RightButton)
-      bRightButtonDown = true;
-   else
-      event->ignore();
-}
-
-void QTV3MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-   mouseMoveEvent(event);
-
-   bLeftButtonDown = false;
-   bRightButtonDown = false;
-}
-
-void QTV3MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
-{
-   if (vrw_->getRotation()==0.0)
-      vrw_->setRotation(10.0);
-   else
-      vrw_->setRotation(0.0);
-}
-
-void QTV3MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-   float x = (float)(event->x())/width();
-   float y = (float)(event->y())/height();
-
-   printf("%g %g\n",x,y); //!!
-
-   if (bLeftButtonDown)
-      vrw_->set_tfunc(x,y,0,0,1);
-   else
-      event->ignore();
-}
-
-void QTV3MainWindow::keyPressEvent(QKeyEvent *event)
-{
-   if (event->key() == Qt::Key_Q)
-      emit close();
-
-   QMainWindow::keyPressEvent(event);
-}
-
-void QTV3MainWindow::keyReleaseEvent(QKeyEvent *event)
-{
-   QMainWindow::keyReleaseEvent(event);
-}
-
-void QTV3MainWindow::wheelEvent(QWheelEvent *event)
-{
-   double numDegrees = event->delta()/8.0;
-
-   event->accept();
 }
 
 void QTV3MainWindow::dragEnterEvent(QDragEnterEvent *event)
