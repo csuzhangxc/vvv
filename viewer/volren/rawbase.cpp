@@ -1720,8 +1720,6 @@ char *processRAWvolume(const char *filename, // source file
 
       cells=(unsigned long long)rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
-      std::cout << cells << std::endl; //!!
-
       if (cells>maxcells)
          {
          // remove suffix
