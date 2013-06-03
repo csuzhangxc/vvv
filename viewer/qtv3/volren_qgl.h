@@ -261,10 +261,10 @@ protected:
 
    void mouseDoubleClickEvent(QMouseEvent *event)
    {
-      if (getRotation()==0.0)
-         setRotation(10.0);
-      else
-         setRotation(0.0);
+      mouseMoveEvent(event);
+
+      bLeftButtonDown = false;
+      bRightButtonDown = false;
    }
 
    void mouseMoveEvent(QMouseEvent *event)
@@ -274,6 +274,11 @@ protected:
 
       if (bLeftButtonDown)
          set_tfunc(x,1.0f-y,0,0,1);
+      else if (bRightButtonDown)
+         if (getRotation()==0.0)
+            setRotation(10.0);
+         else
+            setRotation(0.0);
       else
          event->ignore();
    }
