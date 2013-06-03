@@ -1417,7 +1417,7 @@ unsigned short int *convert2down(unsigned short int *shorts[],unsigned int width
 
    unsigned short int *down;
 
-   if ((down=(unsigned short int *)malloc(width*height*components*sizeof(unsigned short int)))==NULL) ERRORMSG();
+   if ((down=(unsigned short int *)malloc((width>>1)*(height>>1)*components*sizeof(unsigned short int)))==NULL) ERRORMSG();
 
    for (i=0; i<(width>>1); i++)
       for (j=0; j<(height>>1); j++)
@@ -1529,6 +1529,8 @@ char *downsizeRAWvolume(FILE *file, // source file desc
                fclose(outfile);
                return(NULL);
                }
+
+            free(down);
             }
          }
 
