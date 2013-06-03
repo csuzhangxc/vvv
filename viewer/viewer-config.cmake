@@ -1,7 +1,7 @@
 # cmake build configuration for v^3
 # (c) by Stefan Roettger
 
-OPTION(BUILD_WITH_DCMTK "Build with DICOM support." ON)
+OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
 OPTION(FIND_DCMTK_MANUALLY "Do not rely on CMake to find DCMTK." OFF)
 
 # path to custom cmake modules
