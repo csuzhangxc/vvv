@@ -1,5 +1,7 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
+#include <iostream>
+
 #include "codebase.h"
 #include "dirbase.h"
 
@@ -299,7 +301,7 @@ unsigned char *readRAWvolume(const char *filename,
       }
    free(name);
 
-   bytes=(*width)*(*height)*(*depth)*(*components)*(*steps);
+   bytes=(unsigned long long)(*width)*(*height)*(*depth)*(*components)*(*steps);
 
    if (bits!=NULL)
       if (*bits==16) bytes*=2;
@@ -349,7 +351,7 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
 
    free(output);
 
-   bytes=width*height*depth*components*steps;
+   bytes=(unsigned long long)width*height*depth*components*steps;
 
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
@@ -1585,7 +1587,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                        float scalex,float scaley,float scalez,
                        float ratio,  // crop volume ratio
-                       long long maxcells) // down-size threshold
+                       unsigned long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
@@ -1595,7 +1597,7 @@ char *processRAWvolume(FILE *file, // source file desc
    unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
 
-   long long cells;
+   unsigned long long cells;
 
    outname=NULL;
 
@@ -1630,7 +1632,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
                        &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
 
-      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+      cells=(unsigned long long)rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
       if (cells>maxcells)
          {
@@ -1675,7 +1677,7 @@ char *processRAWvolume(FILE *file, // source file desc
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
                        float ratio, // crop volume ratio
-                       long long maxcells) // down-size threshold
+                       unsigned long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
@@ -1685,7 +1687,7 @@ char *processRAWvolume(const char *filename, // source file
    unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
 
-   long long cells;
+   unsigned long long cells;
 
    outname=NULL;
 
@@ -1716,7 +1718,9 @@ char *processRAWvolume(const char *filename, // source file
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
                        &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
 
-      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+      cells=(unsigned long long)rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+
+      std::cout << cells << std::endl; //!!
 
       if (cells>maxcells)
          {

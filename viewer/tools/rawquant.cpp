@@ -2,7 +2,7 @@
 #include "rawbase.h"
 
 static const float ratio=0.5f;
-static const long long maxcells=250000000;
+static const unsigned long long maxcells=250000000;
 
 int main(int argc,char *argv[])
    {
