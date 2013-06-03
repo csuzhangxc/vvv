@@ -14,7 +14,10 @@ class volren
 
    // default constructor
    volren(char *base=NULL)
-      {VOL=new mipmap(base);}
+      {
+      initogl();
+      VOL=new mipmap(base);
+      }
 
    // destructor
    ~volren()
@@ -146,8 +149,6 @@ class volren
                                 tf_premult,tf_preint,vol_light);
 
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
-
-      initogl();
 
       volume::usefbo(gfx_fbo);
 
