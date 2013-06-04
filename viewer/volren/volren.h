@@ -95,15 +95,15 @@ class volren
       VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ba());
       if (inverse)
          {
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ra());
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ga());
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ba());
-         }
-      else
-         {
          VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ra());
          VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ga());
          VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ba());
+         }
+      else
+         {
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ra());
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ga());
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ba());
          }
       }
 
