@@ -101,10 +101,11 @@ public:
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
-                  float r=1.0f,float g=1.0f,float b=1.0f)
+                  float r=1.0f,float g=1.0f,float b=1.0f,
+                  BOOLINT inverse=FALSE)
       {
       if (vr_)
-         vr_->set_tfunc(center,size,r,g,b);
+         vr_->set_tfunc(center,size,r,g,b,inverse);
       }
 
    //! return volume renderer

@@ -75,7 +75,8 @@ class volren
 
    // use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
-                  float r=1.0f,float g=1.0f,float b=1.0f)
+                  float r=1.0f,float g=1.0f,float b=1.0f,
+                  BOOLINT inverse=FALSE)
       {
       float x1=center-0.5f*size;
       float x2=center+0.5f*size;
@@ -84,9 +85,18 @@ class volren
       VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_re());
       VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ge());
       VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_be());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,r,VOL->get_tfunc()->get_re());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,g,VOL->get_tfunc()->get_ge());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,b,VOL->get_tfunc()->get_be());
+      if (inverse)
+         {
+         VOL->get_tfunc()->set_line(x1,r,x2,0.0f,VOL->get_tfunc()->get_re());
+         VOL->get_tfunc()->set_line(x1,g,x2,0.0f,VOL->get_tfunc()->get_ge());
+         VOL->get_tfunc()->set_line(x1,b,x2,0.0f,VOL->get_tfunc()->get_be());
+         }
+      else
+         {
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,r,VOL->get_tfunc()->get_re());
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,g,VOL->get_tfunc()->get_ge());
+         VOL->get_tfunc()->set_line(x1,0.0f,x2,b,VOL->get_tfunc()->get_be());
+         }
 
       // tf absorption (att)
       VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ra());
