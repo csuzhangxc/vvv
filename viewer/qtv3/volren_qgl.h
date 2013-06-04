@@ -3,12 +3,12 @@
 #ifndef VOLREN_QGL_H
 #define VOLREN_QGL_H
 
+#include "volren.h"
+
 #include <QtOpenGL/qgl.h>
 
 #include <QMouseEvent>
 #include <QWheelEvent>
-
-#include "volren.h"
 
 class QGLVolRenWidget: public QGLWidget
 {
