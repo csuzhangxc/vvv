@@ -28,13 +28,13 @@ FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
-# find threads library
-FIND_PACKAGE(Threads)
-
 # OpenGL dependency
 FIND_PACKAGE(OpenGL)
 
 IF (BUILD_WITH_DCMTK)
+
+   # find threads library
+   FIND_PACKAGE(Threads)
 
    # find DCMTK dependencies
    FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd)
@@ -93,7 +93,6 @@ TARGET_LINK_LIBRARIES(qtv3
    ${QT_LIBRARIES}
    ${VOLREN_LIBRARY}
    ${OPENGL_LIBRARIES}
-   ${CMAKE_THREAD_LIBS_INIT}
    )
 IF (BUILD_WITH_DCMTK)
    TARGET_LINK_LIBRARIES(qtv3
@@ -107,5 +106,6 @@ IF (BUILD_WITH_DCMTK)
       ${DCMTK_oflog_LIBRARY}
       ${DCMTK_ofstd_LIBRARY}
       ${ZLIB_LIBRARY}
+      ${CMAKE_THREAD_LIBS_INIT}
       )
 ENDIF (BUILD_WITH_DCMTK)
