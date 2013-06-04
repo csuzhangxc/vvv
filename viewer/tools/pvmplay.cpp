@@ -13,10 +13,12 @@ float fps=25.0f;
 
 unsigned char *volume;
 
-unsigned int width,height,depth,steps,
-             components;
+long long width,height,depth,steps;
+unsigned int components;
 
 BOOLINT msb=TRUE;
+
+unsigned int pvmwidth,pvmheight,pvmdepth;
 
 unsigned int frame=0;
 
@@ -170,9 +172,17 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
-   if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components,NULL,NULL,&msb))!=NULL) depth*=steps;
-   else if ((volume=readREKvolume(argv[1],&width,&height,&depth,&components))!=NULL) msb=FALSE;
-   else if ((volume=readPVMvolume(argv[1],&width,&height,&depth,&components))==NULL) exit(1);
+   if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components,NULL,NULL,&msb))!=NULL)
+      depth*=steps;
+   else if ((volume=readREKvolume(argv[1],&width,&height,&depth,&components))!=NULL)
+      msb=FALSE;
+   else if ((volume=readPVMvolume(argv[1],&pvmwidth,&pvmheight,&pvmdepth,&components))!=NULL)
+      {
+      width=pvmwidth;
+      height=pvmheight;
+      depth=pvmdepth;
+      }
+   else exit(1);
 
    if (components==2)
       {

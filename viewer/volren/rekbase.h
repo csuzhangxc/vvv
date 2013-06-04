@@ -13,12 +13,12 @@
 //  after the header the raw volume data is attached
 //   the values of a 16-bit volume are saved in LSB order
 unsigned char *readREKvolume(const char *filename,
-                             unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                             long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                              float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // read REK file format header
 BOOLINT readREKheader(const char *filename,
-                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                      long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                       float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // copy a REK volume to a RAW volume
@@ -26,7 +26,7 @@ char *copyREKvolume(const char *filename,const char *output);
 
 // read a REK volume out-of-core
 unsigned char *readREKvolume_ooc(const char *filename,
-                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                                 long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                  float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 #endif

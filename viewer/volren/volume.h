@@ -32,7 +32,7 @@ class volume
    // set the volume data
    void set_data(unsigned char *data,
                  unsigned char *extra,
-                 int width,int height,int depth,
+                 long long width,long long height,long long depth,
                  float mx,float my,float mz,
                  float sx,float sy,float sz,
                  int bricksize,float overmax);
@@ -130,7 +130,7 @@ class mipmap
    // set the volume data
    void set_data(unsigned char *data,
                  unsigned char *extra,
-                 int width,int height,int depth,
+                 long long width,long long height,long long depth,
                  float mx,float my,float mz,
                  float sx,float sy,float sz,
                  int bricksize,float overmax);
@@ -206,8 +206,10 @@ class mipmap
    histo *HISTO;
 
    unsigned char *VOLUME,*GRAD;
-   unsigned int WIDTH,HEIGHT,DEPTH,COMPONENTS;
-   unsigned int GWIDTH,GHEIGHT,GDEPTH,GCOMPONENTS;
+   long long WIDTH,HEIGHT,DEPTH;
+   unsigned int COMPONENTS;
+   long long GWIDTH,GHEIGHT,GDEPTH;
+   unsigned int GCOMPONENTS;
    float DSX,DSY,DSZ,GRADMAX;
 
    private:
@@ -226,134 +228,134 @@ class mipmap
    int knvalue;
 
    unsigned char *CACHE;
-   int CSIZEX,CSIZEY,CSLICE,CSLICES;
+   long long CSIZEX,CSIZEY,CSLICE,CSLICES;
 
    int *QUEUEX,*QUEUEY,*QUEUEZ;
    unsigned int QUEUEMAX,QUEUECNT,QUEUESTART,QUEUEEND;
 
    unsigned char *readANYvolume(const char *filename,
-                                unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                                long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                 float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
                                 BOOLINT *msb=NULL);
 
    unsigned char *reduce(unsigned char *data,
-                         unsigned int width,unsigned int height,unsigned int depth);
+                         long long width,long long height,long long depth);
 
    unsigned char *swap(unsigned char *data,
-                       unsigned int *width,unsigned int *height,unsigned int *depth,
+                       long long *width,long long *height,long long *depth,
                        float *dsx,float *dsy,float *dsz,
                        BOOLINT xswap,BOOLINT yswap,BOOLINT zswap,
                        BOOLINT xrotate,BOOLINT zrotate);
 
    void cache(const unsigned char *data=NULL,
-              unsigned int width=0,unsigned int height=0,unsigned int depth=0,
-              int slice=0,int slices=0);
+              long long width=0,long long height=0,long long depth=0,
+              long long slice=0,long long slices=0);
 
    inline unsigned char get(const unsigned char *data,
-                            const unsigned int width,const unsigned int height,const unsigned int depth,
-                            const unsigned int x,const unsigned int y,const unsigned int z);
+                            const long long width,const long long height,const long long depth,
+                            const long long x,const long long y,const long long z);
 
    inline void set(unsigned char *data,
-                   const unsigned int width,const unsigned int height,const unsigned int depth,
-                   const unsigned int x,const unsigned int y,const unsigned int z,unsigned char v);
+                   const long long width,const long long height,const long long depth,
+                   const long long x,const long long y,const long long z,unsigned char v);
 
    unsigned char *gradmag(unsigned char *data,
-                          unsigned int width,unsigned int height,unsigned int depth,
+                          long long width,long long height,long long depth,
                           float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
                           float *gradmax=NULL);
 
    inline float getgrad(unsigned char *data,
-                        int width,int height,int depth,
-                        int i,int j,int k,
+                        long long width,long long height,long long depth,
+                        long long i,long long j,long long k,
                         float dsx,float dsy,float dsz);
 
    inline float getgrad2(unsigned char *data,
-                         int width,int height,int depth,
-                         int i,int j,int k,
+                         long long width,long long height,long long depth,
+                         long long i,long long j,long long k,
                          float dsx,float dsy,float dsz);
 
    inline float getsobel(unsigned char *data,
-                         int width,int height,int depth,
-                         int i,int j,int k,
+                         long long width,long long height,long long depth,
+                         long long i,long long j,long long k,
                          float dsx,float dsy,float dsz);
 
    inline float threshold(float x,float thres);
 
    unsigned char *gradmagML(unsigned char *data,
-                            unsigned int width,unsigned int height,unsigned int depth,
+                            long long width,long long height,long long depth,
                             float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
                             float *gradmax=NULL);
 
    unsigned char *variance(unsigned char *data,
-                           unsigned int width,unsigned int height,unsigned int depth);
+                           long long width,long long height,long long depth);
 
    void blur(unsigned char *data,
-             unsigned int width,unsigned int height,unsigned int depth);
+             long long width,long long height,long long depth);
 
    void usetf(unsigned char *data,unsigned char *grad,
-              unsigned int width,unsigned int height,unsigned int depth);
+              long long width,long long height,long long depth);
 
    void useop(unsigned char *data,unsigned char *grad,
-              unsigned int width,unsigned int height,unsigned int depth);
+              long long width,long long height,long long depth);
 
    void remove(unsigned char *grad,
-               unsigned int width,unsigned int height,unsigned int depth);
+               long long width,long long height,long long depth);
 
    void tangle(unsigned char *grad,
-               unsigned int width,unsigned int height,unsigned int depth);
+               long long width,long long height,long long depth);
 
-   unsigned int grow(unsigned char *grad,
-                     unsigned int width,unsigned int height,unsigned int depth);
+   long long grow(unsigned char *grad,
+                  long long width,long long height,long long depth);
 
-   unsigned int floodfill(const unsigned char *data,unsigned char *mark,
-                          const unsigned int width,const unsigned int height,const unsigned int depth,
-                          const unsigned int x,const unsigned int y,const unsigned int z,
-                          const int value,const int maxdev,
-                          const int token);
+   long long floodfill(const unsigned char *data,unsigned char *mark,
+                       const long long width,const long long height,const long long depth,
+                       const long long x,const long long y,const long long z,
+                       const int value,const int maxdev,
+                       const int token);
 
-   float countfill(const unsigned char *data,unsigned char *mark,
-                   const unsigned int width,const unsigned int height,const unsigned int depth,
-                   const unsigned int x,const unsigned int y,const unsigned int z,
-                   const int value,const int maxdev,
-                   const int token);
+   double countfill(const unsigned char *data,unsigned char *mark,
+                    const long long width,const long long height,const long long depth,
+                    const long long x,const long long y,const long long z,
+                    const int value,const int maxdev,
+                    const int token);
 
-   unsigned int gradfill(const unsigned char *grad,unsigned char *mark,
-                         const unsigned int width,const unsigned int height,const unsigned int depth,
-                         const unsigned int x,const unsigned int y,const unsigned int z,
-                         const int token,const int maxgrad);
+   long long gradfill(const unsigned char *grad,unsigned char *mark,
+                      const long long width,const long long height,const long long depth,
+                      const long long x,const long long y,const long long z,
+                      const int token,const int maxgrad);
 
    unsigned char *sizify(unsigned char *data,
-                         unsigned int width,unsigned int height,unsigned int depth,
+                         long long width,long long height,long long depth,
                          float maxdev);
 
    unsigned char *classify(unsigned char *grad,
-                           unsigned int width,unsigned int height,unsigned int depth,
+                           long long width,long long height,long long depth,
                            float maxgrad,
                            unsigned int *classes=NULL);
 
    void zero(unsigned char *data,unsigned char *grad,
-             unsigned int width,unsigned int height,unsigned int depth,
+             long long width,long long height,long long depth,
              float maxdev);
 
    void parsecommands(unsigned char *volume,
-                      unsigned int width,unsigned int height,unsigned int depth,
+                      long long width,long long height,long long depth,
                       char *commands);
 
    void parsegradcommands(unsigned char *volume,unsigned char *grad,
-                          unsigned int width,unsigned int height,unsigned int depth,
+                          long long width,long long height,long long depth,
                           char *commands);
 
    inline unsigned char getscalar(unsigned char *volume,
-                                  unsigned int width,unsigned int height,unsigned int depth,
+                                  long long width,long long height,long long depth,
                                   float x,float y,float z);
 
    inline float getscalar(float *volume,
-                          unsigned int width,unsigned int height,unsigned int depth,
+                          long long width,long long height,long long depth,
                           float x,float y,float z);
 
    unsigned char *scale(unsigned char *volume,
-                        unsigned int width,unsigned int height,unsigned int depth,
-                        unsigned int nwidth,unsigned int nheight,unsigned int ndepth);
+                        long long width,long long height,long long depth,
+                        long long nwidth,long long nheight,long long ndepth);
    };
 
 #endif

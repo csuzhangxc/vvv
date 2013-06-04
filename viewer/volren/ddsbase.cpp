@@ -949,13 +949,13 @@ void convfloat(unsigned char *data,unsigned int bytes)
 // helper functions for quantize:
 
 inline int DDS_get(unsigned short int *data,
-                   unsigned int width,unsigned int height,unsigned int depth,
-                   unsigned int i,unsigned int j,unsigned int k)
+                   long long width,long long height,long long depth,
+                   long long i,long long j,long long k)
    {return(data[i+(j+k*height)*width]);}
 
 inline double DDS_getgrad(unsigned short int *data,
-                          unsigned int width,unsigned int height,unsigned int depth,
-                          unsigned int i,unsigned int j,unsigned int k)
+                          long long width,long long height,long long depth,
+                          long long i,long long j,long long k)
    {
    double gx,gy,gz;
 
@@ -985,15 +985,15 @@ inline double DDS_getgrad(unsigned short int *data,
 
 // quantize 16 bit data to 8 bit using a non-linear mapping
 unsigned char *quantize(unsigned char *data,
-                        unsigned int width,unsigned int height,unsigned int depth,
+                        long long width,long long height,long long depth,
                         BOOLINT msb,
                         BOOLINT linear,BOOLINT nofree)
    {
-   unsigned int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2;
    unsigned short int *data3;
-   unsigned int idx;
+   long long idx;
 
    int v,vmin,vmax;
 

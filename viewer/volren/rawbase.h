@@ -23,32 +23,32 @@
 //    l = lsb
 //   default modifiers = u1m
 unsigned char *readRAWvolume(const char *filename,
-                             unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
+                             long long *width,long long *height,long long *depth,long long *steps,
                              unsigned int *components=NULL,unsigned int *bits=NULL,BOOLINT *sign=NULL,BOOLINT *msb=NULL,
                              float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
-                    unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
+                    long long *width,long long *height,long long *depth,long long *steps,
                     unsigned int *components=NULL,unsigned int *bits=NULL,BOOLINT *sign=NULL,BOOLINT *msb=NULL,
                     float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // define RAW file format
-char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+char *makeRAWinfo(long long width,long long height,long long depth=1,long long steps=1,
                   unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                   float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
 // write a RAW volume
 BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
                        unsigned char *volume,
-                       unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                       long long width,long long height,long long depth=1,long long steps=1,
                        unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
 // copy a RAW volume
 char *copyRAWvolume(FILE *file, // source file desc
                     const char *output, // destination file name /wo suffix .raw
-                    unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                    long long width,long long height,long long depth=1,long long steps=1,
                     unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
@@ -59,7 +59,7 @@ char *copyRAWvolume(const char *filename, // source file
 // copy a RAW volume with out-of-core linear quantization
 char *copyRAWvolume_linear(FILE *file, // source file desc
                            const char *output, // destination file name /wo suffix .raw
-                           unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                           long long width,long long height,long long depth=1,long long steps=1,
                            unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                            float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
@@ -70,7 +70,7 @@ char *copyRAWvolume_linear(const char *filename, // source file
 // copy a RAW volume with out-of-core non-linear quantization
 char *copyRAWvolume_nonlinear(FILE *file, // source file desc
                               const char *output, // destination file name /wo suffix .raw
-                              unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                              long long width,long long height,long long depth=1,long long steps=1,
                               unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                               float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
@@ -81,7 +81,7 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(FILE *file, // source file desc
                     const char *output, // destination file name /wo suffix .raw
-                    unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                    long long width,long long height,long long depth=1,long long steps=1,
                     unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                     float ratio=0.5f);
@@ -94,7 +94,7 @@ char *cropRAWvolume(const char *filename, // source file
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(FILE *file, // source file desc
                         const char *output, // destination file name /wo .raw
-                        unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                        long long width,long long height,long long depth=1,long long steps=1,
                         unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                         float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
 
@@ -105,15 +105,15 @@ char *downsizeRAWvolume(const char *filename, // source file
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(FILE *file, // source file desc
                        const char *output, // destination file name
-                       unsigned int width,unsigned int height,unsigned int depth=1,unsigned int steps=1,
+                       long long width,long long height,long long depth=1,long long steps=1,
                        unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                        float ratio=0.5f, // crop volume ratio
-                       unsigned long long maxcells=250000000); // down-size threshold
+                       long long maxcells=250000000); // down-size threshold
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
                        float ratio=0.5f, // crop volume ratio
-                       unsigned long long maxcells=250000000); // down-size threshold
+                       long long maxcells=250000000); // down-size threshold
 
 #endif

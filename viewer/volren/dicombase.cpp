@@ -188,9 +188,9 @@ bool DicomVolume::dicomProcess()
 
    // read columns and rows
    if (firstImage->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%lu",&m_Cols);
+   sscanf(tmp.c_str(),"%lld",&m_Cols);
    if (firstImage->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%lu",&m_Rows);
+   sscanf(tmp.c_str(),"%lld",&m_Rows);
 
    // read pixel spacing
    if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,0).bad()) return(false);
@@ -210,8 +210,8 @@ bool DicomVolume::dicomProcess()
       ImageDesc *desc=m_Images[i];
 
       float position[3];
-      unsigned long cols,rows;
-      unsigned long smallestPixVal,largestPixVal;
+      long long cols,rows;
+      unsigned int smallestPixVal,largestPixVal;
 
       // get position of actual slice
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_ImagePositionPatient,tmp,0).bad()) return(false);
@@ -230,18 +230,18 @@ bool DicomVolume::dicomProcess()
 
       // retrieve number of columns and rows
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
-      sscanf(tmp.c_str(),"%lu",&cols);
+      sscanf(tmp.c_str(),"%lld",&cols);
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
-      sscanf(tmp.c_str(),"%lu",&rows);
+      sscanf(tmp.c_str(),"%lld",&rows);
 
       // compare number of columns and rows
       if (cols!=m_Cols || rows!=m_Rows) return(false);
 
       // retrieve smallest and largest pixel value
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) smallestPixVal=0;
-      else sscanf(tmp.c_str(),"%lu",&smallestPixVal);
+      else sscanf(tmp.c_str(),"%u",&smallestPixVal);
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) largestPixVal=4095;
-      else sscanf(tmp.c_str(),"%lu",&largestPixVal);
+      else sscanf(tmp.c_str(),"%u",&largestPixVal);
 
       if (smallestPixVal<m_SmallestPixVal) m_SmallestPixVal=smallestPixVal;
       if (largestPixVal>m_LargestPixVal) m_LargestPixVal=largestPixVal;
@@ -257,7 +257,7 @@ bool DicomVolume::dicomProcess()
 
    // create the volume:
 
-   unsigned int totalSize=m_Cols*m_Rows*m_Images.size();
+   long long totalSize=m_Cols*m_Rows*m_Images.size();
 
    unsigned char *voxels=m_Voxels=new unsigned char[totalSize];
    if (voxels==0) return(false);
@@ -328,7 +328,7 @@ int DicomVolume::compareFunc(const void* elem1,const void* elem2)
 
 // read a DICOM series identified by the * in the filename pattern
 unsigned char *readDICOMvolume(const char *filename,
-                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               long long *width,long long *height,long long *depth,unsigned int *components,
                                float *scalex,float *scaley,float *scalez)
    {
    DicomVolume data;
@@ -354,7 +354,7 @@ unsigned char *readDICOMvolume(const char *filename,
 
 // read a DICOM series from a file name list
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
-                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                               long long *width,long long *height,long long *depth,unsigned int *components,
                                float *scalex,float *scaley,float *scalez)
    {
    DicomVolume data;

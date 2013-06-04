@@ -150,7 +150,7 @@ BOOLINT volume::check(int bricksize,float overmax)
 // set the volume data
 void volume::set_data(unsigned char *data,
                       unsigned char *extra,
-                      int width,int height,int depth,
+                      long long width,long long height,long long depth,
                       float mx,float my,float mz,
                       float sx,float sy,float sz,
                       int bricksize,float overmax)
@@ -159,7 +159,7 @@ void volume::set_data(unsigned char *data,
 
    tileptr *tiles;
 
-   int px,py,pz;
+   long long px,py,pz;
 
    int border=(int)fceil(overmax);
 
@@ -556,11 +556,13 @@ mipmap::~mipmap()
 
 // reduce a volume to half its size
 unsigned char *mipmap::reduce(unsigned char *data,
-                              unsigned int width,unsigned int height,unsigned int depth)
+                              long long width,long long height,long long depth)
    {
-   unsigned int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
+
+   long long idx,slx;
 
    if (data==NULL) return(NULL);
 
@@ -569,14 +571,19 @@ unsigned char *mipmap::reduce(unsigned char *data,
    for (ptr=data2,k=0; k<depth-1; k+=2)
       for (j=0; j<height-1; j+=2)
          for (i=0; i<width-1; i+=2)
-            *ptr++=((int)data[i+(j+k*height)*width]+
-                    (int)data[i+1+(j+k*height)*width]+
-                    (int)data[i+(j+1+k*height)*width]+
-                    (int)data[i+1+(j+1+k*height)*width]+
-                    (int)data[i+(j+(k+1)*height)*width]+
-                    (int)data[i+1+(j+(k+1)*height)*width]+
-                    (int)data[i+(j+1+(k+1)*height)*width]+
-                    (int)data[i+1+(j+1+(k+1)*height)*width]+4)/8;
+            {
+            idx=i+(j+k*height)*width;
+            slx=width*height;
+
+            *ptr++=((int)data[idx]+
+                    (int)data[idx+1]+
+                    (int)data[idx+width]+
+                    (int)data[idx+1+width]+
+                    (int)data[idx+slx]+
+                    (int)data[idx+1+slx]+
+                    (int)data[idx+width+slx]+
+                    (int)data[idx+1+width+slx]+4)/8;
+            }
 
    return(data2);
    }
@@ -584,7 +591,7 @@ unsigned char *mipmap::reduce(unsigned char *data,
 // set the volume data
 void mipmap::set_data(unsigned char *data,
                       unsigned char *extra,
-                      int width,int height,int depth,
+                      long long width,long long height,long long depth,
                       float mx,float my,float mz,
                       float sx,float sy,float sz,
                       int bricksize,float overmax)
@@ -657,16 +664,16 @@ void mipmap::set_data(unsigned char *data,
 
 // swap the volume along the axis
 unsigned char *mipmap::swap(unsigned char *data,
-                            unsigned int *width,unsigned int *height,unsigned int *depth,
+                            long long *width,long long *height,long long *depth,
                             float *dsx,float *dsy,float *dsz,
                             BOOLINT xswap,BOOLINT yswap,BOOLINT zswap,
                             BOOLINT xrotate,BOOLINT zrotate)
    {
-   unsigned int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
 
-   unsigned int size;
+   long long size;
    float dim;
 
    if (xrotate)
@@ -761,10 +768,10 @@ unsigned char *mipmap::swap(unsigned char *data,
 
 // cache a row of slices
 void mipmap::cache(const unsigned char *data,
-                   unsigned int width,unsigned int height,unsigned int depth,
-                   int slice,int slices)
+                   long long width,long long height,long long depth,
+                   long long slice,long long slices)
    {
-   int i;
+   long long i;
 
    if (slices!=CSLICES)
       {
@@ -773,11 +780,11 @@ void mipmap::cache(const unsigned char *data,
 
       if (slices>0)
          {
-         CACHE=new unsigned char[width*height*(unsigned int)slices];
+         CACHE=new unsigned char[width*height*slices];
 
          for (i=0; i<slices; i++)
-            if (slice+i>=0 && slice+i<(int)depth)
-               memcpy(&CACHE[width*height*i],&data[width*height*(unsigned int)(slice+i)],width*height);
+            if (slice+i>=0 && slice+i<(long long)depth)
+               memcpy(&CACHE[width*height*i],&data[width*height*(slice+i)],width*height);
          }
 
       CSIZEX=width;
@@ -790,50 +797,50 @@ void mipmap::cache(const unsigned char *data,
       {
       if (slice>CSLICE)
          for (i=0; i<CSLICES; i++)
-            if (slice+i>=0 && slice+i<(int)depth)
+            if (slice+i>=0 && slice+i<(long long)depth)
                if (slice+i>=CSLICE && slice+i<CSLICE+CSLICES)
                   memcpy(&CACHE[CSIZEX*CSIZEY*i],&CACHE[CSIZEX*CSIZEY*(i+slice-CSLICE)],CSIZEX*CSIZEY);
 
       if (slice<CSLICE)
          for (i=CSLICES-1; i>=0; i--)
-            if (slice+i>=0 && slice+i<(int)depth)
+            if (slice+i>=0 && slice+i<(long long)depth)
                if (slice+i>=CSLICE && slice+i<CSLICE+CSLICES)
                   memcpy(&CACHE[CSIZEX*CSIZEY*i],&CACHE[CSIZEX*CSIZEY*(i+CSLICE-slice)],CSIZEX*CSIZEY);
 
       for (i=0; i<CSLICES; i++)
-         if (slice+i>=0 && slice+i<(int)depth)
+         if (slice+i>=0 && slice+i<(long long)depth)
             if (slice+i<CSLICE || slice+i>=CSLICE+CSLICES)
-               memcpy(&CACHE[CSIZEX*CSIZEY*i],&data[CSIZEX*CSIZEY*(unsigned int)(slice+i)],CSIZEX*CSIZEY);
+               memcpy(&CACHE[CSIZEX*CSIZEY*i],&data[CSIZEX*CSIZEY*(slice+i)],CSIZEX*CSIZEY);
 
       CSLICE=slice;
       }
    }
 
 inline unsigned char mipmap::get(const unsigned char *data,
-                                 const unsigned int width,const unsigned int height,const unsigned int depth,
-                                 const unsigned int x,const unsigned int y,const unsigned int z)
+                                 const long long width,const long long height,const long long depth,
+                                 const long long x,const long long y,const long long z)
    {
    if (CACHE!=NULL)
-      if ((int)z>=CSLICE && (int)z<CSLICE+CSLICES)
+      if ((int)z>=CSLICE && (long long)z<CSLICE+CSLICES)
          return(CACHE[x+(y+(z-CSLICE)*height)*width]);
 
    return(data[x+(y+z*height)*width]);
    }
 
 inline void mipmap::set(unsigned char *data,
-                        const unsigned int width,const unsigned int height,const unsigned int depth,
-                        const unsigned int x,const unsigned int y,const unsigned int z,unsigned char v)
+                        const long long width,const long long height,const long long depth,
+                        const long long x,const long long y,const long long z,unsigned char v)
    {data[x+(y+z*height)*width]=v;}
 
 // calculate the gradient magnitude
 unsigned char *mipmap::gradmag(unsigned char *data,
-                               unsigned int width,unsigned int height,unsigned int depth,
+                               long long width,long long height,long long depth,
                                float dsx,float dsy,float dsz,
                                float *gradmax)
    {
    static const float mingrad=0.1f;
 
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
 
@@ -866,22 +873,22 @@ unsigned char *mipmap::gradmag(unsigned char *data,
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (gmax=1.0f,k=0; k<(int)depth; k+=2)
-      for (j=0; j<(int)height; j+=2)
-         for (i=0; i<(int)width; i+=2)
+   for (gmax=1.0f,k=0; k<depth; k+=2)
+      for (j=0; j<height; j+=2)
+         for (i=0; i<width; i+=2)
             {
             if (i>0)
-               if (i<(int)width-1) gx=(get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i-1,j,k))/2.0f;
+               if (i<width-1) gx=(get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i-1,j,k))/2.0f;
                else gx=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i-1,j,k);
             else gx=get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i,j,k);
 
             if (j>0)
-               if (j<(int)height-1) gy=(get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j-1,k))/2.0f;
+               if (j<height-1) gy=(get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j-1,k))/2.0f;
                else gy=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i,j-1,k);
             else gy=get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j,k);
 
             if (k>0)
-               if (k<(int)depth-1) gz=(get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k-1))/2.0f;
+               if (k<depth-1) gz=(get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k-1))/2.0f;
                else gz=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i,j,k-1);
             else gz=get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k);
 
@@ -889,22 +896,22 @@ unsigned char *mipmap::gradmag(unsigned char *data,
             if (gm>gmax) gmax=gm;
             }
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
             if (i>0)
-               if (i<(int)width-1) gx=(get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i-1,j,k))/2.0f;
+               if (i<width-1) gx=(get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i-1,j,k))/2.0f;
                else gx=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i-1,j,k);
             else gx=get(data,width,height,depth,i+1,j,k)-get(data,width,height,depth,i,j,k);
 
             if (j>0)
-               if (j<(int)height-1) gy=(get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j-1,k))/2.0f;
+               if (j<height-1) gy=(get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j-1,k))/2.0f;
                else gy=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i,j-1,k);
             else gy=get(data,width,height,depth,i,j+1,k)-get(data,width,height,depth,i,j,k);
 
             if (k>0)
-               if (k<(int)depth-1) gz=(get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k-1))/2.0f;
+               if (k<depth-1) gz=(get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k-1))/2.0f;
                else gz=get(data,width,height,depth,i,j,k)-get(data,width,height,depth,i,j,k-1);
             else gz=get(data,width,height,depth,i,j,k+1)-get(data,width,height,depth,i,j,k);
 
@@ -917,8 +924,8 @@ unsigned char *mipmap::gradmag(unsigned char *data,
    }
 
 inline float mipmap::getgrad(unsigned char *data,
-                             int width,int height,int depth,
-                             int i,int j,int k,
+                             long long width,long long height,long long depth,
+                             long long i,long long j,long long k,
                              float dsx,float dsy,float dsz)
    {
    unsigned char *ptr;
@@ -942,8 +949,8 @@ inline float mipmap::getgrad(unsigned char *data,
    }
 
 inline float mipmap::getgrad2(unsigned char *data,
-                              int width,int height,int depth,
-                              int i,int j,int k,
+                              long long width,long long height,long long depth,
+                              long long i,long long j,long long k,
                               float dsx,float dsy,float dsz)
    {
    unsigned char *ptr;
@@ -973,8 +980,8 @@ inline float mipmap::getgrad2(unsigned char *data,
    }
 
 inline float mipmap::getsobel(unsigned char *data,
-                              int width,int height,int depth,
-                              int i,int j,int k,
+                              long long width,long long height,long long depth,
+                              long long i,long long j,long long k,
                               float dsx,float dsy,float dsz)
    {
    unsigned char *ptr;
@@ -1058,21 +1065,21 @@ inline float mipmap::threshold(float x,float thres)
 
 // calculate the gradient magnitude with multi-level averaging
 unsigned char *mipmap::gradmagML(unsigned char *data,
-                                 unsigned int width,unsigned int height,unsigned int depth,
+                                 long long width,long long height,long long depth,
                                  float dsx,float dsy,float dsz,
                                  float *gradmax)
    {
    static const int maxlevel=2;
    static const float mingrad=0.1f;
 
-   int i,j,k;
+   long long i,j,k;
 
    float *data2,*ptr2;
    float *data3,*ptr3;
    unsigned char *data4,*ptr4;
    unsigned char *data5,*ptr5;
 
-   int width2,height2,depth2;
+   long long width2,height2,depth2;
 
    float gm,gmax,gmax2;
 
@@ -1107,9 +1114,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    gmax=0.0f;
 
-   for (ptr2=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
 #ifndef SOBEL
             gm=getgrad(data,width,height,depth,i,j,k,dsx,dsy,dsz);
@@ -1123,9 +1130,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    if (gmax==0.0f) gmax=1.0f;
 
-   for (ptr2=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
             gm=*ptr2;
             *ptr2++=threshold(gm/gmax,mingrad);
@@ -1169,9 +1176,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
             *ptr3++=gm/gmax;
             }
 
-      for (ptr2=data2,k=0; k<(int)depth; k++)
-         for (j=0; j<(int)height; j++)
-            for (i=0; i<(int)width; i++)
+      for (ptr2=data2,k=0; k<depth; k++)
+         for (j=0; j<height; j++)
+            for (i=0; i<width; i++)
                {
                gm=*ptr2;
                gm+=weight*threshold(getscalar(data3,width2,height2,depth2,(float)i/(width-1),(float)j/(height-1),(float)k/(depth-1)),mingrad);
@@ -1189,9 +1196,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    if ((data5=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (ptr2=data2,ptr5=data5,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr2=data2,ptr5=data5,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
             gm=*ptr2++;
             *ptr5++=ftrc(255.0f*gm/gmax2+0.5f);
@@ -1206,9 +1213,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
 // calculate the variance
 unsigned char *mipmap::variance(unsigned char *data,
-                                unsigned int width,unsigned int height,unsigned int depth)
+                                long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
 
@@ -1218,9 +1225,9 @@ unsigned char *mipmap::variance(unsigned char *data,
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (dmax=1,k=0; k<(int)depth; k+=2)
-      for (j=0; j<(int)height; j+=2)
-         for (i=0; i<(int)width; i+=2)
+   for (dmax=1,k=0; k<depth; k+=2)
+      for (j=0; j<height; j+=2)
+         for (i=0; i<width; i+=2)
             {
             // central voxel
             val=get(data,width,height,depth,i,j,k);
@@ -1228,53 +1235,53 @@ unsigned char *mipmap::variance(unsigned char *data,
 
             // x-axis
             if (i>0) {dev+=abs(get(data,width,height,depth,i-1,j,k)-val); cnt++;}
-            if (i<(int)width-1) {dev+=abs(get(data,width,height,depth,i+1,j,k)-val); cnt++;}
+            if (i<width-1) {dev+=abs(get(data,width,height,depth,i+1,j,k)-val); cnt++;}
 
             // y-axis
             if (j>0) {dev+=abs(get(data,width,height,depth,i,j-1,k)-val); cnt++;}
-            if (j<(int)height-1) {dev+=abs(get(data,width,height,depth,i,j+1,k)-val); cnt++;}
+            if (j<height-1) {dev+=abs(get(data,width,height,depth,i,j+1,k)-val); cnt++;}
 
             // z-axis
             if (k>0) {dev+=abs(get(data,width,height,depth,i,j,k-1)-val); cnt++;}
-            if (k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j,k+1)-val); cnt++;}
+            if (k<depth-1) {dev+=abs(get(data,width,height,depth,i,j,k+1)-val); cnt++;}
 
             // xy-plane
             if (i>0 && j>0) {dev+=abs(get(data,width,height,depth,i-1,j-1,k)-val); cnt++;}
-            if (i<(int)width-1 && j>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k)-val); cnt++;}
-            if (i>0 && j<(int)height-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k)-val); cnt++;}
+            if (i<width-1 && j>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k)-val); cnt++;}
+            if (i>0 && j<height-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k)-val); cnt++;}
+            if (i<width-1 && j<height-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k)-val); cnt++;}
 
             // xz-plane
             if (i>0 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j,k-1)-val); cnt++;}
-            if (i<(int)width-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j,k-1)-val); cnt++;}
-            if (i>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j,k+1)-val); cnt++;}
-            if (i<(int)width-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j,k+1)-val); cnt++;}
+            if (i<width-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j,k-1)-val); cnt++;}
+            if (i>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j,k+1)-val); cnt++;}
+            if (i<width-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j,k+1)-val); cnt++;}
 
             // yz-plane
             if (j>0 && k>0) {dev+=abs(get(data,width,height,depth,i,j-1,k-1)-val); cnt++;}
-            if (j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i,j+1,k-1)-val); cnt++;}
-            if (j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j-1,k+1)-val); cnt++;}
-            if (j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j+1,k+1)-val); cnt++;}
+            if (j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i,j+1,k-1)-val); cnt++;}
+            if (j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i,j-1,k+1)-val); cnt++;}
+            if (j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i,j+1,k+1)-val); cnt++;}
 
             // bottom xy-plane
             if (i>0 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j-1,k-1)-val); cnt++;}
-            if (i<(int)width-1 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k-1)-val); cnt++;}
-            if (i>0 && j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j+1,k-1)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j+1,k-1)-val); cnt++;}
+            if (i<width-1 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k-1)-val); cnt++;}
+            if (i>0 && j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j+1,k-1)-val); cnt++;}
+            if (i<width-1 && j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j+1,k-1)-val); cnt++;}
 
             // top xy-plane
-            if (i>0 && j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j-1,k+1)-val); cnt++;}
-            if (i<(int)width-1 && j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j-1,k+1)-val); cnt++;}
-            if (i>0 && j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k+1)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k+1)-val); cnt++;}
+            if (i>0 && j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j-1,k+1)-val); cnt++;}
+            if (i<width-1 && j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j-1,k+1)-val); cnt++;}
+            if (i>0 && j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k+1)-val); cnt++;}
+            if (i<width-1 && j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k+1)-val); cnt++;}
 
             dev=(dev+cnt/2)/cnt;
             if (dev>dmax) dmax=dev;
             }
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
             // central voxel
             val=get(data,width,height,depth,i,j,k);
@@ -1282,45 +1289,45 @@ unsigned char *mipmap::variance(unsigned char *data,
 
             // x-axis
             if (i>0) {dev+=abs(get(data,width,height,depth,i-1,j,k)-val); cnt++;}
-            if (i<(int)width-1) {dev+=abs(get(data,width,height,depth,i+1,j,k)-val); cnt++;}
+            if (i<width-1) {dev+=abs(get(data,width,height,depth,i+1,j,k)-val); cnt++;}
 
             // y-axis
             if (j>0) {dev+=abs(get(data,width,height,depth,i,j-1,k)-val); cnt++;}
-            if (j<(int)height-1) {dev+=abs(get(data,width,height,depth,i,j+1,k)-val); cnt++;}
+            if (j<height-1) {dev+=abs(get(data,width,height,depth,i,j+1,k)-val); cnt++;}
 
             // z-axis
             if (k>0) {dev+=abs(get(data,width,height,depth,i,j,k-1)-val); cnt++;}
-            if (k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j,k+1)-val); cnt++;}
+            if (k<depth-1) {dev+=abs(get(data,width,height,depth,i,j,k+1)-val); cnt++;}
 
             // xy-plane
             if (i>0 && j>0) {dev+=abs(get(data,width,height,depth,i-1,j-1,k)-val); cnt++;}
-            if (i<(int)width-1 && j>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k)-val); cnt++;}
-            if (i>0 && j<(int)height-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k)-val); cnt++;}
+            if (i<width-1 && j>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k)-val); cnt++;}
+            if (i>0 && j<height-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k)-val); cnt++;}
+            if (i<width-1 && j<height-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k)-val); cnt++;}
 
             // xz-plane
             if (i>0 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j,k-1)-val); cnt++;}
-            if (i<(int)width-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j,k-1)-val); cnt++;}
-            if (i>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j,k+1)-val); cnt++;}
-            if (i<(int)width-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j,k+1)-val); cnt++;}
+            if (i<width-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j,k-1)-val); cnt++;}
+            if (i>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j,k+1)-val); cnt++;}
+            if (i<width-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j,k+1)-val); cnt++;}
 
             // yz-plane
             if (j>0 && k>0) {dev+=abs(get(data,width,height,depth,i,j-1,k-1)-val); cnt++;}
-            if (j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i,j+1,k-1)-val); cnt++;}
-            if (j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j-1,k+1)-val); cnt++;}
-            if (j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i,j+1,k+1)-val); cnt++;}
+            if (j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i,j+1,k-1)-val); cnt++;}
+            if (j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i,j-1,k+1)-val); cnt++;}
+            if (j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i,j+1,k+1)-val); cnt++;}
 
             // bottom xy-plane
             if (i>0 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j-1,k-1)-val); cnt++;}
-            if (i<(int)width-1 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k-1)-val); cnt++;}
-            if (i>0 && j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j+1,k-1)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j+1,k-1)-val); cnt++;}
+            if (i<width-1 && j>0 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j-1,k-1)-val); cnt++;}
+            if (i>0 && j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i-1,j+1,k-1)-val); cnt++;}
+            if (i<width-1 && j<height-1 && k>0) {dev+=abs(get(data,width,height,depth,i+1,j+1,k-1)-val); cnt++;}
 
             // top xy-plane
-            if (i>0 && j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j-1,k+1)-val); cnt++;}
-            if (i<(int)width-1 && j>0 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j-1,k+1)-val); cnt++;}
-            if (i>0 && j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k+1)-val); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k+1)-val); cnt++;}
+            if (i>0 && j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j-1,k+1)-val); cnt++;}
+            if (i<width-1 && j>0 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j-1,k+1)-val); cnt++;}
+            if (i>0 && j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i-1,j+1,k+1)-val); cnt++;}
+            if (i<width-1 && j<height-1 && k<depth-1) {dev+=abs(get(data,width,height,depth,i+1,j+1,k+1)-val); cnt++;}
 
             dev=(dev+cnt/2)/cnt;
             *ptr++=ftrc(255.0f*fmin((float)dev/dmax,1.0f)+0.5f);
@@ -1331,20 +1338,20 @@ unsigned char *mipmap::variance(unsigned char *data,
 
 // blur the volume
 void mipmap::blur(unsigned char *data,
-                  unsigned int width,unsigned int height,unsigned int depth)
+                  long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr;
 
    int val,cnt;
 
-   for (ptr=data,k=0; k<(int)depth; k++)
+   for (ptr=data,k=0; k<depth; k++)
       {
       cache(data,width,height,depth,k-1,2);
 
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             {
             // central voxel
             val=54*get(data,width,height,depth,i,j,k);
@@ -1352,45 +1359,45 @@ void mipmap::blur(unsigned char *data,
 
             // x-axis
             if (i>0) {val+=6*get(data,width,height,depth,i-1,j,k); cnt+=6;}
-            if (i<(int)width-1) {val+=6*get(data,width,height,depth,i+1,j,k); cnt+=6;}
+            if (i<width-1) {val+=6*get(data,width,height,depth,i+1,j,k); cnt+=6;}
 
             // y-axis
             if (j>0) {val+=6*get(data,width,height,depth,i,j-1,k); cnt+=6;}
-            if (j<(int)height-1) {val+=6*get(data,width,height,depth,i,j+1,k); cnt+=6;}
+            if (j<height-1) {val+=6*get(data,width,height,depth,i,j+1,k); cnt+=6;}
 
             // z-axis
             if (k>0) {val+=6*get(data,width,height,depth,i,j,k-1); cnt+=6;}
-            if (k<(int)depth-1) {val+=6*get(data,width,height,depth,i,j,k+1); cnt+=6;}
+            if (k<depth-1) {val+=6*get(data,width,height,depth,i,j,k+1); cnt+=6;}
 
             // xy-plane
             if (i>0 && j>0) {val+=2*get(data,width,height,depth,i-1,j-1,k); cnt+=2;}
-            if (i<(int)width-1 && j>0) {val+=2*get(data,width,height,depth,i+1,j-1,k); cnt+=2;}
-            if (i>0 && j<(int)height-1) {val+=2*get(data,width,height,depth,i-1,j+1,k); cnt+=2;}
-            if (i<(int)width-1 && j<(int)height-1) {val+=2*get(data,width,height,depth,i+1,j+1,k); cnt+=2;}
+            if (i<width-1 && j>0) {val+=2*get(data,width,height,depth,i+1,j-1,k); cnt+=2;}
+            if (i>0 && j<height-1) {val+=2*get(data,width,height,depth,i-1,j+1,k); cnt+=2;}
+            if (i<width-1 && j<height-1) {val+=2*get(data,width,height,depth,i+1,j+1,k); cnt+=2;}
 
             // xz-plane
             if (i>0 && k>0) {val+=2*get(data,width,height,depth,i-1,j,k-1); cnt+=2;}
-            if (i<(int)width-1 && k>0) {val+=2*get(data,width,height,depth,i+1,j,k-1); cnt+=2;}
-            if (i>0 && k<(int)depth-1) {val+=2*get(data,width,height,depth,i-1,j,k+1); cnt+=2;}
-            if (i<(int)width-1 && k<(int)depth-1) {val+=2*get(data,width,height,depth,i+1,j,k+1); cnt+=2;}
+            if (i<width-1 && k>0) {val+=2*get(data,width,height,depth,i+1,j,k-1); cnt+=2;}
+            if (i>0 && k<depth-1) {val+=2*get(data,width,height,depth,i-1,j,k+1); cnt+=2;}
+            if (i<width-1 && k<depth-1) {val+=2*get(data,width,height,depth,i+1,j,k+1); cnt+=2;}
 
             // yz-plane
             if (j>0 && k>0) {val+=2*get(data,width,height,depth,i,j-1,k-1); cnt+=2;}
-            if (j<(int)height-1 && k>0) {val+=2*get(data,width,height,depth,i,j+1,k-1); cnt+=2;}
-            if (j>0 && k<(int)depth-1) {val+=2*get(data,width,height,depth,i,j-1,k+1); cnt+=2;}
-            if (j<(int)height-1 && k<(int)depth-1) {val+=2*get(data,width,height,depth,i,j+1,k+1); cnt+=2;}
+            if (j<height-1 && k>0) {val+=2*get(data,width,height,depth,i,j+1,k-1); cnt+=2;}
+            if (j>0 && k<depth-1) {val+=2*get(data,width,height,depth,i,j-1,k+1); cnt+=2;}
+            if (j<height-1 && k<depth-1) {val+=2*get(data,width,height,depth,i,j+1,k+1); cnt+=2;}
 
             // bottom xy-plane
             if (i>0 && j>0 && k>0) {val+=get(data,width,height,depth,i-1,j-1,k-1); cnt++;}
-            if (i<(int)width-1 && j>0 && k>0) {val+=get(data,width,height,depth,i+1,j-1,k-1); cnt++;}
-            if (i>0 && j<(int)height-1 && k>0) {val+=get(data,width,height,depth,i-1,j+1,k-1); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k>0) {val+=get(data,width,height,depth,i+1,j+1,k-1); cnt++;}
+            if (i<width-1 && j>0 && k>0) {val+=get(data,width,height,depth,i+1,j-1,k-1); cnt++;}
+            if (i>0 && j<height-1 && k>0) {val+=get(data,width,height,depth,i-1,j+1,k-1); cnt++;}
+            if (i<width-1 && j<height-1 && k>0) {val+=get(data,width,height,depth,i+1,j+1,k-1); cnt++;}
 
             // top xy-plane
-            if (i>0 && j>0 && k<(int)depth-1) {val+=get(data,width,height,depth,i-1,j-1,k+1); cnt++;}
-            if (i<(int)width-1 && j>0 && k<(int)depth-1) {val+=get(data,width,height,depth,i+1,j-1,k+1); cnt++;}
-            if (i>0 && j<(int)height-1 && k<(int)depth-1) {val+=get(data,width,height,depth,i-1,j+1,k+1); cnt++;}
-            if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) {val+=get(data,width,height,depth,i+1,j+1,k+1); cnt++;}
+            if (i>0 && j>0 && k<depth-1) {val+=get(data,width,height,depth,i-1,j-1,k+1); cnt++;}
+            if (i<width-1 && j>0 && k<depth-1) {val+=get(data,width,height,depth,i+1,j-1,k+1); cnt++;}
+            if (i>0 && j<height-1 && k<depth-1) {val+=get(data,width,height,depth,i-1,j+1,k+1); cnt++;}
+            if (i<width-1 && j<height-1 && k<depth-1) {val+=get(data,width,height,depth,i+1,j+1,k+1); cnt++;}
 
             *ptr++=(val+cnt/2)/cnt;
             }
@@ -1401,9 +1408,9 @@ void mipmap::blur(unsigned char *data,
 
 // set gradient to maximum where transfer function is transparent
 void mipmap::usetf(unsigned char *data,unsigned char *grad,
-                   unsigned int width,unsigned int height,unsigned int depth)
+                   long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr1,*ptr2;
 
@@ -1419,9 +1426,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
 
    TFUNC->preint(TRUE);
 
-   for (ptr1=data,ptr2=grad,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++,ptr1++,ptr2++)
+   for (ptr1=data,ptr2=grad,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++,ptr1++,ptr2++)
             {
             // central voxel
             mindata=maxdata=*ptr1;
@@ -1429,7 +1436,7 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // x-axis:
 
             if (i>0) nbg[0]=get(data,width,height,depth,i-1,j,k); else nbg[0]=*ptr1;
-            if (i<(int)width-1) nbg[1]=get(data,width,height,depth,i+1,j,k); else nbg[1]=*ptr1;
+            if (i<width-1) nbg[1]=get(data,width,height,depth,i+1,j,k); else nbg[1]=*ptr1;
 
             val=(*ptr1)+nbg[0]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[1]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1437,7 +1444,7 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // y-axis:
 
             if (j>0) nbg[2]=get(data,width,height,depth,i,j-1,k); else nbg[2]=*ptr1;
-            if (j<(int)height-1) nbg[3]=get(data,width,height,depth,i,j+1,k); else nbg[3]=*ptr1;
+            if (j<height-1) nbg[3]=get(data,width,height,depth,i,j+1,k); else nbg[3]=*ptr1;
 
             val=(*ptr1)+nbg[2]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[3]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1445,7 +1452,7 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // z-axis:
 
             if (k>0) nbg[4]=get(data,width,height,depth,i,j,k-1); else nbg[4]=*ptr1;
-            if (k<(int)depth-1) nbg[5]=get(data,width,height,depth,i,j,k+1); else nbg[5]=*ptr1;
+            if (k<depth-1) nbg[5]=get(data,width,height,depth,i,j,k+1); else nbg[5]=*ptr1;
 
             val=(*ptr1)+nbg[4]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[5]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1453,9 +1460,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // xy-plane:
 
             if (i>0 && j>0) nbg[6]=get(data,width,height,depth,i-1,j-1,k); else nbg[6]=*ptr1;
-            if (i<(int)width-1 && j>0) nbg[7]=get(data,width,height,depth,i+1,j-1,k); else nbg[7]=*ptr1;
-            if (i>0 && j<(int)height-1) nbg[8]=get(data,width,height,depth,i-1,j+1,k); else nbg[8]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1) nbg[9]=get(data,width,height,depth,i+1,j+1,k); else nbg[9]=*ptr1;
+            if (i<width-1 && j>0) nbg[7]=get(data,width,height,depth,i+1,j-1,k); else nbg[7]=*ptr1;
+            if (i>0 && j<height-1) nbg[8]=get(data,width,height,depth,i-1,j+1,k); else nbg[8]=*ptr1;
+            if (i<width-1 && j<height-1) nbg[9]=get(data,width,height,depth,i+1,j+1,k); else nbg[9]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1465,9 +1472,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // xz-plane:
 
             if (i>0 && k>0) nbg[10]=get(data,width,height,depth,i-1,j,k-1); else nbg[10]=*ptr1;
-            if (i<(int)width-1 && k>0) nbg[11]=get(data,width,height,depth,i+1,j,k-1); else nbg[11]=*ptr1;
-            if (i>0 && k<(int)depth-1) nbg[12]=get(data,width,height,depth,i-1,j,k+1); else nbg[12]=*ptr1;
-            if (i<(int)width-1 && k<(int)depth-1) nbg[13]=get(data,width,height,depth,i+1,j,k+1); else nbg[13]=*ptr1;
+            if (i<width-1 && k>0) nbg[11]=get(data,width,height,depth,i+1,j,k-1); else nbg[11]=*ptr1;
+            if (i>0 && k<depth-1) nbg[12]=get(data,width,height,depth,i-1,j,k+1); else nbg[12]=*ptr1;
+            if (i<width-1 && k<depth-1) nbg[13]=get(data,width,height,depth,i+1,j,k+1); else nbg[13]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[4]+nbg[10]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[1]+nbg[4]+nbg[11]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1477,9 +1484,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // yz-plane:
 
             if (j>0 && k>0) nbg[14]=get(data,width,height,depth,i,j-1,k-1); else nbg[14]=*ptr1;
-            if (j<(int)height-1 && k>0) nbg[15]=get(data,width,height,depth,i,j+1,k-1); else nbg[15]=*ptr1;
-            if (j>0 && k<(int)depth-1) nbg[16]=get(data,width,height,depth,i,j-1,k+1); else nbg[16]=*ptr1;
-            if (j<(int)height-1 && k<(int)depth-1) nbg[17]=get(data,width,height,depth,i,j+1,k+1); else nbg[17]=*ptr1;
+            if (j<height-1 && k>0) nbg[15]=get(data,width,height,depth,i,j+1,k-1); else nbg[15]=*ptr1;
+            if (j>0 && k<depth-1) nbg[16]=get(data,width,height,depth,i,j-1,k+1); else nbg[16]=*ptr1;
+            if (j<height-1 && k<depth-1) nbg[17]=get(data,width,height,depth,i,j+1,k+1); else nbg[17]=*ptr1;
 
             val=(*ptr1)+nbg[2]+nbg[4]+nbg[14]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[3]+nbg[4]+nbg[15]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1489,9 +1496,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
             // bottom xy-plane:
 
             if (i>0 && j>0 && k>0) nbg[18]=get(data,width,height,depth,i-1,j-1,k-1); else nbg[18]=*ptr1;
-            if (i<(int)width-1 && j>0 && k>0) nbg[19]=get(data,width,height,depth,i+1,j-1,k-1); else nbg[19]=*ptr1;
-            if (i>0 && j<(int)height-1 && k>0) nbg[20]=get(data,width,height,depth,i-1,j+1,k-1); else nbg[20]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1 && k>0) nbg[21]=get(data,width,height,depth,i+1,j+1,k-1); else nbg[21]=*ptr1;
+            if (i<width-1 && j>0 && k>0) nbg[19]=get(data,width,height,depth,i+1,j-1,k-1); else nbg[19]=*ptr1;
+            if (i>0 && j<height-1 && k>0) nbg[20]=get(data,width,height,depth,i-1,j+1,k-1); else nbg[20]=*ptr1;
+            if (i<width-1 && j<height-1 && k>0) nbg[21]=get(data,width,height,depth,i+1,j+1,k-1); else nbg[21]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]+nbg[4]+nbg[10]+nbg[14]+nbg[18]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]+nbg[4]+nbg[11]+nbg[14]+nbg[19]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
@@ -1500,10 +1507,10 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
 
             // top xy-plane:
 
-            if (i>0 && j>0 && k<(int)depth-1) nbg[22]=get(data,width,height,depth,i-1,j-1,k+1); else nbg[22]=*ptr1;
-            if (i<(int)width-1 && j>0 && k<(int)depth-1) nbg[23]=get(data,width,height,depth,i+1,j-1,k+1); else nbg[23]=*ptr1;
-            if (i>0 && j<(int)height-1 && k<(int)depth-1) nbg[24]=get(data,width,height,depth,i-1,j+1,k+1); else nbg[24]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) nbg[25]=get(data,width,height,depth,i+1,j+1,k+1); else nbg[25]=*ptr1;
+            if (i>0 && j>0 && k<depth-1) nbg[22]=get(data,width,height,depth,i-1,j-1,k+1); else nbg[22]=*ptr1;
+            if (i<width-1 && j>0 && k<depth-1) nbg[23]=get(data,width,height,depth,i+1,j-1,k+1); else nbg[23]=*ptr1;
+            if (i>0 && j<height-1 && k<depth-1) nbg[24]=get(data,width,height,depth,i-1,j+1,k+1); else nbg[24]=*ptr1;
+            if (i<width-1 && j<height-1 && k<depth-1) nbg[25]=get(data,width,height,depth,i+1,j+1,k+1); else nbg[25]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]+nbg[5]+nbg[12]+nbg[16]+nbg[22]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]+nbg[5]+nbg[13]+nbg[16]+nbg[23]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
@@ -1520,9 +1527,9 @@ void mipmap::usetf(unsigned char *data,unsigned char *grad,
 
 // set gradient to maximum where opacity is zero
 void mipmap::useop(unsigned char *data,unsigned char *grad,
-                   unsigned int width,unsigned int height,unsigned int depth)
+                   long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr1,*ptr2;
 
@@ -1538,9 +1545,9 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
 
    TFUNC->premin();
 
-   for (ptr1=data,ptr2=grad,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++,ptr1++,ptr2++)
+   for (ptr1=data,ptr2=grad,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++,ptr1++,ptr2++)
             {
             // central voxel
             mindata=maxdata=*ptr1;
@@ -1548,7 +1555,7 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // x-axis:
 
             if (i>0) nbg[0]=get(data,width,height,depth,i-1,j,k); else nbg[0]=*ptr1;
-            if (i<(int)width-1) nbg[1]=get(data,width,height,depth,i+1,j,k); else nbg[1]=*ptr1;
+            if (i<width-1) nbg[1]=get(data,width,height,depth,i+1,j,k); else nbg[1]=*ptr1;
 
             val=(*ptr1)+nbg[0]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[1]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1556,7 +1563,7 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // y-axis:
 
             if (j>0) nbg[2]=get(data,width,height,depth,i,j-1,k); else nbg[2]=*ptr1;
-            if (j<(int)height-1) nbg[3]=get(data,width,height,depth,i,j+1,k); else nbg[3]=*ptr1;
+            if (j<height-1) nbg[3]=get(data,width,height,depth,i,j+1,k); else nbg[3]=*ptr1;
 
             val=(*ptr1)+nbg[2]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[3]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1564,7 +1571,7 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // z-axis:
 
             if (k>0) nbg[4]=get(data,width,height,depth,i,j,k-1); else nbg[4]=*ptr1;
-            if (k<(int)depth-1) nbg[5]=get(data,width,height,depth,i,j,k+1); else nbg[5]=*ptr1;
+            if (k<depth-1) nbg[5]=get(data,width,height,depth,i,j,k+1); else nbg[5]=*ptr1;
 
             val=(*ptr1)+nbg[4]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
             val=(*ptr1)+nbg[5]; if (val/2<mindata) mindata=val/2; else if ((val+1)/2>maxdata) maxdata=(val+1)/2;
@@ -1572,9 +1579,9 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // xy-plane:
 
             if (i>0 && j>0) nbg[6]=get(data,width,height,depth,i-1,j-1,k); else nbg[6]=*ptr1;
-            if (i<(int)width-1 && j>0) nbg[7]=get(data,width,height,depth,i+1,j-1,k); else nbg[7]=*ptr1;
-            if (i>0 && j<(int)height-1) nbg[8]=get(data,width,height,depth,i-1,j+1,k); else nbg[8]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1) nbg[9]=get(data,width,height,depth,i+1,j+1,k); else nbg[9]=*ptr1;
+            if (i<width-1 && j>0) nbg[7]=get(data,width,height,depth,i+1,j-1,k); else nbg[7]=*ptr1;
+            if (i>0 && j<height-1) nbg[8]=get(data,width,height,depth,i-1,j+1,k); else nbg[8]=*ptr1;
+            if (i<width-1 && j<height-1) nbg[9]=get(data,width,height,depth,i+1,j+1,k); else nbg[9]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1584,9 +1591,9 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // xz-plane:
 
             if (i>0 && k>0) nbg[10]=get(data,width,height,depth,i-1,j,k-1); else nbg[10]=*ptr1;
-            if (i<(int)width-1 && k>0) nbg[11]=get(data,width,height,depth,i+1,j,k-1); else nbg[11]=*ptr1;
-            if (i>0 && k<(int)depth-1) nbg[12]=get(data,width,height,depth,i-1,j,k+1); else nbg[12]=*ptr1;
-            if (i<(int)width-1 && k<(int)depth-1) nbg[13]=get(data,width,height,depth,i+1,j,k+1); else nbg[13]=*ptr1;
+            if (i<width-1 && k>0) nbg[11]=get(data,width,height,depth,i+1,j,k-1); else nbg[11]=*ptr1;
+            if (i>0 && k<depth-1) nbg[12]=get(data,width,height,depth,i-1,j,k+1); else nbg[12]=*ptr1;
+            if (i<width-1 && k<depth-1) nbg[13]=get(data,width,height,depth,i+1,j,k+1); else nbg[13]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[4]+nbg[10]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[1]+nbg[4]+nbg[11]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1596,9 +1603,9 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // yz-plane:
 
             if (j>0 && k>0) nbg[14]=get(data,width,height,depth,i,j-1,k-1); else nbg[14]=*ptr1;
-            if (j<(int)height-1 && k>0) nbg[15]=get(data,width,height,depth,i,j+1,k-1); else nbg[15]=*ptr1;
-            if (j>0 && k<(int)depth-1) nbg[16]=get(data,width,height,depth,i,j-1,k+1); else nbg[16]=*ptr1;
-            if (j<(int)height-1 && k<(int)depth-1) nbg[17]=get(data,width,height,depth,i,j+1,k+1); else nbg[17]=*ptr1;
+            if (j<height-1 && k>0) nbg[15]=get(data,width,height,depth,i,j+1,k-1); else nbg[15]=*ptr1;
+            if (j>0 && k<depth-1) nbg[16]=get(data,width,height,depth,i,j-1,k+1); else nbg[16]=*ptr1;
+            if (j<height-1 && k<depth-1) nbg[17]=get(data,width,height,depth,i,j+1,k+1); else nbg[17]=*ptr1;
 
             val=(*ptr1)+nbg[2]+nbg[4]+nbg[14]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
             val=(*ptr1)+nbg[3]+nbg[4]+nbg[15]; if (val/4<mindata) mindata=val/4; else if ((val+3)/4>maxdata) maxdata=(val+3)/4;
@@ -1608,9 +1615,9 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
             // bottom xy-plane:
 
             if (i>0 && j>0 && k>0) nbg[18]=get(data,width,height,depth,i-1,j-1,k-1); else nbg[18]=*ptr1;
-            if (i<(int)width-1 && j>0 && k>0) nbg[19]=get(data,width,height,depth,i+1,j-1,k-1); else nbg[19]=*ptr1;
-            if (i>0 && j<(int)height-1 && k>0) nbg[20]=get(data,width,height,depth,i-1,j+1,k-1); else nbg[20]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1 && k>0) nbg[21]=get(data,width,height,depth,i+1,j+1,k-1); else nbg[21]=*ptr1;
+            if (i<width-1 && j>0 && k>0) nbg[19]=get(data,width,height,depth,i+1,j-1,k-1); else nbg[19]=*ptr1;
+            if (i>0 && j<height-1 && k>0) nbg[20]=get(data,width,height,depth,i-1,j+1,k-1); else nbg[20]=*ptr1;
+            if (i<width-1 && j<height-1 && k>0) nbg[21]=get(data,width,height,depth,i+1,j+1,k-1); else nbg[21]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]+nbg[4]+nbg[10]+nbg[14]+nbg[18]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]+nbg[4]+nbg[11]+nbg[14]+nbg[19]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
@@ -1619,10 +1626,10 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
 
             // top xy-plane:
 
-            if (i>0 && j>0 && k<(int)depth-1) nbg[22]=get(data,width,height,depth,i-1,j-1,k+1); else nbg[22]=*ptr1;
-            if (i<(int)width-1 && j>0 && k<(int)depth-1) nbg[23]=get(data,width,height,depth,i+1,j-1,k+1); else nbg[23]=*ptr1;
-            if (i>0 && j<(int)height-1 && k<(int)depth-1) nbg[24]=get(data,width,height,depth,i-1,j+1,k+1); else nbg[24]=*ptr1;
-            if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) nbg[25]=get(data,width,height,depth,i+1,j+1,k+1); else nbg[25]=*ptr1;
+            if (i>0 && j>0 && k<depth-1) nbg[22]=get(data,width,height,depth,i-1,j-1,k+1); else nbg[22]=*ptr1;
+            if (i<width-1 && j>0 && k<depth-1) nbg[23]=get(data,width,height,depth,i+1,j-1,k+1); else nbg[23]=*ptr1;
+            if (i>0 && j<height-1 && k<depth-1) nbg[24]=get(data,width,height,depth,i-1,j+1,k+1); else nbg[24]=*ptr1;
+            if (i<width-1 && j<height-1 && k<depth-1) nbg[25]=get(data,width,height,depth,i+1,j+1,k+1); else nbg[25]=*ptr1;
 
             val=(*ptr1)+nbg[0]+nbg[2]+nbg[6]+nbg[5]+nbg[12]+nbg[16]+nbg[22]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
             val=(*ptr1)+nbg[1]+nbg[2]+nbg[7]+nbg[5]+nbg[13]+nbg[16]+nbg[23]; if (val/8<mindata) mindata=val/8; else if ((val+7)/8>maxdata) maxdata=(val+7)/8;
@@ -1639,32 +1646,32 @@ void mipmap::useop(unsigned char *data,unsigned char *grad,
 
 // remove bubbles
 void mipmap::remove(unsigned char *grad,
-                    unsigned int width,unsigned int height,unsigned int depth)
+                    long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr;
 
    int nbg,cnt;
 
-   for (ptr=grad,k=0; k<(int)depth; k++)
+   for (ptr=grad,k=0; k<depth; k++)
       {
       cache(grad,width,height,depth,k-1,2);
 
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++,ptr++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++,ptr++)
             if (*ptr==255)
                {
                nbg=cnt=0;
 
                if (i>0) {if (get(grad,width,height,depth,i-1,j,k)==255) nbg++; cnt++;}
-               if (i<(int)width-1) {if (get(grad,width,height,depth,i+1,j,k)==255) nbg++; cnt++;}
+               if (i<width-1) {if (get(grad,width,height,depth,i+1,j,k)==255) nbg++; cnt++;}
 
                if (j>0) {if (get(grad,width,height,depth,i,j-1,k)==255) nbg++; cnt++;}
-               if (j<(int)height-1) {if (get(grad,width,height,depth,i,j+1,k)==255) nbg++; cnt++;}
+               if (j<height-1) {if (get(grad,width,height,depth,i,j+1,k)==255) nbg++; cnt++;}
 
                if (k>0) {if (get(grad,width,height,depth,i,j,k-1)==255) nbg++; cnt++;}
-               if (k<(int)depth-1) {if (get(grad,width,height,depth,i,j,k+1)==255) nbg++; cnt++;}
+               if (k<depth-1) {if (get(grad,width,height,depth,i,j,k+1)==255) nbg++; cnt++;}
 
                if (nbg==cnt) *ptr=0;
                }
@@ -1675,65 +1682,65 @@ void mipmap::remove(unsigned char *grad,
 
 // tangle material
 void mipmap::tangle(unsigned char *grad,
-                    unsigned int width,unsigned int height,unsigned int depth)
+                    long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr;
 
    int cnt;
 
-   for (ptr=grad,k=0; k<(int)depth; k++)
+   for (ptr=grad,k=0; k<depth; k++)
       {
       cache(grad,width,height,depth,k-1,2);
 
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++,ptr++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++,ptr++)
             if (*ptr==255)
                {
                cnt=0;
 
                // x-axis
                if (i>0) if (get(grad,width,height,depth,i-1,j,k)<255) cnt++;
-               if (i<(int)width-1) if (get(grad,width,height,depth,i+1,j,k)<255) cnt++;
+               if (i<width-1) if (get(grad,width,height,depth,i+1,j,k)<255) cnt++;
 
                // y-axis
                if (j>0) if (get(grad,width,height,depth,i,j-1,k)<255) cnt++;
-               if (j<(int)height-1) if (get(grad,width,height,depth,i,j+1,k)<255) cnt++;
+               if (j<height-1) if (get(grad,width,height,depth,i,j+1,k)<255) cnt++;
 
                // z-axis
                if (k>0) if (get(grad,width,height,depth,i,j,k-1)<255) cnt++;
-               if (k<(int)depth-1) if (get(grad,width,height,depth,i,j,k+1)<255) cnt++;
+               if (k<depth-1) if (get(grad,width,height,depth,i,j,k+1)<255) cnt++;
 
                // xy-plane
                if (i>0 && j>0) if (get(grad,width,height,depth,i-1,j-1,k)<255) cnt++;
-               if (i<(int)width-1 && j>0) if (get(grad,width,height,depth,i+1,j-1,k)<255) cnt++;
-               if (i>0 && j<(int)height-1) if (get(grad,width,height,depth,i-1,j+1,k)<255) cnt++;
-               if (i<(int)width-1 && j<(int)height-1) if (get(grad,width,height,depth,i+1,j+1,k)<255) cnt++;
+               if (i<width-1 && j>0) if (get(grad,width,height,depth,i+1,j-1,k)<255) cnt++;
+               if (i>0 && j<height-1) if (get(grad,width,height,depth,i-1,j+1,k)<255) cnt++;
+               if (i<width-1 && j<height-1) if (get(grad,width,height,depth,i+1,j+1,k)<255) cnt++;
 
                // xz-plane
                if (i>0 && k>0) if (get(grad,width,height,depth,i-1,j,k-1)<255) cnt++;
-               if (i<(int)width-1 && k>0) if (get(grad,width,height,depth,i+1,j,k-1)<255) cnt++;
-               if (i>0 && k<(int)depth-1) if (get(grad,width,height,depth,i-1,j,k+1)<255) cnt++;
-               if (i<(int)width-1 && k<(int)depth-1) if (get(grad,width,height,depth,i+1,j,k+1)<255) cnt++;
+               if (i<width-1 && k>0) if (get(grad,width,height,depth,i+1,j,k-1)<255) cnt++;
+               if (i>0 && k<depth-1) if (get(grad,width,height,depth,i-1,j,k+1)<255) cnt++;
+               if (i<width-1 && k<depth-1) if (get(grad,width,height,depth,i+1,j,k+1)<255) cnt++;
 
                // yz-plane
                if (j>0 && k>0) if (get(grad,width,height,depth,i,j-1,k-1)<255) cnt++;
-               if (j<(int)height-1 && k>0) if (get(grad,width,height,depth,i,j+1,k-1)<255) cnt++;
-               if (j>0 && k<(int)depth-1) if (get(grad,width,height,depth,i,j-1,k+1)<255) cnt++;
-               if (j<(int)height-1 && k<(int)depth-1) if (get(grad,width,height,depth,i,j+1,k+1)<255) cnt++;
+               if (j<height-1 && k>0) if (get(grad,width,height,depth,i,j+1,k-1)<255) cnt++;
+               if (j>0 && k<depth-1) if (get(grad,width,height,depth,i,j-1,k+1)<255) cnt++;
+               if (j<height-1 && k<depth-1) if (get(grad,width,height,depth,i,j+1,k+1)<255) cnt++;
 
                // bottom xy-plane
                if (i>0 && j>0 && k>0) if (get(grad,width,height,depth,i-1,j-1,k-1)<255) cnt++;
-               if (i<(int)width-1 && j>0 && k>0) if (get(grad,width,height,depth,i+1,j-1,k-1)<255) cnt++;
-               if (i>0 && j<(int)height-1 && k>0) if (get(grad,width,height,depth,i-1,j+1,k-1)<255) cnt++;
-               if (i<(int)width-1 && j<(int)height-1 && k>0) if (get(grad,width,height,depth,i+1,j+1,k-1)<255) cnt++;
+               if (i<width-1 && j>0 && k>0) if (get(grad,width,height,depth,i+1,j-1,k-1)<255) cnt++;
+               if (i>0 && j<height-1 && k>0) if (get(grad,width,height,depth,i-1,j+1,k-1)<255) cnt++;
+               if (i<width-1 && j<height-1 && k>0) if (get(grad,width,height,depth,i+1,j+1,k-1)<255) cnt++;
 
                // top xy-plane
-               if (i>0 && j>0 && k<(int)depth-1) if (get(grad,width,height,depth,i-1,j-1,k+1)<255) cnt++;
-               if (i<(int)width-1 && j>0 && k<(int)depth-1) if (get(grad,width,height,depth,i+1,j-1,k+1)<255) cnt++;
-               if (i>0 && j<(int)height-1 && k<(int)depth-1) if (get(grad,width,height,depth,i-1,j+1,k+1)<255) cnt++;
-               if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) if (get(grad,width,height,depth,i+1,j+1,k+1)<255) cnt++;
+               if (i>0 && j>0 && k<depth-1) if (get(grad,width,height,depth,i-1,j-1,k+1)<255) cnt++;
+               if (i<width-1 && j>0 && k<depth-1) if (get(grad,width,height,depth,i+1,j-1,k+1)<255) cnt++;
+               if (i>0 && j<height-1 && k<depth-1) if (get(grad,width,height,depth,i-1,j+1,k+1)<255) cnt++;
+               if (i<width-1 && j<height-1 && k<depth-1) if (get(grad,width,height,depth,i+1,j+1,k+1)<255) cnt++;
 
                if (cnt>0) *ptr=0;
                }
@@ -1743,15 +1750,15 @@ void mipmap::tangle(unsigned char *grad,
    }
 
 // grow material
-unsigned int mipmap::grow(unsigned char *grad,
-                          unsigned int width,unsigned int height,unsigned int depth)
+long long mipmap::grow(unsigned char *grad,
+                       long long width,long long height,long long depth)
    {
-   int i,j,k;
+   long long i,j,k;
    int v,c;
 
    unsigned char *ptr;
 
-   int cnt,maxcnt;
+   long long cnt,maxcnt;
 
    int val,nbg[26];
 
@@ -1759,57 +1766,57 @@ unsigned int mipmap::grow(unsigned char *grad,
 
    found=0;
 
-   for (ptr=grad,k=0; k<(int)depth; k++)
+   for (ptr=grad,k=0; k<depth; k++)
       {
       cache(grad,width,height,depth,k-1,2);
 
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++,ptr++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++,ptr++)
             if (*ptr==0)
                {
                cnt=0;
 
                // x-axis
                if (i>0) {val=get(grad,width,height,depth,i-1,j,k); if (val>0) cnt++; nbg[0]=val;} else nbg[0]=0;
-               if (i<(int)width-1) {val=get(grad,width,height,depth,i+1,j,k); if (val>0) cnt++; nbg[1]=val;} else nbg[1]=0;
+               if (i<width-1) {val=get(grad,width,height,depth,i+1,j,k); if (val>0) cnt++; nbg[1]=val;} else nbg[1]=0;
 
                // y-axis
                if (j>0) {val=get(grad,width,height,depth,i,j-1,k); if (val>0) cnt++; nbg[2]=val;} else nbg[2]=0;
-               if (j<(int)height-1) {val=get(grad,width,height,depth,i,j+1,k); if (val>0) cnt++; nbg[3]=val;} else nbg[3]=0;
+               if (j<height-1) {val=get(grad,width,height,depth,i,j+1,k); if (val>0) cnt++; nbg[3]=val;} else nbg[3]=0;
 
                // z-axis
                if (k>0) {val=get(grad,width,height,depth,i,j,k-1); if (val>0) cnt++; nbg[4]=val;} else nbg[4]=0;
-               if (k<(int)depth-1) {val=get(grad,width,height,depth,i,j,k+1); if (val>0) cnt++; nbg[5]=val;} else nbg[5]=0;
+               if (k<depth-1) {val=get(grad,width,height,depth,i,j,k+1); if (val>0) cnt++; nbg[5]=val;} else nbg[5]=0;
 
                // xy-plane
                if (i>0 && j>0) {val=get(grad,width,height,depth,i-1,j-1,k); if (val>0) cnt++; nbg[6]=val;} else nbg[6]=0;
-               if (i<(int)width-1 && j>0) {val=get(grad,width,height,depth,i+1,j-1,k); if (val>0) cnt++; nbg[7]=val;} else nbg[7]=0;
-               if (i>0 && j<(int)height-1) {val=get(grad,width,height,depth,i-1,j+1,k); if (val>0) cnt++; nbg[8]=val;} else nbg[8]=0;
-               if (i<(int)width-1 && j<(int)height-1) {val=get(grad,width,height,depth,i+1,j+1,k); if (val>0) cnt++; nbg[9]=val;} else nbg[9]=0;
+               if (i<width-1 && j>0) {val=get(grad,width,height,depth,i+1,j-1,k); if (val>0) cnt++; nbg[7]=val;} else nbg[7]=0;
+               if (i>0 && j<height-1) {val=get(grad,width,height,depth,i-1,j+1,k); if (val>0) cnt++; nbg[8]=val;} else nbg[8]=0;
+               if (i<width-1 && j<height-1) {val=get(grad,width,height,depth,i+1,j+1,k); if (val>0) cnt++; nbg[9]=val;} else nbg[9]=0;
 
                // xz-plane
                if (i>0 && k>0) {val=get(grad,width,height,depth,i-1,j,k-1); if (val>0) cnt++; nbg[10]=val;} else nbg[10]=0;
-               if (i<(int)width-1 && k>0) {val=get(grad,width,height,depth,i+1,j,k-1); if (val>0) cnt++; nbg[11]=val;} else nbg[11]=0;
-               if (i>0 && k<(int)depth-1) {val=get(grad,width,height,depth,i-1,j,k+1); if (val>0) cnt++; nbg[12]=val;} else nbg[12]=0;
-               if (i<(int)width-1 && k<(int)depth-1) {val=get(grad,width,height,depth,i+1,j,k+1); if (val>0) cnt++; nbg[13]=val;} else nbg[13]=0;
+               if (i<width-1 && k>0) {val=get(grad,width,height,depth,i+1,j,k-1); if (val>0) cnt++; nbg[11]=val;} else nbg[11]=0;
+               if (i>0 && k<depth-1) {val=get(grad,width,height,depth,i-1,j,k+1); if (val>0) cnt++; nbg[12]=val;} else nbg[12]=0;
+               if (i<width-1 && k<depth-1) {val=get(grad,width,height,depth,i+1,j,k+1); if (val>0) cnt++; nbg[13]=val;} else nbg[13]=0;
 
                // yz-plane
                if (j>0 && k>0) {val=get(grad,width,height,depth,i,j-1,k-1); if (val>0) cnt++; nbg[14]=val;} else nbg[14]=0;
-               if (j<(int)height-1 && k>0) {val=get(grad,width,height,depth,i,j+1,k-1); if (val>0) cnt++; nbg[15]=val;} else nbg[15]=0;
-               if (j>0 && k<(int)depth-1) {val=get(grad,width,height,depth,i,j-1,k+1); if (val>0) cnt++; nbg[16]=val;} else nbg[16]=0;
-               if (j<(int)height-1 && k<(int)depth-1) {val=get(grad,width,height,depth,i,j+1,k+1); if (val>0) cnt++; nbg[17]=val;} else nbg[17]=0;
+               if (j<height-1 && k>0) {val=get(grad,width,height,depth,i,j+1,k-1); if (val>0) cnt++; nbg[15]=val;} else nbg[15]=0;
+               if (j>0 && k<depth-1) {val=get(grad,width,height,depth,i,j-1,k+1); if (val>0) cnt++; nbg[16]=val;} else nbg[16]=0;
+               if (j<height-1 && k<depth-1) {val=get(grad,width,height,depth,i,j+1,k+1); if (val>0) cnt++; nbg[17]=val;} else nbg[17]=0;
 
                // bottom xy-plane
                if (i>0 && j>0 && k>0) {val=get(grad,width,height,depth,i-1,j-1,k-1); if (val>0) cnt++; nbg[18]=val;} else nbg[18]=0;
-               if (i<(int)width-1 && j>0 && k>0) {val=get(grad,width,height,depth,i+1,j-1,k-1); if (val>0) cnt++; nbg[19]=val;} else nbg[19]=0;
-               if (i>0 && j<(int)height-1 && k>0) {val=get(grad,width,height,depth,i-1,j+1,k-1); if (val>0) cnt++; nbg[20]=val;} else nbg[20]=0;
-               if (i<(int)width-1 && j<(int)height-1 && k>0) {val=get(grad,width,height,depth,i+1,j+1,k-1); if (val>0) cnt++; nbg[21]=val;} else nbg[21]=0;
+               if (i<width-1 && j>0 && k>0) {val=get(grad,width,height,depth,i+1,j-1,k-1); if (val>0) cnt++; nbg[19]=val;} else nbg[19]=0;
+               if (i>0 && j<height-1 && k>0) {val=get(grad,width,height,depth,i-1,j+1,k-1); if (val>0) cnt++; nbg[20]=val;} else nbg[20]=0;
+               if (i<width-1 && j<height-1 && k>0) {val=get(grad,width,height,depth,i+1,j+1,k-1); if (val>0) cnt++; nbg[21]=val;} else nbg[21]=0;
 
                // top xy-plane
-               if (i>0 && j>0 && k<(int)depth-1) {val=get(grad,width,height,depth,i-1,j-1,k+1); if (val>0) cnt++; nbg[22]=val;} else nbg[22]=0;
-               if (i<(int)width-1 && j>0 && k<(int)depth-1) {val=get(grad,width,height,depth,i+1,j-1,k+1); if (val>0) cnt++; nbg[23]=val;} else nbg[23]=0;
-               if (i>0 && j<(int)height-1 && k<(int)depth-1) {val=get(grad,width,height,depth,i-1,j+1,k+1); if (val>0) cnt++; nbg[24]=val;} else nbg[24]=0;
-               if (i<(int)width-1 && j<(int)height-1 && k<(int)depth-1) {val=get(grad,width,height,depth,i+1,j+1,k+1); if (val>0) cnt++; nbg[25]=val;} else nbg[25]=0;
+               if (i>0 && j>0 && k<depth-1) {val=get(grad,width,height,depth,i-1,j-1,k+1); if (val>0) cnt++; nbg[22]=val;} else nbg[22]=0;
+               if (i<width-1 && j>0 && k<depth-1) {val=get(grad,width,height,depth,i+1,j-1,k+1); if (val>0) cnt++; nbg[23]=val;} else nbg[23]=0;
+               if (i>0 && j<height-1 && k<depth-1) {val=get(grad,width,height,depth,i-1,j+1,k+1); if (val>0) cnt++; nbg[24]=val;} else nbg[24]=0;
+               if (i<width-1 && j<height-1 && k<depth-1) {val=get(grad,width,height,depth,i+1,j+1,k+1); if (val>0) cnt++; nbg[25]=val;} else nbg[25]=0;
 
                if (cnt>0)
                   {
@@ -1847,14 +1854,14 @@ unsigned int mipmap::grow(unsigned char *grad,
    }
 
 // floodfill a segment of the volume based on scalar value
-unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
-                               const unsigned int width,const unsigned int height,const unsigned int depth,
-                               const unsigned int x,const unsigned int y,const unsigned int z,
-                               const int value,const int maxdev,
-                               const int token)
+long long mipmap::floodfill(const unsigned char *data,unsigned char *mark,
+                            const long long width,const long long height,const long long depth,
+                            const long long x,const long long y,const long long z,
+                            const int value,const int maxdev,
+                            const int token)
    {
    unsigned int i;
-   unsigned int cnt;
+   long long cnt;
 
    int xs,ys,zs;
    int *qx,*qy,*qz;
@@ -1926,7 +1933,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<(int)width-1)
+      if (xs<width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -1948,7 +1955,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<(int)height-1)
+      if (ys<height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -1970,7 +1977,7 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<(int)depth-1)
+      if (zs<depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -1986,19 +1993,19 @@ unsigned int mipmap::floodfill(const unsigned char *data,unsigned char *mark,
    }
 
 // floodfill a segment of the volume counting space
-float mipmap::countfill(const unsigned char *data,unsigned char *mark,
-                        const unsigned int width,const unsigned int height,const unsigned int depth,
-                        const unsigned int x,const unsigned int y,const unsigned int z,
-                        const int value,const int maxdev,
-                        const int token)
+double mipmap::countfill(const unsigned char *data,unsigned char *mark,
+                         const long long width,const long long height,const long long depth,
+                         const long long x,const long long y,const long long z,
+                         const int value,const int maxdev,
+                         const int token)
    {
    unsigned int i;
-   float cnt;
+   double cnt;
 
    int xs,ys,zs;
    int *qx,*qy,*qz;
 
-   cnt=0.0f;
+   cnt=0.0;
 
    QUEUECNT=1;
    QUEUESTART=0;
@@ -2022,7 +2029,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
       if (abs(get(data,width,height,depth,xs,ys,zs)-value)>maxdev) continue;
 
       set(mark,width,height,depth,xs,ys,zs,token);
-      cnt+=1.0f-get(data,width,height,depth,xs,ys,zs)/255.0f;
+      cnt+=1.0-get(data,width,height,depth,xs,ys,zs)/255.0;
 
       if (QUEUECNT+6>QUEUEMAX)
          {
@@ -2065,7 +2072,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<(int)width-1)
+      if (xs<width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -2087,7 +2094,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<(int)height-1)
+      if (ys<height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -2109,7 +2116,7 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<(int)depth-1)
+      if (zs<depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -2125,13 +2132,13 @@ float mipmap::countfill(const unsigned char *data,unsigned char *mark,
    }
 
 // floodfill a segment of the volume based on gradient magnitude
-unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
-                              const unsigned int width,const unsigned int height,const unsigned int depth,
-                              const unsigned int x,const unsigned int y,const unsigned int z,
-                              const int token,const int maxgrad)
+long long mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
+                           const long long width,const long long height,const long long depth,
+                           const long long x,const long long y,const long long z,
+                           const int token,const int maxgrad)
    {
    unsigned int i;
-   unsigned int cnt;
+   long long cnt;
 
    int xs,ys,zs;
    int *qx,*qy,*qz;
@@ -2203,7 +2210,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (xs<(int)width-1)
+      if (xs<width-1)
          {
          QUEUEX[QUEUEEND]=xs+1;
          QUEUEY[QUEUEEND]=ys;
@@ -2225,7 +2232,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (ys<(int)height-1)
+      if (ys<height-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys+1;
@@ -2247,7 +2254,7 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
          QUEUECNT++;
          }
 
-      if (zs<(int)depth-1)
+      if (zs<depth-1)
          {
          QUEUEX[QUEUEEND]=xs;
          QUEUEY[QUEUEEND]=ys;
@@ -2264,28 +2271,28 @@ unsigned int mipmap::gradfill(const unsigned char *grad,unsigned char *mark,
 
 // classify the volume by the segment size
 unsigned char *mipmap::sizify(unsigned char *data,
-                              unsigned int width,unsigned int height,unsigned int depth,
+                              long long width,long long height,long long depth,
                               float maxdev)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr2;
 
-   unsigned int size,maxsize;
+   long long size,maxsize;
    int maxd;
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (ptr2=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++) *ptr2++=0;
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++) *ptr2++=0;
 
    maxsize=1;
    maxd=ftrc(255.0f*maxdev+0.5f);
 
-   for (k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             if (get(data2,width,height,depth,i,j,k)==0)
                {
                size=floodfill(data,data2,
@@ -2296,13 +2303,13 @@ unsigned char *mipmap::sizify(unsigned char *data,
                if (size>maxsize) maxsize=size;
                }
 
-   for (ptr2=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++) *ptr2++=0;
+   for (ptr2=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++) *ptr2++=0;
 
-   for (k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             if (get(data2,width,height,depth,i,j,k)==0)
                {
                size=floodfill(data,data2,
@@ -2324,13 +2331,13 @@ unsigned char *mipmap::sizify(unsigned char *data,
 
 // classify the volume by gradient border
 unsigned char *mipmap::classify(unsigned char *grad,
-                                unsigned int width,unsigned int height,unsigned int depth,
+                                long long width,long long height,long long depth,
                                 float maxgrad,
                                 unsigned int *classes)
    {
    const int stepping=71;
 
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
 
@@ -2341,17 +2348,17 @@ unsigned char *mipmap::classify(unsigned char *grad,
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++) *ptr++=0;
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++) *ptr++=0;
 
    token=128;
    maxg=ftrc(255.0f*maxgrad+0.5f);
    cnt=0;
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             if (*ptr++==0)
                if (get(grad,width,height,depth,i,j,k)<maxg)
                   {
@@ -2372,32 +2379,32 @@ unsigned char *mipmap::classify(unsigned char *grad,
 
 // zero space
 void mipmap::zero(unsigned char *data,unsigned char *grad,
-                  unsigned int width,unsigned int height,unsigned int depth,
+                  long long width,long long height,long long depth,
                   float maxdev)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *data2,*ptr;
 
    int maxd;
 
-   float cnt,maxcnt;
+   double cnt,maxcnt;
    unsigned int mi,mj,mk;
 
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++) *ptr++=0;
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++) *ptr++=0;
 
    maxd=ftrc(255.0f*maxdev+0.5f);
 
-   maxcnt=0.0f;
+   maxcnt=0.0;
    mi=mj=mk=0;
 
-   for (ptr=data2,k=0; k<(int)depth; k++)
-      for (j=0; j<(int)height; j++)
-         for (i=0; i<(int)width; i++)
+   for (ptr=data2,k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
             if (*ptr++==0)
                {
                cnt=countfill(grad,data2,
@@ -2423,7 +2430,7 @@ void mipmap::zero(unsigned char *data,unsigned char *grad,
 
 // parse command string
 void mipmap::parsecommands(unsigned char *volume,
-                           unsigned int width,unsigned int height,unsigned int depth,
+                           long long width,long long height,long long depth,
                            char *commands)
    {
    char command;
@@ -2443,7 +2450,7 @@ void mipmap::parsecommands(unsigned char *volume,
 
 // parse gradient command string
 void mipmap::parsegradcommands(unsigned char *volume,unsigned char *grad,
-                               unsigned int width,unsigned int height,unsigned int depth,
+                               long long width,long long height,long long depth,
                                char *commands)
    {
    const float maxdev=0.1f;
@@ -2516,10 +2523,10 @@ void mipmap::parsegradcommands(unsigned char *volume,unsigned char *grad,
 
 // get interpolated scalar value from volume
 unsigned char mipmap::getscalar(unsigned char *volume,
-                                unsigned int width,unsigned int height,unsigned int depth,
+                                long long width,long long height,long long depth,
                                 float x,float y,float z)
    {
-   int i,j,k;
+   long long i,j,k;
 
    unsigned char *ptr1,*ptr2;
 
@@ -2553,25 +2560,25 @@ unsigned char mipmap::getscalar(unsigned char *volume,
       z=0.0f;
       }
 
-   if (i>=(int)width-1)
+   if (i>=width-1)
       {
       i=width-2;
       x=1.0f;
       }
 
-   if (j>=(int)height-1)
+   if (j>=height-1)
       {
       j=height-2;
       y=1.0f;
       }
 
-   if (k>=(int)depth-1)
+   if (k>=depth-1)
       {
       k=depth-2;
       z=1.0f;
       }
 
-   ptr1=&volume[(unsigned int)i+((unsigned int)j+(unsigned int)k*height)*width];
+   ptr1=&volume[i+(j+k*height)*width];
    ptr2=ptr1+width*height;
 
    return(ftrc((1.0f-z)*((1.0f-y)*((1.0f-x)*ptr1[0]+x*ptr1[1])+
@@ -2582,10 +2589,10 @@ unsigned char mipmap::getscalar(unsigned char *volume,
 
 // get interpolated scalar value from volume
 float mipmap::getscalar(float *volume,
-                        unsigned int width,unsigned int height,unsigned int depth,
+                        long long width,long long height,long long depth,
                         float x,float y,float z)
    {
-   int i,j,k;
+   long long i,j,k;
 
    float *ptr1,*ptr2;
 
@@ -2619,25 +2626,25 @@ float mipmap::getscalar(float *volume,
       z=0.0f;
       }
 
-   if (i>=(int)width-1)
+   if (i>=width-1)
       {
       i=width-2;
       x=1.0f;
       }
 
-   if (j>=(int)height-1)
+   if (j>=height-1)
       {
       j=height-2;
       y=1.0f;
       }
 
-   if (k>=(int)depth-1)
+   if (k>=depth-1)
       {
       k=depth-2;
       z=1.0f;
       }
 
-   ptr1=&volume[(unsigned int)i+((unsigned int)j+(unsigned int)k*height)*width];
+   ptr1=&volume[i+(j+k*height)*width];
    ptr2=ptr1+width*height;
 
    return((1.0f-z)*((1.0f-y)*((1.0f-x)*ptr1[0]+x*ptr1[1])+
@@ -2648,10 +2655,10 @@ float mipmap::getscalar(float *volume,
 
 // scale volume
 unsigned char *mipmap::scale(unsigned char *volume,
-                             unsigned int width,unsigned int height,unsigned int depth,
-                             unsigned int nwidth,unsigned int nheight,unsigned int ndepth)
+                             long long width,long long height,long long depth,
+                             long long nwidth,long long nheight,long long ndepth)
    {
-   unsigned int i,j,k;
+   long long i,j,k;
 
    unsigned char *volume2;
 
@@ -2670,13 +2677,15 @@ unsigned char *mipmap::scale(unsigned char *volume,
 
 // read a volume by trying any known format
 unsigned char *mipmap::readANYvolume(const char *filename,
-                                     unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                     long long *width,long long *height,long long *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez,
                                      BOOLINT *msb)
    {
    unsigned char *volume;
-   unsigned int steps;
+   long long steps;
    BOOLINT order;
+
+   unsigned int pvmwidth,pvmheight,pvmdepth;
 
    order=TRUE;
 
@@ -2699,7 +2708,12 @@ unsigned char *mipmap::readANYvolume(const char *filename,
 
       // read a PVM volume
       if (volume==NULL)
-         volume=readPVMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+         {
+         volume=readPVMvolume(filename,&pvmwidth,&pvmheight,&pvmdepth,components,scalex,scaley,scalez);
+         *width=pvmwidth;
+         *height=pvmheight;
+         *depth=pvmdepth;
+         }
       }
 
    if (msb!=NULL) *msb=order;

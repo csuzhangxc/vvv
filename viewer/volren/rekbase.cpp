@@ -7,14 +7,15 @@
 
 // analyze 2048 byte REK header
 BOOLINT readREKheader(FILE *file,
-                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                      long long *width,long long *height,long long *depth,unsigned int *components,
                       float *scalex,float *scaley,float *scalez)
    {
    int i;
 
    unsigned char data[2];
 
-   unsigned int rekwidth,rekheight,rekdepth,rekbits,rekcomps;
+   long long rekwidth,rekheight,rekdepth;
+   unsigned int rekbits,rekcomps;
    unsigned int rekdummy;
 
    // volume width
@@ -72,13 +73,13 @@ BOOLINT readREKheader(FILE *file,
 
 // read a REK volume (Fraunhofer EZRT volume format)
 unsigned char *readREKvolume(const char *filename,
-                             unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                             long long *width,long long *height,long long *depth,unsigned int *components,
                              float *scalex,float *scaley,float *scalez)
    {
    FILE *file;
 
    unsigned char *volume;
-   unsigned long long bytes;
+   long long bytes;
 
    // open REK file
    if ((file=fopen(filename,"rb"))==NULL) return(NULL);
@@ -110,7 +111,7 @@ unsigned char *readREKvolume(const char *filename,
 
 // read REK file format header
 BOOLINT readREKheader(const char *filename,
-                      unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                      long long *width,long long *height,long long *depth,unsigned int *components,
                       float *scalex,float *scaley,float *scalez)
    {
    FILE *file;
@@ -136,7 +137,8 @@ char *copyREKvolume(const char *filename,const char *output)
    {
    FILE *file;
 
-   unsigned int width,height,depth,components;
+   long long width,height,depth;
+   unsigned int components;
    float scalex,scaley,scalez;
 
    char *outname;
@@ -172,7 +174,8 @@ char *processREKvolume(const char *filename,const char *output)
    {
    FILE *file;
 
-   unsigned int width,height,depth,components;
+   long long width,height,depth;
+   unsigned int components;
    float scalex,scaley,scalez;
 
    char *outname;
@@ -205,13 +208,13 @@ char *processREKvolume(const char *filename,const char *output)
 
 // read a REK volume out-of-core
 unsigned char *readREKvolume_ooc(const char *filename,
-                                 unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components,
+                                 long long *width,long long *height,long long *depth,unsigned int *components,
                                  float *scalex,float *scaley,float *scalez)
    {
    char *outname;
 
    unsigned char *volume;
-   unsigned int steps;
+   long long steps;
 
    volume=NULL;
 

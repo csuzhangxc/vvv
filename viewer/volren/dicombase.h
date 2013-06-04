@@ -47,11 +47,11 @@ class DicomVolume
    bool loadImages(const std::vector<std::string> list);
 
    unsigned char *getVoxelData() {return(m_Voxels);}
-   int getVoxelNum() {return(getCols()*getRows()*getSlis());}
+   long long getVoxelNum() {return(getCols()*getRows()*getSlis());}
 
-   unsigned long getCols() {return m_Cols;}
-   unsigned long getRows() {return m_Rows;}
-   unsigned long getSlis() {return m_Images.size();}
+   long long getCols() {return m_Cols;}
+   long long getRows() {return m_Rows;}
+   long long getSlis() {return m_Images.size();}
 
    float getBound(int c) {return(m_Bounds[c]);}
 
@@ -67,8 +67,8 @@ class DicomVolume
 
    std::vector<ImageDesc*> m_Images;
 
-   unsigned long m_Cols;
-   unsigned long m_Rows;
+   long long m_Cols;
+   long long m_Rows;
 
    float m_PixSpaceRow;
    float m_PixSpaceCol;
@@ -86,12 +86,12 @@ class DicomVolume
 
 // read a DICOM series identified by the * in the filename pattern
 unsigned char *readDICOMvolume(const char *filename,
-                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                               long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 // read a DICOM series from a file name list
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
-                               unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
+                               long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
 
 #endif

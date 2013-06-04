@@ -26,7 +26,7 @@ inline void RAW_swapfloat(float *x)
 
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
-                    unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
+                    long long *width,long long *height,long long *depth,long long *steps,
                     unsigned int *components,unsigned int *bits,BOOLINT *sign,BOOLINT *msb,
                     float *scalex,float *scaley,float *scalez)
    {
@@ -56,7 +56,7 @@ BOOLINT readRAWinfo(char *filename,
 
    dotdot++;
 
-   if (sscanf(dotdot,"%dx%d%n",width,height,&count)!=2) return(FALSE);
+   if (sscanf(dotdot,"%lldx%lld%n",width,height,&count)!=2) return(FALSE);
 
    dotdot+=count;
 
@@ -64,7 +64,7 @@ BOOLINT readRAWinfo(char *filename,
       {
       dotdot++;
 
-      if (sscanf(dotdot,"%d%n",depth,&count)!=1) return(FALSE);
+      if (sscanf(dotdot,"%lld%n",depth,&count)!=1) return(FALSE);
 
       dotdot+=count;
       }
@@ -73,7 +73,7 @@ BOOLINT readRAWinfo(char *filename,
       {
       dotdot++;
 
-      if (sscanf(dotdot,"%d%n",steps,&count)!=1) return(FALSE);
+      if (sscanf(dotdot,"%lld%n",steps,&count)!=1) return(FALSE);
 
       dotdot+=count;
       }
@@ -155,7 +155,7 @@ BOOLINT readRAWinfo(char *filename,
    }
 
 // define RAW file format
-char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+char *makeRAWinfo(long long width,long long height,long long depth,long long steps,
                   unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                   float scalex,float scaley,float scalez)
    {
@@ -164,9 +164,9 @@ char *makeRAWinfo(unsigned int width,unsigned int height,unsigned int depth,unsi
    char info[maxlen];
    float maxscale=1.0f;
 
-   snprintf(info,maxlen,".%dx%d",width,height);
-   if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",depth);
-   if (steps>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%d",steps);
+   snprintf(info,maxlen,".%lldx%lld",width,height);
+   if (depth>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%lld",depth);
+   if (steps>1) snprintf(&info[strlen(info)],maxlen-strlen(info),"x%lld",steps);
 
    if (components!=1 || bits!=8 || sign!=FALSE || msb!=TRUE ||
        scalex!=1.0f || scaley!=1.0f || scalez!=1.0f)
@@ -215,7 +215,8 @@ char *removeRAWsuffix(const char *filename)
    {
    char *filename2,*dot;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -246,7 +247,7 @@ char *removeRAWsuffix(const char *filename)
 
 // append RAW file format suffix
 char *appendRAWinfo(const char *filename,
-                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    long long width,long long height,long long depth,long long steps,
                     unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                     float scalex,float scaley,float scalez)
    {
@@ -274,7 +275,7 @@ char *appendRAWinfo(const char *filename,
 
 // read a RAW volume
 unsigned char *readRAWvolume(const char *filename,
-                             unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *steps,
+                             long long *width,long long *height,long long *depth,long long *steps,
                              unsigned int *components,unsigned int *bits,BOOLINT *sign,BOOLINT *msb,
                              float *scalex,float *scaley,float *scalez)
    {
@@ -283,7 +284,7 @@ unsigned char *readRAWvolume(const char *filename,
    char *name;
 
    unsigned char *volume;
-   unsigned long long bytes;
+   long long bytes;
 
    // open RAW file
    if ((file=fopen(filename,"rb"))==NULL) return(NULL);
@@ -301,7 +302,7 @@ unsigned char *readRAWvolume(const char *filename,
       }
    free(name);
 
-   bytes=(unsigned long long)(*width)*(*height)*(*depth)*(*components)*(*steps);
+   bytes=(*width)*(*height)*(*depth)*(*components)*(*steps);
 
    if (bits!=NULL)
       if (*bits==16) bytes*=2;
@@ -325,14 +326,14 @@ unsigned char *readRAWvolume(const char *filename,
 // write a RAW volume
 BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
                        unsigned char *volume,
-                       unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                       long long width,long long height,long long depth,long long steps,
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                        float scalex,float scaley,float scalez)
    {
    FILE *file;
 
    char *output;
-   unsigned long long bytes;
+   long long bytes;
 
    // make RAW info
    output=appendRAWinfo(filename,
@@ -351,7 +352,7 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
 
    free(output);
 
-   bytes=(unsigned long long)width*height*depth*components*steps;
+   bytes=width*height*depth*components*steps;
 
    if (bits==16) bytes*=2;
    else if (bits==32) bytes*=4;
@@ -371,14 +372,14 @@ BOOLINT writeRAWvolume(const char *filename, // /wo suffix .raw
 // copy a RAW volume
 char *copyRAWvolume(FILE *file, // source file desc
                     const char *output, // destination file name /wo .raw
-                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    long long width,long long height,long long depth,long long steps,
                     unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                     float scalex,float scaley,float scalez)
    {
-   unsigned int i,j;
+   long long i,j;
 
    unsigned char *slice;
-   unsigned long long bytes;
+   long long bytes;
 
    char *outname;
    FILE *outfile;
@@ -442,7 +443,8 @@ char *copyRAWvolume(const char *filename, // source file
 
    char *name;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -475,10 +477,10 @@ char *copyRAWvolume(const char *filename, // source file
    }
 
 // convert a RAW array to a 16-bit unsigned array
-unsigned short int *convert2short(unsigned char *source,unsigned long long cells,unsigned int &components,
+unsigned short int *convert2short(unsigned char *source,long long cells,unsigned int &components,
                                   unsigned int &bits,BOOLINT sign,BOOLINT msb)
    {
-   unsigned long long i;
+   long long i;
 
    unsigned short int *shorts;
 
@@ -545,10 +547,10 @@ unsigned short int *convert2short(unsigned char *source,unsigned long long cells
    }
 
 // compute minimum and maximum 16-bit unsigned value
-void convert2minmax(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+void convert2minmax(unsigned short int *shorts,long long cells,unsigned int components,
                     unsigned int &minval,unsigned int &maxval)
    {
-   unsigned long long i;
+   long long i;
 
    unsigned int v;
 
@@ -566,10 +568,10 @@ void convert2minmax(unsigned short int *shorts,unsigned long long cells,unsigned
    }
 
 // quantize a 16-bit unsigned array to a char array
-unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+unsigned char *convert2char(unsigned short int *shorts,long long cells,unsigned int components,
                             unsigned int minval,unsigned int maxval)
    {
-   unsigned long long i;
+   long long i;
 
    unsigned char *chars;
 
@@ -588,20 +590,20 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
 // copy a RAW volume with out-of-core linear quantization
 char *copyRAWvolume_linear(FILE *file, // source file desc
                            const char *output, // destination file name /wo .raw
-                           unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                           long long width,long long height,long long depth,long long steps,
                            unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                            float scalex,float scaley,float scalez)
    {
-   unsigned int i,j;
+   long long i,j;
 
    unsigned char *slice;
-   unsigned long long cells;
-   unsigned long long bytes;
+   long long cells;
+   long long bytes;
 
    unsigned short int *shorts;
    unsigned char *chars;
 
-   unsigned long long tellpos;
+   long long tellpos;
 
    unsigned int minval0,minval;
    unsigned int maxval0,maxval;
@@ -707,7 +709,8 @@ char *copyRAWvolume_linear(const char *filename, // source file
 
    char *name;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -833,10 +836,10 @@ void integrate(double *err,unsigned int maxval,unsigned int minval)
    }
 
 // quantize a 16-bit unsigned array to a char array using an integrated error table
-unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+unsigned char *convert2char(unsigned short int *shorts,long long cells,unsigned int components,
                             double *err)
    {
-   unsigned long long i;
+   long long i;
 
    unsigned char *chars;
 
@@ -853,20 +856,20 @@ unsigned char *convert2char(unsigned short int *shorts,unsigned long long cells,
 // copy a RAW volume with out-of-core non-linear quantization
 char *copyRAWvolume_nonlinear(FILE *file, // source file desc
                               const char *output, // destination file name /wo .raw
-                              unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                              long long width,long long height,long long depth,long long steps,
                               unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                               float scalex,float scaley,float scalez)
    {
-   unsigned int i,j;
+   long long i,j;
 
    unsigned char *slice;
-   unsigned long long cells;
-   unsigned long long bytes;
+   long long cells;
+   long long bytes;
 
    unsigned short int *shorts[3];
    unsigned char *chars;
 
-   unsigned long long tellpos;
+   long long tellpos;
 
    unsigned int minval0,minval;
    unsigned int maxval0,maxval;
@@ -1055,7 +1058,8 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
 
    char *name;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -1088,10 +1092,10 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
    }
 
 // populate histogram from short array
-void convert2histogram(unsigned short int *shorts,unsigned long long cells,unsigned int components,
+void convert2histogram(unsigned short int *shorts,long long cells,unsigned int components,
                        double *histo)
    {
-   unsigned long long i;
+   long long i;
 
    cells*=components;
 
@@ -1195,20 +1199,20 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(FILE *file, // source file desc
                     const char *output, // destination file name /wo .raw
-                    unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                    long long width,long long height,long long depth,long long steps,
                     unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                     float scalex,float scaley,float scalez,
                     float ratio) // crop volume ratio
    {
-   unsigned int i,j,k;
+   long long i,j,k;
 
    unsigned char *slice;
-   unsigned long long cells;
-   unsigned long long bytes;
+   long long cells;
+   long long bytes;
 
    unsigned short int *shorts;
 
-   unsigned long long tellpos;
+   long long tellpos;
 
    double *histo;
 
@@ -1377,7 +1381,8 @@ char *cropRAWvolume(const char *filename, // source file
 
    char *name;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -1437,20 +1442,20 @@ unsigned short int *convert2down(unsigned short int *shorts[],unsigned int width
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(FILE *file, // source file desc
                         const char *output, // destination file name /wo .raw
-                        unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                        long long width,long long height,long long depth,long long steps,
                         unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                         float scalex,float scaley,float scalez)
    {
-   unsigned int i,j;
+   long long i,j;
 
    unsigned char *slice;
-   unsigned long long cells;
-   unsigned long long bytes;
+   long long cells;
+   long long bytes;
 
    unsigned short int *shorts[2];
    unsigned short int *down;
 
-   unsigned int sizex,sizey,sizez;
+   long long sizex,sizey,sizez;
 
    char *outname;
    FILE *outfile;
@@ -1550,7 +1555,8 @@ char *downsizeRAWvolume(const char *filename, // source file
 
    char *name;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
    float rawscalex,rawscaley,rawscalez;
 
@@ -1585,21 +1591,22 @@ char *downsizeRAWvolume(const char *filename, // source file
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(FILE *file, // source file desc
                        const char *output, // destination file name
-                       unsigned int width,unsigned int height,unsigned int depth,unsigned int steps,
+                       long long width,long long height,long long depth,long long steps,
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                        float scalex,float scaley,float scalez,
                        float ratio,  // crop volume ratio
-                       unsigned long long maxcells) // down-size threshold
+                       long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
 
    char *filename2,*filename3,*filename4,*filename5,*filename6,*filename7,*filename8,*filename9;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
 
-   unsigned long long cells;
+   long long cells;
 
    outname=NULL;
 
@@ -1634,7 +1641,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
                        &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
 
-      cells=(unsigned long long)rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
       if (cells>maxcells)
          {
@@ -1679,17 +1686,18 @@ char *processRAWvolume(FILE *file, // source file desc
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
                        float ratio, // crop volume ratio
-                       unsigned long long maxcells) // down-size threshold
+                       long long maxcells) // down-size threshold
    {
    char *outname;
    const char *preoutname;
 
    char *filename2,*filename3,*filename4,*filename5,*filename6,*filename7,*filename8,*filename9;
 
-   unsigned int rawwidth,rawheight,rawdepth,rawsteps,rawcomps,rawbits;
+   long long rawwidth,rawheight,rawdepth,rawsteps;
+   unsigned int rawcomps,rawbits;
    BOOLINT rawsign,rawmsb;
 
-   unsigned long long cells;
+   long long cells;
 
    outname=NULL;
 
@@ -1720,7 +1728,7 @@ char *processRAWvolume(const char *filename, // source file
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
                        &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
 
-      cells=(unsigned long long)rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+      cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
       if (cells>maxcells)
          {
