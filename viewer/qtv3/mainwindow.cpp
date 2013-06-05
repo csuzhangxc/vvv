@@ -253,6 +253,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
          if (url.startsWith("file://"))
          {
             url = url.remove("file://");
+            url = url.replace('\\', '/');
             loadVolume(url.toStdString().c_str());
          }
       }
