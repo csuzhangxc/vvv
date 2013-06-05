@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.4"
+#define APP_VERSION "0.9"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
@@ -252,7 +252,8 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 
          if (url.startsWith("file://"))
          {
-            url = url.remove("file://");
+            url.remove("file://");
+            if (url.contains(QRegExp("^/[A-Z]:"))) url.remove(0,1);
             url = url.replace('\\', '/');
             loadVolume(url.toStdString().c_str());
          }
