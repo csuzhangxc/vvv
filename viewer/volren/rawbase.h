@@ -116,4 +116,19 @@ char *processRAWvolume(const char *filename, // source file
                        float ratio=0.5f, // crop volume ratio
                        long long maxcells=250000000); // down-size threshold
 
+// swap the hi and lo byte of 16 bit data
+void swapbytes(unsigned char *data,long long bytes);
+
+// convert from signed short to unsigned short
+void convbytes(unsigned char *data,long long bytes);
+
+// convert from float to unsigned short
+void convfloat(unsigned char *data,long long bytes);
+
+// quantize 16 bit data to 8 bit using a non-linear mapping
+unsigned char *quantize(unsigned char *volume,
+                        long long width,long long height,long long depth,
+                        BOOLINT msb=TRUE,
+                        BOOLINT linear=FALSE,BOOLINT nofree=FALSE);
+
 #endif

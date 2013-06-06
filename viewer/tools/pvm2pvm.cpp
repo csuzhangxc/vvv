@@ -3,6 +3,7 @@
 #include "codebase.h"
 
 #include "ddsbase.h"
+#include "rawbase.h"
 
 int main(int argc,char *argv[])
    {
