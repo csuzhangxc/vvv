@@ -211,6 +211,7 @@ unsigned char *readREKvolume_ooc(const char *filename,
                                  long long *width,long long *height,long long *depth,unsigned int *components,
                                  float *scalex,float *scaley,float *scalez)
    {
+   char *output,*dot;
    char *outname;
 
    unsigned char *volume;
@@ -218,7 +219,15 @@ unsigned char *readREKvolume_ooc(const char *filename,
 
    volume=NULL;
 
-   outname=processREKvolume(filename,filename);
+   output=strdup(filename);
+
+   dot=strrchr(output,'.');
+
+   if (dot!=NULL)
+      if (strcasecmp(dot,".rek")==0) *dot='\0';
+
+   outname=processREKvolume(filename,output);
+   free(output);
 
    if (outname!=NULL)
       {
