@@ -121,7 +121,7 @@ public:
    //! return preferred window size
    QSize sizeHint() const
    {
-      return(QSize(512, 512));
+      return(QSize(768, 768));
    }
 
 protected:
@@ -159,7 +159,7 @@ protected:
 
          // linear blue transfer function
          vr_->set_tfunc(0.5f,1.0f,
-                        0.0f,0.0f,1.0f);
+                        0.5f,0.5f,1.0f);
          }
 
       if (toload_)
