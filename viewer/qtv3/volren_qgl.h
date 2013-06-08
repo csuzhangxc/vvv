@@ -276,7 +276,7 @@ protected:
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
       if (bLeftButtonDown)
-         set_tfunc(x,1.0f-y,0,0,1,shift);
+         set_tfunc(x,1.0f-y,0.5,0.5,1,shift);
       else if (bRightButtonDown)
          if (getRotation()==0.0)
             setRotation(shift?-10.0:10.0);

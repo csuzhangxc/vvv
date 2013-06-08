@@ -802,8 +802,8 @@ void tfunc::set_line(float x1,float y1,float x2,float y2,float *tf)
 
    float y;
 
-   c1=ftrc(RES*x1);
-   c2=ftrc(RES*x2);
+   c1=ftrc((RES-1)*x1+0.5f);
+   c2=ftrc((RES-1)*x2+0.5f);
 
    y=y1;
 
