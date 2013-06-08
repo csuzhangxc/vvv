@@ -30,7 +30,7 @@ public:
       dist_=1.0;
       emi_=0.25;
       att_=0.25;
-
+      tf_=false;
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
@@ -106,6 +106,8 @@ public:
       {
       if (vr_)
          vr_->set_tfunc(center,size,r,g,b,inverse);
+
+      tf_=true;
       }
 
    //! return volume renderer
@@ -138,6 +140,7 @@ protected:
    double dist_; // clipping distance
    double emi_; // volume emission
    double att_; // volume absorption
+   bool tf_; // tfunc given?
 
    void initializeGL()
    {
@@ -157,9 +160,9 @@ protected:
          {
          vr_ = new volren();
 
-         // linear blue transfer function
-         vr_->set_tfunc(0.5f,1.0f,
-                        0.5f,0.5f,1.0f);
+         // linear transfer function
+         if (!tf_)
+            vr_->set_tfunc(0.5f,1.0f, 0.5f,1.0f,0.5f);
          }
 
       if (toload_)
@@ -275,13 +278,16 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (bLeftButtonDown)
-         set_tfunc(x,1.0f-y,0.5,0.5,1,shift);
-      else if (bRightButtonDown)
-         if (getRotation()==0.0)
-            setRotation(shift?-10.0:10.0);
+      if (!tf_)
+         if (bLeftButtonDown)
+            vr_->set_tfunc(x,1.0f-y,0.5f,1.0f,0.5f,shift);
+         else if (bRightButtonDown)
+            if (getRotation()==0.0)
+               setRotation(shift?-10.0:10.0);
+            else
+               setRotation(0.0);
          else
-            setRotation(0.0);
+            event->ignore();
       else
          event->ignore();
    }
