@@ -280,7 +280,7 @@ protected:
 
       if (!tf_)
          if (bLeftButtonDown)
-            vr_->set_tfunc(x,1.0f-y,0.5f,1.0f,0.5f,shift);
+            vr_->set_tfunc(x,1.0f-y,0.5f,1.0f,0.5f,!shift);
          else if (bRightButtonDown)
             if (getRotation()==0.0)
                setRotation(shift?-10.0:10.0);
