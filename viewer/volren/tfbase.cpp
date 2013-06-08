@@ -1172,6 +1172,17 @@ void tfunc2D::set_mode(int mode)
    update();
    }
 
+// check whether or not the absorption is equal for all channels
+BOOLINT tfunc2D::checkRGBA()
+   {
+   int i;
+
+   for (i=0; i<NUM; i++)
+      if (!TF[i]->checkRGBA()) return(FALSE);
+
+   return(TRUE);
+   }
+
 // refresh transfer functions
 void tfunc2D::refresh(const float emission,
                       const float density,
@@ -1184,12 +1195,10 @@ void tfunc2D::refresh(const float emission,
 
    unsigned char *data;
 
-   BOOLINT useRGBA=TRUE;
+   BOOLINT useRGBA;
    BOOLINT changed=FALSE;
 
-   for (i=0; i<NUM; i++)
-      if (!TF[i]->checkRGBA()) useRGBA=FALSE;
-
+   useRGBA=checkRGBA();
    if (EID==0) changed=TRUE;
 
    if (NUM==1)

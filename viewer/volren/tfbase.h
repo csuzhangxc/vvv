@@ -301,6 +301,9 @@ class tfunc2D
    int get_eid() {return(EID);} // get texture id of pre-integrated emission
    int get_aid() {return(AID);} // get texture id of pre-integrated absorption
 
+   // check whether or not the absorption is equal for all channels
+   BOOLINT checkRGBA();
+
    // get pre-multiplication of tables
    BOOLINT get_premult() {return(TF[0]->get_premult());}
 

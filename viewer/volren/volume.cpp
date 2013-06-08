@@ -341,12 +341,14 @@ BOOLINT volume::render(float ex,float ey,float ez,
                        void *abortdata)
    {
    BOOLINT aborted;
+   BOOLINT useRGBA;
 
    // update fbo
    updatefbo();
+   useRGBA=get_tfunc()->checkRGBA();
 
    // render to fbo
-   if (HASFBO && USEFBO)
+   if (HASFBO && USEFBO && useRGBA)
       {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
@@ -373,7 +375,7 @@ BOOLINT volume::render(float ex,float ey,float ez,
       glDisable(GL_ALPHA_TEST);
 
    // render from fbo
-   if (HASFBO && USEFBO)
+   if (HASFBO && USEFBO && useRGBA)
       {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
