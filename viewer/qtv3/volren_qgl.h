@@ -30,6 +30,8 @@ public:
       dist_=1.0;
       emi_=0.25;
       att_=0.25;
+      inv_=false;
+      gm_=false;
       tf_=false;
 
       bLeftButtonDown = false;
@@ -99,6 +101,14 @@ public:
    void setAbsorption(double att=0.0)
       {att_=att;}
 
+   //! set inverse mode
+   void setInvMode(bool on=false)
+      {inv_=on;}
+
+   //! set gradient magnitude mode
+   void setGradMag(bool on=false)
+      {gm_=on;}
+
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   float r=1.0f,float g=1.0f,float b=1.0f,
@@ -140,6 +150,8 @@ protected:
    double dist_; // clipping distance
    double emi_; // volume emission
    double att_; // volume absorption
+   bool inv_; // inverse mode?
+   bool gm_; // gradient magnitude?
    bool tf_; // tfunc given?
 
    void initializeGL()
@@ -224,7 +236,7 @@ protected:
                   tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
                   TRUE,TRUE, // pre-multiplication and pre-integration
                   TRUE, // white background
-                  FALSE, // inverse mode
+                  inv_, // inverse mode
                   vol_over, // oversampling
                   FALSE, // lighting
                   TRUE, // view-aligned clipping

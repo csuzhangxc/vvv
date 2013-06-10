@@ -103,6 +103,8 @@ protected slots:
    void clip(int v);
    void emission(int v);
    void absorption(int v);
+   void checkInvMode(int on);
+   void checkGradMag(int on);
    void about();
 };
 

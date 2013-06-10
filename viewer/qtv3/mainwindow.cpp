@@ -132,12 +132,22 @@ void QTV3MainWindow::createWidgets()
    sliderLayout->addLayout(l2);
 
    QVBoxLayout *l3 = new QVBoxLayout;
-   l3->addStretch(1000);
-   l3->addWidget(s3);
-   l3->addStretch(1000);
    QLabel *ll3=new QLabel("Rotation");
    ll3->setAlignment(Qt::AlignHCenter);
    l3->addWidget(ll3);
+   l3->addStretch(1000);
+   l3->addWidget(s3);
+   l3->addStretch(1000);
+   QHBoxLayout *h = new QHBoxLayout;
+   QCheckBox *invModeCheck = new QCheckBox(tr("Inverse Mode"));
+   invModeCheck->setChecked(false);
+   connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
+   h->addWidget(invModeCheck);
+   QCheckBox *gradMagCheck = new QCheckBox(tr("Gradient Magnitude"));
+   gradMagCheck->setChecked(false);
+   connect(gradMagCheck, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
+   h->addWidget(gradMagCheck);
+   l3->addLayout(h);
    sliderLayout->addLayout(l3);
 
    QVBoxLayout *l4 = new QVBoxLayout;
@@ -340,6 +350,16 @@ void QTV3MainWindow::absorption(int v)
 {
    double att = v / 16.0 / 100.0;
    vrw_->setAbsorption(att);
+}
+
+void QTV3MainWindow::checkInvMode(int on)
+{
+   vrw_->setInvMode(on);
+}
+
+void QTV3MainWindow::checkGradMag(int on)
+{
+   vrw_->setGradMag(on);
 }
 
 void QTV3MainWindow::about()
