@@ -3030,22 +3030,23 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                        BOOLINT (*abort)(void *abortdata),
                        void *abortdata)
    {
-   BOOLINT aborted;
+   BOOLINT aborted=FALSE;
 
    int map=0;
 
-   if (VOLCNT==0) return(FALSE);
+   if (VOLCNT>0)
+      {
+      if (TFUNC->get_imode())
+         while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
 
-   if (TFUNC->get_imode())
-      while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
-
-   aborted=VOL[map]->render(ex,ey,ez,
-                            dx,dy,dz,
-                            ux,uy,uz,
-                            nearp,slab,
-                            1.0f/get_slab(),
-                            lighting,
-                            abort,abortdata);
+      aborted=VOL[map]->render(ex,ey,ez,
+                               dx,dy,dz,
+                               ux,uy,uz,
+                               nearp,slab,
+                               1.0f/get_slab(),
+                               lighting,
+                               abort,abortdata);
+      }
 
    if (TFUNC->get_invmode()) invertbuffer();
 
