@@ -265,7 +265,7 @@ protected:
                   TRUE, // white background
                   inv_, // inverse mode
                   vol_over, // oversampling
-                  FALSE, // lighting
+                  TRUE, // lighting
                   TRUE, // view-aligned clipping
                   dist_, // clipping distance relative to origin
                   TRUE); // wire frame box
