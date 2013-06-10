@@ -107,7 +107,20 @@ public:
 
    //! set gradient magnitude mode
    void setGradMag(bool on=false)
-      {gm_=on;}
+      {
+      gm_=on;
+
+      if (gm_)
+         {
+         vr_->get_tfunc()->set_num(32);
+         vr_->get_tfunc()->set_mode(3);
+         }
+      else
+         {
+         vr_->get_tfunc()->set_num(1);
+         vr_->get_tfunc()->set_mode(0);
+         }
+      }
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
