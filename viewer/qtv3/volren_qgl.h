@@ -179,14 +179,28 @@ protected:
 
       if (toload_)
          {
-         vr_->loadvolume(toload_);
+         vr_->loadvolume(toload_,NULL,
+                         0.0f,0.0f,0.0f,
+                         1.0f,1.0f,1.0f,
+                         128,8.0f,
+                         FALSE,FALSE,FALSE,
+                         FALSE,FALSE,
+                         TRUE);
+
          free(toload_);
          toload_=NULL;
          }
 
       if (series_.size()>0)
          {
-         vr_->loadseries(series_);
+         vr_->loadseries(series_,
+                         0.0f,0.0f,0.0f,
+                         1.0f,1.0f,1.0f,
+                         128,8.0f,
+                         FALSE,FALSE,FALSE,
+                         FALSE,FALSE,
+                         TRUE);
+
          series_.clear();
          }
 

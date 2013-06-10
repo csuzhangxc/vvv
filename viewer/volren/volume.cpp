@@ -2877,6 +2877,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
                            int bricksize,float overmax, // bricksize/overlap of volume (assumed to be fixed)
                            BOOLINT xswap,BOOLINT yswap,BOOLINT zswap, // swap volume flags
                            BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
+                           BOOLINT usegrad, // use gradient volume
                            int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
    {
    float maxsize;
@@ -2897,6 +2898,27 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
                xswap,yswap,zswap,
                xrotate,zrotate);
 
+   if (GRAD!=NULL)
+      {
+      free(GRAD);
+      GRAD=NULL;
+      }
+
+   if (usegrad)
+      {
+#ifdef MULTILEVEL
+      GRAD=gradmagML(VOLUME,
+                     WIDTH,HEIGHT,DEPTH,
+                     DSX,DSY,DSZ,
+                     &GRADMAX);
+#else
+      GRAD=gradmag(VOLUME,
+                   WIDTH,HEIGHT,DEPTH,
+                   DSX,DSY,DSZ,
+                   &GRADMAX);
+#endif
+      }
+
    strncpy(filestr,"",MAXSTR);
    strncpy(gradstr,"",MAXSTR);
    strncpy(commstr,"",MAXSTR);
@@ -2910,7 +2932,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
 
    maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
 
-   set_data(VOLUME,NULL,
+   set_data(VOLUME,GRAD,
             WIDTH,HEIGHT,DEPTH,
             mx,my,mz,
             sx*DSX*(WIDTH-1)/maxsize,sy*DSY*(HEIGHT-1)/maxsize,sz*DSZ*(DEPTH-1)/maxsize,

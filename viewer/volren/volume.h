@@ -154,6 +154,7 @@ class mipmap
                       int bricksize=128,float overmax=8.0f,
                       BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
+                      BOOLINT usegrad=FALSE,
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
 
    // save the volume data as PVM
