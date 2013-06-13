@@ -2692,8 +2692,11 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    order=TRUE;
 
    if (strchr(filename,'*')!=NULL)
+      {
       // read a DICOM series identified by the * in the filename pattern
-      volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez);
+      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+         order=FALSE;
+      }
    else
       {
       // read a RAW volume
