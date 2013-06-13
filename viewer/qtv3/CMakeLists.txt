@@ -112,3 +112,15 @@ IF (BUILD_WITH_DCMTK)
       ${CMAKE_THREAD_LIBS_INIT}
       )
 ENDIF (BUILD_WITH_DCMTK)
+
+# install target
+INSTALL(
+   TARGETS qtv3
+   RUNTIME DESTINATION bin
+)
+
+# install .desktop file and icon for KDE4 (and Gnome)
+IF (UNIX AND NOT APPLE)
+   INSTALL(FILES QTV3.desktop DESTINATION /usr/share/applications)
+   INSTALL(FILES qtv3.png DESTINATION /usr/share/qtv3)
+ENDIF (UNIX AND NOT APPLE)
