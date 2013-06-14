@@ -34,20 +34,20 @@ FIND_PACKAGE(OpenGL)
 IF (BUILD_WITH_DCMTK)
 
    # non-standard path to dcmtk
-   FIND_PATH(DCMTK_DIR include/dcmtk/ofstd/ofstd.h PATHS /usr/local /usr/local/dcmtk)
+   FIND_PATH(DCMTK_DIR include/dcmtk/ofstd/ofstd.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
 
    # find threads library
    FIND_PACKAGE(Threads)
 
    # find DCMTK dependencies
-   FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
-   FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib)
+   FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
    FIND_PATH(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h PATHS ${DCMTK_DIR} PATH_SUFFIXES include)
    INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
    IF (NOT WIN32)
