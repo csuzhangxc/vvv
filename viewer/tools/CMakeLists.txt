@@ -19,3 +19,8 @@ MAKE_VIEWER_EXECUTABLE(pvmdds)
 
 MAKE_VIEWER_EXECUTABLE(dti2pvm)
 MAKE_VIEWER_EXECUTABLE(rgb2hsv)
+
+INSTALL(
+   TARGETS raw2pvm pvm2raw pvm2pgm pgm2pvm pvm2pvm rek2raw rawcrop rawquant pvminfo pvmplay pvmdds
+   RUNTIME DESTINATION bin
+   )
