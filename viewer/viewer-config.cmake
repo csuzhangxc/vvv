@@ -180,6 +180,10 @@ IF (BUILD_WITH_DCMTK)
    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
    # find DCMTK dependencies
+   # caution: when using a cmake built dcmtk library on WIN32,
+   #          make sure that the option DCMTK_OVERWRITE_WIN32_COMPILER_FLAGS is OFF.
+   #          otherwise dcmtk is built with /MT and not as usual with the cmake default /MD.
+   #          this will conflict with the /MD setting of this project.
    IF (FIND_DCMTK_MANUALLY)
       FIND_VIEWER_LIBRARY2(DCMTK_ofstd_LIBRARY ofstd "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
       FIND_VIEWER_LIBRARY2(DCMTK_oflog_LIBRARY oflog "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
