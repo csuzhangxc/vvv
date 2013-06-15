@@ -34,7 +34,7 @@ FIND_PACKAGE(OpenGL)
 IF (BUILD_WITH_DCMTK)
 
    # non-standard path to dcmtk
-   FIND_PATH(DCMTK_DIR include/dcmtk/ofstd/ofstd.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
+   FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
 
    # find threads library
    FIND_PACKAGE(Threads)
