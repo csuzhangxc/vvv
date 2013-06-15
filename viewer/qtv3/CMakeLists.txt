@@ -27,6 +27,10 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
    )
 
 # non-standard path to dcmtk
+# caution: when using a cmake built dcmtk library on WIN32,
+#          make sure that the option DCMTK_OVERWRITE_WIN32_COMPILER_FLAGS is OFF.
+#          otherwise dcmtk is built with /MT and not as usual with the cmake default /MD.
+#          this will conflict with the /MD setting of this project.
 FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk ../../../dcmtk)
 
 # non-standard path to Qt4
