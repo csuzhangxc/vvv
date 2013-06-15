@@ -9,6 +9,10 @@ PROJECT(QTV3VolumeRenderer)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
 OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
+OPTION(FIND_DCMTK_MANUALLY "Do not rely on CMake to find DCMTK." OFF)
+
+# path to custom cmake modules
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
 # determine build type
 IF (CMAKE_BUILD_TYPE)
@@ -16,6 +20,14 @@ IF (CMAKE_BUILD_TYPE)
 ELSE (CMAKE_BUILD_TYPE)
    SET(QTV3_BUILD_TYPE DEFAULT)
 ENDIF (CMAKE_BUILD_TYPE)
+
+# non-standard path to zlib
+SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
+    ../zlib;../../zlib;../../../zlib;
+   )
+
+# non-standard path to dcmtk
+FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk ../../../dcmtk)
 
 # non-standard path to Qt4
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
@@ -33,31 +45,33 @@ FIND_PACKAGE(OpenGL)
 
 IF (BUILD_WITH_DCMTK)
 
-   # non-standard path to dcmtk
-   FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
-
    # find threads library
    FIND_PACKAGE(Threads)
-
-   # find DCMTK dependencies
-   FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-   FIND_PATH(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h PATHS ${DCMTK_DIR} PATH_SUFFIXES include)
-   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
-   IF (NOT WIN32)
-      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
-   ENDIF (NOT WIN32)
-   ADD_DEFINITIONS(-DVIEWER_HAVE_DCMTK)
 
    # find ZLIB dependency
    FIND_PACKAGE(ZLIB)
    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
+   # find DCMTK dependencies
+   IF (FIND_DCMTK_MANUALLY)
+      FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+      FIND_PATH(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h PATHS ${DCMTK_DIR} PATH_SUFFIXES include)
+   ELSE (FIND_DCMTK_MANUALLY)
+      FIND_PACKAGE(DCMTK)
+   ENDIF (FIND_DCMTK_MANUALLY)
+   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
+   IF (NOT WIN32)
+      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+   ENDIF (NOT WIN32)
+
+   ADD_DEFINITIONS(-DVIEWER_HAVE_DCMTK)
 
 ENDIF (BUILD_WITH_DCMTK)
 
@@ -98,19 +112,26 @@ TARGET_LINK_LIBRARIES(qtv3
    ${OPENGL_LIBRARIES}
    )
 IF (BUILD_WITH_DCMTK)
-   TARGET_LINK_LIBRARIES(qtv3
-      ${LIB_NAME}
-      ${DCMTK_dcmdata_LIBRARY}
-      ${DCMTK_dcmjpeg_LIBRARY}
-      ${DCMTK_ijg8_LIBRARY}
-      ${DCMTK_ijg12_LIBRARY}
-      ${DCMTK_ijg16_LIBRARY}
-      ${DCMTK_dcmtls_LIBRARY}
-      ${DCMTK_oflog_LIBRARY}
-      ${DCMTK_ofstd_LIBRARY}
-      ${ZLIB_LIBRARY}
-      ${CMAKE_THREAD_LIBS_INIT}
-      )
+   IF (FIND_DCMTK_MANUALLY)
+      TARGET_LINK_LIBRARIES(qtv3
+         ${DCMTK_dcmdata_LIBRARY}
+         ${DCMTK_dcmjpeg_LIBRARY}
+         ${DCMTK_ijg8_LIBRARY}
+         ${DCMTK_ijg12_LIBRARY}
+         ${DCMTK_ijg16_LIBRARY}
+         ${DCMTK_dcmtls_LIBRARY}
+         ${DCMTK_oflog_LIBRARY}
+         ${DCMTK_ofstd_LIBRARY}
+         ${ZLIB_LIBRARY}
+         ${CMAKE_THREAD_LIBS_INIT}
+         )
+   ELSE (FIND_DCMTK_MANUALLY)
+      TARGET_LINK_LIBRARIES(qtv3
+         ${DCMTK_LIBRARIES}
+         ${ZLIB_LIBRARY}
+	 ${CMAKE_THREAD_LIBS_INIT}
+         )
+   ENDIF (FIND_DCMTK_MANUALLY)
 ENDIF (BUILD_WITH_DCMTK)
 
 # install target
