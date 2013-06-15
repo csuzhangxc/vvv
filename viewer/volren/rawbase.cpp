@@ -1148,7 +1148,7 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
    for (i=0; i<width; i++)
       {
       for (count=0,j=0; j<height; j++)
-         if (isboundary(shorts,width,components,i,j,thres)) count++;
+         if (isboundary(shorts,width,components,width-1-i,j,thres)) count++;
 
       if (count>0)
          {
@@ -1171,10 +1171,10 @@ void convert2boundary(unsigned short int *shorts,unsigned int width,unsigned int
       }
 
    // top side
-   for (j=0; j<width; j++)
+   for (j=0; j<height; j++)
       {
-      for (count=0,i=0; i<height; i++)
-         if (isboundary(shorts,width,components,i,j,thres)) count++;
+      for (count=0,i=0; i<width; i++)
+         if (isboundary(shorts,width,components,i,height-1-j,thres)) count++;
 
       if (count>0)
          {
