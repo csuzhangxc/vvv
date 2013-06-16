@@ -77,6 +77,12 @@ public:
       angle2_=angle2;
    }
 
+   //! set volume rotation angle
+   void setAngle2(double angle2=0.0)
+   {
+      angle2_=angle2;
+   }
+
    //! set volume tilt angle
    void setTilt(double tilt=0.0)
    {
@@ -261,7 +267,7 @@ protected:
                   gfx_fbo, // use fbo
                   angle_, // volume rotation in degrees
                   angle2_, // volume rotation in degrees
-                  0.0f,0.0,0.0f, // volume translation
+                  0.0f,0.0f,0.0f, // volume translation
                   vol_emission,vol_density, // global emi and att
                   tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
                   tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale

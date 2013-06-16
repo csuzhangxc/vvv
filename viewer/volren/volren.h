@@ -146,39 +146,47 @@ class volren
       vol_rot*=PI/180.0f;
       vol_tlt*=PI/180.0f;
 
-      // tilt:
-
-      ex0=fcos(vol_tlt)*eye_x+fsin(vol_tlt)*eye_y;
-      ey0=-fsin(vol_tlt)*eye_x+fcos(vol_tlt)*eye_y;
-      ez0=eye_z;
-
-      dx0=eye_dx;
-      dy0=eye_dy;
-      dz0=eye_dz;
-
-      ux0=fcos(vol_tlt)*eye_ux+fsin(vol_tlt)*eye_uy;
-      uy0=-fsin(vol_tlt)*eye_ux+fcos(vol_tlt)*eye_uy;
-      uz0=eye_uz;
-
       // move:
 
-      ex0+=vol_dx;
-      ey0+=vol_dy;
-      ez0+=vol_dz;
+      ex=eye_x+vol_dx;
+      ey=eye_y+vol_dy;
+      ez=eye_z+vol_dz;
+
+      dx=eye_dx;
+      dy=eye_dy;
+      dz=eye_dz;
+
+      ux=eye_ux;
+      uy=eye_uy;
+      uz=eye_uz;
 
       // rotate:
 
-      ex=fcos(vol_rot)*ex0+fsin(vol_rot)*ez0;
-      ey=ey0;
-      ez=-fsin(vol_rot)*ex0+fcos(vol_rot)*ez0;
+      ex0=fcos(vol_rot)*ex+fsin(vol_rot)*ez;
+      ey0=ey;
+      ez0=-fsin(vol_rot)*ex+fcos(vol_rot)*ez;
 
-      dx=fcos(vol_rot)*dx0+fsin(vol_rot)*dz0;
-      dy=dy0;
-      dz=-fsin(vol_rot)*dx0+fcos(vol_rot)*dz0;
+      dx0=fcos(vol_rot)*dx+fsin(vol_rot)*dz;
+      dy0=dy;
+      dz0=-fsin(vol_rot)*dx+fcos(vol_rot)*dz;
 
-      ux=fcos(vol_rot)*ux0+fsin(vol_rot)*uz0;
-      uy=uy0;
-      uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
+      ux0=fcos(vol_rot)*ux+fsin(vol_rot)*uz;
+      uy0=uy;
+      uz0=-fsin(vol_rot)*ux+fcos(vol_rot)*uz;
+
+      // tilt:
+
+      ex=fcos(vol_tlt)*ex0-fsin(vol_tlt)*ey0;
+      ey=fsin(vol_tlt)*ex0+fcos(vol_tlt)*ey0;
+      ez=ez0;
+
+      dx=fcos(vol_tlt)*dx0-fsin(vol_tlt)*dy0;
+      dy=fsin(vol_tlt)*dx0+fcos(vol_tlt)*dy0;
+      dz=dz0;
+
+      ux=fcos(vol_tlt)*ux0-fsin(vol_tlt)*uy0;
+      uy=fsin(vol_tlt)*ux0+fcos(vol_tlt)*uy0;
+      uz=uz0;
 
       // tf setup:
 
