@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.9.2"
+#define APP_VERSION "0.9.3"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
@@ -147,6 +147,10 @@ void QTV3MainWindow::createWidgets()
    gradMagCheck->setChecked(false);
    connect(gradMagCheck, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
    h->addWidget(gradMagCheck);
+   QCheckBox *flipCheck = new QCheckBox(tr("Flip Volume"));
+   flipCheck->setChecked(false);
+   connect(flipCheck, SIGNAL(stateChanged(int)), this, SLOT(checkFlip(int)));
+   h->addWidget(flipCheck);
    l3->addLayout(h);
    sliderLayout->addLayout(l3);
 
@@ -360,6 +364,11 @@ void QTV3MainWindow::checkInvMode(int on)
 void QTV3MainWindow::checkGradMag(int on)
 {
    vrw_->setGradMag(on);
+}
+
+void QTV3MainWindow::checkFlip(int on)
+{
+   vrw_->setAngle2(on?90.0:0.0);
 }
 
 void QTV3MainWindow::about()

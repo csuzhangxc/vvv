@@ -105,6 +105,7 @@ protected slots:
    void absorption(int v);
    void checkInvMode(int on);
    void checkGradMag(int on);
+   void checkFlip(int on);
    void about();
 };
 
