@@ -116,6 +116,7 @@ class volren
                   float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                   BOOLINT gfx_fbo, // use frame buffer object
                   float vol_rot, // volume rotation in degrees
+                  float vol_tlt, // volume tilt in degrees
                   float vol_dx,float vol_dy,float vol_dz, // volume translation
                   float vol_emi,float vol_att, // global volume emi and att
                   float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
@@ -134,23 +135,52 @@ class volren
       {
       BOOLINT aborted=FALSE;
 
+      float ex0,ey0,ez0,
+            dx0,dy0,dz0,
+            ux0,uy0,uz0;
+
       float ex,ey,ez,
             dx,dy,dz,
             ux,uy,uz;
 
       vol_rot*=PI/180.0f;
+      vol_tlt*=PI/180.0f;
 
-      ex=fcos(vol_rot)*eye_x+fsin(vol_rot)*eye_z+vol_dx;
-      ey=eye_y+vol_dy;
-      ez=-fsin(vol_rot)*eye_x+fcos(vol_rot)*eye_z+vol_dz;
+      // tilt:
 
-      dx=fcos(vol_rot)*eye_dx+fsin(vol_rot)*eye_dz;
-      dy=eye_dy;
-      dz=-fsin(vol_rot)*eye_dx+fcos(vol_rot)*eye_dz;
+      ex0=fcos(vol_tlt)*eye_x+fsin(vol_tlt)*eye_y;
+      ey0=-fsin(vol_tlt)*eye_x+fcos(vol_tlt)*eye_y;
+      ez0=eye_z;
 
-      ux=fcos(vol_rot)*eye_ux+fsin(vol_rot)*eye_uz;
-      uy=eye_uy;
-      uz=-fsin(vol_rot)*eye_ux+fcos(vol_rot)*eye_uz;
+      dx0=eye_dx;
+      dy0=eye_dy;
+      dz0=eye_dz;
+
+      ux0=fcos(vol_tlt)*eye_ux+fsin(vol_tlt)*eye_uy;
+      uy0=-fsin(vol_tlt)*eye_ux+fcos(vol_tlt)*eye_uy;
+      uz0=eye_uz;
+
+      // move:
+
+      ex0+=vol_dx;
+      ey0+=vol_dy;
+      ez0+=vol_dz;
+
+      // rotate:
+
+      ex=fcos(vol_rot)*ex0+fsin(vol_rot)*ez0;
+      ey=ey0;
+      ez=-fsin(vol_rot)*ex0+fcos(vol_rot)*ez0;
+
+      dx=fcos(vol_rot)*dx0+fsin(vol_rot)*dz0;
+      dy=dy0;
+      dz=-fsin(vol_rot)*dx0+fcos(vol_rot)*dz0;
+
+      ux=fcos(vol_rot)*ux0+fsin(vol_rot)*uz0;
+      uy=uy0;
+      uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
+
+      // tf setup:
 
       VOL->get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
       VOL->get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
@@ -160,6 +190,8 @@ class volren
       VOL->get_tfunc()->refresh(vol_emi,vol_att,VOL->get_slab()*vol_over,
                                 tf_premult,tf_preint,vol_light);
 
+      // volren setup:
+
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
       volume::usefbo(gfx_fbo);
@@ -168,6 +200,8 @@ class volren
          if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
          else setbackground(1.0f,1.0f,1.0f);
       else setbackground(0.0f,0.0f,0.0f);
+
+      // render:
 
       clearbuffer();
 
