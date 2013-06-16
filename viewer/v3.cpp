@@ -1521,7 +1521,7 @@ void handler(float time)
                   EYE_UX,EYE_UY,EYE_UZ,
                   EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR,
                   GUI_fbo,
-                  360.0f*GUI_rot,0.0f,
+                  360.0f*GUI_rot,0.0f,0.0f,
                   0.0f,4.0f*(GUI_height-0.5f),0.0f,
                   VOL_EMISSION,VOL_DENSITY,
                   GUI_re_scale,GUI_ge_scale,GUI_be_scale,

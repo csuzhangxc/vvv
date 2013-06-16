@@ -116,7 +116,8 @@ class volren
                   float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                   BOOLINT gfx_fbo, // use frame buffer object
                   float vol_rot, // volume rotation in degrees
-                  float vol_tlt, // volume tilt in degrees
+                  float vol_tlt1, // volume tilt in degrees
+                  float vol_tlt2, // volume tilt in degrees
                   float vol_dx,float vol_dy,float vol_dz, // volume translation
                   float vol_emi,float vol_att, // global volume emi and att
                   float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
@@ -144,49 +145,64 @@ class volren
             ux,uy,uz;
 
       vol_rot*=PI/180.0f;
-      vol_tlt*=PI/180.0f;
+      vol_tlt1*=PI/180.0f;
+      vol_tlt2*=PI/180.0f;
 
       // move:
 
-      ex=eye_x+vol_dx;
-      ey=eye_y+vol_dy;
-      ez=eye_z+vol_dz;
+      ex0=eye_x+vol_dx;
+      ey0=eye_y+vol_dy;
+      ez0=eye_z+vol_dz;
 
-      dx=eye_dx;
-      dy=eye_dy;
-      dz=eye_dz;
+      dx0=eye_dx;
+      dy0=eye_dy;
+      dz0=eye_dz;
 
-      ux=eye_ux;
-      uy=eye_uy;
-      uz=eye_uz;
+      ux0=eye_ux;
+      uy0=eye_uy;
+      uz0=eye_uz;
 
       // rotate:
 
-      ex0=fcos(vol_rot)*ex+fsin(vol_rot)*ez;
-      ey0=ey;
-      ez0=-fsin(vol_rot)*ex+fcos(vol_rot)*ez;
+      ex=fcos(vol_rot)*ex0+fsin(vol_rot)*ez0;
+      ey=ey0;
+      ez=-fsin(vol_rot)*ex0+fcos(vol_rot)*ez0;
 
-      dx0=fcos(vol_rot)*dx+fsin(vol_rot)*dz;
-      dy0=dy;
-      dz0=-fsin(vol_rot)*dx+fcos(vol_rot)*dz;
+      dx=fcos(vol_rot)*dx0+fsin(vol_rot)*dz0;
+      dy=dy0;
+      dz=-fsin(vol_rot)*dx0+fcos(vol_rot)*dz0;
 
-      ux0=fcos(vol_rot)*ux+fsin(vol_rot)*uz;
-      uy0=uy;
-      uz0=-fsin(vol_rot)*ux+fcos(vol_rot)*uz;
+      ux=fcos(vol_rot)*ux0+fsin(vol_rot)*uz0;
+      uy=uy0;
+      uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
 
-      // tilt:
+      // tilt1:
 
-      ex=fcos(vol_tlt)*ex0-fsin(vol_tlt)*ey0;
-      ey=fsin(vol_tlt)*ex0+fcos(vol_tlt)*ey0;
-      ez=ez0;
+      ex0=fcos(vol_tlt1)*ex-fsin(vol_tlt1)*ey;
+      ey0=fsin(vol_tlt1)*ex+fcos(vol_tlt1)*ey;
+      ez0=ez;
 
-      dx=fcos(vol_tlt)*dx0-fsin(vol_tlt)*dy0;
-      dy=fsin(vol_tlt)*dx0+fcos(vol_tlt)*dy0;
-      dz=dz0;
+      dx0=fcos(vol_tlt1)*dx-fsin(vol_tlt1)*dy;
+      dy0=fsin(vol_tlt1)*dx+fcos(vol_tlt1)*dy;
+      dz0=dz;
 
-      ux=fcos(vol_tlt)*ux0-fsin(vol_tlt)*uy0;
-      uy=fsin(vol_tlt)*ux0+fcos(vol_tlt)*uy0;
-      uz=uz0;
+      ux0=fcos(vol_tlt1)*ux-fsin(vol_tlt1)*uy;
+      uy0=fsin(vol_tlt1)*ux+fcos(vol_tlt1)*uy;
+      uz0=uz;
+
+      // tilt2:
+
+      ex=ex0;
+      ey=fcos(vol_tlt2)*ey0-fsin(vol_tlt2)*ez0;
+      ez=fsin(vol_tlt2)*ey0+fcos(vol_tlt2)*ez0;
+
+      dx=dx0;
+      dy=fcos(vol_tlt2)*dy0-fsin(vol_tlt2)*dz0;
+      dz=fsin(vol_tlt2)*dy0+fcos(vol_tlt2)*dz0;
+
+      ux=ux0;
+      uy=fcos(vol_tlt2)*uy0-fsin(vol_tlt2)*uz0;
+      uz=fsin(vol_tlt2)*uy0+fcos(vol_tlt2)*uz0;
 
       // tf setup:
 

@@ -20,6 +20,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    vrw_->loadVolume("Drop.pvm");
    vrw_->setRotation(30.0);
+
+   flip1_=flip2_=0;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -147,10 +149,14 @@ void QTV3MainWindow::createWidgets()
    gradMagCheck->setChecked(false);
    connect(gradMagCheck, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
    h->addWidget(gradMagCheck);
-   QCheckBox *flipCheck = new QCheckBox(tr("Flip Volume"));
-   flipCheck->setChecked(false);
-   connect(flipCheck, SIGNAL(stateChanged(int)), this, SLOT(checkFlip(int)));
-   h->addWidget(flipCheck);
+   QCheckBox *flipCheck1 = new QCheckBox(tr("Flip XY"));
+   flipCheck1->setChecked(false);
+   connect(flipCheck1, SIGNAL(stateChanged(int)), this, SLOT(checkFlip1(int)));
+   h->addWidget(flipCheck1);
+   QCheckBox *flipCheck2 = new QCheckBox(tr("Flip YZ"));
+   flipCheck2->setChecked(false);
+   connect(flipCheck2, SIGNAL(stateChanged(int)), this, SLOT(checkFlip2(int)));
+   h->addWidget(flipCheck2);
    l3->addLayout(h);
    sliderLayout->addLayout(l3);
 
@@ -366,9 +372,30 @@ void QTV3MainWindow::checkGradMag(int on)
    vrw_->setGradMag(on);
 }
 
-void QTV3MainWindow::checkFlip(int on)
+void QTV3MainWindow::checkFlip1(int on)
 {
-   vrw_->setAngle2(on?90.0:0.0);
+   flip1_=on;
+
+   if (flip1_ && flip2_)
+      {
+      vrw_->setTilt1(180);
+      vrw_->setTilt2(0);
+      }
+   else
+      vrw_->setTilt1(on?90.0:0.0);
+}
+
+void QTV3MainWindow::checkFlip2(int on)
+{
+   flip2_=on;
+
+   if (flip1_ && flip2_)
+      {
+      vrw_->setTilt1(180);
+      vrw_->setTilt2(0);
+      }
+   else
+      vrw_->setTilt2(on?90.0:0.0);
 }
 
 void QTV3MainWindow::about()

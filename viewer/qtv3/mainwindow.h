@@ -71,6 +71,8 @@ private:
    QTV3Slider *createSlider(int minimum, int maximum, int value,
                             bool vertical=false);
 
+   int flip1_,flip2_;
+
 protected:
 
    void keyPressEvent(QKeyEvent *event)
@@ -105,7 +107,8 @@ protected slots:
    void absorption(int v);
    void checkInvMode(int on);
    void checkGradMag(int on);
-   void checkFlip(int on);
+   void checkFlip1(int on);
+   void checkFlip2(int on);
    void about();
 };
 
