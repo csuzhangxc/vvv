@@ -30,6 +30,9 @@ public:
       tilt_=0.0;
       zoom_=0.0;
       dist_=1.0;
+      red_=0.5;
+      green_=1.0;
+      blue_=0.5;
       emi_=0.25;
       att_=0.25;
       inv_=false;
@@ -107,6 +110,14 @@ public:
    void setClipDist(double dist=0.0)
       {dist_=dist;}
 
+   //! set default color
+   void setColor(float r,float g,float b)
+   {
+      red_=r;
+      green_=g;
+      blue_=b;
+   }
+
    //! set emission
    void setEmission(double emi=0.0)
       {emi_=emi;}
@@ -138,11 +149,10 @@ public:
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
-                  float r=1.0f,float g=1.0f,float b=1.0f,
                   BOOLINT inverse=FALSE)
       {
       if (vr_)
-         vr_->set_tfunc(center,size,r,g,b,inverse);
+         vr_->set_tfunc(center,size, red_,green_,blue_, inverse);
 
       tf_=true;
       }
@@ -176,6 +186,7 @@ protected:
    double tilt_; // tilt angle in degrees
    double zoom_; // zoom into volume
    double dist_; // clipping distance
+   double red_,green_,blue_; // default color
    double emi_; // volume emission
    double att_; // volume absorption
    bool inv_; // inverse mode?
@@ -202,7 +213,7 @@ protected:
 
          // linear transfer function
          if (!tf_)
-            vr_->set_tfunc(0.5f,1.0f, 0.5f,1.0f,0.5f);
+            vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
          }
 
       if (toload_)
@@ -335,7 +346,7 @@ protected:
 
       if (!tf_)
          if (bLeftButtonDown)
-            vr_->set_tfunc(x,1.0f-y,0.5f,1.0f,0.5f,!shift);
+            vr_->set_tfunc(x,1.0f-y, red_,green_,blue_, !shift);
          else if (bRightButtonDown)
             if (getRotation()==0.0)
                setRotation(shift?-10.0:10.0);
