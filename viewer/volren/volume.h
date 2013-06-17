@@ -171,6 +171,7 @@ class mipmap
    float *get_hist2DTFRGBA(); // return the quantized transfer function
 
    BOOLINT has_data(); // check whether or not the hierarchy has volume data
+   BOOLINT has_grad(); // check whether or not the hierarchy has gradient data
    float get_slab(); // return the slab thickness
 
    // set ambient/diffuse/specular lighting coefficients

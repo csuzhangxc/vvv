@@ -845,7 +845,9 @@ unsigned char *mipmap::calc_gradmag(unsigned char *data,
 
    cells=width*height*depth;
 
-   if (cells>250000000)
+   if (cells>500000000)
+      return(NULL);
+   else if (cells>100000000)
       return(gradmag(data,
                      width,height,depth,
                      dsx,dsy,dsz,
@@ -3098,6 +3100,10 @@ float *mipmap::get_hist2DTFRGBA()
 // check whether or not the hierarchy has volume data
 BOOLINT mipmap::has_data()
    {return(VOLCNT!=0);}
+
+// check whether or not the hierarchy has gradient data
+BOOLINT mipmap::has_grad()
+   {return(VOLCNT!=0 && GRAD!=NULL);}
 
 // return the slab thickness
 float mipmap::get_slab()

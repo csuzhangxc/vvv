@@ -185,6 +185,8 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
    {
    if (data!=NULL) GUI::pushbuttonhook(x,y,data);
 
+   if (!VOLREN->has_grad()) GUI_grad=FALSE;
+
    if (!GUI_grad && GUI_gmc) GUI_gmc=FALSE;
    if (!GUI_grad && GUI_mod) GUI_mod=FALSE;
    if (!GUI_grad && GUI_mat) GUI_mat=FALSE;

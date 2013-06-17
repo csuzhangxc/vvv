@@ -75,6 +75,18 @@ class volren
    void savePVMvolume(const char *filename)
       {VOL->savePVMvolume(filename);}
 
+   // check whether or not the hierarchy has volume data
+   BOOLINT has_data()
+      {return(VOL->has_data());}
+
+   // check whether or not the hierarchy has gradient data
+   BOOLINT has_grad()
+      {return(VOL->has_grad());}
+
+   // return the slab thickness
+   float get_slab()
+      {return(VOL->get_slab());}
+
    // use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   float r=1.0f,float g=1.0f,float b=1.0f,
