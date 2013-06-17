@@ -835,6 +835,35 @@ inline void mipmap::set(unsigned char *data,
    {data[x+(y+z*height)*width]=v;}
 
 // calculate the gradient magnitude
+unsigned char *mipmap::calc_gradmag(unsigned char *data,
+                                    long long width,long long height,long long depth,
+                                    float dsx,float dsy,float dsz,
+                                    float *gradmax)
+   {
+#ifdef MULTILEVEL
+   long long cells;
+
+   cells=width*height*depth;
+
+   if (cells>250000000)
+      return(gradmag(data,
+                     width,height,depth,
+                     dsx,dsy,dsz,
+                     gradmax));
+   else
+      return(gradmagML(data,
+                       width,height,depth,
+                       dsx,dsy,dsz,
+                       gradmax));
+#else
+   return(gradmag(data,
+                  width,height,depth,
+                  dsx,dsy,dsz,
+                  gradmax));
+#endif
+   }
+
+// calculate the gradient magnitude
 unsigned char *mipmap::gradmag(unsigned char *data,
                                long long width,long long height,long long depth,
                                float dsx,float dsy,float dsz,
@@ -2862,17 +2891,10 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
 
       if (usegrad && strlen(gradname)==0)
          {
-#ifdef MULTILEVEL
-         GRAD=gradmagML(VOLUME,
-                        WIDTH,HEIGHT,DEPTH,
-                        DSX,DSY,DSZ,
-                        &GRADMAX);
-#else
-         GRAD=gradmag(VOLUME,
-                      WIDTH,HEIGHT,DEPTH,
-                      DSX,DSY,DSZ,
-                      &GRADMAX);
-#endif
+         GRAD=calc_gradmag(VOLUME,
+                           WIDTH,HEIGHT,DEPTH,
+                           DSX,DSY,DSZ,
+                           &GRADMAX);
 
          parsegradcommands(VOLUME,GRAD,
                            WIDTH,HEIGHT,DEPTH,
@@ -2987,19 +3009,10 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
       }
 
    if (usegrad)
-      {
-#ifdef MULTILEVEL
-      GRAD=gradmagML(VOLUME,
-                     WIDTH,HEIGHT,DEPTH,
-                     DSX,DSY,DSZ,
-                     &GRADMAX);
-#else
-      GRAD=gradmag(VOLUME,
-                   WIDTH,HEIGHT,DEPTH,
-                   DSX,DSY,DSZ,
-                   &GRADMAX);
-#endif
-      }
+      GRAD=calc_gradmag(VOLUME,
+                        WIDTH,HEIGHT,DEPTH,
+                        DSX,DSY,DSZ,
+                        &GRADMAX);
 
    strncpy(filestr,"",MAXSTR);
    strncpy(gradstr,"",MAXSTR);

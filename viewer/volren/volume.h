@@ -260,6 +260,11 @@ class mipmap
                    const long long width,const long long height,const long long depth,
                    const long long x,const long long y,const long long z,unsigned char v);
 
+   unsigned char *calc_gradmag(unsigned char *data,
+                               long long width,long long height,long long depth,
+                               float dsx,float dsy,float dsz,
+                               float *gradmax);
+
    unsigned char *gradmag(unsigned char *data,
                           long long width,long long height,long long depth,
                           float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
