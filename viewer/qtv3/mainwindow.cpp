@@ -382,7 +382,10 @@ void QTV3MainWindow::checkFlip1(int on)
       vrw_->setTilt2(0);
       }
    else
+      {
       vrw_->setTilt1(on?90.0:0.0);
+      vrw_->setTilt2(0);
+      }
 }
 
 void QTV3MainWindow::checkFlip2(int on)
@@ -395,7 +398,10 @@ void QTV3MainWindow::checkFlip2(int on)
       vrw_->setTilt2(0);
       }
    else
+      {
+      vrw_->setTilt1(0); 
       vrw_->setTilt2(on?90.0:0.0);
+      }
 }
 
 void QTV3MainWindow::about()
