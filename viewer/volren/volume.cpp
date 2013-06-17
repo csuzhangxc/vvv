@@ -1076,13 +1076,14 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    long long i,j,k;
 
-   float *data2,*ptr2;
-   float *data3,*ptr3;
+   unsigned short int *data2,*ptr2;
+   unsigned short int *data3,*ptr3;
    unsigned char *data4,*ptr4;
    unsigned char *data5,*ptr5;
 
    long long width2,height2,depth2;
 
+   float gscale,greci;
    float gm,gmax,gmax2;
 
    int level;
@@ -1112,7 +1113,10 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
    dsy=1.0f/dsy;
    dsz=1.0f/dsz;
 
-   if ((data2=(float *)malloc(width*height*depth*sizeof(float)))==NULL) ERRORMSG();
+   if ((data2=(unsigned short int *)malloc(width*height*depth*sizeof(unsigned short int)))==NULL) ERRORMSG();
+
+   gscale=65535.0f/(255.0f*fsqrt(dsx*dsx+dsy*dsy+dsz*dsz));
+   greci=1.0f/gscale;
 
    gmax=0.0f;
 
@@ -1127,7 +1131,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 #endif
             if (gm>gmax) gmax=gm;
 
-            *ptr2++=gm;
+            *ptr2++=ftrc(gm*gscale+0.5f);
             }
 
    if (gmax==0.0f) gmax=1.0f;
@@ -1136,8 +1140,8 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
-            gm=*ptr2;
-            *ptr2++=threshold(gm/gmax,mingrad);
+            gm=*ptr2*greci/gmax;
+            *ptr2++=ftrc(0.5f*65535.0f*threshold(gm,mingrad)+0.5f);
             }
 
    width2=width;
@@ -1164,7 +1168,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
       level++;
       weight*=0.5f;
 
-      if ((data3=(float *)malloc(width2*height2*depth2*sizeof(float)))==NULL) ERRORMSG();
+      if ((data3=(unsigned short int *)malloc(width2*height2*depth2*sizeof(unsigned short int)))==NULL) ERRORMSG();
+
+      gmax=0.0f;
 
       for (ptr3=data3,k=0; k<depth2; k++)
          for (j=0; j<height2; j++)
@@ -1175,18 +1181,25 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 #else
             gm=getsobel(data4,width2,height2,depth2,i,j,k,dsx,dsy,dsz);
 #endif
-            *ptr3++=gm/gmax;
+            if (gm>gmax) gmax=gm;
+
+            *ptr3++=ftrc(gm*gscale+0.5f);
             }
+
+      if (gmax==0.0f) gmax=1.0f;
 
       for (ptr2=data2,k=0; k<depth; k++)
          for (j=0; j<height; j++)
             for (i=0; i<width; i++)
                {
-               gm=*ptr2;
-               gm+=weight*threshold(getscalar(data3,width2,height2,depth2,(float)i/(width-1),(float)j/(height-1),(float)k/(depth-1)),mingrad);
+               gm=*ptr2/(0.5f*65535.0f);
+
+               gm+=weight*threshold(getscalar(data3,width2,height2,depth2,
+                                              (float)i/(width-1),(float)j/(height-1),(float)k/(depth-1))*greci/gmax,mingrad);
+
                if (gm>gmax2) gmax2=gm;
 
-               *ptr2++=gm;
+               *ptr2++=ftrc(0.5f*65535.0f*gm+0.5f);
                }
 
       free(data3);
@@ -1202,7 +1215,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
-            gm=*ptr2++;
+            gm=*ptr2++/(0.5f*65535.0f);
             *ptr5++=ftrc(255.0f*gm/gmax2+0.5f);
             }
 
@@ -2587,6 +2600,72 @@ unsigned char mipmap::getscalar(unsigned char *volume,
                          y*((1.0f-x)*ptr1[width]+x*ptr1[width+1]))+
                z*((1.0f-y)*((1.0f-x)*ptr2[0]+x*ptr2[1])+
                   y*((1.0f-x)*ptr2[width]+x*ptr2[width+1]))+0.5f));
+   }
+
+// get interpolated scalar value from volume
+float mipmap::getscalar(unsigned short int *volume,
+                        long long width,long long height,long long depth,
+                        float x,float y,float z)
+   {
+   long long i,j,k;
+
+   unsigned short int *ptr1,*ptr2;
+
+   x*=width-1;
+   y*=height-1;
+   z*=depth-1;
+
+   i=ftrc(x);
+   j=ftrc(y);
+   k=ftrc(z);
+
+   x-=i;
+   y-=j;
+   z-=k;
+
+   if (i<0)
+      {
+      i=0;
+      x=0.0f;
+      }
+
+   if (j<0)
+      {
+      j=0;
+      y=0.0f;
+      }
+
+   if (k<0)
+      {
+      k=0;
+      z=0.0f;
+      }
+
+   if (i>=width-1)
+      {
+      i=width-2;
+      x=1.0f;
+      }
+
+   if (j>=height-1)
+      {
+      j=height-2;
+      y=1.0f;
+      }
+
+   if (k>=depth-1)
+      {
+      k=depth-2;
+      z=1.0f;
+      }
+
+   ptr1=&volume[i+(j+k*height)*width];
+   ptr2=ptr1+width*height;
+
+   return((1.0f-z)*((1.0f-y)*((1.0f-x)*ptr1[0]+x*ptr1[1])+
+                    y*((1.0f-x)*ptr1[width]+x*ptr1[width+1]))+
+          z*((1.0f-y)*((1.0f-x)*ptr2[0]+x*ptr2[1])+
+             y*((1.0f-x)*ptr2[width]+x*ptr2[width+1])));
    }
 
 // get interpolated scalar value from volume

@@ -350,6 +350,10 @@ class mipmap
                                   long long width,long long height,long long depth,
                                   float x,float y,float z);
 
+   inline float getscalar(unsigned short int *volume,
+                          long long width,long long height,long long depth,
+                          float x,float y,float z);
+
    inline float getscalar(float *volume,
                           long long width,long long height,long long depth,
                           float x,float y,float z);
