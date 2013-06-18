@@ -34,6 +34,8 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
 FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk ../../../dcmtk)
 
 # non-standard path to Qt4
+# note: when building a static version of qt to distribute an executable /wo having to distribute the qt dlls
+#       set the cmake option BUILD_SHARED_LIBS to OFF, e.g. with "cmake -DBUILD_SHARED_LIBS=OFF .".
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
     /usr/local/Trolltech/Qt-4.7.4;
    )
