@@ -10,6 +10,10 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#define VOLREN_DEFAULT_RED 0.5f
+#define VOLREN_DEFAULT_GREEN 1.0f
+#define VOLREN_DEFAULT_BLUE 0.5f
+
 class QGLVolRenWidget: public QGLWidget
 {
 public:
@@ -30,9 +34,9 @@ public:
       tilt_=0.0;
       zoom_=0.0;
       dist_=1.0;
-      red_=0.5;
-      green_=1.0;
-      blue_=0.5;
+      red_=VOLREN_DEFAULT_RED;
+      green_=VOLREN_DEFAULT_GREEN;
+      blue_=VOLREN_DEFAULT_BLUE;
       emi_=0.25;
       att_=0.25;
       inv_=false;
