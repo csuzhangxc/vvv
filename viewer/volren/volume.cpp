@@ -845,9 +845,9 @@ unsigned char *mipmap::calc_gradmag(unsigned char *data,
 
    cells=width*height*depth;
 
-   if (cells>500000000)
+   if (cells>RAW_TARGET_CELLS)
       return(NULL);
-   else if (cells>100000000)
+   else if (cells>RAW_TARGET_CELLS/5)
       return(gradmag(data,
                      width,height,depth,
                      dsx,dsy,dsz,
