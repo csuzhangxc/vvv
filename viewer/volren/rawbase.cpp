@@ -1644,22 +1644,31 @@ char *processRAWvolume(FILE *file, // source file desc
       cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
       if (cells>maxcells)
-         {
-         // remove suffix
-         filename5=removeRAWsuffix(filename4);
+         while (cells>maxcells)
+            {
+            // remove suffix
+            filename5=removeRAWsuffix(filename4);
 
-         // append down-size suffix to filename
-         filename6=strdup2(filename5,"_down");
-         free(filename5);
+            // append down-size suffix to filename
+            filename6=strdup2(filename5,"_down");
+            free(filename5);
 
-         // down-size
-         filename7=downsizeRAWvolume(filename4,filename6);
-         free(filename6);
+            // down-size
+            filename7=downsizeRAWvolume(filename4,filename6);
+            free(filename6);
 
-         // remove crop volume
-         removefile(filename4);
-         free(filename4);
-         }
+            // remove temporary volume
+            removefile(filename4);
+            free(filename4);
+
+            if (!readRAWinfo(filename7,
+                             &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                             &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
+
+            cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+
+            filename4=filename7;
+            }
       else filename7=filename4;
 
       // remove suffix
@@ -1731,22 +1740,31 @@ char *processRAWvolume(const char *filename, // source file
       cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
 
       if (cells>maxcells)
-         {
-         // remove suffix
-         filename5=removeRAWsuffix(filename4);
+         while (cells>maxcells)
+            {
+            // remove suffix
+            filename5=removeRAWsuffix(filename4);
 
-         // append down-size suffix to filename
-         filename6=strdup2(filename5,"_down");
-         free(filename5);
+            // append down-size suffix to filename
+            filename6=strdup2(filename5,"_down");
+            free(filename5);
 
-         // down-size
-         filename7=downsizeRAWvolume(filename4,filename6);
-         free(filename6);
+            // down-size
+            filename7=downsizeRAWvolume(filename4,filename6);
+            free(filename6);
 
-         // remove crop volume
-         removefile(filename4);
-         free(filename4);
-         }
+            // remove temporary volume
+            removefile(filename4);
+            free(filename4);
+
+            if (!readRAWinfo(filename7,
+                             &rawwidth,&rawheight,&rawdepth,&rawsteps,
+                             &rawcomps,&rawbits,&rawsign,&rawmsb)) ERRORMSG();
+
+            cells=rawwidth*rawheight*rawdepth*rawsteps*rawcomps;
+
+            filename4=filename7;
+            }
       else filename7=filename4;
 
       // remove suffix

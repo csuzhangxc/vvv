@@ -109,12 +109,12 @@ char *processRAWvolume(FILE *file, // source file desc
                        unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                        float ratio=0.5f, // crop volume ratio
-                       long long maxcells=250000000); // down-size threshold
+                       long long maxcells=300000000); // down-size threshold
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
                        float ratio=0.5f, // crop volume ratio
-                       long long maxcells=250000000); // down-size threshold
+                       long long maxcells=300000000); // down-size threshold
 
 // swap the hi and lo byte of 16 bit data
 void swapbytes(unsigned char *data,long long bytes);
