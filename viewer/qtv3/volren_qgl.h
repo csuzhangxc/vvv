@@ -14,6 +14,8 @@
 #define VOLREN_DEFAULT_GREEN 1.0f
 #define VOLREN_DEFAULT_BLUE 0.5f
 
+#define VOLREN_DEFAULT_BRICKSIZE 128
+
 class QGLVolRenWidget: public QGLWidget
 {
 public:
@@ -225,7 +227,7 @@ protected:
          vr_->loadvolume(toload_,NULL,
                          0.0f,0.0f,0.0f,
                          1.0f,1.0f,1.0f,
-                         128,8.0f,
+                         VOLREN_DEFAULT_BRICKSIZE,8.0f,
                          FALSE,FALSE,FALSE,
                          FALSE,FALSE,
                          TRUE,

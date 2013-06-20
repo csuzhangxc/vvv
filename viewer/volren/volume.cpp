@@ -855,24 +855,11 @@ unsigned char *mipmap::calc_gradmag(unsigned char *data,
                                     void (*feedback)(const char *info,float percent))
    {
 #ifdef MULTILEVEL
-   long long cells;
-
-   cells=width*height*depth;
-
-   if (cells>RAW_TARGET_CELLS)
-      return(NULL);
-   else if (cells>RAW_TARGET_CELLS/3)
-      return(gradmag(data,
-                     width,height,depth,
-                     dsx,dsy,dsz,
-                     gradmax,
-                     feedback));
-   else
-      return(gradmagML(data,
-                       width,height,depth,
-                       dsx,dsy,dsz,
-                       gradmax,
-                       feedback));
+   return(gradmagML(data,
+                    width,height,depth,
+                    dsx,dsy,dsz,
+                    gradmax,
+                    feedback));
 #else
    return(gradmag(data,
                   width,height,depth,
