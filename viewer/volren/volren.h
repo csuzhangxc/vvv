@@ -37,7 +37,8 @@ class volren
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
                       char *commands=NULL,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent)=NULL)
       {
       return(VOL->loadvolume(filename,
                              gradname,
@@ -48,7 +49,8 @@ class volren
                              xrotate,zrotate,
                              usegrad,
                              commands,
-                             histmin,histfreq,kneigh,histstep));
+                             histmin,histfreq,kneigh,histstep,
+                             feedback));
       }
 
    // load a DICOM series
@@ -59,7 +61,8 @@ class volren
                       BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent)=NULL)
       {
       return(VOL->loadseries(list,
                              mx,my,mz,
@@ -68,7 +71,8 @@ class volren
                              xswap,yswap,zswap,
                              xrotate,zrotate,
                              usegrad,
-                             histmin,histfreq,kneigh,histstep));
+                             histmin,histfreq,kneigh,histstep,
+                             feedback));
       }
 
    // save the volume data as PVM

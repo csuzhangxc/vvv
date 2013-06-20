@@ -35,7 +35,8 @@ class volume
                  long long width,long long height,long long depth,
                  float mx,float my,float mz,
                  float sx,float sy,float sz,
-                 int bricksize,float overmax);
+                 int bricksize,float overmax,
+                 void (*feedback)(const char *info,float percent)=NULL);
 
    float get_slab() {return(SLAB);} // return the slab thickness
    tfunc2D *get_tfunc() {return(TFUNC);} // return the transfer function
@@ -133,7 +134,8 @@ class mipmap
                  long long width,long long height,long long depth,
                  float mx,float my,float mz,
                  float sx,float sy,float sz,
-                 int bricksize,float overmax);
+                 int bricksize,float overmax,
+                 void (*feedback)(const char *info,float percent)=NULL);
 
    // load the volume data
    BOOLINT loadvolume(const char *filename,
@@ -145,7 +147,8 @@ class mipmap
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
                       char *commands=NULL,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent)=NULL);
 
    // load a DICOM series
    BOOLINT loadseries(const std::vector<std::string> list,
@@ -155,7 +158,8 @@ class mipmap
                       BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f);
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent)=NULL);
 
    // save the volume data as PVM
    void savePVMvolume(const char *filename);
@@ -264,12 +268,14 @@ class mipmap
    unsigned char *calc_gradmag(unsigned char *data,
                                long long width,long long height,long long depth,
                                float dsx,float dsy,float dsz,
-                               float *gradmax);
+                               float *gradmax=NULL,
+                               void (*feedback)(const char *info,float percent)=NULL);
 
    unsigned char *gradmag(unsigned char *data,
                           long long width,long long height,long long depth,
                           float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
-                          float *gradmax=NULL);
+                          float *gradmax=NULL,
+                          void (*feedback)(const char *info,float percent)=NULL);
 
    inline float getgrad(unsigned char *data,
                         long long width,long long height,long long depth,
@@ -291,7 +297,8 @@ class mipmap
    unsigned char *gradmagML(unsigned char *data,
                             long long width,long long height,long long depth,
                             float dsx=1.0f,float dsy=1.0f,float dsz=1.0f,
-                            float *gradmax=NULL);
+                            float *gradmax=NULL,
+                            void (*feedback)(const char *info,float percent)=NULL);
 
    unsigned char *variance(unsigned char *data,
                            long long width,long long height,long long depth);

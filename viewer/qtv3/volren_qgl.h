@@ -228,7 +228,10 @@ protected:
                          128,8.0f,
                          FALSE,FALSE,FALSE,
                          FALSE,FALSE,
-                         TRUE);
+                         TRUE,
+                         NULL,
+                         5,5.0f,1,1.0f,
+                         feedback);
 
          free(toload_);
          toload_=NULL;
@@ -242,7 +245,9 @@ protected:
                          128,8.0f,
                          FALSE,FALSE,FALSE,
                          FALSE,FALSE,
-                         TRUE);
+                         TRUE,
+                         5,5.0f,1,1.0f,
+                         feedback);
 
          series_.clear();
          }
@@ -367,6 +372,14 @@ protected:
       double numDegrees = event->delta()/8.0;
 
       event->accept();
+   }
+
+   static void feedback(const char *info,float percent)
+   {
+      if (percent>0.0f)
+         printf("%s: %d%%\n",info,(int)(100.0f*percent+0.5f));
+      else
+         printf("%s\n",info);
    }
 
 };
