@@ -378,10 +378,20 @@ protected:
 
    virtual void update(const char *info,float percent)
    {
+      int act;
+      static int last=0;
+
       if (percent>0.0f)
-         printf("%s: %d%%\n",info,(int)(100.0f*percent+0.5f));
+         {
+         act=(int)(100.0f*percent+0.5f);
+         if (act>last) printf("%s: %d%%\n",info,act);
+         last=act;
+         }
       else
+         {
          printf("%s\n",info);
+         last=0;
+         }
    }
 
    static void feedback(const char *info,float percent,void *obj)
