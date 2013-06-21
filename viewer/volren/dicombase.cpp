@@ -34,11 +34,12 @@ void DicomVolume::deleteImages()
 #endif
    }
 
-bool DicomVolume::loadImages(const char *filenamepattern)
+bool DicomVolume::loadImages(const char *filenamepattern,
+                             void (*feedback)(const char *info,float percent))
    {
    if (m_Images.size()!=0) deleteImages();
 
-   if (!dicomLoad(filenamepattern))
+   if (!dicomLoad(filenamepattern,feedback))
       {
       deleteImages();
       return(false);
@@ -47,11 +48,12 @@ bool DicomVolume::loadImages(const char *filenamepattern)
    return(true);
    }
 
-bool DicomVolume::loadImages(const std::vector<std::string> list)
+bool DicomVolume::loadImages(const std::vector<std::string> list,
+                             void (*feedback)(const char *info,float percent))
    {
    if (m_Images.size()!=0) deleteImages();
 
-   if (!dicomLoad(list))
+   if (!dicomLoad(list,feedback))
       {
       deleteImages();
       return(false);
@@ -60,7 +62,8 @@ bool DicomVolume::loadImages(const std::vector<std::string> list)
    return(true);
    }
 
-bool DicomVolume::dicomLoad(const char *filenamepattern)
+bool DicomVolume::dicomLoad(const char *filenamepattern,
+                            void (*feedback)(const char *info,float percent))
    {
 #ifdef VIEWER_HAVE_DCMTK
 
@@ -80,7 +83,12 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
       ImageDesc *desc=new ImageDesc();
       desc->m_Image=new DcmFileFormat();
 
-      printf("load DICOM file %s\n",fname);
+      if (feedback!=NULL)
+         {
+         char *info=strdup2("loading DICOM file ",fname);
+         feedback(info,0);
+         free(info);
+         }
 
       if (desc->m_Image->loadFile(fname).bad()) return(false);
 
@@ -102,7 +110,8 @@ bool DicomVolume::dicomLoad(const char *filenamepattern)
 #endif
    }
 
-bool DicomVolume::dicomLoad(const std::vector<std::string> list)
+bool DicomVolume::dicomLoad(const std::vector<std::string> list,
+                            void (*feedback)(const char *info,float percent))
    {
 #ifdef VIEWER_HAVE_DCMTK
 
@@ -117,7 +126,12 @@ bool DicomVolume::dicomLoad(const std::vector<std::string> list)
 
       fname=list.at(i).c_str();
 
-      printf("load DICOM file %s\n",fname);
+      if (feedback!=NULL)
+         {
+         char *info=strdup2("loading DICOM file ",fname);
+         feedback(info,0);
+         free(info);
+         }
 
       if (desc->m_Image->loadFile(fname).bad()) return(false);
 
@@ -329,12 +343,13 @@ int DicomVolume::compareFunc(const void* elem1,const void* elem2)
 // read a DICOM series identified by the * in the filename pattern
 unsigned char *readDICOMvolume(const char *filename,
                                long long *width,long long *height,long long *depth,unsigned int *components,
-                               float *scalex,float *scaley,float *scalez)
+                               float *scalex,float *scaley,float *scalez,
+                               void (*feedback)(const char *info,float percent))
    {
    DicomVolume data;
    unsigned char *chunk;
 
-   if (!data.loadImages(filename)) return(NULL);
+   if (!data.loadImages(filename,feedback)) return(NULL);
 
    if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
    memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
@@ -355,12 +370,13 @@ unsigned char *readDICOMvolume(const char *filename,
 // read a DICOM series from a file name list
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
                                long long *width,long long *height,long long *depth,unsigned int *components,
-                               float *scalex,float *scaley,float *scalez)
+                               float *scalex,float *scaley,float *scalez,
+                               void (*feedback)(const char *info,float percent))
    {
    DicomVolume data;
    unsigned char *chunk;
 
-   if (!data.loadImages(list)) return(NULL);
+   if (!data.loadImages(list,feedback)) return(NULL);
 
    if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
    memcpy(chunk,data.getVoxelData(),data.getVoxelNum());

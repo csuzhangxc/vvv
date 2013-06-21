@@ -2162,10 +2162,11 @@ void histo::set_histograms(unsigned char *data,
                            unsigned char *extra,
                            int width,int height,int depth,
                            int histmin,float histfreq,
-                           int kneigh,float histstep)
+                           int kneigh,float histstep,
+                           void (*feedback)(const char *info,float percent))
    {
-   inithist(data,width,height,depth,histmin,histfreq);
-   inithist2DQ(data,extra,width,height,depth,histmin,histfreq,kneigh,histstep);
+   inithist(data,width,height,depth,histmin,histfreq,TRUE,feedback);
+   inithist2DQ(data,extra,width,height,depth,histmin,histfreq,kneigh,histstep,TRUE,feedback);
    }
 
 // get interpolated scalar value from volume
@@ -2257,7 +2258,8 @@ void histo::getrgb(float x,float y,float z,float v,
 
 // compute the centroids
 void histo::initcentroids(unsigned char *volume,
-                          unsigned int width,unsigned int height,unsigned int depth)
+                          unsigned int width,unsigned int height,unsigned int depth,
+                          void (*feedback)(const char *info,float percent))
    {
    int i,j,k,p;
 
@@ -2272,6 +2274,9 @@ void histo::initcentroids(unsigned char *volume,
    for (i=0; i<3*256; i++) centroid1D[i]=0.0f;
 
    for (ptr=volume,k=0; k<(int)depth; k++)
+      {
+      if (feedback!=NULL) feedback("calculating histogram",(float)(k+1)/depth);
+
       for (j=0; j<(int)height; j++)
          for (i=0; i<(int)width; i++,ptr++)
             {
@@ -2282,6 +2287,7 @@ void histo::initcentroids(unsigned char *volume,
             centroid1D[3*p+1]+=(float)j/(height-1)-0.5f;
             centroid1D[3*p+2]+=(float)k/(depth-1)-0.5f;
             }
+      }
 
    hmax=2.0;
    havg=0.0;
@@ -2316,7 +2322,8 @@ void histo::initcentroids(unsigned char *volume,
 void histo::inithist(unsigned char *volume,
                      unsigned int width,unsigned int height,unsigned int depth,
                      int mincnt,float freq,
-                     BOOLINT init)
+                     BOOLINT init,
+                     void (*feedback)(const char *info,float percent))
    {
    int i;
 
@@ -2326,7 +2333,7 @@ void histo::inithist(unsigned char *volume,
 
    if (mincnt<1) ERRORMSG();
 
-   if (init) initcentroids(volume,width,height,depth);
+   if (init) initcentroids(volume,width,height,depth,feedback);
 
    for (i=0; i<256; i++)
       {
@@ -2351,7 +2358,8 @@ void histo::inithist(unsigned char *volume,
 // compute the centroids
 void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
                             unsigned int width,unsigned int height,unsigned int depth,
-                            int kneigh,float step)
+                            int kneigh,float step,
+                            void (*feedback)(const char *info,float percent))
    {
    int m,n;
    int s,g,p;
@@ -2381,6 +2389,9 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
       unsigned char *ptr1,*ptr2;
 
       for (ptr1=volume,ptr2=grad,k=0; k<(int)depth; k++)
+         {
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth);
+
          for (j=0; j<(int)height; j++)
             for (i=0; i<(int)width; i++)
                {
@@ -2399,12 +2410,16 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
                         centroid2D[3*p+2]+=(float)k/(depth-1)-0.5f;
                         }
                }
+         }
       }
    else
       {
       float i,j,k;
 
       for (k=0.0f; k<=1.0f; k+=step/(depth-1))
+         {
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth);
+
          for (j=0.0f; j<=1.0f; j+=step/(height-1))
             for (i=0.0f; i<=1.0f; i+=step/(width-1))
                {
@@ -2423,6 +2438,7 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
                         centroid2D[3*p+2]+=k-0.5f;
                         }
                }
+         }
       }
 
    hmax=2.0;
@@ -2462,6 +2478,9 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
       unsigned char *ptr1,*ptr2;
 
       for (ptr1=volume,ptr2=grad,k=0; k<(int)depth; k++)
+         {
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth+0.5f);
+
          for (j=0; j<(int)height; j++)
             for (i=0; i<(int)width; i++)
                {
@@ -2478,12 +2497,16 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
                                        fsqr((float)k/(depth-1)-0.5f-centroid2D[3*p+2]);
                         }
                }
+         }
       }
    else
       {
       float i,j,k;
 
       for (k=0.0f; k<=1.0f; k+=step/(depth-1))
+         {
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth+0.5f);
+
          for (j=0.0f; j<=1.0f; j+=step/(height-1))
             for (i=0.0f; i<=1.0f; i+=step/(width-1))
                {
@@ -2500,6 +2523,7 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
                                        fsqr(k-0.5f-centroid2D[3*p+2]);
                         }
                }
+         }
       }
 
    for (n=0; n<256*256; n++)
@@ -2512,7 +2536,8 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
 void histo::inithist2D(unsigned char *volume,unsigned char *grad,
                        unsigned int width,unsigned int height,unsigned int depth,
                        int mincnt,float freq,int kneigh,float step,
-                       BOOLINT init)
+                       BOOLINT init,
+                       void (*feedback)(const char *info,float percent))
    {
    int n;
 
@@ -2522,7 +2547,7 @@ void histo::inithist2D(unsigned char *volume,unsigned char *grad,
 
    if (mincnt<1 || kneigh<0 || step<=0.0f) ERRORMSG();
 
-   if (init) initcentroids2D(volume,grad,width,height,depth,kneigh,step);
+   if (init) initcentroids2D(volume,grad,width,height,depth,kneigh,step,feedback);
 
    if (!MULTI) return;
 
@@ -2593,7 +2618,8 @@ inline int operator > (const histo_item &A,const histo_item &B)
 void histo::inithist2DQ(unsigned char *volume,unsigned char *grad,
                         unsigned int width,unsigned int height,unsigned int depth,
                         int mincnt,float freq,int kneigh,float step,
-                        BOOLINT init)
+                        BOOLINT init,
+                        void (*feedback)(const char *info,float percent))
    {
    int m,n,p,i;
 
@@ -2609,7 +2635,7 @@ void histo::inithist2DQ(unsigned char *volume,unsigned char *grad,
 
    if (freq<1.0f) freq=1.0f;
 
-   if (init) initcentroids2D(volume,grad,width,height,depth,kneigh,step);
+   if (init) initcentroids2D(volume,grad,width,height,depth,kneigh,step,feedback);
 
    if (!MULTI) return;
 

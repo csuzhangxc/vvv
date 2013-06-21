@@ -3,8 +3,8 @@
 #define SOBEL
 #define MULTILEVEL
 
-#undef FBOMM
 #define FBO16
+#undef FBOMM
 
 #define TILEINC 1000
 #define QUEUEINC 1000
@@ -2813,7 +2813,8 @@ unsigned char *mipmap::scale(unsigned char *volume,
 unsigned char *mipmap::readANYvolume(const char *filename,
                                      long long *width,long long *height,long long *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez,
-                                     BOOLINT *msb)
+                                     BOOLINT *msb,
+                                     void (*feedback)(const char *info,float percent))
    {
    unsigned char *volume;
    long long steps;
@@ -2826,7 +2827,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    if (strchr(filename,'*')!=NULL)
       {
       // read a DICOM series identified by the * in the filename pattern
-      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez,feedback))!=NULL)
          order=FALSE;
       }
    else
@@ -2836,7 +2837,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
 
       // read a REK volume out-of-core
       if (volume==NULL)
-         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez);
+         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez,feedback);
 
       // read a REK volume
       if (volume==NULL)
@@ -2891,7 +2892,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (feedback!=NULL) feedback("loading data",0);
 
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb))==NULL) return(FALSE);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback))==NULL) return(FALSE);
 
       if (feedback!=NULL) feedback("processing data",0);
 
@@ -2993,18 +2994,20 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       }
 
    if (upload)
-      HISTO->set_histograms(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep);
+      HISTO->set_histograms(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,feedback);
 
    if (!upload && (hmvalue!=histmin || hfvalue!=histfreq))
-      HISTO->inithist(VOLUME,WIDTH,HEIGHT,DEPTH,histmin,histfreq,FALSE);
+      HISTO->inithist(VOLUME,WIDTH,HEIGHT,DEPTH,histmin,histfreq,FALSE,feedback);
 
    if (!upload && (hmvalue!=histmin || hfvalue!=histfreq || kneigh!=knvalue || histstep!=hsvalue))
-      HISTO->inithist2DQ(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,FALSE);
+      HISTO->inithist2DQ(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,FALSE,feedback);
 
    hmvalue=histmin;
    hfvalue=histfreq;
    knvalue=kneigh;
    hsvalue=histstep;
+
+   if (feedback!=NULL) feedback("",0);
 
    return(TRUE);
    }
@@ -3025,7 +3028,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    if (feedback!=NULL) feedback("loading data",0);
 
    if (VOLUME!=NULL) free(VOLUME);
-   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) return(FALSE);
+   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,feedback))==NULL) return(FALSE);
 
    if (feedback!=NULL) feedback("processing data",0);
 
@@ -3079,12 +3082,14 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
             bricksize,overmax,
             feedback);
 
-   HISTO->set_histograms(VOLUME,NULL,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep);
+   HISTO->set_histograms(VOLUME,NULL,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,feedback);
 
    hmvalue=histmin;
    hfvalue=histfreq;
    knvalue=kneigh;
    hsvalue=histstep;
+
+   if (feedback!=NULL) feedback("",0);
 
    return(TRUE);
    }

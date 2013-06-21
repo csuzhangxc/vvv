@@ -43,8 +43,11 @@ class DicomVolume
    DicomVolume();
    virtual ~DicomVolume();
 
-   bool loadImages(const char *filenamepattern);
-   bool loadImages(const std::vector<std::string> list);
+   bool loadImages(const char *filenamepattern,
+                   void (*feedback)(const char *info,float percent)=NULL);
+
+   bool loadImages(const std::vector<std::string> list,
+                   void (*feedback)(const char *info,float percent)=NULL);
 
    unsigned char *getVoxelData() {return(m_Voxels);}
    long long getVoxelNum() {return(getCols()*getRows()*getSlis());}
@@ -57,8 +60,11 @@ class DicomVolume
 
    private:
 
-   bool dicomLoad(const char *filenamepattern);
-   bool dicomLoad(const std::vector<std::string> list);
+   bool dicomLoad(const char *filenamepattern,
+                  void (*feedback)(const char *info,float percent)=NULL);
+
+   bool dicomLoad(const std::vector<std::string> list,
+                  void (*feedback)(const char *info,float percent)=NULL);
 
    bool dicomProcess();
 
@@ -87,11 +93,13 @@ class DicomVolume
 // read a DICOM series identified by the * in the filename pattern
 unsigned char *readDICOMvolume(const char *filename,
                                long long *width,long long *height,long long *depth,unsigned int *components=NULL,
-                               float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+                               float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
+                               void (*feedback)(const char *info,float percent)=NULL);
 
 // read a DICOM series from a file name list
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
                                long long *width,long long *height,long long *depth,unsigned int *components=NULL,
-                               float *scalex=NULL,float *scaley=NULL,float *scalez=NULL);
+                               float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
+                               void (*feedback)(const char *info,float percent)=NULL);
 
 #endif

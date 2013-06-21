@@ -3,7 +3,8 @@
 #ifndef RAWBASE_H
 #define RAWBASE_H
 
-#define RAW_TARGET_CELLS 500000000
+#define RAW_TARGET_RATIO 0.5f
+#define RAW_TARGET_CELLS 250000000
 
 // read a RAW volume
 //  the RAW file format is encoded into the filename
@@ -86,12 +87,12 @@ char *cropRAWvolume(FILE *file, // source file desc
                     long long width,long long height,long long depth=1,long long steps=1,
                     unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
-                    float ratio=0.5f);
+                    float ratio=RAW_TARGET_RATIO);
 
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(const char *filename, // source file
                     const char *output, // destination file name /wo suffix .raw
-                    float ratio=0.5f); // crop volume ratio
+                    float ratio=RAW_TARGET_RATIO); // crop volume ratio
 
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(FILE *file, // source file desc
@@ -110,13 +111,15 @@ char *processRAWvolume(FILE *file, // source file desc
                        long long width,long long height,long long depth=1,long long steps=1,
                        unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
-                       float ratio=0.5f, // crop volume ratio
-                       long long maxcells=RAW_TARGET_CELLS/2); // down-size threshold
+                       float ratio=RAW_TARGET_RATIO, // crop volume ratio
+                       long long maxcells=RAW_TARGET_CELLS, // down-size threshold
+                       void (*feedback)(const char *info,float percent)=NULL); // feedback callback
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
-                       float ratio=0.5f, // crop volume ratio
-                       long long maxcells=RAW_TARGET_CELLS/2); // down-size threshold
+                       float ratio=RAW_TARGET_RATIO, // crop volume ratio
+                       long long maxcells=RAW_TARGET_CELLS, // down-size threshold
+                       void (*feedback)(const char *info,float percent)=NULL); // feedback callback
 
 // swap the hi and lo byte of 16 bit data
 void swapbytes(unsigned char *data,long long bytes);
