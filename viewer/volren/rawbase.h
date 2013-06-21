@@ -64,22 +64,26 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
                            const char *output, // destination file name /wo suffix .raw
                            long long width,long long height,long long depth=1,long long steps=1,
                            unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
-                           float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
+                           float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
+                           void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core linear quantization
 char *copyRAWvolume_linear(const char *filename, // source file
-                           const char *output); // destination file name /wo suffix .raw
+                           const char *output, // destination file name /wo suffix .raw
+                           void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core non-linear quantization
 char *copyRAWvolume_nonlinear(FILE *file, // source file desc
                               const char *output, // destination file name /wo suffix .raw
                               long long width,long long height,long long depth=1,long long steps=1,
                               unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
-                              float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
+                              float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
+                              void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core non-linear quantization
 char *copyRAWvolume_nonlinear(const char *filename, // source file
-                              const char *output); // destination file name /wo suffix .raw
+                              const char *output, // destination file name /wo suffix .raw
+                              void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(FILE *file, // source file desc
@@ -87,23 +91,27 @@ char *cropRAWvolume(FILE *file, // source file desc
                     long long width,long long height,long long depth=1,long long steps=1,
                     unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
-                    float ratio=RAW_TARGET_RATIO);
+                    float ratio=RAW_TARGET_RATIO,
+                    void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(const char *filename, // source file
                     const char *output, // destination file name /wo suffix .raw
-                    float ratio=RAW_TARGET_RATIO); // crop volume ratio
+                    float ratio=RAW_TARGET_RATIO, // crop volume ratio
+                    void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(FILE *file, // source file desc
                         const char *output, // destination file name /wo .raw
                         long long width,long long height,long long depth=1,long long steps=1,
                         unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
-                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f);
+                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
+                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(const char *filename, // source file
-                        const char *output); // destination file name /wo suffix .raw
+                        const char *output, // destination file name /wo suffix .raw
+                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(FILE *file, // source file desc

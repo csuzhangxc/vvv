@@ -592,7 +592,8 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
                            const char *output, // destination file name /wo .raw
                            long long width,long long height,long long depth,long long steps,
                            unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                           float scalex,float scaley,float scalez)
+                           float scalex,float scaley,float scalez,
+                           void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    long long i,j;
 
@@ -629,6 +630,8 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("scanning data",0.5f*(i*depth+j+1)/(depth*steps),obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -669,6 +672,8 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("writing data",0.5f*(i*depth+j+1)/(depth*steps)+0.5f,obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -703,7 +708,8 @@ char *copyRAWvolume_linear(FILE *file, // source file desc
 
 // copy a RAW volume with out-of-core linear quantization
 char *copyRAWvolume_linear(const char *filename, // source file
-                           const char *output) // destination file name /wo suffix .raw
+                           const char *output, // destination file name /wo suffix .raw
+                           void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    FILE *file;
 
@@ -735,7 +741,8 @@ char *copyRAWvolume_linear(const char *filename, // source file
    outname=copyRAWvolume_linear(file,output,
                                 rawwidth,rawheight,rawdepth,rawsteps,
                                 rawcomps,rawbits,rawsign,rawmsb,
-                                rawscalex,rawscaley,rawscalez);
+                                rawscalex,rawscaley,rawscalez,
+                                feedback,obj);
 
    fclose(file);
 
@@ -858,7 +865,8 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
                               const char *output, // destination file name /wo .raw
                               long long width,long long height,long long depth,long long steps,
                               unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                              float scalex,float scaley,float scalez)
+                              float scalex,float scaley,float scalez,
+                              void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    long long i,j;
 
@@ -899,6 +907,8 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("scanning data",1.0f/3*(i*depth+j+1)/(depth*steps),obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -938,6 +948,8 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
       for (i=0; i<steps; i++)
          for (j=0; j<depth; j++)
             {
+            if (feedback!=NULL) feedback("analyzing data",1.0f/3*(i*depth+j+1)/(depth*steps)+1.0f/3,obj);
+
             if (j==0)
                {
                if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
@@ -1015,6 +1027,8 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("writing data",1.0f/3*(i*depth+j+1)/(depth*steps)+2.0f/3,obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -1052,7 +1066,8 @@ char *copyRAWvolume_nonlinear(FILE *file, // source file desc
 
 // copy a RAW volume with out-of-core non-linear quantization
 char *copyRAWvolume_nonlinear(const char *filename, // source file
-                              const char *output) // destination file name /wo suffix .raw
+                              const char *output, // destination file name /wo suffix .raw
+                              void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    FILE *file;
 
@@ -1084,7 +1099,8 @@ char *copyRAWvolume_nonlinear(const char *filename, // source file
    outname=copyRAWvolume_nonlinear(file,output,
                                    rawwidth,rawheight,rawdepth,rawsteps,
                                    rawcomps,rawbits,rawsign,rawmsb,
-                                   rawscalex,rawscaley,rawscalez);
+                                   rawscalex,rawscaley,rawscalez,
+                                   feedback,obj);
 
    fclose(file);
 
@@ -1202,7 +1218,8 @@ char *cropRAWvolume(FILE *file, // source file desc
                     long long width,long long height,long long depth,long long steps,
                     unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                     float scalex,float scaley,float scalez,
-                    float ratio) // crop volume ratio
+                    float ratio, // crop volume ratio
+                    void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    long long i,j,k;
 
@@ -1247,6 +1264,8 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("scanning data",1.0f/3*(i*depth+j+1)/(depth*steps),obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -1294,6 +1313,8 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("analyzing data",1.0f/3*(i*depth+j+1)/(depth*steps)+1.0f/3,obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -1341,6 +1362,8 @@ char *cropRAWvolume(FILE *file, // source file desc
    for (i=0; i<steps; i++)
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("writing data",1.0f/3*(i*depth+j+1)/(depth*steps)+2.0f/3,obj);
+
          if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
 
          if (fread(slice,bytes,1,file)!=1)
@@ -1375,7 +1398,8 @@ char *cropRAWvolume(FILE *file, // source file desc
 // copy a RAW volume with out-of-core cropping
 char *cropRAWvolume(const char *filename, // source file
                     const char *output, // destination file name /wo suffix .raw
-                    float ratio) // crop volume ratio
+                    float ratio, // crop volume ratio
+                    void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    FILE *file;
 
@@ -1408,7 +1432,8 @@ char *cropRAWvolume(const char *filename, // source file
                          rawwidth,rawheight,rawdepth,rawsteps,
                          rawcomps,rawbits,rawsign,rawmsb,
                          rawscalex,rawscaley,rawscalez,
-                         ratio);
+                         ratio,
+                         feedback,obj);
 
    fclose(file);
 
@@ -1444,7 +1469,8 @@ char *downsizeRAWvolume(FILE *file, // source file desc
                         const char *output, // destination file name /wo .raw
                         long long width,long long height,long long depth,long long steps,
                         unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
-                        float scalex,float scaley,float scalez)
+                        float scalex,float scaley,float scalez,
+                        void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    long long i,j;
 
@@ -1494,6 +1520,8 @@ char *downsizeRAWvolume(FILE *file, // source file desc
       {
       for (j=0; j<depth; j++)
          {
+         if (feedback!=NULL) feedback("writing data",(float)(i*depth+j+1)/(depth*steps),obj);
+
          if (j%2==0)
             {
             if ((slice=(unsigned char *)malloc(bytes))==NULL) ERRORMSG();
@@ -1549,7 +1577,8 @@ char *downsizeRAWvolume(FILE *file, // source file desc
 
 // copy a RAW volume with out-of-core down-sizing
 char *downsizeRAWvolume(const char *filename, // source file
-                        const char *output) // destination file name /wo suffix .raw
+                        const char *output, // destination file name /wo suffix .raw
+                        void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    FILE *file;
 
@@ -1581,7 +1610,8 @@ char *downsizeRAWvolume(const char *filename, // source file
    outname=downsizeRAWvolume(file,output,
                              rawwidth,rawheight,rawdepth,rawsteps,
                              rawcomps,rawbits,rawsign,rawmsb,
-                             rawscalex,rawscaley,rawscalez);
+                             rawscalex,rawscaley,rawscalez,
+                             feedback,obj);
 
    fclose(file);
 
@@ -1638,7 +1668,8 @@ char *processRAWvolume(FILE *file, // source file desc
                                width,height,depth,steps,
                                components,bits,sign,msb,
                                scalex,scaley,scalez,
-                               ratio))
+                               ratio,
+                               feedback,obj))
       {
       if (!readRAWinfo(filename4,
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
@@ -1659,7 +1690,7 @@ char *processRAWvolume(FILE *file, // source file desc
             if (feedback!=NULL) feedback("down-sizing out-of-core",0,obj);
 
             // down-size
-            filename7=downsizeRAWvolume(filename4,filename6);
+            filename7=downsizeRAWvolume(filename4,filename6,feedback,obj);
             free(filename6);
 
             // remove temporary volume
@@ -1686,7 +1717,7 @@ char *processRAWvolume(FILE *file, // source file desc
       if (feedback!=NULL) feedback("quantizing out-of-core",0,obj);
 
       // quantize
-      outname=copyRAWvolume_nonlinear(filename7,filename9);
+      outname=copyRAWvolume_nonlinear(filename7,filename9,feedback,obj);
       free(filename9);
 
       // remove down-size volume
@@ -1742,7 +1773,7 @@ char *processRAWvolume(const char *filename, // source file
    if (feedback!=NULL) feedback("cropping out-of-core",0,obj);
 
    // crop
-   if (filename4=cropRAWvolume(filename,filename3,ratio))
+   if (filename4=cropRAWvolume(filename,filename3,ratio,feedback,obj))
       {
       if (!readRAWinfo(filename4,
                        &rawwidth,&rawheight,&rawdepth,&rawsteps,
@@ -1763,7 +1794,7 @@ char *processRAWvolume(const char *filename, // source file
             if (feedback!=NULL) feedback("down-sizing out-of-core",0,obj);
 
             // down-size
-            filename7=downsizeRAWvolume(filename4,filename6);
+            filename7=downsizeRAWvolume(filename4,filename6,feedback,obj);
             free(filename6);
 
             // remove temporary volume
@@ -1790,7 +1821,7 @@ char *processRAWvolume(const char *filename, // source file
       if (feedback!=NULL) feedback("quantizing out-of-core",0,obj);
 
       // quantize
-      outname=copyRAWvolume_nonlinear(filename7,filename9);
+      outname=copyRAWvolume_nonlinear(filename7,filename9,feedback,obj);
       free(filename9);
 
       // remove down-size volume
