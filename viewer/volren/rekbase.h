@@ -28,6 +28,6 @@ char *copyREKvolume(const char *filename,const char *output);
 unsigned char *readREKvolume_ooc(const char *filename,
                                  long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                  float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
-                                 void (*feedback)(const char *info,float percent)=NULL);
+                                 void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 #endif

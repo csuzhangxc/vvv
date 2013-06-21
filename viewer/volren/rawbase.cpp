@@ -1596,7 +1596,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        float scalex,float scaley,float scalez,
                        float ratio,  // crop volume ratio
                        long long maxcells, // down-size threshold
-                       void (*feedback)(const char *info,float percent)) // feedback callback
+                       void (*feedback)(const char *info,float percent,void *obj),void *obj) // feedback callback
    {
    char *outname;
    const char *preoutname;
@@ -1631,7 +1631,7 @@ char *processRAWvolume(FILE *file, // source file desc
    filename3=strdup2(filename2,"_crop");
    free(filename2);
 
-   if (feedback!=NULL) feedback("cropping out-of-core",0);
+   if (feedback!=NULL) feedback("cropping out-of-core",0,obj);
 
    // crop
    if (filename4=cropRAWvolume(file,filename3,
@@ -1656,7 +1656,7 @@ char *processRAWvolume(FILE *file, // source file desc
             filename6=strdup2(filename5,"_down");
             free(filename5);
 
-            if (feedback!=NULL) feedback("down-sizing out-of-core",0);
+            if (feedback!=NULL) feedback("down-sizing out-of-core",0,obj);
 
             // down-size
             filename7=downsizeRAWvolume(filename4,filename6);
@@ -1683,7 +1683,7 @@ char *processRAWvolume(FILE *file, // source file desc
       filename9=strdup2(filename8,"_quant");
       free(filename8);
 
-      if (feedback!=NULL) feedback("quantizing out-of-core",0);
+      if (feedback!=NULL) feedback("quantizing out-of-core",0,obj);
 
       // quantize
       outname=copyRAWvolume_nonlinear(filename7,filename9);
@@ -1703,7 +1703,7 @@ char *processRAWvolume(FILE *file, // source file desc
 char *processRAWvolume(const char *filename, // source file
                        float ratio, // crop volume ratio
                        long long maxcells, // down-size threshold
-                       void (*feedback)(const char *info,float percent)) // feedback callback
+                       void (*feedback)(const char *info,float percent,void *obj),void *obj) // feedback callback
 
    {
    char *outname;
@@ -1739,7 +1739,7 @@ char *processRAWvolume(const char *filename, // source file
    filename3=strdup2(filename2,"_crop");
    free(filename2);
 
-   if (feedback!=NULL) feedback("cropping out-of-core",0);
+   if (feedback!=NULL) feedback("cropping out-of-core",0,obj);
 
    // crop
    if (filename4=cropRAWvolume(filename,filename3,ratio))
@@ -1760,7 +1760,7 @@ char *processRAWvolume(const char *filename, // source file
             filename6=strdup2(filename5,"_down");
             free(filename5);
 
-            if (feedback!=NULL) feedback("down-sizing out-of-core",0);
+            if (feedback!=NULL) feedback("down-sizing out-of-core",0,obj);
 
             // down-size
             filename7=downsizeRAWvolume(filename4,filename6);
@@ -1787,7 +1787,7 @@ char *processRAWvolume(const char *filename, // source file
       filename9=strdup2(filename8,"_quant");
       free(filename8);
 
-      if (feedback!=NULL) feedback("quantizing out-of-core",0);
+      if (feedback!=NULL) feedback("quantizing out-of-core",0,obj);
 
       // quantize
       outname=copyRAWvolume_nonlinear(filename7,filename9);

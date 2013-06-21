@@ -44,10 +44,10 @@ class DicomVolume
    virtual ~DicomVolume();
 
    bool loadImages(const char *filenamepattern,
-                   void (*feedback)(const char *info,float percent)=NULL);
+                   void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    bool loadImages(const std::vector<std::string> list,
-                   void (*feedback)(const char *info,float percent)=NULL);
+                   void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    unsigned char *getVoxelData() {return(m_Voxels);}
    long long getVoxelNum() {return(getCols()*getRows()*getSlis());}
@@ -61,10 +61,10 @@ class DicomVolume
    private:
 
    bool dicomLoad(const char *filenamepattern,
-                  void (*feedback)(const char *info,float percent)=NULL);
+                  void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    bool dicomLoad(const std::vector<std::string> list,
-                  void (*feedback)(const char *info,float percent)=NULL);
+                  void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    bool dicomProcess();
 
@@ -94,12 +94,12 @@ class DicomVolume
 unsigned char *readDICOMvolume(const char *filename,
                                long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
-                               void (*feedback)(const char *info,float percent)=NULL);
+                               void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // read a DICOM series from a file name list
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
                                long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
-                               void (*feedback)(const char *info,float percent)=NULL);
+                               void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 #endif

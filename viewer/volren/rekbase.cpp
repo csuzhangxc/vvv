@@ -171,7 +171,7 @@ char *copyREKvolume(const char *filename,const char *output)
 
 // copy a REK volume to a RAW volume with out-of-core cropping and non-linear quantization
 char *processREKvolume(const char *filename,const char *output,
-                       void (*feedback)(const char *info,float percent)=NULL)
+                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
    {
    FILE *file;
 
@@ -199,7 +199,7 @@ char *processREKvolume(const char *filename,const char *output,
                                   scalex,scaley,scalez,
                                   RAW_TARGET_RATIO,
                                   RAW_TARGET_CELLS,
-                                  feedback)))
+                                  feedback,obj)))
       {
       fclose(file);
       return(NULL);
@@ -214,7 +214,7 @@ char *processREKvolume(const char *filename,const char *output,
 unsigned char *readREKvolume_ooc(const char *filename,
                                  long long *width,long long *height,long long *depth,unsigned int *components,
                                  float *scalex,float *scaley,float *scalez,
-                                 void (*feedback)(const char *info,float percent))
+                                 void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    char *output,*dot;
    char *outname;
@@ -231,7 +231,7 @@ unsigned char *readREKvolume_ooc(const char *filename,
    if (dot!=NULL)
       if (strcasecmp(dot,".rek")==0) *dot='\0';
 
-   outname=processREKvolume(filename,output,feedback);
+   outname=processREKvolume(filename,output,feedback,obj);
    free(output);
 
    if (outname!=NULL)

@@ -35,11 +35,11 @@ void DicomVolume::deleteImages()
    }
 
 bool DicomVolume::loadImages(const char *filenamepattern,
-                             void (*feedback)(const char *info,float percent))
+                             void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    if (m_Images.size()!=0) deleteImages();
 
-   if (!dicomLoad(filenamepattern,feedback))
+   if (!dicomLoad(filenamepattern,feedback,obj))
       {
       deleteImages();
       return(false);
@@ -49,11 +49,11 @@ bool DicomVolume::loadImages(const char *filenamepattern,
    }
 
 bool DicomVolume::loadImages(const std::vector<std::string> list,
-                             void (*feedback)(const char *info,float percent))
+                             void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    if (m_Images.size()!=0) deleteImages();
 
-   if (!dicomLoad(list,feedback))
+   if (!dicomLoad(list,feedback,obj))
       {
       deleteImages();
       return(false);
@@ -63,7 +63,7 @@ bool DicomVolume::loadImages(const std::vector<std::string> list,
    }
 
 bool DicomVolume::dicomLoad(const char *filenamepattern,
-                            void (*feedback)(const char *info,float percent))
+                            void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
 #ifdef VIEWER_HAVE_DCMTK
 
@@ -86,7 +86,7 @@ bool DicomVolume::dicomLoad(const char *filenamepattern,
       if (feedback!=NULL)
          {
          char *info=strdup2("loading DICOM file ",fname);
-         feedback(info,0);
+         feedback(info,0,obj);
          free(info);
          }
 
@@ -111,7 +111,7 @@ bool DicomVolume::dicomLoad(const char *filenamepattern,
    }
 
 bool DicomVolume::dicomLoad(const std::vector<std::string> list,
-                            void (*feedback)(const char *info,float percent))
+                            void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
 #ifdef VIEWER_HAVE_DCMTK
 
@@ -129,7 +129,7 @@ bool DicomVolume::dicomLoad(const std::vector<std::string> list,
       if (feedback!=NULL)
          {
          char *info=strdup2("loading DICOM file ",fname);
-         feedback(info,0);
+         feedback(info,0,obj);
          free(info);
          }
 
@@ -344,12 +344,12 @@ int DicomVolume::compareFunc(const void* elem1,const void* elem2)
 unsigned char *readDICOMvolume(const char *filename,
                                long long *width,long long *height,long long *depth,unsigned int *components,
                                float *scalex,float *scaley,float *scalez,
-                               void (*feedback)(const char *info,float percent))
+                               void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    DicomVolume data;
    unsigned char *chunk;
 
-   if (!data.loadImages(filename,feedback)) return(NULL);
+   if (!data.loadImages(filename,feedback,obj)) return(NULL);
 
    if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
    memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
@@ -371,12 +371,12 @@ unsigned char *readDICOMvolume(const char *filename,
 unsigned char *readDICOMvolume(const std::vector<std::string> list,
                                long long *width,long long *height,long long *depth,unsigned int *components,
                                float *scalex,float *scaley,float *scalez,
-                               void (*feedback)(const char *info,float percent))
+                               void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    DicomVolume data;
    unsigned char *chunk;
 
-   if (!data.loadImages(list,feedback)) return(NULL);
+   if (!data.loadImages(list,feedback,obj)) return(NULL);
 
    if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
    memcpy(chunk,data.getVoxelData(),data.getVoxelNum());

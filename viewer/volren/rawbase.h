@@ -113,13 +113,13 @@ char *processRAWvolume(FILE *file, // source file desc
                        float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                        float ratio=RAW_TARGET_RATIO, // crop volume ratio
                        long long maxcells=RAW_TARGET_CELLS, // down-size threshold
-                       void (*feedback)(const char *info,float percent)=NULL); // feedback callback
+                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL); // feedback callback
 
 // process a RAW volume with out-of-core cropping and non-linear quantization
 char *processRAWvolume(const char *filename, // source file
                        float ratio=RAW_TARGET_RATIO, // crop volume ratio
                        long long maxcells=RAW_TARGET_CELLS, // down-size threshold
-                       void (*feedback)(const char *info,float percent)=NULL); // feedback callback
+                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL); // feedback callback
 
 // swap the hi and lo byte of 16 bit data
 void swapbytes(unsigned char *data,long long bytes);

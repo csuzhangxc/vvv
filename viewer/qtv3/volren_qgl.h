@@ -233,7 +233,7 @@ protected:
                          TRUE,
                          NULL,
                          5,5.0f,1,1.0f,
-                         feedback);
+                         feedback,this);
 
          free(toload_);
          toload_=NULL;
@@ -249,7 +249,7 @@ protected:
                          FALSE,FALSE,
                          TRUE,
                          5,5.0f,1,1.0f,
-                         feedback);
+                         feedback,this);
 
          series_.clear();
          }
@@ -376,12 +376,18 @@ protected:
       event->accept();
    }
 
-   static void feedback(const char *info,float percent)
+   void update(const char *info,float percent)
    {
       if (percent>0.0f)
          printf("%s: %d%%\n",info,(int)(100.0f*percent+0.5f));
       else
          printf("%s\n",info);
+   }
+
+   static void feedback(const char *info,float percent,void *obj)
+   {
+      QGLVolRenWidget *w=(QGLVolRenWidget *)obj;
+      w->update(info,percent);
    }
 
 };
