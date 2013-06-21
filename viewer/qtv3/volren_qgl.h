@@ -376,7 +376,7 @@ protected:
       event->accept();
    }
 
-   void update(const char *info,float percent)
+   virtual void update(const char *info,float percent)
    {
       if (percent>0.0f)
          printf("%s: %d%%\n",info,(int)(100.0f*percent+0.5f));
