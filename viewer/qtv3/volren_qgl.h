@@ -27,6 +27,7 @@ public:
       setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
 
       vr_ = NULL;
+
       toload_ = NULL;
 
       fps_=30.0;
@@ -56,6 +57,9 @@ public:
    {
       if (vr_)
          delete vr_;
+
+      if (toload_)
+         delete toload_;
    }
 
    //! load a volume
@@ -182,6 +186,7 @@ public:
 protected:
 
    volren *vr_;
+
    char *toload_;
    std::vector<std::string> series_;
 
@@ -220,38 +225,6 @@ protected:
          // linear transfer function
          if (!tf_)
             vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
-         }
-
-      if (toload_)
-         {
-         vr_->loadvolume(toload_,NULL,
-                         0.0f,0.0f,0.0f,
-                         1.0f,1.0f,1.0f,
-                         VOLREN_DEFAULT_BRICKSIZE,8.0f,
-                         FALSE,FALSE,FALSE,
-                         FALSE,FALSE,
-                         TRUE,
-                         NULL,
-                         5,5.0f,1,1.0f,
-                         feedback,this);
-
-         free(toload_);
-         toload_=NULL;
-         }
-
-      if (series_.size()>0)
-         {
-         vr_->loadseries(series_,
-                         0.0f,0.0f,0.0f,
-                         1.0f,1.0f,1.0f,
-                         128,8.0f,
-                         FALSE,FALSE,FALSE,
-                         FALSE,FALSE,
-                         TRUE,
-                         5,5.0f,1,1.0f,
-                         feedback,this);
-
-         series_.clear();
          }
 
       double eye_x=0,eye_y=0,eye_z=2;
@@ -314,6 +287,45 @@ protected:
    void timerEvent(QTimerEvent *)
    {
       repaint();
+      updateVolume();
+   }
+
+   void updateVolume()
+   {
+      if (vr_)
+      {
+         if (toload_)
+         {
+            vr_->loadvolume(toload_,NULL,
+                            0.0f,0.0f,0.0f,
+                            1.0f,1.0f,1.0f,
+                            VOLREN_DEFAULT_BRICKSIZE,8.0f,
+                            FALSE,FALSE,FALSE,
+                            FALSE,FALSE,
+                            TRUE,
+                            NULL,
+                            5,5.0f,1,1.0f,
+                            feedback,this);
+
+            free(toload_);
+            toload_=NULL;
+         }
+
+         if (series_.size()>0)
+         {
+            vr_->loadseries(series_,
+                            0.0f,0.0f,0.0f,
+                            1.0f,1.0f,1.0f,
+                            128,8.0f,
+                            FALSE,FALSE,FALSE,
+                            FALSE,FALSE,
+                            TRUE,
+                            5,5.0f,1,1.0f,
+                            feedback,this);
+            
+            series_.clear();
+         }
+      }
    }
 
    bool bLeftButtonDown,bRightButtonDown;
