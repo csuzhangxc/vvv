@@ -219,13 +219,7 @@ protected:
    void paintGL()
    {
       if (!vr_)
-         {
          vr_ = new volren();
-
-         // linear transfer function
-         if (!tf_)
-            vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
-         }
 
       double eye_x=0,eye_y=0,eye_z=2;
       double eye_dx=0,eye_dy=0,eye_dz=-1;
@@ -292,39 +286,52 @@ protected:
 
    void updateVolume()
    {
-      if (vr_)
+      if (toload_)
       {
-         if (toload_)
-         {
-            vr_->loadvolume(toload_,NULL,
-                            0.0f,0.0f,0.0f,
-                            1.0f,1.0f,1.0f,
-                            VOLREN_DEFAULT_BRICKSIZE,8.0f,
-                            FALSE,FALSE,FALSE,
-                            FALSE,FALSE,
-                            TRUE,
-                            NULL,
-                            5,5.0f,1,1.0f,
-                            feedback,this);
+         volren *vr = new volren();
 
-            free(toload_);
-            toload_=NULL;
-         }
+         vr->loadvolume(toload_,NULL,
+                        0.0f,0.0f,0.0f,
+                        1.0f,1.0f,1.0f,
+                        VOLREN_DEFAULT_BRICKSIZE,8.0f,
+                        FALSE,FALSE,FALSE,
+                        FALSE,FALSE,
+                        TRUE,
+                        NULL,
+                        5,5.0f,1,1.0f,
+                        feedback,this);
 
-         if (series_.size()>0)
-         {
-            vr_->loadseries(series_,
-                            0.0f,0.0f,0.0f,
-                            1.0f,1.0f,1.0f,
-                            128,8.0f,
-                            FALSE,FALSE,FALSE,
-                            FALSE,FALSE,
-                            TRUE,
-                            5,5.0f,1,1.0f,
-                            feedback,this);
-            
-            series_.clear();
-         }
+         if (vr_) delete vr_;
+         vr_ = vr;
+
+         vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
+         tf_ = false;
+
+         free(toload_);
+         toload_=NULL;
+      }
+
+      if (series_.size()>0)
+      {
+         volren *vr = new volren();
+
+         vr->loadseries(series_,
+                        0.0f,0.0f,0.0f,
+                        1.0f,1.0f,1.0f,
+                        128,8.0f,
+                        FALSE,FALSE,FALSE,
+                        FALSE,FALSE,
+                        TRUE,
+                        5,5.0f,1,1.0f,
+                        feedback,this);
+
+         if (vr_) delete vr_;
+         vr_ = vr;
+
+         vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
+         tf_ = false;
+
+         series_.clear();
       }
    }
 
