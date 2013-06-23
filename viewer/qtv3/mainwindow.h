@@ -21,8 +21,6 @@ protected:
 
    virtual void update(const char *info,float percent)
    {
-      static const float update_fps=10.0f;
-
       QString text;
 
       if (percent>0.0f)
@@ -32,7 +30,7 @@ protected:
 
       emit update_signal(text);
 
-      if (timer_.elapsed()>1000.0f/update_fps)
+      if (timer_.elapsed()>1000.0f/fps_)
       {
          repaint();
          QApplication::processEvents();

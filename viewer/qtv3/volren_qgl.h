@@ -298,6 +298,9 @@ protected:
          {
             loading_ = true;
 
+            delete vr_;
+            vr_ = new volren();
+
             volren *vr = new volren();
 
             vr->loadvolume(toload_,NULL,
@@ -314,11 +317,11 @@ protected:
             vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
             tf_ = false;
 
-            delete vr_;
-            vr_ = vr;
-
             free(toload_);
             toload_=NULL;
+
+            delete vr_;
+            vr_ = vr;
 
             loading_ = false;
          }
@@ -326,6 +329,9 @@ protected:
          if (series_.size()>0)
          {
             loading_ = true;
+
+            delete vr_;
+            vr_ = new volren();
 
             volren *vr = new volren();
 
@@ -342,10 +348,10 @@ protected:
             vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
             tf_ = false;
 
+            series_.clear();
+
             delete vr_;
             vr_ = vr;
-
-            series_.clear();
 
             loading_ = false;
          }
