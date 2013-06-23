@@ -42,6 +42,7 @@ void brick::deletetexmap3D()
 // a tile of the volume:
 
 BOOLINT tile::LOADED=FALSE;
+unsigned int tile::INSTANCES=0;
 GLuint tile::PROGID[PROGNUM];
 
 tile::tile(tfunc2D *tf,char *base)
@@ -139,6 +140,8 @@ void tile::setup(char *base)
 
       LOADED=TRUE;
       }
+
+   INSTANCES++;
    }
 
 // destroy fragment programs
@@ -148,13 +151,16 @@ void tile::destroy()
 
    int i;
 
-   if (LOADED)
-      {
-      for (i=0; i<PROGNUM; i++)
-         glDeleteProgramsARB(1,&PROGID[i]);
+   INSTANCES--;
 
-      LOADED=FALSE;
-      }
+   if (INSTANCES==0)
+      if (LOADED)
+         {
+         for (i=0; i<PROGNUM; i++)
+            glDeleteProgramsARB(1,&PROGID[i]);
+
+         LOADED=FALSE;
+         }
 
 #endif
    }

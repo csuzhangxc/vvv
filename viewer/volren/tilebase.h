@@ -184,6 +184,7 @@ class tile
    // fragment program loading:
 
    static BOOLINT LOADED;
+   static unsigned int INSTANCES;
    static GLuint PROGID[PROGNUM];
 
    static void setup(char *base=NULL);

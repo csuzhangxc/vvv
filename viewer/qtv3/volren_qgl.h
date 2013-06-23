@@ -290,19 +290,24 @@ protected:
       {
          if (toload_)
          {
-            vr_->loadvolume(toload_,NULL,
-                            0.0f,0.0f,0.0f,
-                            1.0f,1.0f,1.0f,
-                            VOLREN_DEFAULT_BRICKSIZE,8.0f,
-                            FALSE,FALSE,FALSE,
-                            FALSE,FALSE,
-                            TRUE,
-                            NULL,
-                            5,5.0f,1,1.0f,
-                            feedback,this);
+            volren *vr = new volren();
 
-            vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
+            vr->loadvolume(toload_,NULL,
+                           0.0f,0.0f,0.0f,
+                           1.0f,1.0f,1.0f,
+                           VOLREN_DEFAULT_BRICKSIZE,8.0f,
+                           FALSE,FALSE,FALSE,
+                           FALSE,FALSE,
+                           TRUE,
+                           NULL,
+                           5,5.0f,1,1.0f,
+                           feedback,this);
+
+            vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
             tf_ = false;
+
+            delete vr_;
+            vr_ = vr;
 
             free(toload_);
             toload_=NULL;
@@ -310,18 +315,23 @@ protected:
 
          if (series_.size()>0)
          {
-            vr_->loadseries(series_,
-                            0.0f,0.0f,0.0f,
-                            1.0f,1.0f,1.0f,
-                            128,8.0f,
-                            FALSE,FALSE,FALSE,
-                            FALSE,FALSE,
-                            TRUE,
-                            5,5.0f,1,1.0f,
-                            feedback,this);
+            volren *vr = new volren();
 
-            vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
+            vr->loadseries(series_,
+                           0.0f,0.0f,0.0f,
+                           1.0f,1.0f,1.0f,
+                           128,8.0f,
+                           FALSE,FALSE,FALSE,
+                           FALSE,FALSE,
+                           TRUE,
+                           5,5.0f,1,1.0f,
+                           feedback,this);
+
+            vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
             tf_ = false;
+
+            delete vr_;
+            vr_ = vr;
 
             series_.clear();
          }
