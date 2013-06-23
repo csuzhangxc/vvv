@@ -29,6 +29,7 @@ public:
       vr_ = NULL;
 
       toload_ = NULL;
+      loading_ = false;
 
       fps_=30.0;
       angle_=0.0;
@@ -65,6 +66,8 @@ public:
    //! load a volume
    void loadVolume(const char *filename)
    {
+      if (loading_) return;
+
       if (toload_) free(toload_);
       toload_ = strdup(filename);
    }
@@ -72,6 +75,8 @@ public:
    //! load a DICOM series
    void loadSeries(const std::vector<std::string> list)
    {
+      if (loading_) return;
+
       series_ = list;
    }
 
@@ -189,6 +194,7 @@ protected:
 
    char *toload_;
    std::vector<std::string> series_;
+   bool loading_;
 
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
@@ -290,6 +296,8 @@ protected:
       {
          if (toload_)
          {
+            loading_ = true;
+
             volren *vr = new volren();
 
             vr->loadvolume(toload_,NULL,
@@ -311,10 +319,14 @@ protected:
 
             free(toload_);
             toload_=NULL;
+
+            loading_ = false;
          }
 
          if (series_.size()>0)
          {
+            loading_ = true;
+
             volren *vr = new volren();
 
             vr->loadseries(series_,
@@ -334,6 +346,8 @@ protected:
             vr_ = vr;
 
             series_.clear();
+
+            loading_ = false;
          }
       }
    }
