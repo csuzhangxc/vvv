@@ -234,8 +234,6 @@ class volren
 
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
-      volume::usefbo(gfx_fbo);
-
       if (vol_white)
          if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
          else setbackground(1.0f,1.0f,1.0f);
@@ -271,6 +269,7 @@ class volren
                              ux,uy,uz,
                              gfx_near,VOL->get_slab()*vol_over,
                              vol_light,
+                             gfx_fbo,
                              abort,abortdata);
       else
          aborted=VOL->render(ex,ey,ez,
@@ -278,6 +277,7 @@ class volren
                              ux,uy,uz,
                              sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
                              vol_light,
+                             gfx_fbo,
                              abort,abortdata);
 
       glPopMatrix();

@@ -11,13 +11,6 @@
 
 #include "volume.h"
 
-BOOLINT volume::HASFBO=FALSE;
-BOOLINT volume::USEFBO=FALSE;
-int volume::fboWidth=0,volume::fboHeight=0;
-GLuint volume::textureId=0;
-GLuint volume::rboId=0;
-GLuint volume::fboId=0;
-
 volume::volume(tfunc2D *tf,char *base)
    {
    TILEMAX=TILEINC;
@@ -28,6 +21,11 @@ volume::volume(tfunc2D *tf,char *base)
 
    if (base==NULL) strncpy(BASE,"volren",MAXSTR);
    else snprintf(BASE,MAXSTR,"%s/volren",base);
+
+   HASFBO=FALSE;
+   USEFBO=FALSE;
+   fboWidth=fboHeight=0;
+   textureId=rboId=fboId=0;
    }
 
 volume::~volume()
@@ -3177,6 +3175,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                        float ux,float uy,float uz,
                        float nearp,float slab,
                        BOOLINT lighting,
+                       BOOLINT usefbo,
                        BOOLINT (*abort)(void *abortdata),
                        void *abortdata)
    {
@@ -3188,6 +3187,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       {
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
+
+      VOL[map]->usefbo(usefbo);
 
       aborted=VOL[map]->render(ex,ey,ez,
                                dx,dy,dz,

@@ -68,7 +68,7 @@ class volume
    float getsizez() {return(BZ);}
 
    // use 16-bit fbo
-   static void usefbo(BOOLINT yes=FALSE);
+   void usefbo(BOOLINT yes=FALSE);
 
    protected:
 
@@ -99,19 +99,19 @@ class volume
                 BOOLINT (*abort)(void *abortdata)=NULL,
                 void *abortdata=NULL);
 
-   static void updatefbo();
+   void updatefbo();
 
    // frame buffer object:
 
-   static void setup(int width,int heigth);
-   static void destroy();
+   void setup(int width,int heigth);
+   void destroy();
 
-   static BOOLINT HASFBO;
-   static BOOLINT USEFBO;
-   static int fboWidth,fboHeight;
-   static GLuint textureId;
-   static GLuint rboId;
-   static GLuint fboId;
+   BOOLINT HASFBO;
+   BOOLINT USEFBO;
+   int fboWidth,fboHeight;
+   GLuint textureId;
+   GLuint rboId;
+   GLuint fboId;
    };
 
 typedef volume *volumeptr;
@@ -187,6 +187,7 @@ class mipmap
                   float ux,float uy,float uz,
                   float nearp,float slab,
                   BOOLINT lighting=FALSE,
+                  BOOLINT usefbo=FALSE,
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL);
 
