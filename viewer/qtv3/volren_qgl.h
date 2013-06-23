@@ -414,9 +414,6 @@ protected:
          printf("%s\n",info);
          last=0;
       }
-
-      repaint();
-      QApplication::processEvents();
    }
 
    static void feedback(const char *info,float percent,void *obj)
