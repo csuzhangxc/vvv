@@ -303,6 +303,11 @@ protected:
 
             volren *vr = new volren();
 
+            int histmin = 5;
+            float histfreq = 5.0f;
+            int kneigh = 1;
+            float histstep = 4.0f;
+
             vr->loadvolume(toload_,NULL,
                            0.0f,0.0f,0.0f,
                            1.0f,1.0f,1.0f,
@@ -311,7 +316,7 @@ protected:
                            FALSE,FALSE,
                            TRUE,
                            NULL,
-                           5,5.0f,1,1.0f,
+                           histmin,histfreq,kneigh,histstep,
                            feedback,this);
 
             vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
