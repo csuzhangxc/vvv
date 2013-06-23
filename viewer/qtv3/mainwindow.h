@@ -15,12 +15,14 @@ public:
 
    QTV3VolRenWidget(QWidget * parent = 0)
       : QGLVolRenWidget(parent)
-   {}
+   {timer_.start();}
 
 protected:
 
    virtual void update(const char *info,float percent)
    {
+      static const float update_fps=10.0f;
+
       QString text;
 
       if (percent>0.0f)
@@ -30,9 +32,15 @@ protected:
 
       emit update_signal(text);
 
-      repaint(); //!! do not update every time
-      QApplication::processEvents();
+      if (timer_.elapsed()>1000.0f/update_fps)
+      {
+         repaint();
+         QApplication::processEvents();
+         timer_.restart();
+      }
    }
+
+   QTime timer_;
 
 signals:
 
