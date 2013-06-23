@@ -142,7 +142,7 @@ public:
 
    //! set gradient magnitude mode
    void setGradMag(bool on=false)
-      {
+   {
       gm_=on;
 
       if (gm_ && vr_->has_grad())
@@ -155,17 +155,17 @@ public:
          vr_->get_tfunc()->set_num(1);
          vr_->get_tfunc()->set_mode(0);
          }
-      }
+   }
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   BOOLINT inverse=FALSE)
-      {
+   {
       if (vr_)
          vr_->set_tfunc(center,size, red_,green_,blue_, inverse);
 
       tf_=true;
-      }
+   }
 
    //! return volume renderer
    volren *getVR()
@@ -404,16 +404,19 @@ protected:
       static int last=0;
 
       if (percent>0.0f)
-         {
+      {
          act=(int)(100.0f*percent+0.5f);
          if (act>last) printf("%s: %d%%\n",info,act);
          last=act;
-         }
+      }
       else
-         {
+      {
          printf("%s\n",info);
          last=0;
-         }
+      }
+
+      repaint();
+      QApplication::processEvents();
    }
 
    static void feedback(const char *info,float percent,void *obj)
