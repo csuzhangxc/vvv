@@ -284,7 +284,7 @@ protected:
                   dist_, // clipping distance relative to origin
                   TRUE); // wire frame box
 
-      // show tf
+      // show histogram and tfunc
       if (bLeftButtonDown)
          {
          glMatrixMode(GL_MODELVIEW);
@@ -299,13 +299,12 @@ protected:
          glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA);
          glEnable(GL_BLEND);
 
-         glColor4f(0.5f,0.5f,0.5f,0.5f);
-         glBegin(GL_QUADS);
-         glVertex3f(tf_left_,0.0f,0.0f);
-         glVertex3f(tf_right_,0.0f,0.0f);
-         glVertex3f(tf_right_,1.0f,0.0f);
-         glVertex3f(tf_left_,1.0f,0.0f);
-         glEnd();
+         for (int i=0; i<256; i++)
+            drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
+                     vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
+                     0.5f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+
+         drawquad(tf_left_,0.0f,tf_right_-tf_left_,1.0f,0.5f,0.5f,0.5f,0.5f);
 
          glDisable(GL_BLEND);
 
@@ -485,6 +484,20 @@ protected:
    {
       QGLVolRenWidget *w=(QGLVolRenWidget *)obj;
       w->update(info,percent);
+   }
+
+private:
+
+   void drawquad(float x,float y,float width,float height,
+                 float r,float g,float b,float alpha)
+   {
+      glColor4f(r,g,b,alpha);
+      glBegin(GL_QUADS);
+      glVertex2f(x,y);
+      glVertex2f(x+width,y);
+      glVertex2f(x+width,y+height);
+      glVertex2f(x,y+height);
+      glEnd();
    }
 
 };
