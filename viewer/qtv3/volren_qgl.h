@@ -50,6 +50,9 @@ public:
       bLeftButtonDown = false;
       bRightButtonDown = false;
 
+      tf_left_ = 0.0f;
+      tf_right_ = 1.0f;
+
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
 
@@ -281,6 +284,38 @@ protected:
                   dist_, // clipping distance relative to origin
                   TRUE); // wire frame box
 
+      // show tf
+      if (bLeftButtonDown)
+         {
+         glMatrixMode(GL_MODELVIEW);
+         glPushMatrix();
+         glLoadIdentity();
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glLoadIdentity();
+         gluOrtho2D(0.0f,1.0f,0.0f,1.0f);
+         glMatrixMode(GL_MODELVIEW);
+
+         glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA);
+         glEnable(GL_BLEND);
+
+         glColor4f(0.5f,0.5f,0.5f,0.5f);
+         glBegin(GL_QUADS);
+         glVertex3f(tf_left_,0.0f,0.0f);
+         glVertex3f(tf_right_,0.0f,0.0f);
+         glVertex3f(tf_right_,1.0f,0.0f);
+         glVertex3f(tf_left_,1.0f,0.0f);
+         glEnd();
+
+         glDisable(GL_BLEND);
+
+         glMatrixMode(GL_MODELVIEW);
+         glPopMatrix();
+         glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
+         }
+
       angle_+=omega_/fps_;
    }
 
@@ -364,6 +399,7 @@ protected:
    }
 
    bool bLeftButtonDown,bRightButtonDown;
+   float tf_left_,tf_right_;
 
    void mousePressEvent(QMouseEvent *event)
    {
@@ -404,7 +440,11 @@ protected:
 
       if (!tf_)
          if (bLeftButtonDown)
+         {
+            tf_left_ = x-0.5f*(1.0f-y);
+            tf_right_ = x+0.5f*(1.0f-y);
             vr_->set_tfunc(x,1.0f-y, red_,green_,blue_, !shift);
+         }
          else if (bRightButtonDown)
             if (getRotation()==0.0)
                setRotation(shift?-10.0:10.0);
