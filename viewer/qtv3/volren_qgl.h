@@ -153,7 +153,7 @@ public:
       if (gm_ && vr_->has_grad())
          {
          vr_->get_tfunc()->set_num(32);
-         vr_->get_tfunc()->set_mode(3);
+         vr_->get_tfunc()->set_mode(7);
          }
       else
          {
