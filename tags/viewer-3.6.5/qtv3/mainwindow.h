@@ -7,6 +7,44 @@
 
 #include "volren_qgl.h"
 
+class QTV3VolRenWidget: public QGLVolRenWidget
+{
+   Q_OBJECT;
+
+public:
+
+   QTV3VolRenWidget(QWidget * parent = 0)
+      : QGLVolRenWidget(parent)
+   {timer_.start();}
+
+protected:
+
+   virtual void update(const char *info,float percent)
+   {
+      QString text;
+
+      if (percent>0.0f)
+         text=QString("%1: %2%").arg(info).arg((int)(100.0f*percent+0.5f));
+      else
+         text=QString("%1").arg(info);
+
+      emit update_signal(text);
+
+      if (timer_.elapsed()>1000.0f/fps_)
+      {
+         repaint();
+         QApplication::processEvents();
+         timer_.restart();
+      }
+   }
+
+   QTime timer_;
+
+signals:
+
+   void update_signal(QString text);
+};
+
 class QTV3Slider: public QSlider
 {
 public:
@@ -24,7 +62,7 @@ public:
          return(QSize(50, 100));
    }
 
-private:
+protected:
 
    Qt::Orientation o_;
 };
@@ -59,8 +97,8 @@ public:
 private:
 
    QVBoxLayout *layout_;
-   QGLVolRenWidget *vrw_;
-   QLabel *label_;
+   QTV3VolRenWidget *vrw_;
+   QLabel *label_,*update_;
 
    void createMenus();
    void createWidgets();
@@ -110,6 +148,8 @@ protected slots:
    void checkFlip1(int on);
    void checkFlip2(int on);
    void about();
+
+   void update_slot(QString text);
 };
 
 #endif

@@ -381,25 +381,29 @@ class histo
                        unsigned char *extra,
                        int width,int height,int depth,
                        int histmin,float histfreq,
-                       int kneigh=1,float histstep=1.0f);
+                       int kneigh=1,float histstep=1.0f,
+                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    // init 1D histogram
    void inithist(unsigned char *volume,
                  unsigned int width,unsigned int height,unsigned int depth,
                  int mincnt,float freq,
-                 BOOLINT init=TRUE);
+                 BOOLINT init=TRUE,
+                 void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    // init 2D histogram
    void inithist2D(unsigned char *volume,unsigned char *grad,
                    unsigned int width,unsigned int height,unsigned int depth,
                    int mincnt,float freq,int kneigh,float step,
-                   BOOLINT init=TRUE);
+                   BOOLINT init=TRUE,
+                   void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    // init 2D histogram using vector quantization
    void inithist2DQ(unsigned char *volume,unsigned char *grad,
                     unsigned int width,unsigned int height,unsigned int depth,
                     int mincnt,float freq,int kneigh,float step,
-                    BOOLINT init=TRUE);
+                    BOOLINT init=TRUE,
+                    void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    // clear regions
    BOOLINT clear(BOOLINT full=FALSE);
@@ -465,11 +469,13 @@ class histo
                       float *rgb);
 
    void initcentroids(unsigned char *volume,
-                      unsigned int width,unsigned int height,unsigned int depth);
+                      unsigned int width,unsigned int height,unsigned int depth,
+                      void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    void initcentroids2D(unsigned char *volume,unsigned char *grad,
                         unsigned int width,unsigned int height,unsigned int depth,
-                        int kneigh,float step);
+                        int kneigh,float step,
+                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    int detect(const int s,const int t,const int v,
               const float r,const float g,const float b,

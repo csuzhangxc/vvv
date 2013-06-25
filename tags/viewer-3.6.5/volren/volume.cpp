@@ -3,20 +3,13 @@
 #define SOBEL
 #define MULTILEVEL
 
-#undef FBOMM
 #define FBO16
+#undef FBOMM
 
 #define TILEINC 1000
 #define QUEUEINC 1000
 
 #include "volume.h"
-
-BOOLINT volume::HASFBO=FALSE;
-BOOLINT volume::USEFBO=FALSE;
-int volume::fboWidth=0,volume::fboHeight=0;
-GLuint volume::textureId=0;
-GLuint volume::rboId=0;
-GLuint volume::fboId=0;
 
 volume::volume(tfunc2D *tf,char *base)
    {
@@ -28,6 +21,11 @@ volume::volume(tfunc2D *tf,char *base)
 
    if (base==NULL) strncpy(BASE,"volren",MAXSTR);
    else snprintf(BASE,MAXSTR,"%s/volren",base);
+
+   HASFBO=FALSE;
+   USEFBO=FALSE;
+   fboWidth=fboHeight=0;
+   textureId=rboId=fboId=0;
    }
 
 volume::~volume()
@@ -153,7 +151,8 @@ void volume::set_data(unsigned char *data,
                       long long width,long long height,long long depth,
                       float mx,float my,float mz,
                       float sx,float sy,float sz,
-                      int bricksize,float overmax)
+                      int bricksize,float overmax,
+                      void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    int i;
 
@@ -171,6 +170,13 @@ void volume::set_data(unsigned char *data,
    if (bricksize<=2*border) ERRORMSG();
 
    for (TILEZ=0,pz=-2*border; pz<depth-1+border; pz+=bricksize-1-2*border,TILEZ++)
+      {
+      if (feedback!=NULL)
+         {
+         float tilesz=(float)(depth+3*border)/(bricksize-2*border);
+         feedback("uploading data",fmin((TILEZ+1)/tilesz,1.0f),obj);
+         }
+
       for (TILEY=0,py=-2*border; py<height-1+border; py+=bricksize-1-2*border,TILEY++)
          for (TILEX=0,px=-2*border; px<width-1+border; px+=bricksize-1-2*border,TILEX++)
             {
@@ -230,6 +236,7 @@ void volume::set_data(unsigned char *data,
             TILE[TILECNT++]->set_size(mx2,my2,mz2,
                                       sx2,sy2,sz2);
             }
+      }
 
    MX=mx;
    MY=my;
@@ -596,7 +603,8 @@ void mipmap::set_data(unsigned char *data,
                       long long width,long long height,long long depth,
                       float mx,float my,float mz,
                       float sx,float sy,float sz,
-                      int bricksize,float overmax)
+                      int bricksize,float overmax,
+                      void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    int i;
 
@@ -624,10 +632,13 @@ void mipmap::set_data(unsigned char *data,
                     width,height,depth,
                     mx,my,mz,
                     sx,sy,sz,
-                    bricksize,overmax);
+                    bricksize,overmax,
+                    feedback,obj);
 
    for (i=1; i<VOLCNT; i++)
       {
+      if (feedback!=NULL) feedback("calculating mipmap",(float)(i+1)/VOLCNT,obj);
+
       VOL[i]=new volume(TFUNC,BASE);
 
       data2=reduce(data,width,height,depth);
@@ -838,30 +849,21 @@ inline void mipmap::set(unsigned char *data,
 unsigned char *mipmap::calc_gradmag(unsigned char *data,
                                     long long width,long long height,long long depth,
                                     float dsx,float dsy,float dsz,
-                                    float *gradmax)
+                                    float *gradmax,
+                                    void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
 #ifdef MULTILEVEL
-   long long cells;
-
-   cells=width*height*depth;
-
-   if (cells>RAW_TARGET_CELLS)
-      return(NULL);
-   else if (cells>RAW_TARGET_CELLS/5)
-      return(gradmag(data,
-                     width,height,depth,
-                     dsx,dsy,dsz,
-                     gradmax));
-   else
-      return(gradmagML(data,
-                       width,height,depth,
-                       dsx,dsy,dsz,
-                       gradmax));
+   return(gradmagML(data,
+                    width,height,depth,
+                    dsx,dsy,dsz,
+                    gradmax,
+                    feedback,obj));
 #else
    return(gradmag(data,
                   width,height,depth,
                   dsx,dsy,dsz,
-                  gradmax));
+                  gradmax,
+                  feedback,obj));
 #endif
    }
 
@@ -869,7 +871,8 @@ unsigned char *mipmap::calc_gradmag(unsigned char *data,
 unsigned char *mipmap::gradmag(unsigned char *data,
                                long long width,long long height,long long depth,
                                float dsx,float dsy,float dsz,
-                               float *gradmax)
+                               float *gradmax,
+                               void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    static const float mingrad=0.1f;
 
@@ -907,6 +910,9 @@ unsigned char *mipmap::gradmag(unsigned char *data,
    if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
    for (gmax=1.0f,k=0; k<depth; k+=2)
+      {
+      if (feedback!=NULL) feedback("calculating gradients",0.5f*(k+1)/depth,obj);
+
       for (j=0; j<height; j+=2)
          for (i=0; i<width; i+=2)
             {
@@ -928,8 +934,12 @@ unsigned char *mipmap::gradmag(unsigned char *data,
             gm=fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz);
             if (gm>gmax) gmax=gm;
             }
+      }
 
    for (ptr=data2,k=0; k<depth; k++)
+      {
+      if (feedback!=NULL) feedback("calculating gradients",0.5f*(k+1)/depth+0.5f,obj);
+
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
@@ -950,6 +960,7 @@ unsigned char *mipmap::gradmag(unsigned char *data,
 
             *ptr++=ftrc(255.0f*threshold(fsqrt(fmin((fsqr(gx*dsx)+fsqr(gy*dsy)+fsqr(gz*dsz))/gmax,1.0f)),mingrad)+0.5f);
             }
+      }
 
    if (gradmax!=NULL) *gradmax=fsqrt(gmax)/255.0f;
 
@@ -1100,7 +1111,8 @@ inline float mipmap::threshold(float x,float thres)
 unsigned char *mipmap::gradmagML(unsigned char *data,
                                  long long width,long long height,long long depth,
                                  float dsx,float dsy,float dsz,
-                                 float *gradmax)
+                                 float *gradmax,
+                                 void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    static const int maxlevel=2;
    static const float mingrad=0.1f;
@@ -1152,6 +1164,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
    gmax=0.0f;
 
    for (ptr2=data2,k=0; k<depth; k++)
+      {
+      if (feedback!=NULL) feedback("calculating gradients",0.5f*(k+1)/depth,obj);
+
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
@@ -1164,6 +1179,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
             *ptr2++=ftrc(gm*gscale+0.5f);
             }
+      }
 
    if (gmax==0.0f) gmax=1.0f;
 
@@ -1220,6 +1236,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
       if (gmax==0.0f) gmax=1.0f;
 
       for (ptr2=data2,k=0; k<depth; k++)
+         {
+         if (feedback!=NULL) feedback("calculating gradients",0.5f*((float)(k+1)/depth+level-1)/maxlevel+0.5f,obj);
+
          for (j=0; j<height; j++)
             for (i=0; i<width; i++)
                {
@@ -1232,6 +1251,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
                *ptr2++=ftrc(0.5f*65535.0f*gm+0.5f);
                }
+         }
 
       free(data3);
       }
@@ -2791,7 +2811,8 @@ unsigned char *mipmap::scale(unsigned char *volume,
 unsigned char *mipmap::readANYvolume(const char *filename,
                                      long long *width,long long *height,long long *depth,unsigned int *components,
                                      float *scalex,float *scaley,float *scalez,
-                                     BOOLINT *msb)
+                                     BOOLINT *msb,
+                                     void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    unsigned char *volume;
    long long steps;
@@ -2804,7 +2825,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    if (strchr(filename,'*')!=NULL)
       {
       // read a DICOM series identified by the * in the filename pattern
-      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez,feedback,obj))!=NULL)
          order=FALSE;
       }
    else
@@ -2814,7 +2835,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
 
       // read a REK volume out-of-core
       if (volume==NULL)
-         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez);
+         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez,feedback,obj);
 
       // read a REK volume
       if (volume==NULL)
@@ -2846,7 +2867,8 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
                            BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
                            BOOLINT usegrad, // use gradient volume
                            char *commands, // filter commands
-                           int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
+                           int histmin,float histfreq,int kneigh,float histstep, // parameters for histogram computation
+                           void (*feedback)(const char *info,float percent,void *obj),void *obj) // feedback callback
    {
    BOOLINT msb;
    BOOLINT upload;
@@ -2865,8 +2887,12 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
        xswap!=xsflag || yswap!=ysflag || zswap!=zsflag ||
        xrotate!=xrflag || zrotate!=zrflag)
       {
+      if (feedback!=NULL) feedback("loading data",0,obj);
+
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb))==NULL) return(FALSE);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL) return(FALSE);
+
+      if (feedback!=NULL) feedback("processing data",0,obj);
 
       if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH,msb);
       else if (COMPONENTS!=1)
@@ -2893,10 +2919,13 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
 
       if (usegrad && strlen(gradname)==0)
          {
+         if (feedback!=NULL) feedback("calculating gradients",0,obj);
+
          GRAD=calc_gradmag(VOLUME,
                            WIDTH,HEIGHT,DEPTH,
                            DSX,DSY,DSZ,
-                           &GRADMAX);
+                           &GRADMAX,
+                           feedback,obj);
 
          parsegradcommands(VOLUME,GRAD,
                            WIDTH,HEIGHT,DEPTH,
@@ -2921,6 +2950,8 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (GRAD==NULL ||
           strncmp(gradname,gradstr,MAXSTR)!=0)
          {
+         if (feedback!=NULL) feedback("loading gradients",0,obj);
+
          if (GRAD!=NULL) free(GRAD);
          if ((GRAD=readANYvolume(gradname,&GWIDTH,&GHEIGHT,&GDEPTH,&GCOMPONENTS))==NULL) exit(1);
          GRADMAX=1.0f;
@@ -2956,22 +2987,25 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
                WIDTH,HEIGHT,DEPTH,
                mx,my,mz,
                sx*DSX*(WIDTH-1)/maxsize,sy*DSY*(HEIGHT-1)/maxsize,sz*DSZ*(DEPTH-1)/maxsize,
-               bricksize,overmax);
+               bricksize,overmax,
+               feedback,obj);
       }
 
    if (upload)
-      HISTO->set_histograms(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep);
+      HISTO->set_histograms(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,feedback,obj);
 
    if (!upload && (hmvalue!=histmin || hfvalue!=histfreq))
-      HISTO->inithist(VOLUME,WIDTH,HEIGHT,DEPTH,histmin,histfreq,FALSE);
+      HISTO->inithist(VOLUME,WIDTH,HEIGHT,DEPTH,histmin,histfreq,FALSE,feedback,obj);
 
    if (!upload && (hmvalue!=histmin || hfvalue!=histfreq || kneigh!=knvalue || histstep!=hsvalue))
-      HISTO->inithist2DQ(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,FALSE);
+      HISTO->inithist2DQ(VOLUME,GRAD,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,FALSE,feedback,obj);
 
    hmvalue=histmin;
    hfvalue=histfreq;
    knvalue=kneigh;
    hsvalue=histstep;
+
+   if (feedback!=NULL) feedback("",0,obj);
 
    return(TRUE);
    }
@@ -2984,12 +3018,17 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
                            BOOLINT xswap,BOOLINT yswap,BOOLINT zswap, // swap volume flags
                            BOOLINT xrotate,BOOLINT zrotate, // rotate volume flags
                            BOOLINT usegrad, // use gradient volume
-                           int histmin,float histfreq,int kneigh,float histstep) // parameters for histogram computation
+                           int histmin,float histfreq,int kneigh,float histstep, // parameters for histogram computation
+                           void (*feedback)(const char *info,float percent,void *obj),void *obj) // feedback callback
    {
    float maxsize;
 
+   if (feedback!=NULL) feedback("loading data",0,obj);
+
    if (VOLUME!=NULL) free(VOLUME);
-   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ))==NULL) return(FALSE);
+   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,feedback,obj))==NULL) return(FALSE);
+
+   if (feedback!=NULL) feedback("processing data",0,obj);
 
    if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
    else if (COMPONENTS!=1)
@@ -3011,10 +3050,15 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
       }
 
    if (usegrad)
+      {
+      if (feedback!=NULL) feedback("calculating gradients",0,obj);
+
       GRAD=calc_gradmag(VOLUME,
                         WIDTH,HEIGHT,DEPTH,
                         DSX,DSY,DSZ,
-                        &GRADMAX);
+                        &GRADMAX,
+                        feedback,obj);
+      }
 
    strncpy(filestr,"",MAXSTR);
    strncpy(gradstr,"",MAXSTR);
@@ -3033,14 +3077,17 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
             WIDTH,HEIGHT,DEPTH,
             mx,my,mz,
             sx*DSX*(WIDTH-1)/maxsize,sy*DSY*(HEIGHT-1)/maxsize,sz*DSZ*(DEPTH-1)/maxsize,
-            bricksize,overmax);
+            bricksize,overmax,
+            feedback,obj);
 
-   HISTO->set_histograms(VOLUME,NULL,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep);
+   HISTO->set_histograms(VOLUME,NULL,WIDTH,HEIGHT,DEPTH,histmin,histfreq,kneigh,histstep,feedback,obj);
 
    hmvalue=histmin;
    hfvalue=histfreq;
    knvalue=kneigh;
    hsvalue=histstep;
+
+   if (feedback!=NULL) feedback("",0,obj);
 
    return(TRUE);
    }
@@ -3128,6 +3175,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                        float ux,float uy,float uz,
                        float nearp,float slab,
                        BOOLINT lighting,
+                       BOOLINT usefbo,
                        BOOLINT (*abort)(void *abortdata),
                        void *abortdata)
    {
@@ -3139,6 +3187,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       {
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
+
+      VOL[map]->usefbo(usefbo);
 
       aborted=VOL[map]->render(ex,ey,ez,
                                dx,dy,dz,

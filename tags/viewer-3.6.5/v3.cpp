@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.6.4 as of 19.June.2012"
+#define VERSION "3.6.5 as of 25.June.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base rendering
@@ -184,8 +184,6 @@ void setupGUI();
 void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
    {
    if (data!=NULL) GUI::pushbuttonhook(x,y,data);
-
-   if (!VOLREN->has_grad()) GUI_grad=FALSE;
 
    if (!GUI_grad && GUI_gmc) GUI_gmc=FALSE;
    if (!GUI_grad && GUI_mod) GUI_mod=FALSE;

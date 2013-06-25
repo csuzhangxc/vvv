@@ -37,7 +37,8 @@ class volren
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
                       char *commands=NULL,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
       {
       return(VOL->loadvolume(filename,
                              gradname,
@@ -48,7 +49,8 @@ class volren
                              xrotate,zrotate,
                              usegrad,
                              commands,
-                             histmin,histfreq,kneigh,histstep));
+                             histmin,histfreq,kneigh,histstep,
+                             feedback,obj));
       }
 
    // load a DICOM series
@@ -59,7 +61,8 @@ class volren
                       BOOLINT xswap=FALSE,BOOLINT yswap=FALSE,BOOLINT zswap=FALSE,
                       BOOLINT xrotate=FALSE,BOOLINT zrotate=FALSE,
                       BOOLINT usegrad=FALSE,
-                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f)
+                      int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
+                      void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
       {
       return(VOL->loadseries(list,
                              mx,my,mz,
@@ -68,7 +71,8 @@ class volren
                              xswap,yswap,zswap,
                              xrotate,zrotate,
                              usegrad,
-                             histmin,histfreq,kneigh,histstep));
+                             histmin,histfreq,kneigh,histstep,
+                             feedback,obj));
       }
 
    // save the volume data as PVM
@@ -230,8 +234,6 @@ class volren
 
       VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
-      volume::usefbo(gfx_fbo);
-
       if (vol_white)
          if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
          else setbackground(1.0f,1.0f,1.0f);
@@ -267,6 +269,7 @@ class volren
                              ux,uy,uz,
                              gfx_near,VOL->get_slab()*vol_over,
                              vol_light,
+                             gfx_fbo,
                              abort,abortdata);
       else
          aborted=VOL->render(ex,ey,ez,
@@ -274,6 +277,7 @@ class volren
                              ux,uy,uz,
                              sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
                              vol_light,
+                             gfx_fbo,
                              abort,abortdata);
 
       glPopMatrix();

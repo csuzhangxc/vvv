@@ -14,6 +14,8 @@
 #define VOLREN_DEFAULT_GREEN 1.0f
 #define VOLREN_DEFAULT_BLUE 0.5f
 
+#define VOLREN_DEFAULT_BRICKSIZE 128
+
 class QGLVolRenWidget: public QGLWidget
 {
 public:
@@ -25,7 +27,9 @@ public:
       setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
 
       vr_ = NULL;
+
       toload_ = NULL;
+      loading_ = false;
 
       fps_=30.0;
       angle_=0.0;
@@ -42,6 +46,9 @@ public:
       inv_=false;
       gm_=false;
       tf_=false;
+      tf_center_ = 0.5f;
+      tf_size_ = 1.0f;
+      tf_inverse_ = false;
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
@@ -54,11 +61,16 @@ public:
    {
       if (vr_)
          delete vr_;
+
+      if (toload_)
+         delete toload_;
    }
 
    //! load a volume
    void loadVolume(const char *filename)
    {
+      if (loading_) return;
+
       if (toload_) free(toload_);
       toload_ = strdup(filename);
    }
@@ -66,6 +78,8 @@ public:
    //! load a DICOM series
    void loadSeries(const std::vector<std::string> list)
    {
+      if (loading_) return;
+
       series_ = list;
    }
 
@@ -136,30 +150,34 @@ public:
 
    //! set gradient magnitude mode
    void setGradMag(bool on=false)
-      {
+   {
       gm_=on;
 
       if (gm_ && vr_->has_grad())
          {
          vr_->get_tfunc()->set_num(32);
-         vr_->get_tfunc()->set_mode(3);
+         vr_->get_tfunc()->set_mode(7);
          }
       else
          {
          vr_->get_tfunc()->set_num(1);
          vr_->get_tfunc()->set_mode(0);
          }
-      }
+   }
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   BOOLINT inverse=FALSE)
-      {
+   {
       if (vr_)
          vr_->set_tfunc(center,size, red_,green_,blue_, inverse);
 
       tf_=true;
-      }
+
+      tf_center_=center;
+      tf_size_=size;
+      tf_inverse_=inverse;
+   }
 
    //! return volume renderer
    volren *getVR()
@@ -180,8 +198,10 @@ public:
 protected:
 
    volren *vr_;
+
    char *toload_;
    std::vector<std::string> series_;
+   bool loading_;
 
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
@@ -196,6 +216,9 @@ protected:
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
    bool tf_; // tfunc given?
+   float tf_center_; // tfunc center
+   float tf_size_; // tfunc size
+   float tf_inverse_; // inverse tfunc
 
    void initializeGL()
    {
@@ -212,40 +235,7 @@ protected:
    void paintGL()
    {
       if (!vr_)
-         {
          vr_ = new volren();
-
-         // linear transfer function
-         if (!tf_)
-            vr_->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
-         }
-
-      if (toload_)
-         {
-         vr_->loadvolume(toload_,NULL,
-                         0.0f,0.0f,0.0f,
-                         1.0f,1.0f,1.0f,
-                         128,8.0f,
-                         FALSE,FALSE,FALSE,
-                         FALSE,FALSE,
-                         TRUE);
-
-         free(toload_);
-         toload_=NULL;
-         }
-
-      if (series_.size()>0)
-         {
-         vr_->loadseries(series_,
-                         0.0f,0.0f,0.0f,
-                         1.0f,1.0f,1.0f,
-                         128,8.0f,
-                         FALSE,FALSE,FALSE,
-                         FALSE,FALSE,
-                         TRUE);
-
-         series_.clear();
-         }
 
       double eye_x=0,eye_y=0,eye_z=2;
       double eye_dx=0,eye_dy=0,eye_dz=-1;
@@ -301,12 +291,130 @@ protected:
                   dist_, // clipping distance relative to origin
                   TRUE); // wire frame box
 
+      // show histogram and tfunc
+      if (vr_->has_data() && bLeftButtonDown)
+         {
+         glMatrixMode(GL_MODELVIEW);
+         glPushMatrix();
+         glLoadIdentity();
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glLoadIdentity();
+         gluOrtho2D(0.0f,1.0f,0.0f,1.0f);
+         glMatrixMode(GL_MODELVIEW);
+
+         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+         glEnable(GL_BLEND);
+
+         if (!gm_)
+         {
+            // 1D histogram
+            for (int i=0; i<256; i++)
+               qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
+                            vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
+                            0.9f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+         }
+         else
+         {
+            // 2D histogram
+            unsigned int texid;
+            texid=qgl_buildtexmap2DRGBA(vr_->get_volume()->get_hist2DQRGBA(),256,256);
+            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.9f);
+            qgl_deletetexmap(texid);
+         }
+
+         // windowing
+         qgl_drawquad(tf_center_-0.5f*tf_size_,0.0f,tf_size_,1.0f,0.5f,0.5f,0.5f,0.5f);
+
+         glDisable(GL_BLEND);
+
+         glMatrixMode(GL_MODELVIEW);
+         glPopMatrix();
+         glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
+         }
+
       angle_+=omega_/fps_;
    }
 
    void timerEvent(QTimerEvent *)
    {
       repaint();
+      updateVolume();
+   }
+
+   void updateVolume()
+   {
+      if (vr_)
+      {
+         if (toload_)
+         {
+            loading_ = true;
+
+            delete vr_;
+            vr_ = new volren();
+
+            volren *vr = new volren();
+
+            int histmin = 5;
+            float histfreq = 7.0f;
+            int kneigh = 2;
+            float histstep = 2.0f;
+
+            vr->loadvolume(toload_,NULL,
+                           0.0f,0.0f,0.0f,
+                           1.0f,1.0f,1.0f,
+                           VOLREN_DEFAULT_BRICKSIZE,8.0f,
+                           FALSE,FALSE,FALSE,
+                           FALSE,FALSE,
+                           TRUE,
+                           NULL,
+                           histmin,histfreq,kneigh,histstep,
+                           feedback,this);
+
+            free(toload_);
+            toload_=NULL;
+
+            delete vr_;
+            vr_ = vr;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
+
+            loading_ = false;
+         }
+
+         if (series_.size()>0)
+         {
+            loading_ = true;
+
+            delete vr_;
+            vr_ = new volren();
+
+            volren *vr = new volren();
+
+            vr->loadseries(series_,
+                           0.0f,0.0f,0.0f,
+                           1.0f,1.0f,1.0f,
+                           128,8.0f,
+                           FALSE,FALSE,FALSE,
+                           FALSE,FALSE,
+                           TRUE,
+                           5,5.0f,1,1.0f,
+                           feedback,this);
+
+            series_.clear();
+
+            delete vr_;
+            vr_ = vr;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
+
+            loading_ = false;
+         }
+      }
    }
 
    bool bLeftButtonDown,bRightButtonDown;
@@ -350,7 +458,13 @@ protected:
 
       if (!tf_)
          if (bLeftButtonDown)
-            vr_->set_tfunc(x,1.0f-y, red_,green_,blue_, !shift);
+         {
+            tf_center_ = x;
+            tf_size_ = 1.0f-y;
+            tf_inverse_ = !shift;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+         }
          else if (bRightButtonDown)
             if (getRotation()==0.0)
                setRotation(shift?-10.0:10.0);
@@ -367,6 +481,106 @@ protected:
       double numDegrees = event->delta()/8.0;
 
       event->accept();
+   }
+
+   virtual void update(const char *info,float percent)
+   {
+      int act;
+      static int last=0;
+
+      if (percent>0.0f)
+      {
+         act=(int)(100.0f*percent+0.5f);
+         if (act>last) printf("%s: %d%%\n",info,act);
+         last=act;
+      }
+      else
+      {
+         printf("%s\n",info);
+         last=0;
+      }
+   }
+
+   static void feedback(const char *info,float percent,void *obj)
+   {
+      QGLVolRenWidget *w=(QGLVolRenWidget *)obj;
+      w->update(info,percent);
+   }
+
+private:
+
+   void qgl_drawquad(float x,float y,float width,float height,
+                     float r,float g,float b,float alpha)
+   {
+      glColor4f(r,g,b,alpha);
+      glBegin(GL_QUADS);
+      glVertex2f(x,y);
+      glVertex2f(x+width,y);
+      glVertex2f(x+width,y+height);
+      glVertex2f(x,y+height);
+      glEnd();
+   }
+
+   unsigned int qgl_buildtexmap2DRGBA(float *image,int width,int height)
+   {
+      GLuint texid;
+
+      glGenTextures(1,&texid);
+      glBindTexture(GL_TEXTURE_2D,texid);
+
+      glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,
+                   GL_RGBA,GL_FLOAT,image);
+
+      glBindTexture(GL_TEXTURE_2D,0);
+
+      return(texid);
+   }
+
+   void qgl_deletetexmap(unsigned int texid)
+   {
+      GLuint GLtexid=texid;
+      if (texid>0) glDeleteTextures(1,&GLtexid);
+   }
+
+   void qgl_drawtexture(float x,float y,float width,float height,
+                        int texid,int sizex,int sizey,float alpha=1.0f)
+   {
+      glEnable(GL_TEXTURE_2D);
+
+      glBindTexture(GL_TEXTURE_2D,texid);
+      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+      glMatrixMode(GL_TEXTURE);
+      glPushMatrix();
+      glLoadIdentity();
+      glTranslatef(0.5f/sizex,0.5f/sizey,0.0f);
+      glScalef((float)(sizex-1)/sizex,(float)(sizey-1)/sizey,1.0f);
+      glMatrixMode(GL_MODELVIEW);
+
+      glColor4f(1.0f,1.0f,1.0f,alpha);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f,0.0f);
+      glVertex2f(x,y);
+      glTexCoord2f(1.0f,0.0f);
+      glVertex2f(x+width,y);
+      glTexCoord2f(1.0f,1.0f);
+      glVertex2f(x+width,y+height);
+      glTexCoord2f(0.0f,1.0f);
+      glVertex2f(x,y+height);
+      glEnd();
+
+      glMatrixMode(GL_TEXTURE);
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
+
+      glBindTexture(GL_TEXTURE_2D,0);
+
+      glDisable(GL_TEXTURE_2D);
    }
 
 };

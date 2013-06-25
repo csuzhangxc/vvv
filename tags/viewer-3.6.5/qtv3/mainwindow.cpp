@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "0.9.4"
+#define APP_VERSION "0.9.5"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    : QMainWindow(parent)
@@ -88,7 +88,7 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *mainGroup = new QGroupBox(this);
    layout_ = new QVBoxLayout(mainGroup);
 
-   vrw_ = new QGLVolRenWidget(mainGroup);
+   vrw_ = new QTV3VolRenWidget(mainGroup);
    layout_->addWidget(vrw_);
 
    label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) here\n"
@@ -96,6 +96,11 @@ void QTV3MainWindow::createWidgets()
 
    label_->setAlignment(Qt::AlignHCenter);
    layout_->addWidget(label_);
+
+   update_ = new QLabel("");
+   update_->setAlignment(Qt::AlignHCenter);
+   connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
+   layout_->addWidget(update_);
 
    QTV3Slider *s1=createSlider(0,100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
@@ -377,15 +382,15 @@ void QTV3MainWindow::checkFlip1(int on)
    flip1_=on;
 
    if (flip1_ && flip2_)
-      {
+   {
       vrw_->setTilt1(180);
       vrw_->setTilt2(0);
-      }
+   }
    else
-      {
+   {
       vrw_->setTilt1(flip1_?90.0:0.0);
       vrw_->setTilt2(flip2_?90.0:0.0);
-      }
+   }
 }
 
 void QTV3MainWindow::checkFlip2(int on)
@@ -393,15 +398,15 @@ void QTV3MainWindow::checkFlip2(int on)
    flip2_=on;
 
    if (flip1_ && flip2_)
-      {
+   {
       vrw_->setTilt1(180);
       vrw_->setTilt2(0);
-      }
+   }
    else
-      {
+   {
       vrw_->setTilt1(flip1_?90.0:0.0);
       vrw_->setTilt2(flip2_?90.0:0.0);
-      }
+   }
 }
 
 void QTV3MainWindow::about()
@@ -412,4 +417,9 @@ void QTV3MainWindow::about()
                       "\n(c) by Stefan Roettger"
                       "\nmailto:snroettg@googlemail.com"
                       "\nlicensed under GPL 2.0+");
+}
+
+void QTV3MainWindow::update_slot(QString text)
+{
+   update_->setText(text);
 }
