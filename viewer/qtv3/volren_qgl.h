@@ -312,19 +312,14 @@ protected:
             for (int i=0; i<256; i++)
                qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
                             vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
-                            0.5f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+                            0.9f*vr_->get_volume()->get_histRGBA()[4*i+3]);
          }
          else
          {
             // 2D histogram
             unsigned int texid;
-            float *texmap=new float[4*256*256];
-            memcpy(texmap,vr_->get_volume()->get_hist2DTFRGBA(),4*256*256*sizeof(float));
-            for (unsigned int i=0; i<256*256; i++)
-               if (texmap[4*i]==0.0f && texmap[4*i+1]==0.0f && texmap[4*i+2]==0.0f) texmap[4*i+3]=0.5f;
-            texid=qgl_buildtexmap2DRGBA(texmap,256,256);
-            delete texmap;
-            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.5f);
+            texid=qgl_buildtexmap2DRGBA(vr_->get_volume()->get_hist2DQRGBA(),256,256);
+            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.9f);
             qgl_deletetexmap(texid);
          }
 
@@ -363,9 +358,9 @@ protected:
             volren *vr = new volren();
 
             int histmin = 5;
-            float histfreq = 5.0f;
-            int kneigh = 1;
-            float histstep = 4.0f;
+            float histfreq = 10.0f;
+            int kneigh = 3;
+            float histstep = 2.0f;
 
             vr->loadvolume(toload_,NULL,
                            0.0f,0.0f,0.0f,
