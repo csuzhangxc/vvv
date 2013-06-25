@@ -2418,7 +2418,7 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
 
       for (k=0.0f; k<=1.0f; k+=step/(depth-1))
          {
-         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth,obj);
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*k,obj);
 
          for (j=0.0f; j<=1.0f; j+=step/(height-1))
             for (i=0.0f; i<=1.0f; i+=step/(width-1))
@@ -2505,7 +2505,7 @@ void histo::initcentroids2D(unsigned char *volume,unsigned char *grad,
 
       for (k=0.0f; k<=1.0f; k+=step/(depth-1))
          {
-         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*(k+1)/depth+0.5f,obj);
+         if (feedback!=NULL) feedback("calculating 2D histogram",0.5f*k+0.5f,obj);
 
          for (j=0.0f; j<=1.0f; j+=step/(height-1))
             for (i=0.0f; i<=1.0f; i+=step/(width-1))

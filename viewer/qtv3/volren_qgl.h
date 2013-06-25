@@ -358,8 +358,8 @@ protected:
             volren *vr = new volren();
 
             int histmin = 5;
-            float histfreq = 10.0f;
-            int kneigh = 3;
+            float histfreq = 7.0f;
+            int kneigh = 2;
             float histstep = 2.0f;
 
             vr->loadvolume(toload_,NULL,
@@ -373,14 +373,14 @@ protected:
                            histmin,histfreq,kneigh,histstep,
                            feedback,this);
 
-            vr->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
-            setGradMag(gm_);
-
             free(toload_);
             toload_=NULL;
 
             delete vr_;
             vr_ = vr;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
 
             loading_ = false;
          }
@@ -404,13 +404,13 @@ protected:
                            5,5.0f,1,1.0f,
                            feedback,this);
 
-            vr->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
-            setGradMag(gm_);
-
             series_.clear();
 
             delete vr_;
             vr_ = vr;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
 
             loading_ = false;
          }
