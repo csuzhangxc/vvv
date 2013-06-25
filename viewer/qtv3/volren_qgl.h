@@ -285,7 +285,7 @@ protected:
                   TRUE); // wire frame box
 
       // show histogram and tfunc
-      if (bLeftButtonDown)
+      if (vr_->has_data() && bLeftButtonDown)
          {
          glMatrixMode(GL_MODELVIEW);
          glPushMatrix();
@@ -296,15 +296,33 @@ protected:
          gluOrtho2D(0.0f,1.0f,0.0f,1.0f);
          glMatrixMode(GL_MODELVIEW);
 
-         glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA);
+         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
          glEnable(GL_BLEND);
 
-         for (int i=0; i<256; i++)
-            drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
-                     vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
-                     0.5f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+         if (!gm_)
+         {
+            // 1D histogram
+            for (int i=0; i<256; i++)
+               qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
+                            vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
+                            0.5f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+         }
+         else
+         {
+            // 2D histogram
+            unsigned int texid;
+            float *texmap=new float[4*256*256];
+            memcpy(texmap,vr_->get_volume()->get_hist2DTFRGBA(),4*256*256*sizeof(float));
+            for (unsigned int i=0; i<256*256; i++)
+               if (texmap[4*i]==0.0f && texmap[4*i+1]==0.0f && texmap[4*i+2]==0.0f) texmap[4*i+3]=0.5f;
+            texid=qgl_buildtexmap2DRGBA(texmap,256,256);
+            delete texmap;
+            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.5f);
+            qgl_deletetexmap(texid);
+         }
 
-         drawquad(tf_left_,0.0f,tf_right_-tf_left_,1.0f,0.5f,0.5f,0.5f,0.5f);
+         // windowing
+         qgl_drawquad(tf_left_,0.0f,tf_right_-tf_left_,1.0f,0.5f,0.5f,0.5f,0.5f);
 
          glDisable(GL_BLEND);
 
@@ -488,8 +506,8 @@ protected:
 
 private:
 
-   void drawquad(float x,float y,float width,float height,
-                 float r,float g,float b,float alpha)
+   void qgl_drawquad(float x,float y,float width,float height,
+                     float r,float g,float b,float alpha)
    {
       glColor4f(r,g,b,alpha);
       glBegin(GL_QUADS);
@@ -498,6 +516,68 @@ private:
       glVertex2f(x+width,y+height);
       glVertex2f(x,y+height);
       glEnd();
+   }
+
+   unsigned int qgl_buildtexmap2DRGBA(float *image,int width,int height)
+   {
+      GLuint texid;
+
+      glGenTextures(1,&texid);
+      glBindTexture(GL_TEXTURE_2D,texid);
+
+      glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,
+                   GL_RGBA,GL_FLOAT,image);
+
+      glBindTexture(GL_TEXTURE_2D,0);
+
+      return(texid);
+   }
+
+   void qgl_deletetexmap(unsigned int texid)
+   {
+      GLuint GLtexid=texid;
+      if (texid>0) glDeleteTextures(1,&GLtexid);
+   }
+
+   void qgl_drawtexture(float x,float y,float width,float height,
+                        int texid,int sizex,int sizey,float alpha=1.0f)
+   {
+      glEnable(GL_TEXTURE_2D);
+
+      glBindTexture(GL_TEXTURE_2D,texid);
+      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+      glMatrixMode(GL_TEXTURE);
+      glPushMatrix();
+      glLoadIdentity();
+      glTranslatef(0.5f/sizex,0.5f/sizey,0.0f);
+      glScalef((float)(sizex-1)/sizex,(float)(sizey-1)/sizey,1.0f);
+      glMatrixMode(GL_MODELVIEW);
+
+      glColor4f(1.0f,1.0f,1.0f,alpha);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f,0.0f);
+      glVertex2f(x,y);
+      glTexCoord2f(1.0f,0.0f);
+      glVertex2f(x+width,y);
+      glTexCoord2f(1.0f,1.0f);
+      glVertex2f(x+width,y+height);
+      glTexCoord2f(0.0f,1.0f);
+      glVertex2f(x,y+height);
+      glEnd();
+
+      glMatrixMode(GL_TEXTURE);
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
+
+      glBindTexture(GL_TEXTURE_2D,0);
+
+      glDisable(GL_TEXTURE_2D);
    }
 
 };
