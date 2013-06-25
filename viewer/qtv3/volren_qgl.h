@@ -46,12 +46,12 @@ public:
       inv_=false;
       gm_=false;
       tf_=false;
+      tf_center_ = 0.5f;
+      tf_size_ = 1.0f;
+      tf_inverse_ = false;
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
-
-      tf_left_ = 0.0f;
-      tf_right_ = 1.0f;
 
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
@@ -173,6 +173,10 @@ public:
          vr_->set_tfunc(center,size, red_,green_,blue_, inverse);
 
       tf_=true;
+
+      tf_center_=center;
+      tf_size_=size;
+      tf_inverse_=inverse;
    }
 
    //! return volume renderer
@@ -212,6 +216,9 @@ protected:
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
    bool tf_; // tfunc given?
+   float tf_center_; // tfunc center
+   float tf_size_; // tfunc size
+   float tf_inverse_; // inverse tfunc
 
    void initializeGL()
    {
@@ -322,7 +329,7 @@ protected:
          }
 
          // windowing
-         qgl_drawquad(tf_left_,0.0f,tf_right_-tf_left_,1.0f,0.5f,0.5f,0.5f,0.5f);
+         qgl_drawquad(tf_center_-0.5f*tf_size_,0.0f,tf_size_,1.0f,0.5f,0.5f,0.5f,0.5f);
 
          glDisable(GL_BLEND);
 
@@ -371,8 +378,8 @@ protected:
                            histmin,histfreq,kneigh,histstep,
                            feedback,this);
 
-            vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
-            tf_ = false;
+            vr->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
 
             free(toload_);
             toload_=NULL;
@@ -402,8 +409,8 @@ protected:
                            5,5.0f,1,1.0f,
                            feedback,this);
 
-            vr->set_tfunc(0.5f,1.0f, red_,green_,blue_, FALSE);
-            tf_ = false;
+            vr->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            setGradMag(gm_);
 
             series_.clear();
 
@@ -416,7 +423,6 @@ protected:
    }
 
    bool bLeftButtonDown,bRightButtonDown;
-   float tf_left_,tf_right_;
 
    void mousePressEvent(QMouseEvent *event)
    {
@@ -458,9 +464,11 @@ protected:
       if (!tf_)
          if (bLeftButtonDown)
          {
-            tf_left_ = x-0.5f*(1.0f-y);
-            tf_right_ = x+0.5f*(1.0f-y);
-            vr_->set_tfunc(x,1.0f-y, red_,green_,blue_, !shift);
+            tf_center_ = x;
+            tf_size_ = 1.0f-y;
+            tf_inverse_ = !shift;
+
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
          }
          else if (bRightButtonDown)
             if (getRotation()==0.0)
