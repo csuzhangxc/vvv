@@ -11,18 +11,18 @@ unsigned short int RAW_INTEL=1;
 
 #define RAW_ISINTEL (*((unsigned char *)(&RAW_INTEL)+1)==0)
 
-inline void RAW_swapuint(unsigned int *x)
+inline void RAW_swap4(char *x)
    {
-   unsigned int tmp=*x;
+   char a=x[0];
+   char b=x[1];
+   char c=x[2];
+   char d=x[3];
 
-   *x=((tmp&0xff)<<24)|
-      ((tmp&0xff00)<<8)|
-      ((tmp&0xff0000)>>8)|
-      ((tmp&0xff000000)>>24);
+   x[0]=d;
+   x[1]=c;
+   x[2]=b;
+   x[3]=a;
    }
-
-inline void RAW_swapfloat(float *x)
-   {RAW_swapuint((unsigned int *)x);}
 
 // analyze RAW file format
 BOOLINT readRAWinfo(char *filename,
@@ -518,7 +518,7 @@ unsigned short int *convert2short(unsigned char *source,long long cells,unsigned
             for (i=0; i<cells; i++)
                {
                v=fabs(*(float*)(&source[i<<2]));
-               RAW_swapfloat(&v);
+               RAW_swap4((char*)&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
          else
@@ -538,7 +538,7 @@ unsigned short int *convert2short(unsigned char *source,long long cells,unsigned
             for (i=0; i<cells; i++)
                {
                v=fabs(*(float*)(&source[i<<2]));
-               RAW_swapfloat(&v);
+               RAW_swap4((char *)&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
    else ERRORMSG();
@@ -1881,7 +1881,7 @@ void convfloat(unsigned char *data,long long bytes)
 
    for (vmax=1.0f,ptr=data,i=0; i<bytes/4; i++,ptr+=4)
       {
-      if (RAW_ISINTEL) RAW_swapuint((unsigned int *)ptr);
+      if (RAW_ISINTEL) RAW_swap4((char *)ptr);
 
       v=fabs(*((float *)ptr));
       if (v>vmax) vmax=v;
