@@ -78,7 +78,7 @@ void handler(float time)
 
    for (i=0; i<height; i++)
       memcpy(&image[i*components*imgwidth],
-             &volume[frame*components*width*height+i*components*width],components*width);
+             &volume[(long long)frame*components*width*height+i*components*width],components*width);
 
    glGenTextures(1,&texid);
    glBindTexture(GL_TEXTURE_2D,texid);
@@ -199,11 +199,11 @@ int main(int argc,char *argv[])
 
    if (argc==4)
       {
-      if ((image=(unsigned char *)malloc(width*height*components))==NULL) exit(1);
+      if ((image=(unsigned char *)malloc((long long)width*height*components))==NULL) exit(1);
 
       for (i=0; i<height; i++)
          memcpy(&image[(height-1-i)*width*components],
-                &volume[frame*width*height*components+i*width*components],width*components);
+                &volume[(long long)frame*width*height*components+i*width*components],width*components);
 
       free(volume);
 

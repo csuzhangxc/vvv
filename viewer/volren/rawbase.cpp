@@ -515,27 +515,27 @@ unsigned short int *convert2short(unsigned char *source,long long cells,unsigned
          if (RAW_ISINTEL)
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[i<<2]));
-               RAW_swap4((char*)&v);
+               v=fabs(*(float *)(&source[i<<2]));
+               RAW_swap4((char *)&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
          else
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[i<<2]));
+               v=fabs(*(float *)(&source[i<<2]));
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
       else
          if (RAW_ISINTEL)
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[i<<2]));
+               v=fabs(*(float *)(&source[i<<2]));
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
          else
             for (i=0; i<cells; i++)
                {
-               v=fabs(*(float*)(&source[i<<2]));
+               v=fabs(*(float *)(&source[i<<2]));
                RAW_swap4((char *)&v);
                shorts[i]=v>1.0f?65535:(unsigned int)ffloor(65535.0f*v+0.5f);
                }
