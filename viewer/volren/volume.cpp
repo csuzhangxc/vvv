@@ -2890,7 +2890,11 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (feedback!=NULL) feedback("loading data",0,obj);
 
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL) return(FALSE);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL)
+         {
+         if (feedback!=NULL) feedback("",0,obj);
+         return(FALSE);
+         }
 
       if (feedback!=NULL) feedback("processing data",0,obj);
 
@@ -2898,6 +2902,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       else if (COMPONENTS!=1)
          {
          free(VOLUME);
+         if (feedback!=NULL) feedback("",0,obj);
          return(FALSE);
          }
 
