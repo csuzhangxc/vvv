@@ -1,7 +1,5 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#include <iostream>
-
 #include "codebase.h"
 #include "dirbase.h"
 
