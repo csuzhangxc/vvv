@@ -5,6 +5,7 @@
 
 #define FBO16
 #undef FBOMM
+#undef FBOZ
 
 #define TILEINC 1000
 #define QUEUEINC 1000
@@ -104,7 +105,9 @@ void volume::setup(int width,int height)
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
 
             // attach the renderbuffer to depth attachment point
+#ifdef FBOZ
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+#endif
 
             // get fbo status
             GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
@@ -357,10 +360,19 @@ BOOLINT volume::render(float ex,float ey,float ez,
    // render to fbo
    if (HASFBO && USEFBO && useRGBA)
       {
+#ifdef FBOZ
+      glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, 0);
+      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, fboId);
+      glReadBuffer(GL_DEPTH_ATTACHMENT_EXT);
+      glDrawBuffer(GL_DEPTH_ATTACHMENT_EXT);
+      glBlitFramebufferEXT(0,0,fboWidth,fboHeight,0,0,fboWidth,fboHeight,GL_DEPTH_BUFFER_BIT,GL_NEAREST);
+      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+#endif
+
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
       glClearColor(0,0,0,0);
-      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT);
       }
 
    // enable alpha test for pre-multiplied tfs
