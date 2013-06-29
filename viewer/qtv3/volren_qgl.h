@@ -31,21 +31,21 @@ public:
       toload_ = NULL;
       loading_ = false;
 
-      fps_=30.0;
-      angle_=0.0;
-      omega_=0.0;
-      tilt1_=tilt2_=0.0;
-      tilt_=0.0;
-      zoom_=0.0;
-      dist_=1.0;
-      red_=VOLREN_DEFAULT_RED;
-      green_=VOLREN_DEFAULT_GREEN;
-      blue_=VOLREN_DEFAULT_BLUE;
-      emi_=0.25;
-      att_=0.25;
-      inv_=false;
-      gm_=false;
-      tf_=false;
+      fps_ = 30.0;
+      angle_ = 0.0;
+      omega_ = 0.0;
+      tilt1_ = tilt2_ = 0.0;
+      tilt_ = 0.0;
+      zoom_ = 0.0;
+      dist_ = 1.0;
+      red_ = VOLREN_DEFAULT_RED;
+      green_ = VOLREN_DEFAULT_GREEN;
+      blue_ = VOLREN_DEFAULT_BLUE;
+      emi_ = 0.25;
+      att_ = 0.25;
+      inv_ = false;
+      gm_ = false;
+      tf_ = false;
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
       tf_inverse_ = false;
@@ -289,7 +289,7 @@ protected:
                   TRUE, // lighting
                   TRUE, // view-aligned clipping
                   dist_, // clipping distance relative to origin
-                  TRUE); // wire frame box
+                  FALSE); // wire frame box
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)

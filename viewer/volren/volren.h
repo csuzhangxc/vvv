@@ -252,7 +252,7 @@ class volren
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
-      if (vol_wire) VOL->drawwireframe();
+      if (vol_wire || !VOL->has_data()) VOL->drawwireframe();
 
       if (vol_histo)
          if (VOL->has_data())
