@@ -5,7 +5,7 @@
 
 #define FBO16
 #undef FBOMM
-#undef FBOZ
+#define FBOZ
 
 #define TILEINC 1000
 #define QUEUEINC 1000
@@ -362,15 +362,14 @@ BOOLINT volume::render(float ex,float ey,float ez,
       {
 #ifdef FBOZ
       glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, 0);
-      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, fboId);
+      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0); //!! fboId
       glBlitFramebufferEXT(0,0, fboWidth,fboHeight, 0,0, fboWidth,fboHeight, GL_DEPTH_BUFFER_BIT,GL_NEAREST);
-      glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
 #endif
 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
       glClearColor(0,0,0,0);
-      glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
       }
 
    // enable alpha test for pre-multiplied tfs
