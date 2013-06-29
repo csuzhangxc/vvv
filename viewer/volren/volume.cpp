@@ -363,9 +363,7 @@ BOOLINT volume::render(float ex,float ey,float ez,
 #ifdef FBOZ
       glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, 0);
       glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, fboId);
-      glReadBuffer(GL_DEPTH_ATTACHMENT_EXT);
-      glDrawBuffer(GL_DEPTH_ATTACHMENT_EXT);
-      glBlitFramebufferEXT(0,0,fboWidth,fboHeight,0,0,fboWidth,fboHeight,GL_DEPTH_BUFFER_BIT,GL_NEAREST);
+      glBlitFramebufferEXT(0,0, fboWidth,fboHeight, 0,0, fboWidth,fboHeight, GL_DEPTH_BUFFER_BIT,GL_NEAREST);
       glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
 #endif
 
