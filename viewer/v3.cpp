@@ -1514,8 +1514,6 @@ void handler(float time)
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
 
-   clearwindow();
-
    VOLREN->get_volume()->enablewireframe(GUI_wire);
    VOLREN->get_volume()->enablehistogram(GUI_points);
 

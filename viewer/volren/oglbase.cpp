@@ -52,8 +52,8 @@ static void initwglprocs()
 
 // OpenGL dependent functions:
 
-void setbackground(float R,float G,float B)
-   {glClearColor(R,G,B,1.0f);}
+void setbackground(float R,float G,float B,float A)
+   {glClearColor(R,G,B,A);}
 
 void clearbuffer()
    {

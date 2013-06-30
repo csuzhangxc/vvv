@@ -288,8 +288,7 @@ protected:
                   vol_over, // oversampling
                   TRUE, // lighting
                   TRUE, // view-aligned clipping
-                  dist_, // clipping distance relative to origin
-                  FALSE); // wire frame box
+                  dist_); // clipping distance relative to origin
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)
