@@ -393,17 +393,38 @@ class volscene: public mipmap
    // default constructor
    volscene(char *base=NULL,int res=0)
       : mipmap(base,res)
-      {}
+      {
+      wireframe_=FALSE;
+      histogram_=FALSE;
+      }
 
    // destructor
    virtual ~volscene()
       {}
 
+   void enablewireframe(BOOLINT on=FALSE)
+      {wireframe_=on;}
+
+   void enablehistogram(BOOLINT on=FALSE)
+      {histogram_=on;}
+
    protected:
+
+   BOOLINT wireframe_;
+   BOOLINT histogram_;
 
    // render opaque geometry
    virtual void geometry()
-      {if (!has_data()) drawwireframe();}
+      {
+      // wire frame box
+      if (wireframe_ || !has_data()) drawwireframe();
+
+      // quantized histogram
+      if (histogram_)
+         if (has_data())
+            get_histo()->render2DQ(getcenterx(),getcentery(),getcenterz(),
+                                   getsizex(),getsizey(),getsizez());
+      }
 
    };
 

@@ -3117,19 +3117,19 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
 
    int map=0;
 
-   BOOLINT useRGBA;
-
    // update fbo
    if (usefbo) updatefbo();
-   useRGBA=get_tfunc()->checkRGBA();
 
    // render to fbo
-   if (HASFBO && usefbo && useRGBA)
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+   if (HASFBO && usefbo)
+      if (get_tfunc()->checkRGBA())
+         {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
-   // clear buffers
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+         // clear buffers
+         glClearColor(0,0,0,0);
+         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+         }
 
    // render opaque geometry
    geometry();
@@ -3152,53 +3152,54 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       }
 
    // render from fbo
-   if (HASFBO && usefbo && useRGBA)
-   {
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+   if (HASFBO && usefbo)
+      if (get_tfunc()->checkRGBA())
+         {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
-      glBindTexture(GL_TEXTURE_2D, textureId);
-      glEnable(GL_TEXTURE_2D);
+         glBindTexture(GL_TEXTURE_2D, textureId);
+         glEnable(GL_TEXTURE_2D);
 
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+         glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
-      glAlphaFunc(GL_GREATER,0.0);
-      glEnable(GL_ALPHA_TEST);
+         glAlphaFunc(GL_GREATER,0.0);
+         glEnable(GL_ALPHA_TEST);
 
-      glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_BLEND);
+         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+         glEnable(GL_BLEND);
 
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-      glLoadIdentity();
-      gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glLoadIdentity();
+         gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
+         glMatrixMode(GL_MODELVIEW);
+         glPushMatrix();
+         glLoadIdentity();
 
-      glBegin(GL_QUADS);
-      glColor3f(1.0f,1.0f,1.0f);
-      glTexCoord2f(0.0f,0.0f);
-      glVertex2f(-1.0f,-1.0f);
-      glTexCoord2f(1.0f,0.0f);
-      glVertex2f(1.0f,-1.0f);
-      glTexCoord2f(1.0f,1.0f);
-      glVertex2f(1.0f,1.0f);
-      glTexCoord2f(0.0f,1.0f);
-      glVertex2f(-1.0f,1.0f);
-      glEnd();
+         glBegin(GL_QUADS);
+         glColor3f(1.0f,1.0f,1.0f);
+         glTexCoord2f(0.0f,0.0f);
+         glVertex2f(-1.0f,-1.0f);
+         glTexCoord2f(1.0f,0.0f);
+         glVertex2f(1.0f,-1.0f);
+         glTexCoord2f(1.0f,1.0f);
+         glVertex2f(1.0f,1.0f);
+         glTexCoord2f(0.0f,1.0f);
+         glVertex2f(-1.0f,1.0f);
+         glEnd();
 
-      glPopMatrix();
-      glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glMatrixMode(GL_MODELVIEW);
+         glPopMatrix();
+         glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
 
-      glBindTexture(GL_TEXTURE_2D, 0);
-      glDisable(GL_TEXTURE_2D);
+         glBindTexture(GL_TEXTURE_2D, 0);
+         glDisable(GL_TEXTURE_2D);
 
-      glDisable(GL_ALPHA_TEST);
+         glDisable(GL_ALPHA_TEST);
 
-      glDisable(GL_BLEND);
-      }
+         glDisable(GL_BLEND);
+         }
 
    // invert frame buffer
    if (TFUNC->get_invmode()) invertbuffer();

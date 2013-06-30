@@ -13,7 +13,7 @@ class volren
    public:
 
    // default constructor
-     volren(char *base=NULL)
+   volren(char *base=NULL)
       {
       initogl();
       VOL=new volscene(base);
@@ -23,7 +23,7 @@ class volren
    ~volren()
       {delete VOL;}
 
-   mipmap *get_volume() {return(VOL);} // return the volume
+   volscene *get_volume() {return(VOL);} // return the volume
    tfunc2D *get_tfunc() {return(VOL->get_tfunc());} // return the transfer function
    histo *get_histo() {return(VOL->get_histo());} // return the histogram
 
@@ -145,8 +145,6 @@ class volren
                   BOOLINT vol_light=FALSE, // lighting
                   BOOLINT vol_clip=FALSE, // view-aligned clipping
                   float vol_clip_dist=0.0f, // clipping distance relative to origin
-                  BOOLINT vol_wire=FALSE, // wire frame box
-                  BOOLINT vol_histo=FALSE, // spatialized histogram
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL)
       {
@@ -241,6 +239,8 @@ class volren
 
       // render:
 
+      clearbuffer();
+
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
       gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
@@ -249,20 +249,6 @@ class volren
       glPushMatrix();
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
-
-      //!! if (vol_wire || !VOL->has_data()) VOL->drawwireframe();
-
-      //!!
-      /*
-      if (vol_histo)
-         if (VOL->has_data())
-            VOL->get_histo()->render2DQ(VOL->getcenterx(),
-                                        VOL->getcentery(),
-                                        VOL->getcenterz(),
-                                        VOL->getsizex(),
-                                        VOL->getsizey(),
-                                        VOL->getsizez());
-      */
 
       if (!vol_clip)
          aborted=VOL->render(ex,ey,ez,

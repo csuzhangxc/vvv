@@ -1514,6 +1514,11 @@ void handler(float time)
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
 
+   clearwindow();
+
+   VOLREN->get_volume()->enablewireframe(GUI_wire);
+   VOLREN->get_volume()->enablehistogram(GUI_points);
+
    VOLREN->render(EYE_X,EYE_Y,EYE_Z,
                   EYE_DX,EYE_DY,EYE_DZ,
                   EYE_UX,EYE_UY,EYE_UZ,
@@ -1528,9 +1533,7 @@ void handler(float time)
                   GUI_white,GUI_inv,
                   over,
                   GUI_light,
-                  GUI_clip,GUI_clip_dist,
-                  GUI_wire,
-                  GUI_points);
+                  GUI_clip,GUI_clip_dist);
 
    OGL_GUI.refresh();
 
