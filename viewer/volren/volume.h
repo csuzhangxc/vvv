@@ -202,7 +202,7 @@ class mipmap
    float DSX,DSY,DSZ,GRADMAX;
 
    // render opaque geometry
-   virtual void geometry() = 0;
+   virtual void rendergeometry() = 0;
 
    // render the wire frame
    void drawwireframe();
@@ -414,7 +414,7 @@ class volscene: public mipmap
    BOOLINT histogram_;
 
    // render opaque geometry
-   virtual void geometry()
+   virtual void rendergeometry()
       {
       // wire frame box
       if (wireframe_ || !has_data()) drawwireframe();

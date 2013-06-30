@@ -3110,7 +3110,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    int map=0;
 
    // update fbo
-   if (usefbo) updatefbo();
+   if (usefbo && has_data()) updatefbo();
 
    // render to fbo
    if (HASFBO && usefbo)
@@ -3124,7 +3124,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          }
 
    // render opaque geometry
-   geometry();
+   rendergeometry();
 
    // render transparent volume
    if (VOLCNT>0)
