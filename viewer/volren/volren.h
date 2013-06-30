@@ -13,10 +13,10 @@ class volren
    public:
 
    // default constructor
-   volren(char *base=NULL)
+     volren(char *base=NULL)
       {
       initogl();
-      VOL=new mipmap(base);
+      VOL=new volscene(base);
       }
 
    // destructor
@@ -241,8 +241,6 @@ class volren
 
       // render:
 
-      clearbuffer();
-
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
       gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
@@ -252,8 +250,10 @@ class volren
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
-      if (vol_wire || !VOL->has_data()) VOL->drawwireframe();
+      //!! if (vol_wire || !VOL->has_data()) VOL->drawwireframe();
 
+      //!!
+      /*
       if (vol_histo)
          if (VOL->has_data())
             VOL->get_histo()->render2DQ(VOL->getcenterx(),
@@ -262,6 +262,7 @@ class volren
                                         VOL->getsizex(),
                                         VOL->getsizey(),
                                         VOL->getsizez());
+      */
 
       if (!vol_clip)
          aborted=VOL->render(ex,ey,ez,
@@ -287,7 +288,7 @@ class volren
 
    protected:
 
-   mipmap *VOL;
+   volscene *VOL;
    };
 
 #endif

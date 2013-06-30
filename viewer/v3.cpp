@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.7 as of 29.June.2012"
+#define VERSION "3.7 as of 30.June.2012"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base rendering
@@ -1513,8 +1513,6 @@ void handler(float time)
          float w=2.0f*(1.0f-GUI_slab1);
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
-
-   clearwindow();
 
    VOLREN->render(EYE_X,EYE_Y,EYE_Z,
                   EYE_DX,EYE_DY,EYE_DZ,
