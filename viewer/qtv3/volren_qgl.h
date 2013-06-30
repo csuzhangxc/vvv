@@ -50,6 +50,8 @@ public:
       tf_size_ = 1.0f;
       tf_inverse_ = false;
 
+      rendercount_ = 0;
+
       bLeftButtonDown = false;
       bRightButtonDown = false;
 
@@ -220,6 +222,8 @@ protected:
    float tf_size_; // tfunc size
    float tf_inverse_; // inverse tfunc
 
+   unsigned int rendercount_;
+
    void initializeGL()
    {
       qglClearColor(Qt::white);
@@ -247,6 +251,7 @@ protected:
       double gfx_far=10.0;
 
       bool gfx_fbo=true;
+      if (rendercount_<100) gfx_fbo=false;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -335,6 +340,8 @@ protected:
          }
 
       angle_+=omega_/fps_;
+
+      rendercount_++;
    }
 
    void timerEvent(QTimerEvent *)

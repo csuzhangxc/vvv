@@ -386,17 +386,6 @@ void mipmap::setup(int width,int height)
    {
    char *GL_EXTs;
 
-   //!!
-   /*
-   if (!HASFBO && fboWidth==0 && fboHeight==0)
-      {
-      fboWidth=width;
-      fboHeight=height;
-
-      return;
-      }
-   */
-
    if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
 
    if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
