@@ -251,7 +251,7 @@ protected:
       double gfx_far=10.0;
 
       bool gfx_fbo=true;
-      if (rendercount_<10) gfx_fbo=false;
+      if (rendercount_<1) gfx_fbo=false;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
