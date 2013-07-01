@@ -251,7 +251,11 @@ protected:
       double gfx_far=10.0;
 
       bool gfx_fbo=true;
+
+#ifdef MACOSX
+      // fbo bugfix for macos x 10.5
       if (rendercount_<1) gfx_fbo=false;
+#endif
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -314,15 +318,15 @@ protected:
          {
             // 1D histogram
             for (int i=0; i<256; i++)
-               qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_volume()->get_hist()[i],
-                            vr_->get_volume()->get_histRGBA()[4*i],vr_->get_volume()->get_histRGBA()[4*i+1],vr_->get_volume()->get_histRGBA()[4*i+2],
-                            0.9f*vr_->get_volume()->get_histRGBA()[4*i+3]);
+               qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_hist()[i],
+                            vr_->get_histRGBA()[4*i],vr_->get_histRGBA()[4*i+1],vr_->get_histRGBA()[4*i+2],
+                            0.9f*vr_->get_histRGBA()[4*i+3]);
          }
          else
          {
             // 2D histogram
             unsigned int texid;
-            texid=qgl_buildtexmap2DRGBA(vr_->get_volume()->get_hist2DQRGBA(),256,256);
+            texid=qgl_buildtexmap2DRGBA(vr_->get_hist2DQRGBA(),256,256);
             qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.9f);
             qgl_deletetexmap(texid);
          }
