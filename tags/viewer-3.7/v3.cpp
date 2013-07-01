@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.6.5 as of 25.June.2012"
+#define VERSION "3.7 as of 1.July.2013"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base rendering
@@ -221,8 +221,8 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
 
       GUI::deletetexmap(GUI_texid);
 
-      if (GUI_STF) GUI_texid=GUI::buildtexmap2DRGBA(VOLREN->get_volume()->get_hist2DQRGBA(),256,256);
-      else GUI_texid=GUI::buildtexmap2DL(VOLREN->get_volume()->get_hist2D(),256,256);
+      if (GUI_STF) GUI_texid=GUI::buildtexmap2DRGBA(VOLREN->get_hist2DQRGBA(),256,256);
+      else GUI_texid=GUI::buildtexmap2DL(VOLREN->get_hist2D(),256,256);
 
       if (GUI_grad)
          {
@@ -254,9 +254,9 @@ void reloadhook(float x=0.0f,float y=0.0f,void *data=NULL)
       }
 
    if (GUI_STF)
-      if (!GUI_grad) VOLREN->get_tfunc()->copy_tfRGB(VOLREN->get_volume()->get_histRGBA(),256,1);
-      else if (!GUI_mod) VOLREN->get_tfunc()->copy_2DTFRGB(VOLREN->get_volume()->get_hist2DTFRGBA(),256,256,1);
-      else VOLREN->get_tfunc()->copy_2DTFRGBA(VOLREN->get_volume()->get_hist2DTFRGBA(),256,256,0);
+      if (!GUI_grad) VOLREN->get_tfunc()->copy_tfRGB(VOLREN->get_histRGBA(),256,1);
+      else if (!GUI_mod) VOLREN->get_tfunc()->copy_2DTFRGB(VOLREN->get_hist2DTFRGBA(),256,256,1);
+      else VOLREN->get_tfunc()->copy_2DTFRGBA(VOLREN->get_hist2DTFRGBA(),256,256,0);
 
    setupGUI();
    }
@@ -700,12 +700,12 @@ void drawhist(BOOLINT colored=TRUE)
 
    for (i=0; i<256; i++)
       if (!colored)
-         GUI::drawquad((float)i/256,0.0f,1.0f/256,VOLREN->get_volume()->get_hist()[i],
+         GUI::drawquad((float)i/256,0.0f,1.0f/256,VOLREN->get_hist()[i],
                        0.0f,0.0f,0.5f,0.5f);
       else
-         GUI::drawquadRGBA((float)i/256,0.0f,1.0f/256,VOLREN->get_volume()->get_hist()[i],
-                           VOLREN->get_volume()->get_histRGBA()[4*i],VOLREN->get_volume()->get_histRGBA()[4*i+1],VOLREN->get_volume()->get_histRGBA()[4*i+2],
-                           0.5f*VOLREN->get_volume()->get_histRGBA()[4*i+3]);
+         GUI::drawquadRGBA((float)i/256,0.0f,1.0f/256,VOLREN->get_hist()[i],
+                           VOLREN->get_histRGBA()[4*i],VOLREN->get_histRGBA()[4*i+1],VOLREN->get_histRGBA()[4*i+2],
+                           0.5f*VOLREN->get_histRGBA()[4*i+3]);
    }
 
 void drawhist2D()
@@ -1514,7 +1514,8 @@ void handler(float time)
          over=((1.0f-w)*VOL_OVERMIN+w)*fmin(1.0f/GUI_slab2,VOL_OVERMAX);
          }
 
-   clearwindow();
+   VOLREN->enablewireframe(GUI_wire);
+   VOLREN->enablehistogram(GUI_points);
 
    VOLREN->render(EYE_X,EYE_Y,EYE_Z,
                   EYE_DX,EYE_DY,EYE_DZ,
@@ -1530,9 +1531,7 @@ void handler(float time)
                   GUI_white,GUI_inv,
                   over,
                   GUI_light,
-                  GUI_clip,GUI_clip_dist,
-                  GUI_wire,
-                  GUI_points);
+                  GUI_clip,GUI_clip_dist);
 
    OGL_GUI.refresh();
 

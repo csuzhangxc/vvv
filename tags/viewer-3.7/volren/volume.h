@@ -98,26 +98,11 @@ class volume
                 BOOLINT lighting=FALSE,
                 BOOLINT (*abort)(void *abortdata)=NULL,
                 void *abortdata=NULL);
-
-   void updatefbo();
-
-   // frame buffer object:
-
-   void setup(int width,int heigth);
-   void destroy();
-
-   BOOLINT HASFBO;
-   BOOLINT USEFBO;
-   int fboWidth,fboHeight;
-   GLuint textureId;
-   GLuint rboId;
-   GLuint fboId;
    };
 
 typedef volume *volumeptr;
 
-// the volume hierarchy:
-
+// the volume hierarchy
 class mipmap
    {
    public:
@@ -126,7 +111,7 @@ class mipmap
    mipmap(char *base=NULL,int res=0);
 
    // destructor
-   ~mipmap();
+   virtual ~mipmap();
 
    // set the volume data
    void set_data(unsigned char *data,
@@ -191,9 +176,6 @@ class mipmap
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL);
 
-   // render the wire frame
-   void drawwireframe();
-
    // return center of bounding box
    float getcenterx() {return(VOL[0]->getcenterx());}
    float getcentery() {return(VOL[0]->getcentery());}
@@ -219,7 +201,15 @@ class mipmap
    unsigned int GCOMPONENTS;
    float DSX,DSY,DSZ,GRADMAX;
 
+   // render opaque geometry
+   virtual void rendergeometry() = 0;
+
+   // render the wire frame
+   void drawwireframe();
+
    private:
+
+   // volume options:
 
    char BASE[MAXSTR];
 
@@ -234,11 +224,28 @@ class mipmap
    float hmvalue,hfvalue,hsvalue;
    int knvalue;
 
+   // preprocessing cache:
+
    unsigned char *CACHE;
    long long CSIZEX,CSIZEY,CSLICE,CSLICES;
 
    int *QUEUEX,*QUEUEY,*QUEUEZ;
    unsigned int QUEUEMAX,QUEUECNT,QUEUESTART,QUEUEEND;
+
+   // frame buffer object:
+
+   BOOLINT HASFBO;
+   int fboWidth,fboHeight;
+   GLuint textureId;
+   GLuint rboId;
+   GLuint fboId;
+
+   void setup(int width,int heigth);
+   void destroy();
+
+   void updatefbo();
+
+   // volume loading and preprocessing:
 
    unsigned char *readANYvolume(const char *filename,
                                 long long *width,long long *height,long long *depth,unsigned int *components=NULL,
@@ -376,6 +383,49 @@ class mipmap
    unsigned char *scale(unsigned char *volume,
                         long long width,long long height,long long depth,
                         long long nwidth,long long nheight,long long ndepth);
+   };
+
+// the volume scene
+class volscene: public mipmap
+   {
+   public:
+
+   // default constructor
+   volscene(char *base=NULL,int res=0)
+      : mipmap(base,res)
+      {
+      wireframe_=FALSE;
+      histogram_=FALSE;
+      }
+
+   // destructor
+   virtual ~volscene()
+      {}
+
+   void enablewireframe(BOOLINT on=FALSE)
+      {wireframe_=on;}
+
+   void enablehistogram(BOOLINT on=FALSE)
+      {histogram_=on;}
+
+   protected:
+
+   BOOLINT wireframe_;
+   BOOLINT histogram_;
+
+   // render opaque geometry
+   virtual void rendergeometry()
+      {
+      // wire frame box
+      if (wireframe_ || !has_data()) drawwireframe();
+
+      // quantized histogram
+      if (histogram_)
+         if (has_data())
+            get_histo()->render2DQ(getcenterx(),getcentery(),getcenterz(),
+                                   getsizex(),getsizey(),getsizez());
+      }
+
    };
 
 #endif

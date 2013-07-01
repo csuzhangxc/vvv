@@ -111,6 +111,8 @@ void reshapefunc(int width,int height)
    {
    OGL_winwidth=width;
    OGL_winheight=height;
+
+   glViewport(0,0,OGL_winwidth,OGL_winheight);
    }
 
 void mousefunc(int button,int state,int mx,int my)

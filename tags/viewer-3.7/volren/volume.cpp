@@ -21,11 +21,6 @@ volume::volume(tfunc2D *tf,char *base)
 
    if (base==NULL) strncpy(BASE,"volren",MAXSTR);
    else snprintf(BASE,MAXSTR,"%s/volren",base);
-
-   HASFBO=FALSE;
-   USEFBO=FALSE;
-   fboWidth=fboHeight=0;
-   textureId=rboId=fboId=0;
    }
 
 volume::~volume()
@@ -34,108 +29,6 @@ volume::~volume()
 
    for (i=0; i<TILECNT; i++) delete TILE[i];
    delete TILE;
-
-   destroy();
-   }
-
-// create fbo
-void volume::setup(int width,int height)
-   {
-   char *GL_EXTs;
-
-   if (!HASFBO && fboWidth==0 && fboHeight==0)
-      {
-      fboWidth=width;
-      fboHeight=height;
-
-      return;
-      }
-
-   if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
-
-   if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
-      if (width>0 && height>0)
-         if (!HASFBO || width!=fboWidth || height!=fboHeight)
-            {
-#ifdef GL_EXT_framebuffer_object
-
-            destroy();
-
-            HASFBO=TRUE;
-
-            // save actual size
-            fboWidth=width;
-            fboHeight=height;
-
-            // create a texture object
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_2D, textureId);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-#ifdef FBOMM
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-#else
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-#endif
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifdef FBOMM
-            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
-#else
-            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
-#endif
-#ifdef FBO16
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
-#else
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-#endif
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            // create a renderbuffer object to store depth info
-            glGenRenderbuffersEXT(1, &rboId);
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
-            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-
-            // create a framebuffer object
-            glGenFramebuffersEXT(1, &fboId);
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
-
-            // attach the texture to fbo color attachment point
-            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
-
-            // attach the renderbuffer to depth attachment point
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
-
-            // get fbo status
-            GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-
-            // switch back to window-system-provided framebuffer
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-            // check fbo status
-            if (status != GL_FRAMEBUFFER_COMPLETE_EXT) destroy();
-
-#endif
-            }
-   }
-
-// destroy fbo
-void volume::destroy()
-   {
-#ifdef GL_EXT_framebuffer_object
-
-   if (textureId!=0) glDeleteTextures(1, &textureId);
-   if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
-   if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
-
-   textureId=0;
-   rboId=0;
-   fboId=0;
-
-   HASFBO=FALSE;
-   fboWidth=fboHeight=0;
-
-#endif
    }
 
 // check brick size
@@ -348,20 +241,6 @@ BOOLINT volume::render(float ex,float ey,float ez,
                        void *abortdata)
    {
    BOOLINT aborted;
-   BOOLINT useRGBA;
-
-   // update fbo
-   updatefbo();
-   useRGBA=get_tfunc()->checkRGBA();
-
-   // render to fbo
-   if (HASFBO && USEFBO && useRGBA)
-      {
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
-
-      glClearColor(0,0,0,0);
-      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-      }
 
    // enable alpha test for pre-multiplied tfs
    if (get_tfunc()->get_premult())
@@ -380,55 +259,6 @@ BOOLINT volume::render(float ex,float ey,float ez,
    // disable alpha test for pre-multiplied tfs
    if (get_tfunc()->get_premult())
       glDisable(GL_ALPHA_TEST);
-
-   // render from fbo
-   if (HASFBO && USEFBO && useRGBA)
-      {
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-      glBindTexture(GL_TEXTURE_2D, textureId);
-      glEnable(GL_TEXTURE_2D);
-
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-
-      glAlphaFunc(GL_GREATER,0.0);
-      glEnable(GL_ALPHA_TEST);
-
-      glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_BLEND);
-
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-      glLoadIdentity();
-      gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
-
-      glBegin(GL_QUADS);
-      glColor3f(1.0f,1.0f,1.0f);
-      glTexCoord2f(0.0f,0.0f);
-      glVertex2f(-1.0f,-1.0f);
-      glTexCoord2f(1.0f,0.0f);
-      glVertex2f(1.0f,-1.0f);
-      glTexCoord2f(1.0f,1.0f);
-      glVertex2f(1.0f,1.0f);
-      glTexCoord2f(0.0f,1.0f);
-      glVertex2f(-1.0f,1.0f);
-      glEnd();
-
-      glPopMatrix();
-      glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glMatrixMode(GL_MODELVIEW);
-
-      glBindTexture(GL_TEXTURE_2D, 0);
-      glDisable(GL_TEXTURE_2D);
-
-      glDisable(GL_ALPHA_TEST);
-
-      glDisable(GL_BLEND);
-      }
 
    return(aborted);
    }
@@ -480,24 +310,6 @@ void volume::drawwireframe(float mx,float my,float mz,
    glPopMatrix();
    }
 
-// use 16-bit fbo
-void volume::usefbo(BOOLINT yes)
-   {USEFBO=yes;}
-
-// update 16-bit fbo
-void volume::updatefbo()
-   {
-   if (USEFBO)
-      {
-      GLint viewport[4];
-      glGetIntegerv(GL_VIEWPORT,viewport);
-      int width=viewport[2];
-      int height=viewport[3];
-
-      setup(width,height);
-      }
-   }
-
 // the volume hierarchy:
 
 mipmap::mipmap(char *base,int res)
@@ -541,6 +353,10 @@ mipmap::mipmap(char *base,int res)
    QUEUEX=new int[QUEUEMAX];
    QUEUEY=new int[QUEUEMAX];
    QUEUEZ=new int[QUEUEMAX];
+
+   HASFBO=FALSE;
+   fboWidth=fboHeight=0;
+   textureId=rboId=fboId=0;
    }
 
 mipmap::~mipmap()
@@ -561,6 +377,111 @@ mipmap::~mipmap()
    delete QUEUEX;
    delete QUEUEY;
    delete QUEUEZ;
+
+   destroy();
+   }
+
+// create fbo
+void mipmap::setup(int width,int height)
+   {
+   char *GL_EXTs;
+
+   if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
+
+   if (strstr(GL_EXTs,"EXT_framebuffer_object")!=NULL)
+      if (width>0 && height>0)
+         if (!HASFBO || width!=fboWidth || height!=fboHeight)
+            {
+#ifdef GL_EXT_framebuffer_object
+
+            destroy();
+
+            HASFBO=TRUE;
+
+            // save actual size
+            fboWidth=width;
+            fboHeight=height;
+
+            // create a texture object
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+#ifdef FBOMM
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+#else
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#endif
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifdef FBOMM
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
+#else
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE); // automatic mipmap off
+#endif
+#ifdef FBO16
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
+#else
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+#endif
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            // create a renderbuffer object to store depth info
+            glGenRenderbuffersEXT(1, &rboId);
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+
+            // create a framebuffer object
+            glGenFramebuffersEXT(1, &fboId);
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+
+            // attach the texture to fbo color attachment point
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);
+
+            // attach the renderbuffer to depth attachment point
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+
+            // get fbo status
+            GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+
+            // switch back to window-system-provided framebuffer
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+            // check fbo status
+            if (status != GL_FRAMEBUFFER_COMPLETE_EXT) destroy();
+
+#endif
+            }
+   }
+
+// destroy fbo
+void mipmap::destroy()
+   {
+#ifdef GL_EXT_framebuffer_object
+
+   if (textureId!=0) glDeleteTextures(1, &textureId);
+   if (rboId!=0) glDeleteRenderbuffersEXT(1, &rboId);
+   if (fboId!=0) glDeleteFramebuffersEXT(1, &fboId);
+
+   textureId=0;
+   rboId=0;
+   fboId=0;
+
+   HASFBO=FALSE;
+   fboWidth=fboHeight=0;
+
+#endif
+   }
+
+// update 16-bit fbo
+void mipmap::updatefbo()
+   {
+   GLint viewport[4];
+   glGetIntegerv(GL_VIEWPORT,viewport);
+   int width=viewport[2];
+   int height=viewport[3];
+
+   setup(width,height);
    }
 
 // reduce a volume to half its size
@@ -2890,7 +2811,11 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (feedback!=NULL) feedback("loading data",0,obj);
 
       if (VOLUME!=NULL) free(VOLUME);
-      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL) return(FALSE);
+      if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL)
+         {
+         if (feedback!=NULL) feedback("",0,obj);
+         return(FALSE);
+         }
 
       if (feedback!=NULL) feedback("processing data",0,obj);
 
@@ -2898,6 +2823,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       else if (COMPONENTS!=1)
          {
          free(VOLUME);
+         if (feedback!=NULL) feedback("",0,obj);
          return(FALSE);
          }
 
@@ -3183,13 +3109,31 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
 
    int map=0;
 
+   // update fbo
+   if (usefbo && has_data()) updatefbo();
+
+   // render to fbo
+   if (HASFBO && usefbo)
+      if (get_tfunc()->checkRGBA())
+         {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+
+         // clear buffers
+         glClearColor(0,0,0,0);
+         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+         }
+
+   // render opaque geometry
+   rendergeometry();
+
+   // render transparent volume
    if (VOLCNT>0)
       {
+      // choose volume
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
 
-      VOL[map]->usefbo(usefbo);
-
+      // render volume
       aborted=VOL[map]->render(ex,ey,ez,
                                dx,dy,dz,
                                ux,uy,uz,
@@ -3199,6 +3143,57 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                                abort,abortdata);
       }
 
+   // render from fbo
+   if (HASFBO && usefbo)
+      if (get_tfunc()->checkRGBA())
+         {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+         glBindTexture(GL_TEXTURE_2D, textureId);
+         glEnable(GL_TEXTURE_2D);
+
+         glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+         glAlphaFunc(GL_GREATER,0.0);
+         glEnable(GL_ALPHA_TEST);
+
+         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+         glEnable(GL_BLEND);
+
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glLoadIdentity();
+         gluOrtho2D(-1.0f,1.0f,-1.0f,1.0f);
+         glMatrixMode(GL_MODELVIEW);
+         glPushMatrix();
+         glLoadIdentity();
+
+         glBegin(GL_QUADS);
+         glColor3f(1.0f,1.0f,1.0f);
+         glTexCoord2f(0.0f,0.0f);
+         glVertex2f(-1.0f,-1.0f);
+         glTexCoord2f(1.0f,0.0f);
+         glVertex2f(1.0f,-1.0f);
+         glTexCoord2f(1.0f,1.0f);
+         glVertex2f(1.0f,1.0f);
+         glTexCoord2f(0.0f,1.0f);
+         glVertex2f(-1.0f,1.0f);
+         glEnd();
+
+         glPopMatrix();
+         glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
+
+         glBindTexture(GL_TEXTURE_2D, 0);
+         glDisable(GL_TEXTURE_2D);
+
+         glDisable(GL_ALPHA_TEST);
+
+         glDisable(GL_BLEND);
+         }
+
+   // invert frame buffer
    if (TFUNC->get_invmode()) invertbuffer();
 
    return(aborted);

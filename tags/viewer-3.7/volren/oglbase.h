@@ -55,7 +55,7 @@
 #endif
 
 void initogl();
-void setbackground(float R,float G,float B);
+void setbackground(float R,float G,float B,float A=1.0f);
 void clearbuffer();
 void invertbuffer();
 

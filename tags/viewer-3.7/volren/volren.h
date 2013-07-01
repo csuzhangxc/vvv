@@ -8,24 +8,17 @@
 #include "volume.h" // volume mipmap pyramid
 
 // the volume renderer
-class volren
+class volren: public volscene
    {
    public:
 
    // default constructor
    volren(char *base=NULL)
-      {
-      initogl();
-      VOL=new mipmap(base);
-      }
+      : volscene(base)
+      {initogl();}
 
    // destructor
-   ~volren()
-      {delete VOL;}
-
-   mipmap *get_volume() {return(VOL);} // return the volume
-   tfunc2D *get_tfunc() {return(VOL->get_tfunc());} // return the transfer function
-   histo *get_histo() {return(VOL->get_histo());} // return the histogram
+   ~volren() {}
 
    // load the volume data
    BOOLINT loadvolume(const char *filename,
@@ -40,17 +33,17 @@ class volren
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
       {
-      return(VOL->loadvolume(filename,
-                             gradname,
-                             mx,my,mz,
-                             sx,sy,sz,
-                             bricksize,overmax,
-                             xswap,yswap,zswap,
-                             xrotate,zrotate,
-                             usegrad,
-                             commands,
-                             histmin,histfreq,kneigh,histstep,
-                             feedback,obj));
+      return(volscene::loadvolume(filename,
+                                  gradname,
+                                  mx,my,mz,
+                                  sx,sy,sz,
+                                  bricksize,overmax,
+                                  xswap,yswap,zswap,
+                                  xrotate,zrotate,
+                                  usegrad,
+                                  commands,
+                                  histmin,histfreq,kneigh,histstep,
+                                  feedback,obj));
       }
 
    // load a DICOM series
@@ -64,32 +57,16 @@ class volren
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
       {
-      return(VOL->loadseries(list,
-                             mx,my,mz,
-                             sx,sy,sz,
-                             bricksize,overmax,
-                             xswap,yswap,zswap,
-                             xrotate,zrotate,
-                             usegrad,
-                             histmin,histfreq,kneigh,histstep,
-                             feedback,obj));
+      return(volscene::loadseries(list,
+                                  mx,my,mz,
+                                  sx,sy,sz,
+                                  bricksize,overmax,
+                                  xswap,yswap,zswap,
+                                  xrotate,zrotate,
+                                  usegrad,
+                                  histmin,histfreq,kneigh,histstep,
+                                  feedback,obj));
       }
-
-   // save the volume data as PVM
-   void savePVMvolume(const char *filename)
-      {VOL->savePVMvolume(filename);}
-
-   // check whether or not the hierarchy has volume data
-   BOOLINT has_data()
-      {return(VOL->has_data());}
-
-   // check whether or not the hierarchy has gradient data
-   BOOLINT has_grad()
-      {return(VOL->has_grad());}
-
-   // return the slab thickness
-   float get_slab()
-      {return(VOL->get_slab());}
 
    // use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
@@ -100,28 +77,28 @@ class volren
       float x2=center+0.5f*size;
 
       // tf emission (emi)
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_re());
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ge());
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_be());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,r,VOL->get_tfunc()->get_re());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,g,VOL->get_tfunc()->get_ge());
-      VOL->get_tfunc()->set_line(x1,0.0f,x2,b,VOL->get_tfunc()->get_be());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_re());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_ge());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_be());
+      get_tfunc()->set_line(x1,0.0f,x2,r,get_tfunc()->get_re());
+      get_tfunc()->set_line(x1,0.0f,x2,g,get_tfunc()->get_ge());
+      get_tfunc()->set_line(x1,0.0f,x2,b,get_tfunc()->get_be());
 
       // tf absorption (att)
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ra());
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ga());
-      VOL->get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,VOL->get_tfunc()->get_ba());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_ra());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_ga());
+      get_tfunc()->set_line(0.0f,0.0f,1.0f,0.0f,get_tfunc()->get_ba());
       if (inverse)
          {
-         VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ra());
-         VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ga());
-         VOL->get_tfunc()->set_line(x1,1.0f,x2,0.0f,VOL->get_tfunc()->get_ba());
+         get_tfunc()->set_line(x1,1.0f,x2,0.0f,get_tfunc()->get_ra());
+         get_tfunc()->set_line(x1,1.0f,x2,0.0f,get_tfunc()->get_ga());
+         get_tfunc()->set_line(x1,1.0f,x2,0.0f,get_tfunc()->get_ba());
          }
       else
          {
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ra());
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ga());
-         VOL->get_tfunc()->set_line(x1,0.0f,x2,1.0f,VOL->get_tfunc()->get_ba());
+         get_tfunc()->set_line(x1,0.0f,x2,1.0f,get_tfunc()->get_ra());
+         get_tfunc()->set_line(x1,0.0f,x2,1.0f,get_tfunc()->get_ga());
+         get_tfunc()->set_line(x1,0.0f,x2,1.0f,get_tfunc()->get_ba());
          }
       }
 
@@ -145,8 +122,6 @@ class volren
                   BOOLINT vol_light=FALSE, // lighting
                   BOOLINT vol_clip=FALSE, // view-aligned clipping
                   float vol_clip_dist=0.0f, // clipping distance relative to origin
-                  BOOLINT vol_wire=FALSE, // wire frame box
-                  BOOLINT vol_histo=FALSE, // spatialized histogram
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL)
       {
@@ -222,17 +197,17 @@ class volren
 
       // tf setup:
 
-      VOL->get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
-      VOL->get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
+      get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
+      get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
 
-      VOL->get_tfunc()->set_invmode(vol_inv);
+      get_tfunc()->set_invmode(vol_inv);
 
-      VOL->get_tfunc()->refresh(vol_emi,vol_att,VOL->get_slab()*vol_over,
-                                tf_premult,tf_preint,vol_light);
+      get_tfunc()->refresh(vol_emi,vol_att,get_slab()*vol_over,
+                           tf_premult,tf_preint,vol_light);
 
       // volren setup:
 
-      VOL->set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
+      set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
       if (vol_white)
          if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
@@ -252,42 +227,28 @@ class volren
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
-      if (vol_wire) VOL->drawwireframe();
-
-      if (vol_histo)
-         if (VOL->has_data())
-            VOL->get_histo()->render2DQ(VOL->getcenterx(),
-                                        VOL->getcentery(),
-                                        VOL->getcenterz(),
-                                        VOL->getsizex(),
-                                        VOL->getsizey(),
-                                        VOL->getsizez());
-
       if (!vol_clip)
-         aborted=VOL->render(ex,ey,ez,
-                             dx,dy,dz,
-                             ux,uy,uz,
-                             gfx_near,VOL->get_slab()*vol_over,
-                             vol_light,
-                             gfx_fbo,
-                             abort,abortdata);
+         aborted=volscene::render(ex,ey,ez,
+                                  dx,dy,dz,
+                                  ux,uy,uz,
+                                  gfx_near,get_slab()*vol_over,
+                                  vol_light,
+                                  gfx_fbo,
+                                  abort,abortdata);
       else
-         aborted=VOL->render(ex,ey,ez,
-                             dx,dy,dz,
-                             ux,uy,uz,
-                             sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,VOL->get_slab()*vol_over,
-                             vol_light,
-                             gfx_fbo,
-                             abort,abortdata);
+         aborted=volscene::render(ex,ey,ez,
+                                  dx,dy,dz,
+                                  ux,uy,uz,
+                                  sqrt(ex*ex+ey*ey+ez*ez)-vol_clip_dist,get_slab()*vol_over,
+                                  vol_light,
+                                  gfx_fbo,
+                                  abort,abortdata);
 
       glPopMatrix();
 
       return(aborted);
       }
 
-   protected:
-
-   mipmap *VOL;
    };
 
 #endif
