@@ -486,7 +486,8 @@ void mipmap::updatefbo()
 
 // reduce a volume to half its size
 unsigned char *mipmap::reduce(unsigned char *data,
-                              long long width,long long height,long long depth)
+                              long long width,long long height,long long depth,
+                              void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    long long i,j,k;
 
@@ -499,6 +500,9 @@ unsigned char *mipmap::reduce(unsigned char *data,
    if ((data2=(unsigned char *)malloc((width/2)*(height/2)*(depth/2)))==NULL) ERRORMSG();
 
    for (ptr=data2,k=0; k<depth-1; k+=2)
+      {
+      if (feedback!=NULL) feedback("reducing volume",(float)(k+1)/(depth-1),obj);
+
       for (j=0; j<height-1; j+=2)
          for (i=0; i<width-1; i+=2)
             {
@@ -514,6 +518,7 @@ unsigned char *mipmap::reduce(unsigned char *data,
                     (int)data[idx+width+slx]+
                     (int)data[idx+1+width+slx]+4)/8;
             }
+      }
 
    return(data2);
    }
@@ -1105,12 +1110,16 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
    if (gmax==0.0f) gmax=1.0f;
 
    for (ptr2=data2,k=0; k<depth; k++)
+      {
+      if (feedback!=NULL) feedback("calculating gradients",0.5f*(k+1)/depth+0.5f,obj);
+
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
             gm=*ptr2*greci/gmax;
             *ptr2++=ftrc(0.5f*65535.0f*threshold(gm,mingrad)+0.5f);
             }
+      }
 
    width2=width;
    height2=height;
@@ -1125,7 +1134,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
    while (width2>5 && height2>5 && depth2>5 && level<maxlevel)
       {
-      data5=reduce(data4,width2,height2,depth2);
+      data5=reduce(data4,width2,height2,depth2,feedback,obj);
       if (data4!=data) free(data4);
       data4=data5;
 
@@ -1141,6 +1150,9 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
       gmax=0.0f;
 
       for (ptr3=data3,k=0; k<depth2; k++)
+         {
+         if (feedback!=NULL) feedback("calculating reduced gradients",(float)(k+1)/depth2,obj);
+
          for (j=0; j<height2; j++)
             for (i=0; i<width2; i++)
             {
@@ -1153,12 +1165,13 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
 
             *ptr3++=ftrc(gm*gscale+0.5f);
             }
+         }
 
       if (gmax==0.0f) gmax=1.0f;
 
       for (ptr2=data2,k=0; k<depth; k++)
          {
-         if (feedback!=NULL) feedback("calculating gradients",0.5f*((float)(k+1)/depth+level-1)/maxlevel+0.5f,obj);
+         if (feedback!=NULL) feedback("interpolating reduced gradients",(float)(k+1)/depth,obj);
 
          for (j=0; j<height; j++)
             for (i=0; i<width; i++)
@@ -1184,12 +1197,16 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
    if ((data5=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
 
    for (ptr2=data2,ptr5=data5,k=0; k<depth; k++)
+      {
+      if (feedback!=NULL) feedback("normalizing gradients",(float)(k+1)/depth,obj);
+
       for (j=0; j<height; j++)
          for (i=0; i<width; i++)
             {
             gm=*ptr2++/(0.5f*65535.0f);
             *ptr5++=ftrc(255.0f*gm/gmax2+0.5f);
             }
+      }
 
    free(data2);
 

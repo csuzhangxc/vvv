@@ -254,7 +254,8 @@ class mipmap
                                 void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    unsigned char *reduce(unsigned char *data,
-                         long long width,long long height,long long depth);
+                         long long width,long long height,long long depth,
+                         void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    unsigned char *swap(unsigned char *data,
                        long long *width,long long *height,long long *depth,
