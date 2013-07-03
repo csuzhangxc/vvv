@@ -316,23 +316,23 @@ protected:
 
          if (!gm_)
          {
-            // 1D histogram
+            // show 1D histogram
             for (int i=0; i<256; i++)
                qgl_drawquad((float)i/256,0.0f,1.0f/256,vr_->get_hist()[i],
                             vr_->get_histRGBA()[4*i],vr_->get_histRGBA()[4*i+1],vr_->get_histRGBA()[4*i+2],
-                            0.9f*vr_->get_histRGBA()[4*i+3]);
+                            0.5f*vr_->get_histRGBA()[4*i+3]);
          }
          else
          {
-            // 2D histogram
+            // show 2D histogram
             unsigned int texid;
             texid=qgl_buildtexmap2DRGBA(vr_->get_hist2DQRGBA(),256,256);
-            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.9f);
+            qgl_drawtexture(0.0f,0.0f,1.0f,1.0f,texid,256,256,0.5f);
             qgl_deletetexmap(texid);
          }
 
-         // windowing
-         qgl_drawquad(tf_center_-0.5f*tf_size_,0.0f,tf_size_,1.0f,0.5f,0.5f,0.5f,0.5f);
+         // show windowing
+         qgl_drawquad(tf_center_-0.5f*tf_size_,0.0f,tf_size_,1.0f,0.5f,0.5f,0.5f,0.25f);
 
          glDisable(GL_BLEND);
 
