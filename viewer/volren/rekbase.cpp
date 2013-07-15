@@ -10,29 +10,34 @@ BOOLINT readREKheader(FILE *file,
                       long long *width,long long *height,long long *depth,unsigned int *components,
                       float *scalex,float *scaley,float *scalez)
    {
-   int i;
-
-   unsigned char data[2];
+   unsigned char data16[2];
+   unsigned char data32[4];
 
    long long rekwidth,rekheight,rekdepth;
    unsigned int rekbits,rekcomps;
-   unsigned int rekdummy;
+
+   unsigned int rekheader;
+   unsigned int rekmajor,rekminor,rekrevision;
+
+   unsigned int rekX,rekY,rekZ;
+   float reknorm;
+   float rekvoxelX,rekvoxelZ;
 
    // volume width
-   if (fread(&data,1,2,file)!=2) return(FALSE);
-   rekwidth=data[0]+256*data[1];
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekwidth=data16[0]+256*data16[1];
 
    // volume height
-   if (fread(&data,1,2,file)!=2) return(FALSE);
-   rekheight=data[0]+256*data[1];
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekheight=data16[0]+256*data16[1];
 
-   // volume bits
-   if (fread(&data,1,2,file)!=2) return(FALSE);
-   rekbits=data[0]+256*data[1];
+   // volume bits (16 = unsigned short int)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekbits=data16[0]+256*data16[1];
 
-   // volume depth (slices)
-   if (fread(&data,1,2,file)!=2) return(FALSE);
-   rekdepth=data[0]+256*data[1];
+   // volume depth (slices / images per file)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekdepth=data16[0]+256*data16[1];
 
    if (rekwidth<1 || rekheight<1 || rekdepth<1) return(FALSE);
    if (rekbits!=8 && rekbits!=16) return(FALSE);
@@ -42,21 +47,55 @@ BOOLINT readREKheader(FILE *file,
 
    if (rekcomps!=1 && components==NULL) return(FALSE);
 
-   // check 3x 0x01000000 signature at 0x3b8
-   if (fseek(file,0x3b8,SEEK_SET)==-1) return(FALSE);
-   for (i=0; i<3; i++)
-      {
-      if (fread(&data,1,2,file)!=2) return(FALSE);
-      rekdummy=data[0]+256*data[1];
-      if (rekdummy!=1) return(FALSE);
+   // header size (2048)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekheader=data16[0]+256*data16[1];
 
-      if (fread(&data,1,2,file)!=2) return(FALSE);
-      rekdummy=data[0]+256*data[1];
-      if (rekdummy!=0) return(FALSE);
-      }
+   // major version (2)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekmajor=data16[0]+256*data16[1];
+
+   // minor version (5)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekminor=data16[0]+256*data16[1];
+
+   // revision (0)
+   if (fread(&data16,1,2,file)!=2) return(FALSE);
+   rekrevision=data16[0]+256*data16[1];
+
+   if (rekmajor!=2 || rekminor<5) return(FALSE);
+
+   // fseek to reconstruction params
+   if (fseek(file,0x238,SEEK_SET)==-1) return(FALSE);
+
+   // reconstruction width
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   rekX=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+
+   // reconstruction height
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   rekY=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+
+   // reconstruction depth
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   rekZ=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+
+   if (rekX!=rekwidth || rekY!=rekheight || rekZ!=rekdepth) return(FALSE);
+
+   // reconstruction norm (scaling factor, abscoeff = greyvalue / norm)
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   reknorm=*(float *)(&data32);
+
+   // reconstruction voxel size X (micrometers, equal to voxel size Y)
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   rekvoxelX=*(float *)(&data32);
+
+   // reconstruction voxel size Z (micrometers)
+   if (fread(&data32,1,4,file)!=4) return(FALSE);
+   rekvoxelZ=*(float *)(&data32);
 
    // seek to raw data
-   if (fseek(file,2048,SEEK_SET)==-1) return(FALSE);
+   if (fseek(file,rekheader,SEEK_SET)==-1) return(FALSE);
 
    *width=rekwidth;
    *height=rekheight;
@@ -64,9 +103,9 @@ BOOLINT readREKheader(FILE *file,
 
    if (components!=0) *components=rekcomps;
 
-   if (scalex!=NULL) *scalex=1.0f;
-   if (scaley!=NULL) *scaley=1.0f;
-   if (scalez!=NULL) *scalez=1.0f;
+   if (scalex!=NULL) *scalex=rekvoxelX;
+   if (scaley!=NULL) *scaley=rekvoxelX;
+   if (scalez!=NULL) *scalez=rekvoxelZ;
 
    return(TRUE);
    }
