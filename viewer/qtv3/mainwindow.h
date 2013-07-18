@@ -109,7 +109,10 @@ private:
    QTV3Slider *createSlider(int minimum, int maximum, int value,
                             bool vertical=false);
 
-   int flip1_,flip2_;
+   int flipXY1_,flipXY2_;
+   int flipYZ1_,flipYZ2_;
+
+   void setTilt();
 
 protected:
 
@@ -145,8 +148,10 @@ protected slots:
    void absorption(int v);
    void checkInvMode(int on);
    void checkGradMag(int on);
-   void checkFlip1(int on);
-   void checkFlip2(int on);
+   void checkFlipXY1(int on);
+   void checkFlipXY2(int on);
+   void checkFlipYZ1(int on);
+   void checkFlipYZ2(int on);
    void about();
 
    void update_slot(QString text);

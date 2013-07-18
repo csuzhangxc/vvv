@@ -109,8 +109,8 @@ class volren: public volscene
                   float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
                   BOOLINT gfx_fbo, // use frame buffer object
                   float vol_rot, // volume rotation in degrees
-                  float vol_tlt1, // volume tilt in degrees
-                  float vol_tlt2, // volume tilt in degrees
+                  float vol_tltXY, // volume tilt in degrees
+                  float vol_tltYZ, // volume tilt in degrees
                   float vol_dx,float vol_dy,float vol_dz, // volume translation
                   float vol_emi,float vol_att, // global volume emi and att
                   float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
@@ -136,8 +136,8 @@ class volren: public volscene
             ux,uy,uz;
 
       vol_rot*=PI/180.0f;
-      vol_tlt1*=PI/180.0f;
-      vol_tlt2*=PI/180.0f;
+      vol_tltXY*=PI/180.0f;
+      vol_tltYZ*=PI/180.0f;
 
       // move:
 
@@ -167,33 +167,33 @@ class volren: public volscene
       uy=uy0;
       uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
 
-      // tilt1:
+      // tiltXY:
 
-      ex0=fcos(vol_tlt1)*ex-fsin(vol_tlt1)*ey;
-      ey0=fsin(vol_tlt1)*ex+fcos(vol_tlt1)*ey;
+      ex0=fcos(vol_tltXY)*ex-fsin(vol_tltXY)*ey;
+      ey0=fsin(vol_tltXY)*ex+fcos(vol_tltXY)*ey;
       ez0=ez;
 
-      dx0=fcos(vol_tlt1)*dx-fsin(vol_tlt1)*dy;
-      dy0=fsin(vol_tlt1)*dx+fcos(vol_tlt1)*dy;
+      dx0=fcos(vol_tltXY)*dx-fsin(vol_tltXY)*dy;
+      dy0=fsin(vol_tltXY)*dx+fcos(vol_tltXY)*dy;
       dz0=dz;
 
-      ux0=fcos(vol_tlt1)*ux-fsin(vol_tlt1)*uy;
-      uy0=fsin(vol_tlt1)*ux+fcos(vol_tlt1)*uy;
+      ux0=fcos(vol_tltXY)*ux-fsin(vol_tltXY)*uy;
+      uy0=fsin(vol_tltXY)*ux+fcos(vol_tltXY)*uy;
       uz0=uz;
 
-      // tilt2:
+      // tiltYZ:
 
       ex=ex0;
-      ey=fcos(vol_tlt2)*ey0-fsin(vol_tlt2)*ez0;
-      ez=fsin(vol_tlt2)*ey0+fcos(vol_tlt2)*ez0;
+      ey=fcos(vol_tltYZ)*ey0-fsin(vol_tltYZ)*ez0;
+      ez=fsin(vol_tltYZ)*ey0+fcos(vol_tltYZ)*ez0;
 
       dx=dx0;
-      dy=fcos(vol_tlt2)*dy0-fsin(vol_tlt2)*dz0;
-      dz=fsin(vol_tlt2)*dy0+fcos(vol_tlt2)*dz0;
+      dy=fcos(vol_tltYZ)*dy0-fsin(vol_tltYZ)*dz0;
+      dz=fsin(vol_tltYZ)*dy0+fcos(vol_tltYZ)*dz0;
 
       ux=ux0;
-      uy=fcos(vol_tlt2)*uy0-fsin(vol_tlt2)*uz0;
-      uz=fsin(vol_tlt2)*uy0+fcos(vol_tlt2)*uz0;
+      uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
+      uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
 
       // tf setup:
 

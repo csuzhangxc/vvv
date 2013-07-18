@@ -19,7 +19,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    vrw_->loadVolume("Drop.pvm");
    vrw_->setRotation(30.0);
 
-   flip1_=flip2_=0;
+   flipXY1_=flipXY2_=0;
+   flipYZ1_=flipYZ2_=0;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -143,24 +144,34 @@ void QTV3MainWindow::createWidgets()
    l3->addStretch(1000);
    l3->addWidget(s3);
    l3->addStretch(1000);
-   QHBoxLayout *h = new QHBoxLayout;
+   QHBoxLayout *h1 = new QHBoxLayout;
    QCheckBox *invModeCheck = new QCheckBox(tr("Inverse Mode"));
    invModeCheck->setChecked(false);
    connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
-   h->addWidget(invModeCheck);
+   h1->addWidget(invModeCheck);
    QCheckBox *gradMagCheck = new QCheckBox(tr("Gradient Magnitude"));
    gradMagCheck->setChecked(false);
    connect(gradMagCheck, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
-   h->addWidget(gradMagCheck);
-   QCheckBox *flipCheck1 = new QCheckBox(tr("Flip XY"));
-   flipCheck1->setChecked(false);
-   connect(flipCheck1, SIGNAL(stateChanged(int)), this, SLOT(checkFlip1(int)));
-   h->addWidget(flipCheck1);
-   QCheckBox *flipCheck2 = new QCheckBox(tr("Flip YZ"));
-   flipCheck2->setChecked(false);
-   connect(flipCheck2, SIGNAL(stateChanged(int)), this, SLOT(checkFlip2(int)));
-   h->addWidget(flipCheck2);
-   l3->addLayout(h);
+   h1->addWidget(gradMagCheck);
+   QHBoxLayout *h2 = new QHBoxLayout;
+   QCheckBox *flipCheckXY1 = new QCheckBox(tr("Flip +XY"));
+   flipCheckXY1->setChecked(false);
+   connect(flipCheckXY1, SIGNAL(stateChanged(int)), this, SLOT(checkFlipXY1(int)));
+   h2->addWidget(flipCheckXY1);
+   QCheckBox *flipCheckXY2 = new QCheckBox(tr("Flip -XY"));
+   flipCheckXY2->setChecked(false);
+   connect(flipCheckXY2, SIGNAL(stateChanged(int)), this, SLOT(checkFlipXY2(int)));
+   h2->addWidget(flipCheckXY2);
+   QCheckBox *flipCheckYZ1 = new QCheckBox(tr("Flip +YZ"));
+   flipCheckYZ1->setChecked(false);
+   connect(flipCheckYZ1, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ1(int)));
+   h2->addWidget(flipCheckYZ1);
+   QCheckBox *flipCheckYZ2 = new QCheckBox(tr("Flip -YZ"));
+   flipCheckYZ2->setChecked(false);
+   connect(flipCheckYZ2, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ2(int)));
+   h2->addWidget(flipCheckYZ2);
+   l3->addLayout(h1);
+   l3->addLayout(h2);
    sliderLayout->addLayout(l3);
 
    QVBoxLayout *l4 = new QVBoxLayout;
@@ -375,36 +386,51 @@ void QTV3MainWindow::checkGradMag(int on)
    vrw_->setGradMag(on);
 }
 
-void QTV3MainWindow::checkFlip1(int on)
+void QTV3MainWindow::setTilt()
 {
-   flip1_=on;
+   double tiltXY=0.0;
+   double tiltYZ=0.0;
 
-   if (flip1_ && flip2_)
+   if (flipXY1_) tiltXY+=90.0;
+   if (flipXY2_) tiltXY-=90.0;
+
+   if (flipYZ1_) tiltYZ+=90.0;
+   if (flipYZ2_) tiltYZ-=90.0;
+
+   if (fabs(tiltXY)>0.0 && fabs(tiltYZ)>0.0)
    {
-      vrw_->setTilt1(180);
-      vrw_->setTilt2(0);
+      vrw_->setTiltXY(180.0);
+      vrw_->setTiltYZ(0.0);
    }
    else
    {
-      vrw_->setTilt1(flip1_?90.0:0.0);
-      vrw_->setTilt2(flip2_?90.0:0.0);
+      vrw_->setTiltXY(tiltXY);
+      vrw_->setTiltYZ(tiltYZ);
    }
 }
 
-void QTV3MainWindow::checkFlip2(int on)
+void QTV3MainWindow::checkFlipXY1(int on)
 {
-   flip2_=on;
+   flipXY1_=on;
+   setTilt();
+}
 
-   if (flip1_ && flip2_)
-   {
-      vrw_->setTilt1(180);
-      vrw_->setTilt2(0);
-   }
-   else
-   {
-      vrw_->setTilt1(flip1_?90.0:0.0);
-      vrw_->setTilt2(flip2_?90.0:0.0);
-   }
+void QTV3MainWindow::checkFlipXY2(int on)
+{
+   flipXY2_=on;
+   setTilt();
+}
+
+void QTV3MainWindow::checkFlipYZ1(int on)
+{
+   flipYZ1_=on;
+   setTilt();
+}
+
+void QTV3MainWindow::checkFlipYZ2(int on)
+{
+   flipYZ2_=on;
+   setTilt();
 }
 
 void QTV3MainWindow::about()

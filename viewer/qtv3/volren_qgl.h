@@ -34,7 +34,7 @@ public:
       fps_ = 30.0;
       angle_ = 0.0;
       omega_ = 0.0;
-      tilt1_ = tilt2_ = 0.0;
+      tiltXY_ = tiltYZ_ = 0.0;
       tilt_ = 0.0;
       zoom_ = 0.0;
       dist_ = 1.0;
@@ -101,15 +101,15 @@ public:
    }
 
    //! set volume rotation angle
-   void setTilt1(double tilt1=0.0)
+   void setTiltXY(double tiltXY=0.0)
    {
-      tilt1_=tilt1;
+      tiltXY_=tiltXY;
    }
 
    //! set volume rotation angle
-   void setTilt2(double tilt2=0.0)
+   void setTiltYZ(double tiltYZ=0.0)
    {
-      tilt2_=tilt2;
+      tiltYZ_=tiltYZ;
    }
 
    //! set volume tilt angle
@@ -208,7 +208,7 @@ protected:
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
-   double tilt1_,tilt2_; // rotation angle in degrees
+   double tiltXY_,tiltYZ_; // rotation angle in degrees
    double tilt_; // tilt angle in degrees
    double zoom_; // zoom into volume
    double dist_; // clipping distance
@@ -286,7 +286,7 @@ protected:
                   gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                   gfx_fbo, // use fbo
                   angle_, // volume rotation in degrees
-                  tilt1_,tilt2_, // volume rotation in degrees
+                  tiltXY_,tiltYZ_, // volume rotation in degrees
                   0.0f,0.0f,0.0f, // volume translation
                   vol_emission,vol_density, // global emi and att
                   tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
