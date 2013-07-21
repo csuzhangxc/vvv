@@ -1,9 +1,10 @@
 # v^3 header and module list
 
 SET(VOLREN_HDRS
+   volren/codebase.h
    volren/ddsbase.h volren/dicombase.h volren/rekbase.h volren/rawbase.h
    volren/dirbase.h volren/oglbase.h
-   volren/tfbase.h volren/tilebase.h
+   volren/tfbase.h volren/tilebase.h volren/progs.h
    volren/volume.h volren/volren.h
    )
 
