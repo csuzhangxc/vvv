@@ -70,7 +70,7 @@ BOOLINT readREKheader(FILE *file,
    rekrevision=data16[0]+256*data16[1];
 
    if (rekmajor!=2 || rekminor<5) return(FALSE);
-   if (rekrevision<0) ERRORMSG();
+   if (rekrevision>1000) ERRORMSG();
 
    // fseek to reconstruction params
    if (fseek(file,0x238,SEEK_SET)==-1) return(FALSE);
