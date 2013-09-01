@@ -70,15 +70,15 @@ BOOLINT readREKheader(FILE *file,
 
    // reconstruction width
    if (fread(&data32,1,4,file)!=4) return(FALSE);
-   rekX=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+   rekX=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[3]));
 
    // reconstruction height
    if (fread(&data32,1,4,file)!=4) return(FALSE);
-   rekY=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+   rekY=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[3]));
 
    // reconstruction depth
    if (fread(&data32,1,4,file)!=4) return(FALSE);
-   rekZ=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[4]));
+   rekZ=data32[0]+256*(data32[1]+256*(data32[2]+256*data32[3]));
 
    if (rekX!=rekwidth || rekY!=rekheight || rekZ!=rekdepth) return(FALSE);
 
