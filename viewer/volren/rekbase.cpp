@@ -13,6 +13,11 @@ BOOLINT readREKheader(FILE *file,
    unsigned char data16[2];
    unsigned char data32[4];
 
+   union {
+      unsigned char uchar[4];
+      float float32;
+      } float32;
+
    long long rekwidth,rekheight,rekdepth;
    unsigned int rekbits,rekcomps;
 
@@ -64,6 +69,7 @@ BOOLINT readREKheader(FILE *file,
    rekrevision=data16[0]+256*data16[1];
 
    if (rekmajor!=2 || rekminor<5) return(FALSE);
+   if (rekrevision<0) ERRORMSG();
 
    // fseek to reconstruction params
    if (fseek(file,0x238,SEEK_SET)==-1) return(FALSE);
@@ -83,16 +89,19 @@ BOOLINT readREKheader(FILE *file,
    if (rekX!=rekwidth || rekY!=rekheight || rekZ!=rekdepth) return(FALSE);
 
    // reconstruction norm (scaling factor, abscoeff = greyvalue / norm)
-   if (fread(&data32,1,4,file)!=4) return(FALSE);
-   reknorm=*(float *)(&data32);
+   if (fread(float32.uchar,1,4,file)!=4) return(FALSE);
+   reknorm=float32.float32;
+
+   if (reknorm<=0.0f) return(FALSE);
+   reknorm=1.0f/reknorm;
 
    // reconstruction voxel size X (micrometers, equal to voxel size Y)
-   if (fread(&data32,1,4,file)!=4) return(FALSE);
-   rekvoxelX=*(float *)(&data32);
+   if (fread(float32.uchar,1,4,file)!=4) return(FALSE);
+   rekvoxelX=float32.float32;
 
    // reconstruction voxel size Z (micrometers)
-   if (fread(&data32,1,4,file)!=4) return(FALSE);
-   rekvoxelZ=*(float *)(&data32);
+   if (fread(float32.uchar,1,4,file)!=4) return(FALSE);
+   rekvoxelZ=float32.float32;
 
    // seek to raw data
    if (fseek(file,rekheader,SEEK_SET)==-1) return(FALSE);

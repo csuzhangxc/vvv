@@ -175,9 +175,9 @@ void QTV3MainWindow::createWidgets()
    QRadioButton *sampleButton2 = new QRadioButton(tr("Regular Sampling"), this);
    QRadioButton *sampleButton3 = new QRadioButton(tr("Oversampling"), this);
    sampleButton2->setChecked(true);
-   connect(sampleButton1, SIGNAL(stateChanged(int)), this, SLOT(samplingChanged1(int)));
-   connect(sampleButton2, SIGNAL(stateChanged(int)), this, SLOT(samplingChanged2(int)));
-   connect(sampleButton3, SIGNAL(stateChanged(int)), this, SLOT(samplingChanged3(int)));
+   connect(sampleButton1, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
+   connect(sampleButton2, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
+   connect(sampleButton3, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
    h3->addWidget(sampleButton1);
    h3->addWidget(sampleButton2);
    h3->addWidget(sampleButton3);
