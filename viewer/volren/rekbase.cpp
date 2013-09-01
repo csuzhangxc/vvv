@@ -13,7 +13,8 @@ BOOLINT readREKheader(FILE *file,
    unsigned char data16[2];
    unsigned char data32[4];
 
-   union {
+   union
+      {
       unsigned char uchar[4];
       float float32;
       } float32;
