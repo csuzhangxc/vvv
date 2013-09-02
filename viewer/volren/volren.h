@@ -125,6 +125,8 @@ class volren: public volscene
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL)
       {
+      int i;
+
       BOOLINT aborted=FALSE;
 
       float ex0,ey0,ez0,
@@ -214,6 +216,23 @@ class volren: public volscene
          else setbackground(1.0f,1.0f,1.0f);
       else setbackground(0.0f,0.0f,0.0f);
 
+      // clip on:
+
+      for (i=0; i<6; i++)
+         if (clip_on[i])
+            {
+            GLdouble equ[4];
+
+            equ[0]=clip_a[i];
+            equ[1]=clip_b[i];
+            equ[2]=clip_c[i];
+            equ[3]=clip_d[i];
+
+            glClipPlane(GL_CLIP_PLANE0+i,equ);
+
+            glEnable(GL_CLIP_PLANE0+i);
+            }
+
       // render:
 
       clearbuffer();
@@ -246,9 +265,36 @@ class volren: public volscene
 
       glPopMatrix();
 
+      // clip off:
+
+      for (i=0; i<6; i++)
+         if (clip_on[i])
+            glDisable(GL_CLIP_PLANE0+i);
+
       return(aborted);
       }
 
+   // define clip plane
+   void define_clip(int n,
+                    double a,double b,double c,double d)
+      {
+      clip_a[n]=a;
+      clip_b[n]=b;
+      clip_c[n]=c;
+      clip_d[n]=d;
+      }
+
+   // enable clip plane
+   void enable_clip(int n,int on)
+      {clip_on[n]=on;}
+
+   protected:
+
+   int clip_on[8];
+   double clip_a[8];
+   double clip_b[8];
+   double clip_c[8];
+   double clip_d[8];
    };
 
 #endif
