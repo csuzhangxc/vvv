@@ -38,6 +38,7 @@ public:
       tilt_ = 0.0;
       zoom_ = 0.0;
       dist_ = 1.0;
+      oversampling_ = 1.0;
       red_ = VOLREN_DEFAULT_RED;
       green_ = VOLREN_DEFAULT_GREEN;
       blue_ = VOLREN_DEFAULT_BLUE;
@@ -130,6 +131,10 @@ public:
    void setClipDist(double dist=0.0)
       {dist_=dist;}
 
+   //! set oversampling rate
+   void setOversampling(double rate=1.0)
+      {oversampling_=1.0/rate;}
+
    //! set default color
    void setColor(float r,float g,float b)
    {
@@ -212,6 +217,7 @@ protected:
    double tilt_; // tilt angle in degrees
    double zoom_; // zoom into volume
    double dist_; // clipping distance
+   double oversampling_; // oversampling rate
    double red_,green_,blue_; // default color
    double emi_; // volume emission
    double att_; // volume absorption
@@ -263,7 +269,7 @@ protected:
       double tf_re_scale=emi_,tf_ge_scale=emi_,tf_be_scale=emi_;
       double tf_ra_scale=att_,tf_ga_scale=att_,tf_ba_scale=att_;
 
-      double vol_over=1.0;
+      double vol_over=oversampling_;
 
       // zoom
       eye_z=(1.0-zoom_)*eye_z+zoom_*0.5;

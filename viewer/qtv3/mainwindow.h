@@ -152,6 +152,9 @@ protected slots:
    void checkFlipXY2(int on);
    void checkFlipYZ1(int on);
    void checkFlipYZ2(int on);
+   void samplingChanged1(bool on);
+   void samplingChanged2(bool on);
+   void samplingChanged3(bool on);
    void about();
 
    void update_slot(QString text);

@@ -175,9 +175,9 @@ void QTV3MainWindow::createWidgets()
    QRadioButton *sampleButton2 = new QRadioButton(tr("Regular Sampling"), this);
    QRadioButton *sampleButton3 = new QRadioButton(tr("Oversampling"), this);
    sampleButton2->setChecked(true);
-   connect(sampleButton1, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
-   connect(sampleButton2, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
-   connect(sampleButton3, SIGNAL(toggled(bool)), this, SLOT(samplingChanged()));
+   connect(sampleButton1, SIGNAL(toggled(bool)), this, SLOT(samplingChanged1(bool)));
+   connect(sampleButton2, SIGNAL(toggled(bool)), this, SLOT(samplingChanged2(bool)));
+   connect(sampleButton3, SIGNAL(toggled(bool)), this, SLOT(samplingChanged3(bool)));
    h3->addWidget(sampleButton1);
    h3->addWidget(sampleButton2);
    h3->addWidget(sampleButton3);
@@ -443,6 +443,21 @@ void QTV3MainWindow::checkFlipYZ2(int on)
 {
    flipYZ2_=on;
    setTilt();
+}
+
+void QTV3MainWindow::samplingChanged1(bool on)
+{
+   if (on) vrw_->setOversampling(0.5);
+}
+
+void QTV3MainWindow::samplingChanged2(bool on)
+{
+   if (on) vrw_->setOversampling(1.0);
+}
+
+void QTV3MainWindow::samplingChanged3(bool on)
+{
+   if (on) vrw_->setOversampling(2.0);
 }
 
 void QTV3MainWindow::about()
