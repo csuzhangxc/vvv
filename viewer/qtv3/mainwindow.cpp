@@ -21,6 +21,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;
+
+   clipNum_=0;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -126,8 +128,11 @@ void QTV3MainWindow::createWidgets()
    ll1->setAlignment(Qt::AlignHCenter);
    QPushButton *tackButton = new QPushButton(tr("Tack"));
    connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
+   QPushButton *clearButton = new QPushButton(tr("Clear"));
+   connect(clearButton, SIGNAL(pressed()), this, SLOT(clear()));
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
+   l1->addWidget(clearButton);
    sliderLayout->addLayout(l1);
 
    QFrame* line1 = new QFrame();
@@ -387,8 +392,20 @@ void QTV3MainWindow::tack()
    double nx,ny,nz;
 
    vrw_->getClipPlane(px,py,pz, nx,ny,nz);
-   vrw_->setClipPlane(0, px,py,pz, nx,ny,nz);
-   vrw_->enableClipPlane(0,1);
+   vrw_->setClipPlane(clipNum_, px,py,pz, nx,ny,nz);
+   vrw_->enableClipPlane(clipNum_,1);
+
+   clipSlider_->setValue(0);
+
+   clipNum_++;
+   if (clipNum_>=6) clear();
+}
+
+void QTV3MainWindow::clear()
+{
+   vrw_->disableClipPlanes();
+
+   clipNum_=0;
 
    clipSlider_->setValue(0);
 }

@@ -99,7 +99,6 @@ private:
    QVBoxLayout *layout_;
    QTV3VolRenWidget *vrw_;
    QLabel *label_,*update_;
-   QTV3Slider *clipSlider_;
 
    void createMenus();
    void createWidgets();
@@ -109,6 +108,9 @@ private:
 
    QTV3Slider *createSlider(int minimum, int maximum, int value,
                             bool vertical=false);
+
+   QTV3Slider *clipSlider_;
+   int clipNum_;
 
    int flipXY1_,flipXY2_;
    int flipYZ1_,flipYZ2_;
@@ -146,6 +148,7 @@ protected slots:
    void tilt(int v);
    void clip(int v);
    void tack();
+   void clear();
    void emission(int v);
    void absorption(int v);
    void checkInvMode(int on);

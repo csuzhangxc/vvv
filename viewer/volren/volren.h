@@ -16,6 +16,8 @@ class volren: public volscene
    volren(char *base=NULL)
       : volscene(base)
       {
+      int i;
+
       initogl();
 
       ex_=ey_=ez_=0.0;
@@ -24,6 +26,8 @@ class volren: public volscene
 
       px_=py_=pz_=0.0;
       nx_=ny_=nz_=0.0;
+
+      disable_clip();
       }
 
    //! destructor
