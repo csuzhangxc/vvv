@@ -15,20 +15,7 @@ class volren: public volscene
    //! default constructor
    volren(char *base=NULL)
       : volscene(base)
-      {
-      int i;
-
-      initogl();
-
-      ex_=ey_=ez_=0.0;
-      dx_=dy_=dz_=0.0;
-      ux_=uy_=uz_=0.0;
-
-      px_=py_=pz_=0.0;
-      nx_=ny_=nz_=0.0;
-
-      disable_clip();
-      }
+      {initogl();}
 
    //! destructor
    ~volren() {}
@@ -138,8 +125,6 @@ class volren: public volscene
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL)
       {
-      int i;
-
       BOOLINT aborted=FALSE;
 
       float ex0,ey0,ez0,
@@ -210,20 +195,6 @@ class volren: public volscene
       uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
       uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
 
-      // save eye point:
-
-      ex_=ex;
-      ey_=ey;
-      ez_=ez;
-
-      dx_=dx;
-      dy_=dy;
-      dz_=dz;
-
-      ux_=ux;
-      uy_=uy;
-      uz_=uz;
-
       // tf setup:
 
       get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
@@ -256,23 +227,6 @@ class volren: public volscene
       glLoadIdentity();
       gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
-      // clip on:
-
-      for (i=0; i<6; i++)
-         if (clip_on[i])
-            {
-            GLdouble equ[4];
-
-            equ[0]=clip_a[i];
-            equ[1]=clip_b[i];
-            equ[2]=clip_c[i];
-            equ[3]=clip_d[i];
-
-            glClipPlane(GL_CLIP_PLANE0+i,equ);
-
-            glEnable(GL_CLIP_PLANE0+i);
-            }
-
       // render:
 
       if (!vol_clip)
@@ -284,7 +238,6 @@ class volren: public volscene
                                   gfx_fbo,
                                   abort,abortdata);
       else
-         {
          aborted=volscene::render(ex,ey,ez,
                                   dx,dy,dz,
                                   ux,uy,uz,
@@ -293,120 +246,12 @@ class volren: public volscene
                                   gfx_fbo,
                                   abort,abortdata);
 
-         // save clip plane:
-
-         px_=-vol_clip_dist*dx;
-         py_=-vol_clip_dist*dy;
-         pz_=-vol_clip_dist*dz;
-
-         nx_=dx;
-         ny_=dy;
-         nz_=dz;
-         }
 
       glPopMatrix();
-
-      // clip off:
-
-      for (i=0; i<6; i++)
-         if (clip_on[i])
-            glDisable(GL_CLIP_PLANE0+i);
 
       return(aborted);
       }
 
-   //! get eye point
-   void get_eye(double &ex,double &ey,double &ez,
-                double &dx,double &dy,double &dz,
-                double &ux,double &uy,double &uz)
-      {
-      ex=ex_;
-      ey=ey_;
-      ez=ez_;
-
-      dx=dx_;
-      dy=dy_;
-      dz=dz_;
-
-      ux=ux_;
-      uy=uy_;
-      uz=uz_;
-      }
-
-   //! get clip plane
-   void get_clip(double &px,double &py,double &pz,
-                 double &nx,double &ny,double &nz)
-      {
-      px=px_;
-      py=py_;
-      pz=pz_;
-
-      nx=nx_;
-      ny=ny_;
-      nz=nz_;
-      }
-
-   //! define clip plane
-   void define_clip(int n,
-                    double a,double b,double c,double d)
-      {
-      if (n<0 || n>=6) return;
-
-      clip_a[n]=a;
-      clip_b[n]=b;
-      clip_c[n]=c;
-      clip_d[n]=d;
-      }
-
-   //! define clip plane via point on plane and normal
-   void define_clip(int n,
-                    double px,double py,double pz,
-                    double nx,double ny,double nz)
-      {
-      double l;
-
-      l=sqrt(nx*nx+ny*ny+nz*nz);
-
-      nx/=l;
-      ny/=l;
-      nz/=l;
-
-      l=nx*px+ny*py+nz*pz;
-
-      define_clip(n,nx,ny,nz,-l);
-      }
-
-   //! enable clip plane
-   void enable_clip(int n,int on)
-      {
-      if (n<0 || n>=6) return;
-
-      clip_on[n]=on;
-      }
-
-   //! disable all clip planes
-   void disable_clip()
-      {
-      int n;
-
-      for (n=0; n<6; n++)
-         clip_on[n]=0;
-      }
-
-   protected:
-
-   double ex_,ey_,ez_;
-   double dx_,dy_,dz_;
-   double ux_,uy_,uz_;
-
-   double px_,py_,pz_;
-   double nx_,ny_,nz_;
-
-   int clip_on[8];
-   double clip_a[8];
-   double clip_b[8];
-   double clip_c[8];
-   double clip_d[8];
    };
 
 #endif

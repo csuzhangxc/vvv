@@ -102,18 +102,18 @@ class volume
 
 typedef volume *volumeptr;
 
-// the volume hierarchy
+//! the volume hierarchy
 class mipmap
    {
    public:
 
-   // default constructor
+   //! default constructor
    mipmap(char *base=NULL,int res=0);
 
-   // destructor
+   //! destructor
    virtual ~mipmap();
 
-   // set the volume data
+   //! set the volume data
    void set_data(unsigned char *data,
                  unsigned char *extra,
                  long long width,long long height,long long depth,
@@ -122,7 +122,7 @@ class mipmap
                  int bricksize,float overmax,
                  void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
-   // load the volume data
+   //! load the volume data
    BOOLINT loadvolume(const char *filename,
                       const char *gradname=NULL,
                       float mx=0.0f,float my=0.0f,float mz=0.0f,
@@ -135,7 +135,7 @@ class mipmap
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
-   // load a DICOM series
+   //! load a DICOM series
    BOOLINT loadseries(const std::vector<std::string> list,
                       float mx=0.0f,float my=0.0f,float mz=0.0f,
                       float sx=1.0f,float sy=1.0f,float sz=1.0f,
@@ -146,7 +146,7 @@ class mipmap
                       int histmin=5,float histfreq=5.0f,int kneigh=1,float histstep=1.0f,
                       void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
-   // save the volume data as PVM
+   //! save the volume data as PVM
    void savePVMvolume(const char *filename);
 
    tfunc2D *get_tfunc() {return(TFUNC);} // return the transfer function
@@ -163,10 +163,10 @@ class mipmap
    BOOLINT has_grad(); // check whether or not the hierarchy has gradient data
    float get_slab(); // return the slab thickness
 
-   // set ambient/diffuse/specular lighting coefficients
+   //! set ambient/diffuse/specular lighting coefficients
    void set_light(float noise,float ambnt,float difus,float specl,float specx);
 
-   // render the volume
+   //! render the volume
    BOOLINT render(float ex,float ey,float ez,
                   float dx,float dy,float dz,
                   float ux,float uy,float uz,
@@ -176,15 +176,93 @@ class mipmap
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL);
 
-   // return center of bounding box
+   //! return center of bounding box
    float getcenterx() {return(VOL[0]->getcenterx());}
    float getcentery() {return(VOL[0]->getcentery());}
    float getcenterz() {return(VOL[0]->getcenterz());}
 
-   // return size of bounding box
+   //! return size of bounding box
    float getsizex() {return(VOL[0]->getsizex());}
    float getsizey() {return(VOL[0]->getsizey());}
    float getsizez() {return(VOL[0]->getsizez());}
+
+   //! get eye point
+   void get_eye(double &ex,double &ey,double &ez,
+                double &dx,double &dy,double &dz,
+                double &ux,double &uy,double &uz)
+      {
+      ex=ex_;
+      ey=ey_;
+      ez=ez_;
+
+      dx=dx_;
+      dy=dy_;
+      dz=dz_;
+
+      ux=ux_;
+      uy=uy_;
+      uz=uz_;
+      }
+
+   //! get near plane
+   void get_near(double &px,double &py,double &pz,
+                 double &nx,double &ny,double &nz)
+      {
+      px=px_;
+      py=py_;
+      pz=pz_;
+
+      nx=nx_;
+      ny=ny_;
+      nz=nz_;
+      }
+
+   //! define clip plane
+   void define_clip(int n,
+                    double a,double b,double c,double d)
+      {
+      if (n<0 || n>=6) return;
+
+      clip_a[n]=a;
+      clip_b[n]=b;
+      clip_c[n]=c;
+      clip_d[n]=d;
+      }
+
+   //! define clip plane via point on plane and normal
+   void define_clip(int n,
+                    double px,double py,double pz,
+                    double nx,double ny,double nz)
+      {
+      double l;
+
+      l=sqrt(nx*nx+ny*ny+nz*nz);
+
+      nx/=l;
+      ny/=l;
+      nz/=l;
+
+      l=nx*px+ny*py+nz*pz;
+
+      define_clip(n,nx,ny,nz,-l);
+      }
+
+   //! enable clip plane
+   void enable_clip(int n,int on)
+      {
+      if (n<0 || n>=6) return;
+
+      clip_on[n]=on;
+      }
+
+   //! disable all clip planes
+   void disable_clip()
+      {
+      int i;
+
+      for (i=0; i<6; i++)
+         clip_on[i]=0;
+      }
 
    protected:
 
@@ -200,6 +278,19 @@ class mipmap
    long long GWIDTH,GHEIGHT,GDEPTH;
    unsigned int GCOMPONENTS;
    float DSX,DSY,DSZ,GRADMAX;
+
+   double ex_,ey_,ez_;
+   double dx_,dy_,dz_;
+   double ux_,uy_,uz_;
+
+   double px_,py_,pz_;
+   double nx_,ny_,nz_;
+
+   int clip_on[6];
+   double clip_a[6];
+   double clip_b[6];
+   double clip_c[6];
+   double clip_d[6];
 
    // render opaque geometry
    virtual void rendergeometry() = 0;
@@ -386,12 +477,12 @@ class mipmap
                         long long nwidth,long long nheight,long long ndepth);
    };
 
-// the volume scene
+//! the volume scene
 class volscene: public mipmap
    {
    public:
 
-   // default constructor
+   //! default constructor
    volscene(char *base=NULL,int res=0)
       : mipmap(base,res)
       {
@@ -399,13 +490,15 @@ class volscene: public mipmap
       histogram_=FALSE;
       }
 
-   // destructor
+   //! destructor
    virtual ~volscene()
       {}
 
+   //! enable wire frame mode
    void enablewireframe(BOOLINT on=FALSE)
       {wireframe_=on;}
 
+   //! enable display of histogram
    void enablehistogram(BOOLINT on=FALSE)
       {histogram_=on;}
 

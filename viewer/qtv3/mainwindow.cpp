@@ -391,7 +391,7 @@ void QTV3MainWindow::tack()
    double px,py,pz;
    double nx,ny,nz;
 
-   vrw_->getClipPlane(px,py,pz, nx,ny,nz);
+   vrw_->getNearPlane(px,py,pz, nx,ny,nz);
    vrw_->setClipPlane(clipNum_, px,py,pz, nx,ny,nz);
    vrw_->enableClipPlane(clipNum_,1);
 

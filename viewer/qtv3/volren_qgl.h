@@ -194,11 +194,11 @@ public:
       vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz);
    }
 
-   //! get clip plane
-   void getClipPlane(double &px,double &py,double &pz,
+   //! get near plane
+   void getNearPlane(double &px,double &py,double &pz,
                      double &nx,double &ny,double &nz)
    {
-      vr_->get_clip(px,py,pz, nx,ny,nz);
+      vr_->get_near(px,py,pz, nx,ny,nz);
    }
 
    //! define clip plane via point on plane and normal

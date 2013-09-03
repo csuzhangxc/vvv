@@ -341,6 +341,15 @@ mipmap::mipmap(char *base,int res)
    hmvalue=0.0f; hfvalue=0.0f; hsvalue=0.0f;
    knvalue=0;
 
+   ex_=ey_=ez_=0.0;
+   dx_=dy_=dz_=0.0;
+   ux_=uy_=uz_=0.0;
+
+   px_=py_=pz_=0.0;
+   nx_=ny_=nz_=0.0;
+
+   disable_clip();
+
    CACHE=NULL;
 
    CSIZEX=0;
@@ -3122,9 +3131,36 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                        BOOLINT (*abort)(void *abortdata),
                        void *abortdata)
    {
+   int i;
+
    BOOLINT aborted=FALSE;
 
    int map=0;
+
+   // save eye point
+   ex_=ex;
+   ey_=ey;
+   ez_=ez;
+
+   // save viewing direction
+   dx_=dx;
+   dy_=dy;
+   dz_=dz;
+
+   // save up vector
+   ux_=ux;
+   uy_=uy;
+   uz_=uz;
+
+   // save near plane point
+   px_=ex+dx*nearp;
+   py_=ey+dy*nearp;
+   pz_=ez+dz*nearp;
+
+   // save near plane normal
+   nx_=dx;
+   ny_=dy;
+   nz_=dz;
 
    // update fbo
    if (usefbo && has_data()) updatefbo();
@@ -3146,6 +3182,22 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    // render transparent volume
    if (VOLCNT>0)
       {
+      // enable clipping planes
+      for (i=0; i<6; i++)
+         if (clip_on[i])
+            {
+            GLdouble equ[4];
+
+            equ[0]=clip_a[i];
+            equ[1]=clip_b[i];
+            equ[2]=clip_c[i];
+            equ[3]=clip_d[i];
+
+            glClipPlane(GL_CLIP_PLANE0+i,equ);
+
+            glEnable(GL_CLIP_PLANE0+i);
+            }
+
       // choose volume
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
@@ -3158,6 +3210,11 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                                1.0f/get_slab(),
                                lighting,
                                abort,abortdata);
+
+      // disable clipping planes
+      for (i=0; i<6; i++)
+         if (clip_on[i])
+            glDisable(GL_CLIP_PLANE0+i);
       }
 
    // render from fbo
