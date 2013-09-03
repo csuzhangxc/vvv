@@ -144,6 +144,7 @@ protected slots:
    void rotate(int v);
    void tilt(int v);
    void clip(int v);
+   void tack();
    void emission(int v);
    void absorption(int v);
    void checkInvMode(int on);

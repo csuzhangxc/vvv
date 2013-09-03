@@ -7,20 +7,29 @@
 #include "oglbase.h" // OpenGL base and window handling
 #include "volume.h" // volume mipmap pyramid
 
-// the volume renderer
+//! the volume renderer
 class volren: public volscene
    {
    public:
 
-   // default constructor
+   //! default constructor
    volren(char *base=NULL)
       : volscene(base)
-      {initogl();}
+      {
+      initogl();
 
-   // destructor
+      ex_=ey_=ez_=0.0;
+      dx_=dy_=dz_=0.0;
+      ux_=uy_=uz_=0.0;
+
+      px_=py_=pz_=0.0;
+      nx_=ny_=nz_=0.0;
+      }
+
+   //! destructor
    ~volren() {}
 
-   // load the volume data
+   //! load the volume data
    BOOLINT loadvolume(const char *filename,
                       const char *gradname=NULL,
                       float mx=0.0f,float my=0.0f,float mz=0.0f,
@@ -46,7 +55,7 @@ class volren: public volscene
                                   feedback,obj));
       }
 
-   // load a DICOM series
+   //! load a DICOM series
    BOOLINT loadseries(const std::vector<std::string> list,
                       float mx=0.0f,float my=0.0f,float mz=0.0f,
                       float sx=1.0f,float sy=1.0f,float sz=1.0f,
@@ -68,7 +77,7 @@ class volren: public volscene
                                   feedback,obj));
       }
 
-   // use linear transfer function
+   //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   float r=1.0f,float g=1.0f,float b=1.0f,
                   BOOLINT inverse=FALSE)
@@ -102,7 +111,7 @@ class volren: public volscene
          }
       }
 
-   // render the volume mipmap pyramid
+   //! render the volume mipmap pyramid
    BOOLINT render(float eye_x,float eye_y,float eye_z, // eye point
                   float eye_dx,float eye_dy,float eye_dz, // viewing direction
                   float eye_ux,float eye_uy,float eye_uz, // up vector
@@ -197,6 +206,20 @@ class volren: public volscene
       uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
       uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
 
+      // save eye point:
+
+      ex_=ex;
+      ey_=ey;
+      ez_=ez;
+
+      dx_=dx;
+      dy_=dy;
+      dz_=dz;
+
+      ux_=ux;
+      uy_=uy;
+      uz_=uz;
+
       // tf setup:
 
       get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
@@ -215,6 +238,19 @@ class volren: public volscene
          if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
          else setbackground(1.0f,1.0f,1.0f);
       else setbackground(0.0f,0.0f,0.0f);
+
+      clearbuffer();
+
+      // model view:
+
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
+      glMatrixMode(GL_MODELVIEW);
+
+      glPushMatrix();
+      glLoadIdentity();
+      gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
 
       // clip on:
 
@@ -235,17 +271,6 @@ class volren: public volscene
 
       // render:
 
-      clearbuffer();
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
-      glMatrixMode(GL_MODELVIEW);
-
-      glPushMatrix();
-      glLoadIdentity();
-      gluLookAt(ex,ey,ez,ex+dx,ey+dy,ez+dz,ux,uy,uz);
-
       if (!vol_clip)
          aborted=volscene::render(ex,ey,ez,
                                   dx,dy,dz,
@@ -255,6 +280,7 @@ class volren: public volscene
                                   gfx_fbo,
                                   abort,abortdata);
       else
+         {
          aborted=volscene::render(ex,ey,ez,
                                   dx,dy,dz,
                                   ux,uy,uz,
@@ -262,6 +288,17 @@ class volren: public volscene
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
+
+         // save clip plane:
+
+         px_=-vol_clip_dist*dx;
+         py_=-vol_clip_dist*dy;
+         pz_=-vol_clip_dist*dz;
+
+         nx_=dx;
+         ny_=dy;
+         nz_=dz;
+         }
 
       glPopMatrix();
 
@@ -274,21 +311,92 @@ class volren: public volscene
       return(aborted);
       }
 
-   // define clip plane
+   //! get eye point
+   void get_eye(double &ex,double &ey,double &ez,
+                double &dx,double &dy,double &dz,
+                double &ux,double &uy,double &uz)
+      {
+      ex=ex_;
+      ey=ey_;
+      ez=ez_;
+
+      dx=dx_;
+      dy=dy_;
+      dz=dz_;
+
+      ux=ux_;
+      uy=uy_;
+      uz=uz_;
+      }
+
+   //! get clip plane
+   void get_clip(double &px,double &py,double &pz,
+                 double &nx,double &ny,double &nz)
+      {
+      px=px_;
+      py=py_;
+      pz=pz_;
+
+      nx=nx_;
+      ny=ny_;
+      nz=nz_;
+      }
+
+   //! define clip plane
    void define_clip(int n,
                     double a,double b,double c,double d)
       {
+      if (n<0 || n>=6) return;
+
       clip_a[n]=a;
       clip_b[n]=b;
       clip_c[n]=c;
       clip_d[n]=d;
       }
 
-   // enable clip plane
+   //! define clip plane via point on plane and normal
+   void define_clip(int n,
+                    double px,double py,double pz,
+                    double nx,double ny,double nz)
+      {
+      double l;
+
+      l=sqrt(nx*nx+ny*ny+nz*nz);
+
+      nx/=l;
+      ny/=l;
+      nz/=l;
+
+      l=nx*px+ny*py+nz*pz;
+
+      define_clip(n,nx,ny,nz,-l);
+      }
+
+   //! enable clip plane
    void enable_clip(int n,int on)
-      {clip_on[n]=on;}
+      {
+      if (n<0 || n>=6) return;
+
+      clip_on[n]=on;
+      }
+
+   //! disable all clip planes
+   void disable_clip()
+      {
+      int n;
+
+      for (n=0; n<6; n++)
+         clip_on[n]=0;
+      }
 
    protected:
+
+   double ex_,ey_,ez_;
+   double dx_,dy_,dz_;
+   double ux_,uy_,uz_;
+
+   double px_,py_,pz_;
+   double nx_,ny_,nz_;
 
    int clip_on[8];
    double clip_a[8];

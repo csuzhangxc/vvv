@@ -122,7 +122,10 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(s1);
    QLabel *ll1=new QLabel("Clipping");
    ll1->setAlignment(Qt::AlignHCenter);
+   QPushButton *tackButton = new QPushButton(tr("Tack"));
+   connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
    l1->addWidget(ll1);
+   l1->addWidget(tackButton);
    sliderLayout->addLayout(l1);
 
    QFrame* line1 = new QFrame();
@@ -374,6 +377,16 @@ void QTV3MainWindow::clip(int v)
 {
    double dist = v / 16.0 / 100.0;
    vrw_->setClipDist(1.0-2*dist);
+}
+
+void QTV3MainWindow::tack()
+{
+   double px,py,pz;
+   double nx,ny,nz;
+
+   vrw_->getVR()->get_clip(px,py,pz, nx,ny,nz);
+   vrw_->getVR()->define_clip(0, px,py,pz, nx,ny,nz);
+   vrw_->getVR()->enable_clip(0,1);
 }
 
 void QTV3MainWindow::emission(int v)
