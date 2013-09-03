@@ -108,6 +108,8 @@ void QTV3MainWindow::createWidgets()
    QTV3Slider *s5=createSlider(0,100,25,true);
    QTV3Slider *s6=createSlider(0,100,25,true);
 
+   clipSlider_=s1;
+
    connect(s1, SIGNAL(valueChanged(int)), this, SLOT(clip(int)));
    connect(s2, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
    connect(s3, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
@@ -384,9 +386,11 @@ void QTV3MainWindow::tack()
    double px,py,pz;
    double nx,ny,nz;
 
-   vrw_->getVR()->get_clip(px,py,pz, nx,ny,nz);
-   vrw_->getVR()->define_clip(0, px,py,pz, nx,ny,nz);
-   vrw_->getVR()->enable_clip(0,1);
+   vrw_->getClipPlane(px,py,pz, nx,ny,nz);
+   vrw_->setClipPlane(0, px,py,pz, nx,ny,nz);
+   vrw_->enableClipPlane(0,1);
+
+   clipSlider_->setValue(0);
 }
 
 void QTV3MainWindow::emission(int v)

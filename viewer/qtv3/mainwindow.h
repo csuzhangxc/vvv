@@ -99,6 +99,7 @@ private:
    QVBoxLayout *layout_;
    QTV3VolRenWidget *vrw_;
    QLabel *label_,*update_;
+   QTV3Slider *clipSlider_;
 
    void createMenus();
    void createWidgets();

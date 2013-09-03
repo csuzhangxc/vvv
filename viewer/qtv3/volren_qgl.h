@@ -186,6 +186,41 @@ public:
       tf_inverse_=inverse;
    }
 
+   //! get eye point
+   void getEyePoint(double &ex,double &ey,double &ez,
+                    double &dx,double &dy,double &dz,
+                    double &ux,double &uy,double &uz)
+   {
+      vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz);
+   }
+
+   //! get clip plane
+   void getClipPlane(double &px,double &py,double &pz,
+                     double &nx,double &ny,double &nz)
+   {
+      vr_->get_clip(px,py,pz, nx,ny,nz);
+   }
+
+   //! define clip plane via point on plane and normal
+   void setClipPlane(int n,
+                     double px,double py,double pz,
+                     double nx,double ny,double nz)
+   {
+      vr_->define_clip(n, px,py,pz, nx,ny,nz);
+   }
+
+   //! enable clip plane
+   void enableClipPlane(int n,int on)
+   {
+      vr_->enable_clip(n,on);
+   }
+
+   //! disable all clip planes
+   void disableClipPlanes()
+   {
+      vr_->disable_clip();
+   }
+
    //! return volume renderer
    volren *getVR()
       {return(vr_);}
