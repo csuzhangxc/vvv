@@ -109,13 +109,13 @@ private:
    QTV3Slider *createSlider(int minimum, int maximum, int value,
                             bool vertical=false);
 
-   QTV3Slider *clipSlider_;
-   int clipNum_;
-
    int flipXY1_,flipXY2_;
    int flipYZ1_,flipYZ2_;
 
    void setTilt();
+
+   QTV3Slider *clipSlider_;
+   int clipNum_;
 
 protected:
 
