@@ -331,7 +331,7 @@ protected:
 
       if (gm_)
          {
-         tf_re_scale=tf_ge_scale=tf_be_scale=2.0*emi_gm_;
+         tf_re_scale=tf_ge_scale=tf_be_scale=1.5*emi_gm_;
          tf_ra_scale=tf_ga_scale=tf_ba_scale=att_gm_;
          }
       else
