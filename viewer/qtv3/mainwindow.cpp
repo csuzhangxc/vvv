@@ -36,7 +36,7 @@ void QTV3MainWindow::loadVolume(const char *filename)
 
    if (label_)
    {
-      layout_->removeItem(layout_->itemAt(1));
+      mainLayout_->removeItem(mainLayout_->itemAt(0));
       delete label_;
       label_=NULL;
    }
@@ -48,7 +48,7 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 
    if (label_)
    {
-      layout_->removeItem(layout_->itemAt(1));
+      mainLayout_->removeItem(mainLayout_->itemAt(0));
       delete label_;
       label_=NULL;
    }
@@ -87,23 +87,40 @@ void QTV3MainWindow::createMenus()
 void QTV3MainWindow::createWidgets()
 {
    QGroupBox *mainGroup = new QGroupBox(this);
-   layout_ = new QVBoxLayout(mainGroup);
+   mainLayout_ = new QVBoxLayout(mainGroup);
 
-   QSplitter *viewerSplitter = new QSplitter(mainGroup);
-   layout_->addWidget(viewerSplitter);
+   mainSplitter_ = new QSplitter;
+   QGroupBox *viewerGroup = new QGroupBox;
+   viewerLayout_ = new QVBoxLayout;
+   QSplitter *viewerSplitter = new QSplitter;
+   QGroupBox *sliderGroup = new QGroupBox;
+   sliderLayout_ = new QHBoxLayout;
+
+   mainSplitter_->setOrientation(Qt::Vertical);
+
+   mainSplitter_->addWidget(viewerGroup);
+   mainSplitter_->addWidget(sliderGroup);
+   viewerGroup->setLayout(viewerLayout_);
+   sliderGroup->setLayout(sliderLayout_);
+
+   mainLayout_->addWidget(mainSplitter_);
+   mainGroup->setLayout(mainLayout_);
+
+   viewerLayout_->addWidget(viewerSplitter);
+   viewerSplitter->setOrientation(Qt::Horizontal);
 
    vrw_ = new QTV3VolRenWidget(viewerSplitter);
 
-   label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) here\n"
+   label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) into the window\n"
                        "to display it with the volume renderer!");
 
    label_->setAlignment(Qt::AlignHCenter);
-   layout_->addWidget(label_);
+   mainLayout_->insertWidget(0,label_);
 
    update_ = new QLabel("");
    update_->setAlignment(Qt::AlignHCenter);
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
-   layout_->addWidget(update_);
+   mainSplitter_->addWidget(update_);
 
    QTV3Slider *s1=createSlider(0,100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
@@ -120,9 +137,6 @@ void QTV3MainWindow::createWidgets()
    connect(s4, SIGNAL(valueChanged(int)), this, SLOT(tilt(int)));
    connect(s5, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
    connect(s6, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
-
-   QGroupBox *sliderGroup = new QGroupBox(mainGroup);
-   QHBoxLayout *sliderLayout = new QHBoxLayout(sliderGroup);
 
    QVBoxLayout *l1 = new QVBoxLayout;
    l1->addWidget(s1);
@@ -145,7 +159,7 @@ void QTV3MainWindow::createWidgets()
    QLabel *ll2=new QLabel("Zoom");
    ll2->setAlignment(Qt::AlignLeft);
    l2->addWidget(ll2);
-   sliderLayout->addLayout(l2);
+   sliderLayout_->addLayout(l2);
 
    QVBoxLayout *l3 = new QVBoxLayout;
    QLabel *ll3=new QLabel("Rotation");
@@ -194,40 +208,36 @@ void QTV3MainWindow::createWidgets()
    l3->addLayout(h1);
    l3->addLayout(h2);
    l3->addLayout(h3);
-   sliderLayout->addLayout(l3);
+   sliderLayout_->addLayout(l3);
 
    QVBoxLayout *l4 = new QVBoxLayout;
    l4->addWidget(s4);
    QLabel *ll4=new QLabel("Tilt");
    ll4->setAlignment(Qt::AlignLeft);
    l4->addWidget(ll4);
-   sliderLayout->addLayout(l4);
+   sliderLayout_->addLayout(l4);
 
    QFrame* line = new QFrame();
    line->setFrameShape(QFrame::VLine);
    line->setFrameShadow(QFrame::Raised);
-   sliderLayout->addWidget(line);
+   sliderLayout_->addWidget(line);
 
    QVBoxLayout *l5 = new QVBoxLayout;
    l5->addWidget(s5);
    QLabel *ll5=new QLabel("Emission");
    ll5->setAlignment(Qt::AlignLeft);
    l5->addWidget(ll5);
-   sliderLayout->addLayout(l5);
+   sliderLayout_->addLayout(l5);
 
    QVBoxLayout *l6 = new QVBoxLayout;
    l6->addWidget(s6);
    QLabel *ll6=new QLabel("Absorption");
    ll6->setAlignment(Qt::AlignLeft);
    l6->addWidget(ll6);
-   sliderLayout->addLayout(l6);
+   sliderLayout_->addLayout(l6);
 
    viewerSplitter->addWidget(vrw_);
 
-   sliderGroup->setLayout(sliderLayout);
-   layout_->addWidget(sliderGroup);
-
-   mainGroup->setLayout(layout_);
    setCentralWidget(mainGroup);
 }
 

@@ -96,8 +96,14 @@ public:
 
 private:
 
-   QVBoxLayout *layout_;
+   QVBoxLayout *mainLayout_;
+   QSplitter *mainSplitter_;
+
+   QVBoxLayout *viewerLayout_;
+   QHBoxLayout *sliderLayout_;
+
    QTV3VolRenWidget *vrw_;
+
    QLabel *label_,*update_;
 
    void createMenus();
