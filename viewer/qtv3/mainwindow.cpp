@@ -89,12 +89,10 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *mainGroup = new QGroupBox(this);
    layout_ = new QVBoxLayout(mainGroup);
 
-   QGroupBox *viewerGroup = new QGroupBox(mainGroup);
-   QHBoxLayout *viewerLayout = new QHBoxLayout;
-   viewerGroup->setLayout(viewerLayout);
-   layout_->addWidget(viewerGroup);
+   QSplitter *viewerSplitter = new QSplitter(mainGroup);
+   layout_->addWidget(viewerSplitter);
 
-   vrw_ = new QTV3VolRenWidget(viewerGroup);
+   vrw_ = new QTV3VolRenWidget(viewerSplitter);
 
    label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) here\n"
                        "to display it with the volume renderer!");
@@ -137,6 +135,10 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
+
+   QGroupBox *g1 = new QGroupBox;
+   g1->setLayout(l1);
+   viewerSplitter->addWidget(g1);
 
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
@@ -220,8 +222,7 @@ void QTV3MainWindow::createWidgets()
    l6->addWidget(ll6);
    sliderLayout->addLayout(l6);
 
-   viewerLayout->addLayout(l1);
-   viewerLayout->addWidget(vrw_);
+   viewerSplitter->addWidget(vrw_);
 
    sliderGroup->setLayout(sliderLayout);
    layout_->addWidget(sliderGroup);
