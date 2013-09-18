@@ -49,8 +49,10 @@ class DicomVolume
    bool loadImages(const std::vector<std::string> list,
                    void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
-   unsigned char *getVoxelData() {return(m_Voxels);}
+   unsigned char *getVoxelData() {return((unsigned char *)m_Voxels);}
+
    long long getVoxelNum() {return(getCols()*getRows()*getSlis());}
+   long long getByteCount() {return(sizeof(unsigned short)*getCols()*getRows()*getSlis());}
 
    long long getCols() {return m_Cols;}
    long long getRows() {return m_Rows;}
@@ -85,9 +87,11 @@ class DicomVolume
    unsigned long m_SmallestPixVal;
    unsigned long m_LargestPixVal;
 
-   unsigned char *m_Voxels;
+   unsigned short *m_Voxels;
 
    static int compareFunc(const void *elem1,const void *elem2);
+
+   static bool check_intel();
    };
 
 // read a DICOM series identified by the * in the filename pattern

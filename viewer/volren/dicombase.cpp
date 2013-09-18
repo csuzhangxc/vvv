@@ -150,12 +150,19 @@ bool DicomVolume::dicomLoad(const std::vector<std::string> list,
 #endif
    }
 
+bool check_intel()
+   {
+   static unsigned short int RAW_INTEL=1;
+   return(*((unsigned char *)(&RAW_INTEL)+1)==0);
+   }
+
 bool DicomVolume::dicomProcess()
    {
 #ifdef VIEWER_HAVE_DCMTK
 
    unsigned int i,j;
 
+   if (!check_intel()) return(false);
    if (m_Images.size()<2) return(false);
 
    // check and sort the images by their position:
@@ -254,7 +261,7 @@ bool DicomVolume::dicomProcess()
       // retrieve smallest and largest pixel value
       if (desc->m_Image->getDataset()->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) smallestPixVal=0;
       else sscanf(tmp.c_str(),"%u",&smallestPixVal);
-      if (desc->m_Image->getDataset()->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) largestPixVal=4095;
+      if (desc->m_Image->getDataset()->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) largestPixVal=65535;
       else sscanf(tmp.c_str(),"%u",&largestPixVal);
 
       if (smallestPixVal<m_SmallestPixVal) m_SmallestPixVal=smallestPixVal;
@@ -273,12 +280,12 @@ bool DicomVolume::dicomProcess()
 
    long long totalSize=m_Cols*m_Rows*m_Images.size();
 
-   unsigned char *voxels=m_Voxels=new unsigned char[totalSize];
+   unsigned short *voxels=m_Voxels=new unsigned short[totalSize];
    if (voxels==0) return(false);
 
    // calculate the scaling factor from the pixel value range
    if (m_LargestPixVal==m_SmallestPixVal) m_LargestPixVal++;
-   float factor=255.0f/(m_LargestPixVal-m_SmallestPixVal);
+   float factor=65535.0f/(m_LargestPixVal-m_SmallestPixVal);
 
    const Uint16 *data=NULL;
    unsigned long length=0;
@@ -298,9 +305,9 @@ bool DicomVolume::dicomProcess()
 
       unsigned short *usdata=(unsigned short *)data;
 
-      // scale each voxel
+      // scale and copy each voxel
       for (j=0; j<length; j++, voxels++)
-         *voxels=(unsigned char)((usdata[j]-m_SmallestPixVal)*factor+0.5f);
+         *voxels=(unsigned short)((usdata[j]-m_SmallestPixVal)*factor+0.5f);
       }
 
    DJDecoderRegistration::cleanup(); // deregister JPEG codecs
@@ -351,14 +358,14 @@ unsigned char *readDICOMvolume(const char *filename,
 
    if (!data.loadImages(filename,feedback,obj)) return(NULL);
 
-   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
-   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+   if ((chunk=(unsigned char *)malloc(data.getByteCount()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getByteCount());
 
    *width=data.getCols();
    *height=data.getRows();
    *depth=data.getSlis();
 
-   *components=1;
+   *components=2;
 
    if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
    if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
@@ -378,18 +385,25 @@ unsigned char *readDICOMvolume(const std::vector<std::string> list,
 
    if (!data.loadImages(list,feedback,obj)) return(NULL);
 
-   if ((chunk=(unsigned char *)malloc(data.getVoxelNum()))==NULL) ERRORMSG();
-   memcpy(chunk,data.getVoxelData(),data.getVoxelNum());
+   if ((chunk=(unsigned char *)malloc(data.getByteCount()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),data.getByteCount());
 
    *width=data.getCols();
    *height=data.getRows();
    *depth=data.getSlis();
 
-   *components=1;
+   *components=2;
 
    if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
    if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
    if (scalez!=NULL) *scalez=data.getBound(2)/data.getSlis();
 
    return(chunk);
+   }
+
+// check for intel lsb representation
+bool DicomVolume::check_intel()
+   {
+   static unsigned short int INTEL=1;
+   return(*((unsigned char *)(&INTEL)+1)==0);
    }
