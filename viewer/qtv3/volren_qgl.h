@@ -47,6 +47,8 @@ public:
       blue_ = VOLREN_DEFAULT_BLUE;
       emi_ = 0.25;
       att_ = 0.25;
+      emi_gm_ = 0.25;
+      att_gm_ = 0.25;
       inv_ = false;
       gm_ = false;
       tf_ = false;
@@ -148,11 +150,29 @@ public:
 
    //! set emission
    void setEmission(double emi=0.0)
-      {emi_=emi;}
+   {
+      if (gm_)
+         emi_gm_=emi;
+      else
+         emi_=emi;
+   }
+
+   //! get emission
+   double getEmission()
+      {return(gm_?emi_gm_:emi_);}
 
    //! set absorption
    void setAbsorption(double att=0.0)
-      {att_=att;}
+   {
+      if (gm_)
+         att_gm_=att;
+      else
+         att_=att;
+   }
+
+   //! get absorption
+   double getAbsorption()
+      {return(gm_?att_gm_:att_);}
 
    //! set inverse mode
    void setInvMode(bool on=false)
@@ -259,6 +279,8 @@ protected:
    double red_,green_,blue_; // default color
    double emi_; // volume emission
    double att_; // volume absorption
+   double emi_gm_; // volume emission for gradmag
+   double att_gm_; // volume absorption for gradmag
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
    bool tf_; // tfunc given?
@@ -304,8 +326,19 @@ protected:
       double vol_emission=1000.0;
       double vol_density=1000.0;
 
-      double tf_re_scale=emi_,tf_ge_scale=emi_,tf_be_scale=emi_;
-      double tf_ra_scale=att_,tf_ga_scale=att_,tf_ba_scale=att_;
+      double tf_re_scale,tf_ge_scale,tf_be_scale;
+      double tf_ra_scale,tf_ga_scale,tf_ba_scale;
+
+      if (gm_)
+         {
+         tf_re_scale=tf_ge_scale=tf_be_scale=2.0*emi_gm_;
+         tf_ra_scale=tf_ga_scale=tf_ba_scale=2.0*att_gm_;
+         }
+      else
+         {
+         tf_re_scale=tf_ge_scale=tf_be_scale=emi_;
+         tf_ra_scale=tf_ga_scale=tf_ba_scale=att_;
+         }
 
       double vol_over=oversampling_;
 

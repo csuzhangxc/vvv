@@ -130,6 +130,8 @@ void QTV3MainWindow::createWidgets()
    QTV3Slider *s6=createSlider(0,100,25,true);
 
    clipSlider_=s1;
+   emiSlider_=s5;
+   attSlider_=s6;
 
    connect(s1, SIGNAL(valueChanged(int)), this, SLOT(clip(int)));
    connect(s2, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
@@ -442,6 +444,8 @@ void QTV3MainWindow::checkInvMode(int on)
 void QTV3MainWindow::checkGradMag(int on)
 {
    vrw_->setGradMag(on);
+   emiSlider_->setValue(16*100*vrw_->getEmission());
+   attSlider_->setValue(16*100*vrw_->getAbsorption());
 }
 
 void QTV3MainWindow::setTilt()

@@ -123,6 +123,9 @@ private:
    QTV3Slider *clipSlider_;
    int clipNum_;
 
+   QTV3Slider *emiSlider_;
+   QTV3Slider *attSlider_;
+
 protected:
 
    void keyPressEvent(QKeyEvent *event)
