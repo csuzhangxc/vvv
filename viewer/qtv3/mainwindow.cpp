@@ -89,8 +89,12 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *mainGroup = new QGroupBox(this);
    layout_ = new QVBoxLayout(mainGroup);
 
-   vrw_ = new QTV3VolRenWidget(mainGroup);
-   layout_->addWidget(vrw_);
+   QGroupBox *viewerGroup = new QGroupBox(mainGroup);
+   QHBoxLayout *viewerLayout = new QHBoxLayout;
+   viewerGroup->setLayout(viewerLayout);
+   layout_->addWidget(viewerGroup);
+
+   vrw_ = new QTV3VolRenWidget(viewerGroup);
 
    label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) here\n"
                        "to display it with the volume renderer!");
@@ -125,7 +129,7 @@ void QTV3MainWindow::createWidgets()
    QVBoxLayout *l1 = new QVBoxLayout;
    l1->addWidget(s1);
    QLabel *ll1=new QLabel("Clipping");
-   ll1->setAlignment(Qt::AlignHCenter);
+   ll1->setAlignment(Qt::AlignLeft);
    QPushButton *tackButton = new QPushButton(tr("Tack"));
    connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
    QPushButton *clearButton = new QPushButton(tr("Clear"));
@@ -133,17 +137,11 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
-   sliderLayout->addLayout(l1);
-
-   QFrame* line1 = new QFrame();
-   line1->setFrameShape(QFrame::VLine);
-   line1->setFrameShadow(QFrame::Raised);
-   sliderLayout->addWidget(line1);
 
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
    QLabel *ll2=new QLabel("Zoom");
-   ll2->setAlignment(Qt::AlignHCenter);
+   ll2->setAlignment(Qt::AlignLeft);
    l2->addWidget(ll2);
    sliderLayout->addLayout(l2);
 
@@ -199,28 +197,31 @@ void QTV3MainWindow::createWidgets()
    QVBoxLayout *l4 = new QVBoxLayout;
    l4->addWidget(s4);
    QLabel *ll4=new QLabel("Tilt");
-   ll4->setAlignment(Qt::AlignHCenter);
+   ll4->setAlignment(Qt::AlignLeft);
    l4->addWidget(ll4);
    sliderLayout->addLayout(l4);
 
-   QFrame* line2 = new QFrame();
-   line2->setFrameShape(QFrame::VLine);
-   line2->setFrameShadow(QFrame::Raised);
-   sliderLayout->addWidget(line2);
+   QFrame* line = new QFrame();
+   line->setFrameShape(QFrame::VLine);
+   line->setFrameShadow(QFrame::Raised);
+   sliderLayout->addWidget(line);
 
    QVBoxLayout *l5 = new QVBoxLayout;
    l5->addWidget(s5);
    QLabel *ll5=new QLabel("Emission");
-   ll5->setAlignment(Qt::AlignHCenter);
+   ll5->setAlignment(Qt::AlignLeft);
    l5->addWidget(ll5);
    sliderLayout->addLayout(l5);
 
    QVBoxLayout *l6 = new QVBoxLayout;
    l6->addWidget(s6);
    QLabel *ll6=new QLabel("Absorption");
-   ll6->setAlignment(Qt::AlignHCenter);
+   ll6->setAlignment(Qt::AlignLeft);
    l6->addWidget(ll6);
    sliderLayout->addLayout(l6);
+
+   viewerLayout->addLayout(l1);
+   viewerLayout->addWidget(vrw_);
 
    sliderGroup->setLayout(sliderLayout);
    layout_->addWidget(sliderGroup);
@@ -278,7 +279,7 @@ QSize QTV3MainWindow::minimumSizeHint() const
 
 QSize QTV3MainWindow::sizeHint() const
 {
-   return(QSize(512, 512));
+   return(QSize(MAIN_WIDTH, MAIN_HEIGHT));
 }
 
 void QTV3MainWindow::dragEnterEvent(QDragEnterEvent *event)

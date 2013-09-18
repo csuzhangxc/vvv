@@ -16,6 +16,9 @@
 
 #define VOLREN_DEFAULT_BRICKSIZE 128
 
+#define VOLREN_DEFAULT_WIDTH 1024
+#define VOLREN_DEFAULT_HEIGHT 1024
+
 class QGLVolRenWidget: public QGLWidget
 {
 public:
@@ -234,7 +237,7 @@ public:
    //! return preferred window size
    QSize sizeHint() const
    {
-      return(QSize(768, 768));
+      return(QSize(VOLREN_DEFAULT_WIDTH, VOLREN_DEFAULT_HEIGHT));
    }
 
 protected:
@@ -307,7 +310,7 @@ protected:
       double vol_over=oversampling_;
 
       // zoom
-      eye_z=(1.0-zoom_)*eye_z+zoom_*0.5;
+      eye_z=(1.0-zoom_)*eye_z+zoom_*gfx_near;
 
       // tilt
       double eye_tx=eye_x;
