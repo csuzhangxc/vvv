@@ -272,12 +272,15 @@ class mipmap
    tfunc2D *TFUNC;
    histo *HISTO;
 
-   unsigned char *VOLUME,*GRAD;
+   unsigned char *VOLUME;
    long long WIDTH,HEIGHT,DEPTH;
    unsigned int COMPONENTS;
+   float DSX,DSY,DSZ;
+
+   unsigned char *GRAD;
    long long GWIDTH,GHEIGHT,GDEPTH;
    unsigned int GCOMPONENTS;
-   float DSX,DSY,DSZ,GRADMAX;
+   float GDSX,GDSY,GDSZ,GRADMAX;
 
    double ex_,ey_,ez_;
    double dx_,dy_,dz_;

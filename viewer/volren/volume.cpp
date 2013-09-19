@@ -324,6 +324,7 @@ mipmap::mipmap(char *base,int res)
    VOLUME=GRAD=NULL;
 
    DSX=DSY=DSZ=1.0f;
+   GDSX=GDSY=GDSZ=1.0f;
 
    GRADMAX=1.0f;
 
@@ -554,7 +555,7 @@ void mipmap::set_data(unsigned char *data,
       }
 
    for (VOLCNT=0,i=bricksize,o=overmax; volume::check(i,o); i/=2,o/=2.0f,VOLCNT++)
-      if ((width>>VOLCNT)<=2 || (height>>VOLCNT)<=2 || (depth>>VOLCNT)<=2) break;
+      if ((width>>VOLCNT)<2 || (height>>VOLCNT)<2 || (depth>>VOLCNT)<2) break;
 
    if (VOLCNT==0) ERRORMSG();
 
@@ -2905,10 +2906,10 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
          if (feedback!=NULL) feedback("loading gradients",0,obj);
 
          if (GRAD!=NULL) free(GRAD);
-         if ((GRAD=readANYvolume(gradname,&GWIDTH,&GHEIGHT,&GDEPTH,&GCOMPONENTS))==NULL) exit(1);
+         if ((GRAD=readANYvolume(gradname,&GWIDTH,&GHEIGHT,&GDEPTH,&GCOMPONENTS,&GDSX,&GDSY,&GDSZ,&msb))==NULL) exit(1);
          GRADMAX=1.0f;
 
-         if (GCOMPONENTS==2) GRAD=quantize(GRAD,GWIDTH,GHEIGHT,GDEPTH);
+         if (GCOMPONENTS==2) GRAD=quantize(GRAD,GWIDTH,GHEIGHT,GDEPTH,msb);
          else if (GCOMPONENTS!=1) exit(1);
 
          GRAD=swap(GRAD,
@@ -2975,6 +2976,8 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    {
    float maxsize;
 
+   int msb=FALSE;
+
    if (feedback!=NULL) feedback("loading data",0,obj);
 
    if (VOLUME!=NULL) free(VOLUME);
@@ -2986,7 +2989,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
 
    if (feedback!=NULL) feedback("processing data",0,obj);
 
-   if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH);
+   if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH,msb);
    else if (COMPONENTS!=1)
       {
       free(VOLUME);
