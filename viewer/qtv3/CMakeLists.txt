@@ -151,3 +151,8 @@ IF (UNIX AND NOT APPLE)
    INSTALL(FILES QTV3.desktop DESTINATION /usr/share/applications)
    INSTALL(FILES qtv3.png DESTINATION /usr/share/qtv3)
 ENDIF (UNIX AND NOT APPLE)
+
+# install data
+IF (UNIX)
+   INSTALL(FILES Drop.pvm DESTINATION /usr/share/qtv3)
+ENDIF (UNIX)
