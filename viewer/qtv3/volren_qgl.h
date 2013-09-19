@@ -334,7 +334,7 @@ protected:
 
 #ifdef MACOSX
       // fbo bugfix for macos x 10.5
-      if (rendercount_<1) gfx_fbo=false;
+      if (rendercount_<5) gfx_fbo=false;
 #endif
 
       double vol_emission=1000.0;
