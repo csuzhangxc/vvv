@@ -2839,7 +2839,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (VOLUME!=NULL) free(VOLUME);
       if ((VOLUME=readANYvolume(filename,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,&msb,feedback,obj))==NULL)
          {
-         if (feedback!=NULL) feedback("",0,obj);
+         if (feedback!=NULL) feedback("unable to load volume",0,obj);
          return(FALSE);
          }
 
@@ -2978,7 +2978,11 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    if (feedback!=NULL) feedback("loading data",0,obj);
 
    if (VOLUME!=NULL) free(VOLUME);
-   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,feedback,obj))==NULL) return(FALSE);
+   if ((VOLUME=readDICOMvolume(list,&WIDTH,&HEIGHT,&DEPTH,&COMPONENTS,&DSX,&DSY,&DSZ,feedback,obj))==NULL)
+      {
+      if (feedback!=NULL) feedback("unable to load dicom series",0,obj);
+      return(FALSE);
+      }
 
    if (feedback!=NULL) feedback("processing data",0,obj);
 
