@@ -149,6 +149,10 @@ public:
 
    void dropEvent(QDropEvent *event);
 
+protected:
+
+   static QString normalizeFile(QString file);
+   
 protected slots:
 
    void open();

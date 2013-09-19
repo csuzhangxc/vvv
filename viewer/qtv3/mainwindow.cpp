@@ -322,11 +322,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 
          if (url.startsWith("file://"))
          {
-            url.remove("file://");
-            url.replace('\\', '/');
-            if (url.contains(QRegExp("^/[A-Z]:"))) url.remove(0,1);
-
-            loadVolume(url.toStdString().c_str());
+            loadVolume(normalizeFile(url).toStdString().c_str());
          }
       }
       else
@@ -340,8 +336,7 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 
             if (url.startsWith("file://"))
             {
-               url = url.remove("file://");
-               list.push_back(url.toStdString());
+               list.push_back(normalizeFile(url).toStdString());
             }
          }
 
@@ -355,13 +350,22 @@ void QTV3MainWindow::dragLeaveEvent(QDragLeaveEvent *event)
    event->accept();
 }
 
+QString QTV3MainWindow::normalizeFile(QString file)
+{
+   file.remove("file://");
+   file.replace('\\', '/');
+   if (file.contains(QRegExp("^/[A-Z]:"))) file.remove(0,1);
+
+   return(file);
+}
+
 void QTV3MainWindow::open()
 {
    QStringList files = browse();
 
    if (files.size()==1)
    {
-      loadVolume(files.at(0).toStdString().c_str());
+      loadVolume(normalizeFile(files.at(0)).toStdString().c_str());
    }
    else
    {
@@ -369,7 +373,7 @@ void QTV3MainWindow::open()
 
       for (int i=0; i<files.size(); i++)
       {
-         list.push_back(files.at(i).toStdString());
+         list.push_back(normalizeFile(files.at(i)).toStdString());
       }
 
       loadSeries(list);
