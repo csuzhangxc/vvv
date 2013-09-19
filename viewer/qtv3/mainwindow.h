@@ -152,7 +152,7 @@ public:
 protected:
 
    static QString normalizeFile(QString file);
-   
+
 protected slots:
 
    void open();
