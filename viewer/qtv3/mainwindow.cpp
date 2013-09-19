@@ -159,7 +159,7 @@ void QTV3MainWindow::createWidgets()
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
    QLabel *ll2=new QLabel("Zoom");
-   ll2->setAlignment(Qt::AlignLeft);
+   ll2->setAlignment(Qt::AlignHCenter);
    l2->addWidget(ll2);
    sliderLayout_->addLayout(l2);
 
@@ -215,7 +215,7 @@ void QTV3MainWindow::createWidgets()
    QVBoxLayout *l4 = new QVBoxLayout;
    l4->addWidget(s4);
    QLabel *ll4=new QLabel("Tilt");
-   ll4->setAlignment(Qt::AlignLeft);
+   ll4->setAlignment(Qt::AlignHCenter);
    l4->addWidget(ll4);
    sliderLayout_->addLayout(l4);
 
@@ -227,14 +227,14 @@ void QTV3MainWindow::createWidgets()
    QVBoxLayout *l5 = new QVBoxLayout;
    l5->addWidget(s5);
    QLabel *ll5=new QLabel("Emission");
-   ll5->setAlignment(Qt::AlignLeft);
+   ll5->setAlignment(Qt::AlignHCenter);
    l5->addWidget(ll5);
    sliderLayout_->addLayout(l5);
 
    QVBoxLayout *l6 = new QVBoxLayout;
    l6->addWidget(s6);
    QLabel *ll6=new QLabel("Absorption");
-   ll6->setAlignment(Qt::AlignLeft);
+   ll6->setAlignment(Qt::AlignHCenter);
    l6->addWidget(ll6);
    sliderLayout_->addLayout(l6);
 
