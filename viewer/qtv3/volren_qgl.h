@@ -32,6 +32,7 @@ public:
       vr_ = NULL;
 
       toload_ = NULL;
+      altpath_ = NULL;
       loading_ = false;
 
       fps_ = 30.0;
@@ -71,16 +72,29 @@ public:
          delete vr_;
 
       if (toload_)
-         delete toload_;
+         free(toload_);
+
+      if (altpath_)
+         free(altpath_);
    }
 
    //! load a volume
-   void loadVolume(const char *filename)
+   void loadVolume(const char *filename,
+                   const char *altpath=NULL)
    {
       if (loading_) return;
 
       if (toload_) free(toload_);
       toload_ = strdup(filename);
+
+      if (altpath_)
+      {
+         free(altpath_);
+         altpath_ = NULL;
+      }
+
+      if (altpath)
+         altpath_ = strdup(altpath);
    }
 
    //! load a DICOM series
@@ -264,7 +278,7 @@ protected:
 
    volren *vr_;
 
-   char *toload_;
+   char *toload_,*altpath_;
    std::vector<std::string> series_;
    bool loading_;
 
@@ -444,21 +458,17 @@ protected:
 
             volren *vr = new volren();
 
-            int histmin = 5;
-            float histfreq = 7.0f;
-            int kneigh = 2;
-            float histstep = 2.0f;
+            // try to load from regular file path
+            if (!loadFile(vr, toload_))
+               if (altpath_!=NULL)
+                  {
+                  char *toload=strdup2(altpath_,toload_);
 
-            vr->loadvolume(toload_,NULL,
-                           0.0f,0.0f,0.0f,
-                           1.0f,1.0f,1.0f,
-                           VOLREN_DEFAULT_BRICKSIZE,8.0f,
-                           FALSE,FALSE,FALSE,
-                           FALSE,FALSE,
-                           TRUE,
-                           NULL,
-                           histmin,histfreq,kneigh,histstep,
-                           feedback,this);
+                  // load from alternate file path
+                  loadFile(vr, toload);
+
+                  free(toload);
+                  }
 
             free(toload_);
             toload_=NULL;
@@ -594,7 +604,26 @@ protected:
       w->update(info,percent);
    }
 
-private:
+protected:
+
+   BOOLINT loadFile(volren *vr, const char *filename)
+   {
+      int histmin = 5;
+      float histfreq = 7.0f;
+      int kneigh = 2;
+      float histstep = 2.0f;
+
+      return(vr->loadvolume(filename,NULL,
+                            0.0f,0.0f,0.0f,
+                            1.0f,1.0f,1.0f,
+                            VOLREN_DEFAULT_BRICKSIZE,8.0f,
+                            FALSE,FALSE,FALSE,
+                            FALSE,FALSE,
+                            TRUE,
+                            NULL,
+                            histmin,histfreq,kneigh,histstep,
+                            feedback,this));
+   }
 
    void qgl_drawquad(float x,float y,float width,float height,
                      float r,float g,float b,float alpha)

@@ -16,7 +16,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    setWindowTitle(APP_NAME" "APP_VERSION);
 
-   vrw_->loadVolume("Drop.pvm");
+   vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
    vrw_->setRotation(30.0);
 
    flipXY1_=flipXY2_=0;
