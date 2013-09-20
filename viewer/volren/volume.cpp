@@ -2773,27 +2773,36 @@ unsigned char *mipmap::readANYvolume(const char *filename,
    if (strchr(filename,'*')!=NULL)
       {
       // read a DICOM series identified by the * in the filename pattern
-      if ((volume=readDICOMvolume(filename,width,height,depth,components,scalex,scaley,scalez,feedback,obj))!=NULL)
+      if ((volume=readDICOMvolume(filename,width,height,depth,components,
+                                  scalex,scaley,scalez,
+                                  feedback,obj))!=NULL)
          order=FALSE;
       }
    else
       {
       // read a RAW volume
-      volume=readRAWvolume(filename,width,height,depth,&steps,components,NULL,NULL,&order,scalex,scaley,scalez);
+      volume=readRAWvolume(filename,width,height,depth,&steps,components,
+                           NULL,NULL,&order,scalex,scaley,scalez);
 
       // read a REK volume out-of-core
       if (volume==NULL)
-         volume=readREKvolume_ooc(filename,width,height,depth,components,scalex,scaley,scalez,feedback,obj);
+         volume=readREKvolume_ooc(filename,width,height,depth,components,
+                                  scalex,scaley,scalez,
+                                  REK_TARGET_RATIO,REK_TARGET_CELLS,
+                                  feedback,obj);
 
       // read a REK volume
       if (volume==NULL)
-         if ((volume=readREKvolume(filename,width,height,depth,components,scalex,scaley,scalez))!=NULL)
+         if ((volume=readREKvolume(filename,width,height,depth,components,
+                                   scalex,scaley,scalez))!=NULL)
             order=FALSE;
 
       // read a PVM volume
       if (volume==NULL)
          {
-         volume=readPVMvolume(filename,&pvmwidth,&pvmheight,&pvmdepth,components,scalex,scaley,scalez);
+         volume=readPVMvolume(filename,&pvmwidth,&pvmheight,&pvmdepth,components,
+                              scalex,scaley,scalez);
+
          *width=pvmwidth;
          *height=pvmheight;
          *depth=pvmdepth;

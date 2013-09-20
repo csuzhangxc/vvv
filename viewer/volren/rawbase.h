@@ -3,8 +3,12 @@
 #ifndef RAWBASE_H
 #define RAWBASE_H
 
-#define RAW_TARGET_RATIO 0.5f
-#define RAW_TARGET_CELLS 250000000
+extern float RAW_TARGET_RATIO;
+extern long long RAW_TARGET_CELLS;
+
+extern unsigned short int RAW_INTEL;
+
+#define RAW_ISINTEL (((unsigned char *)(&RAW_INTEL)+1)==0)
 
 // read a RAW volume
 //  the RAW file format is encoded into the filename
@@ -91,7 +95,7 @@ char *cropRAWvolume(FILE *file, // source file desc
                     long long width,long long height,long long depth=1,long long steps=1,
                     unsigned int components=1,unsigned int bits=8,BOOLINT sign=FALSE,BOOLINT msb=TRUE,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
-                    float ratio=RAW_TARGET_RATIO,
+                    float ratio=RAW_TARGET_RATIO, // crop volume ratio
                     void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a RAW volume with out-of-core cropping

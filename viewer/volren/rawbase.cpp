@@ -5,9 +5,10 @@
 
 #include "rawbase.h"
 
-unsigned short int RAW_INTEL=1;
+float RAW_TARGET_RATIO=0.5f;
+long long RAW_TARGET_CELLS=250000000;
 
-#define RAW_ISINTEL (*((unsigned char *)(&RAW_INTEL)+1)==0)
+unsigned short int RAW_INTEL=1;
 
 inline void RAW_swap4(char *x)
    {
@@ -1622,7 +1623,7 @@ char *processRAWvolume(FILE *file, // source file desc
                        long long width,long long height,long long depth,long long steps,
                        unsigned int components,unsigned int bits,BOOLINT sign,BOOLINT msb,
                        float scalex,float scaley,float scalez,
-                       float ratio,  // crop volume ratio
+                       float ratio, // crop volume ratio
                        long long maxcells, // down-size threshold
                        void (*feedback)(const char *info,float percent,void *obj),void *obj) // feedback callback
    {

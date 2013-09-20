@@ -5,6 +5,9 @@
 
 #include "rekbase.h"
 
+float REK_TARGET_RATIO=0.5f;
+long long REK_TARGET_CELLS=250000000;
+
 // analyze 2048 byte REK header
 BOOLINT readREKheader(FILE *file,
                       long long *width,long long *height,long long *depth,unsigned int *components,
@@ -220,6 +223,8 @@ char *copyREKvolume(const char *filename,const char *output)
 
 // copy a REK volume to a RAW volume with out-of-core cropping and non-linear quantization
 char *processREKvolume(const char *filename,const char *output,
+                       float ratio, // crop volume ratio
+                       long long maxcells, // down-size threshold
                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
    {
    FILE *file;
@@ -246,8 +251,7 @@ char *processREKvolume(const char *filename,const char *output,
                                   width,height,depth,1,
                                   components,8,FALSE,FALSE,
                                   scalex,scaley,scalez,
-                                  RAW_TARGET_RATIO,
-                                  RAW_TARGET_CELLS,
+                                  ratio,maxcells,
                                   feedback,obj)))
       {
       fclose(file);
@@ -263,6 +267,8 @@ char *processREKvolume(const char *filename,const char *output,
 unsigned char *readREKvolume_ooc(const char *filename,
                                  long long *width,long long *height,long long *depth,unsigned int *components,
                                  float *scalex,float *scaley,float *scalez,
+                                 float ratio, // crop volume ratio
+                                 long long maxcells, // down-size threshold
                                  void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    char *output,*dot;
@@ -280,7 +286,7 @@ unsigned char *readREKvolume_ooc(const char *filename,
    if (dot!=NULL)
       if (strcasecmp(dot,".rek")==0) *dot='\0';
 
-   outname=processREKvolume(filename,output,feedback,obj);
+   outname=processREKvolume(filename,output,ratio,maxcells,feedback,obj);
    free(output);
 
    if (outname!=NULL)

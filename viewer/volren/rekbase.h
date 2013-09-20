@@ -3,6 +3,9 @@
 #ifndef REKBASE_H
 #define REKBASE_H
 
+extern float REK_TARGET_RATIO;
+extern long long REK_TARGET_CELLS;
+
 // read a REK volume (Fraunhofer EZRT volume format)
 //  the REK format has a 2048 byte header
 //  the header contains short int values in LSB format
@@ -28,6 +31,8 @@ char *copyREKvolume(const char *filename,const char *output);
 unsigned char *readREKvolume_ooc(const char *filename,
                                  long long *width,long long *height,long long *depth,unsigned int *components=NULL,
                                  float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
+                                 float ratio=REK_TARGET_RATIO, // crop volume ratio
+                                 long long maxcells=REK_TARGET_CELLS, // down-size threshold
                                  void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 #endif
