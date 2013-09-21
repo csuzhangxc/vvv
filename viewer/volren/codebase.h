@@ -11,6 +11,8 @@
 #include <float.h>
 #include <math.h>
 
+#include <iostream>
+
 #if !defined WINOS && !defined MACOSX && !defined LINUX
 #if defined _WIN32
 #   define WINOS
