@@ -23,6 +23,11 @@ int main(int argc, char *argv[])
       main.loadSeries(list);
    }
 
+   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+   if (env.contains("QTV3_CELL_LIMIT"))
+      REK_TARGET_CELLS=env.value("QTV3_CELL_LIMIT").toInt();
+
    main.show();
 
    return(app.exec());
