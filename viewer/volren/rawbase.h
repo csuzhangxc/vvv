@@ -8,7 +8,7 @@ extern long long RAW_TARGET_CELLS;
 
 extern unsigned short int RAW_INTEL;
 
-#define RAW_ISINTEL (((unsigned char *)(&RAW_INTEL)+1)==0)
+#define RAW_ISINTEL (*((unsigned char *)(&RAW_INTEL)+1)==0)
 
 // read a RAW volume
 //  the RAW file format is encoded into the filename
