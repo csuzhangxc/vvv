@@ -4,8 +4,10 @@
 #include "oglbase.h" // OpenGL base rendering
 #include "glutbase.h" // GLUT window handling
 #include "ddsbase.h" // volume file reader
-#include "rekbase.h" // rek file reader
-#include "rawbase.h" // raw file reader
+#ifdef HAVE_MINI
+#include <mini/rekbase.h> // rek file reader
+#include <mini/rawbase.h> // raw file reader
+#endif
 
 #define STR_MAX (256)
 
@@ -172,11 +174,17 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
+#ifdef HAVE_MINI
+
    if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components,NULL,NULL,&msb))!=NULL)
       depth*=steps;
    else if ((volume=readREKvolume(argv[1],&width,&height,&depth,&components))!=NULL)
       msb=FALSE;
-   else if ((volume=readPVMvolume(argv[1],&pvmwidth,&pvmheight,&pvmdepth,&components))!=NULL)
+   else
+
+#endif
+
+   if ((volume=readPVMvolume(argv[1],&pvmwidth,&pvmheight,&pvmdepth,&components))!=NULL)
       {
       width=pvmwidth;
       height=pvmheight;

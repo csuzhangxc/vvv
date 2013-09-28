@@ -2,14 +2,14 @@
 
 SET(VOLREN_HDRS
    volren/codebase.h
-   volren/ddsbase.h volren/dicombase.h volren/rekbase.h volren/rawbase.h
+   volren/ddsbase.h volren/dicombase.h
    volren/dirbase.h volren/oglbase.h
    volren/tfbase.h volren/tilebase.h volren/progs.h
    volren/volume.h volren/volren.h
    )
 
 SET(VOLREN_SRCS
-   volren/ddsbase.cpp volren/dicombase.cpp volren/rekbase.cpp volren/rawbase.cpp
+   volren/ddsbase.cpp volren/dicombase.cpp
    volren/dirbase.cpp volren/oglbase.cpp
    volren/tfbase.cpp volren/tilebase.cpp
    volren/volume.cpp

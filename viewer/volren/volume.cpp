@@ -2763,7 +2763,6 @@ unsigned char *mipmap::readANYvolume(const char *filename,
                                      void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    unsigned char *volume;
-   long long steps;
    BOOLINT order;
 
    unsigned int pvmwidth,pvmheight,pvmdepth;
@@ -2780,9 +2779,16 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       }
    else
       {
+      volume=NULL;
+
+#ifdef HAVE_MINI
+
+      long long steps;
+
       // read a RAW volume
-      volume=readRAWvolume(filename,width,height,depth,&steps,components,
-                           NULL,NULL,&order,scalex,scaley,scalez);
+      if (volume==NULL)
+         volume=readRAWvolume(filename,width,height,depth,&steps,components,
+                              NULL,NULL,&order,scalex,scaley,scalez);
 
       // read a REK volume out-of-core
       if (volume==NULL)
@@ -2796,6 +2802,8 @@ unsigned char *mipmap::readANYvolume(const char *filename,
          if ((volume=readREKvolume(filename,width,height,depth,components,
                                    scalex,scaley,scalez))!=NULL)
             order=FALSE;
+
+#endif
 
       // read a PVM volume
       if (volume==NULL)

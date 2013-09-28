@@ -883,3 +883,202 @@ unsigned int checksum(unsigned char *data,unsigned int bytes)
 
    return(sum);
    }
+
+// swap the hi and lo byte of 16 bit data
+void swapbytes(unsigned char *data,long long bytes)
+   {
+   long long i;
+   unsigned char *ptr,tmp;
+
+   for (ptr=data,i=0; i<bytes/2; i++,ptr+=2)
+      {
+      tmp=*ptr;
+      *ptr=*(ptr+1);
+      *(ptr+1)=tmp;
+      }
+   }
+
+// convert from signed short to unsigned short
+void convbytes(unsigned char *data,long long bytes)
+   {
+   long long i;
+   unsigned char *ptr;
+   int v,vmin;
+
+   for (vmin=32767,ptr=data,i=0; i<bytes/2; i++,ptr+=2)
+      {
+      v=256*(*ptr)+*(ptr+1);
+      if (v>32767) v=v-65536;
+      if (v<vmin) vmin=v;
+      }
+
+   for (ptr=data,i=0; i<bytes/2; i++,ptr+=2)
+      {
+      v=256*(*ptr)+*(ptr+1);
+      if (v>32767) v=v-65536;
+
+      *ptr=(v-vmin)/256;
+      *(ptr+1)=(v-vmin)%256;
+      }
+   }
+
+// convert from float to unsigned short
+void convfloat(unsigned char *data,long long bytes)
+   {
+   long long i;
+   unsigned char *ptr;
+   float v,vmax;
+
+   for (vmax=1.0f,ptr=data,i=0; i<bytes/4; i++,ptr+=4)
+      {
+      if (DDS_ISINTEL) DDS_swapuint((unsigned int *)ptr);
+
+      v=fabs(*((float *)ptr));
+      if (v>vmax) vmax=v;
+      }
+
+   for (ptr=data,i=0; i<bytes/4; i++,ptr+=4)
+      {
+      v=fabs(*((float *)ptr))/vmax;
+
+      data[2*i]=ftrc(65535.0f*v+0.5f)/256;
+      data[2*i+1]=ftrc(65535.0f*v+0.5f)%256;
+      }
+   }
+
+// helper to get a short value from a volume
+inline int getshort(unsigned short int *data,
+                    long long width,long long height,long long depth,
+                    long long i,long long j,long long k)
+   {return(data[i+(j+k*height)*width]);}
+
+// helper to get a short gradient value from a volume
+inline double getgrad(unsigned short int *data,
+                      long long width,long long height,long long depth,
+                      long long i,long long j,long long k)
+   {
+   double gx,gy,gz;
+
+   if (i>0)
+      if (i<width-1) gx=(getshort(data,width,height,depth,i+1,j,k)-getshort(data,width,height,depth,i-1,j,k))/2.0;
+      else gx=getshort(data,width,height,depth,i,j,k)-getshort(data,width,height,depth,i-1,j,k);
+   else
+      if (i<width-1) gx=getshort(data,width,height,depth,i+1,j,k)-getshort(data,width,height,depth,i,j,k);
+      else gx=0.0;
+
+   if (j>0)
+      if (j<height-1) gy=(getshort(data,width,height,depth,i,j+1,k)-getshort(data,width,height,depth,i,j-1,k))/2.0;
+      else gy=getshort(data,width,height,depth,i,j,k)-getshort(data,width,height,depth,i,j-1,k);
+   else
+      if (j<height-1) gy=getshort(data,width,height,depth,i,j+1,k)-getshort(data,width,height,depth,i,j,k);
+      else gy=0.0;
+
+   if (k>0)
+      if (k<depth-1) gz=(getshort(data,width,height,depth,i,j,k+1)-getshort(data,width,height,depth,i,j,k-1))/2.0;
+      else gz=getshort(data,width,height,depth,i,j,k)-getshort(data,width,height,depth,i,j,k-1);
+   else
+      if (k<depth-1) gz=getshort(data,width,height,depth,i,j,k+1)-getshort(data,width,height,depth,i,j,k);
+      else gz=0.0;
+
+   return(sqrt(gx*gx+gy*gy+gz*gz));
+   }
+
+// quantize 16 bit data to 8 bit using a non-linear mapping
+unsigned char *quantize(unsigned char *data,
+                        long long width,long long height,long long depth,
+                        BOOLINT msb,
+                        BOOLINT linear,BOOLINT nofree)
+   {
+   long long i,j,k;
+
+   unsigned char *data2;
+   unsigned short int *data3;
+   long long idx;
+
+   int v,vmin,vmax;
+
+   double *err,eint;
+
+   BOOLINT done;
+
+   if ((data3=(unsigned short int*)malloc(width*height*depth*sizeof(unsigned short int)))==NULL) ERRORMSG();
+
+   vmin=65535;
+   vmax=0;
+
+   for (k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
+            {
+            idx=i+(j+k*height)*width;
+
+            if (msb)
+               v=256*data[2*idx]+data[2*idx+1];
+            else
+               v=data[2*idx]+256*data[2*idx+1];
+            data3[idx]=v;
+
+            if (v<vmin) vmin=v;
+            if (v>vmax) vmax=v;
+            }
+
+   if (!nofree) free(data);
+
+   if (vmin==vmax) vmax=vmin+1;
+
+   if (vmax-vmin<256) linear=TRUE;
+
+   err=new double[65536];
+
+   if (linear)
+      for (i=0; i<65536; i++) err[i]=255*(double)(i-vmin)/(vmax-vmin);
+   else
+      {
+      for (i=0; i<65536; i++) err[i]=0.0;
+
+      for (k=0; k<depth; k++)
+         for (j=0; j<height; j++)
+            for (i=0; i<width; i++)
+               err[getshort(data3,width,height,depth,i,j,k)]+=sqrt(getgrad(data3,width,height,depth,i,j,k));
+
+      for (i=0; i<65536; i++) err[i]=pow(err[i],1.0/3);
+
+      err[vmin]=err[vmax]=0.0;
+
+      for (k=0; k<256; k++)
+         {
+         for (eint=0.0,i=0; i<65536; i++) eint+=err[i];
+
+         done=TRUE;
+
+         for (i=0; i<65536; i++)
+            if (err[i]>eint/256)
+               {
+               err[i]=eint/256;
+               done=FALSE;
+               }
+
+         if (done) break;
+         }
+
+      for (i=1; i<65536; i++) err[i]+=err[i-1];
+
+      if (err[65535]>0.0f)
+         for (i=0; i<65536; i++) err[i]*=255.0/err[65535];
+      }
+
+   if ((data2=(unsigned char *)malloc(width*height*depth))==NULL) ERRORMSG();
+
+   for (k=0; k<depth; k++)
+      for (j=0; j<height; j++)
+         for (i=0; i<width; i++)
+            {
+            idx=i+(j+k*height)*width;
+            data2[idx]=(int)(err[data3[idx]]+0.5);
+            }
+
+   delete err;
+   free(data3);
+
+   return(data2);
+   }

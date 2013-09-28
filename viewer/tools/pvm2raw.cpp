@@ -3,7 +3,9 @@
 #include "codebase.h"
 
 #include "ddsbase.h"
-#include "rawbase.h"
+#ifdef HAVE_MINI
+#include <mini/rawbase.h>
+#endif
 
 int main(int argc,char *argv[])
    {
@@ -33,6 +35,8 @@ int main(int argc,char *argv[])
 
    printf("and data checksum=%08X\n",checksum(volume,width*height*depth*components));
 
+#ifdef HAVE_MINI
+
    if (argc>2)
       {
       printf("writing RAW file with size=%d\n",width*height*depth*components);
@@ -43,6 +47,12 @@ int main(int argc,char *argv[])
                           scalex,scaley,scalez))
          printf("write error\n");
       }
+
+#else
+
+   ERRORMSG();
+
+#endif
 
    free(volume);
 

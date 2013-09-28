@@ -9,8 +9,10 @@
 #include "codebase.h" // universal code base
 #include "ddsbase.h" // volume file reader
 #include "dicombase.h" // dicom file reader
-#include "rekbase.h" // rek file reader
-#include "rawbase.h" // raw file reader
+#ifdef HAVE_MINI
+#include <mini/rekbase.h> // rek file reader
+#include <mini/rawbase.h> // raw file reader
+#endif
 #include "oglbase.h" // OpenGL base and window handling
 #include "tfbase.h" // transfer functions
 #include "tilebase.h" // volume tiles and bricks

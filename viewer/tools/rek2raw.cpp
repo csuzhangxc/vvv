@@ -1,10 +1,11 @@
 #include "codebase.h"
-#include "rekbase.h"
+
+#ifdef HAVE_MINI
+#include <mini/rekbase.h>
+#endif
 
 int main(int argc,char *argv[])
    {
-   char *output;
-
    if (argc!=3)
       {
       printf("usage: %s <input.rek> <output.raw>\n",argv[0]);
@@ -13,6 +14,10 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
+#ifdef HAVE_MINI
+
+   char *output;
+
    output=copyREKvolume(argv[1],argv[2]);
 
    if (output)
@@ -20,6 +25,12 @@ int main(int argc,char *argv[])
       printf("wrote %s\n",output);
       free(output);
       }
+
+#else
+
+   ERRORMSG();
+
+#endif
 
    return(0);
    }

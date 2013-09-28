@@ -3,7 +3,6 @@
 #include "codebase.h"
 
 #include "ddsbase.h"
-#include "rawbase.h"
 
 #define MAX_STR 1000
 

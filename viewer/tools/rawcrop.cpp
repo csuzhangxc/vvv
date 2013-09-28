@@ -1,12 +1,13 @@
 #include "codebase.h"
-#include "rawbase.h"
+
+#ifdef HAVE_MINI
+#include <mini/rawbase.h>
+#endif
 
 static const float ratio=0.5f;
 
 int main(int argc,char *argv[])
    {
-   char *output;
-
    if (argc!=3)
       {
       printf("usage: %s <input.raw> <output.raw>\n",argv[0]);
@@ -15,6 +16,10 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
+#ifdef HAVE_MINI
+
+   char *output;
+
    output=cropRAWvolume(argv[1],argv[2],ratio);
 
    if (output)
@@ -22,6 +27,12 @@ int main(int argc,char *argv[])
       printf("wrote %s\n",output);
       free(output);
       }
+
+#else
+
+   ERRORMSG();
+
+#endif
 
    return(0);
    }

@@ -33,4 +33,13 @@ unsigned char *readPVMvolume(const char *filename,
 int checkfile(const char *filename);
 unsigned int checksum(unsigned char *data,unsigned int bytes);
 
+void swapbytes(unsigned char *data,long long bytes);
+void convbytes(unsigned char *data,long long bytes);
+void convfloat(unsigned char *data,long long bytes);
+
+unsigned char *quantize(unsigned char *volume,
+                        long long width,long long height,long long depth,
+                        BOOLINT msb=TRUE,
+                        BOOLINT linear=FALSE,BOOLINT nofree=FALSE);
+
 #endif
