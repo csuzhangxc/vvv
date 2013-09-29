@@ -25,8 +25,12 @@ int main(int argc, char *argv[])
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
+#ifdef HAVE_MINI
+
    if (env.contains("QTV3_CELL_LIMIT"))
       REK_TARGET_CELLS=env.value("QTV3_CELL_LIMIT").toUInt()*1000000;
+
+#endif
 
    main.show();
 
