@@ -1,8 +1,6 @@
 # cmake build configuration for v^3
 # (c) by Stefan Roettger
 
-OPTION(BUILD_WITH_MINI "Build with REK support." OFF)
-OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
 OPTION(FIND_DCMTK_MANUALLY "Do not rely on CMake to find DCMTK." OFF)
 
 # path to custom cmake modules
@@ -171,19 +169,41 @@ ENDIF (NOT VIEWER_LIBRARY)
 FIND_VIEWER_PATH(VIEWER_INCLUDE_DIR guibase.h ${VIEWER_PATH})
 INCLUDE_DIRECTORIES(${VIEWER_INCLUDE_DIR})
 
-IF (BUILD_WITH_MINI)
+# find libmini library
+FIND_PACKAGE(MINI)
 
-   # find libmini library
-   FIND_PACKAGE(MINI)
+# determine libmini status
+IF (MINI_FOUND)
+   INCLUDE_DIRECTORIES(${MINI_INCLUDE_DIR})
+   ADD_DEFINITIONS(-DHAVE_MINI)
+ENDIF (MINI_FOUND)
 
-   IF (MINI_FOUND)
-      INCLUDE_DIRECTORIES(${MINI_INCLUDE_DIR})
-      ADD_DEFINITIONS(-DHAVE_MINI)
-   ENDIF (MINI_FOUND)
+# find DCMTK dependencies
+# caution: when using a cmake built dcmtk library on WIN32,
+#          make sure that the option DCMTK_OVERWRITE_WIN32_COMPILER_FLAGS is OFF.
+#          otherwise dcmtk is built with /MT and not as usual with the cmake default /MD.
+#          this will conflict with the /MD setting of this project.
+IF (FIND_DCMTK_MANUALLY)
+   FIND_VIEWER_LIBRARY2(DCMTK_ofstd_LIBRARY ofstd "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_oflog_LIBRARY oflog "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmdata_LIBRARY dcmdata "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmjpeg_LIBRARY dcmjpeg "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg8_LIBRARY ijg8 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg12_LIBRARY ijg12 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_ijg16_LIBRARY ijg16 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_LIBRARY2(DCMTK_dcmtls_LIBRARY dcmtls "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+   FIND_VIEWER_PATH2(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
+ELSE (FIND_DCMTK_MANUALLY)
+   FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
+   FIND_PACKAGE(DCMTK)
+ENDIF (FIND_DCMTK_MANUALLY)
 
-ENDIF (BUILD_WITH_MINI)
-
-IF (BUILD_WITH_DCMTK)
+# determine DCMTK status
+IF (DCMTK_FOUND)
+   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
+   IF (NOT WIN32)
+      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+   ENDIF (NOT WIN32)
 
    # find threads library
    FIND_PACKAGE(Threads)
@@ -194,33 +214,8 @@ IF (BUILD_WITH_DCMTK)
    FIND_VIEWER_PATH2(ZLIB_INCLUDE_DIR zlib.h "${ZLIB_PATH}" "${WIN32_ZLIB_PATH}")
    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
-   # find DCMTK dependencies
-   # caution: when using a cmake built dcmtk library on WIN32,
-   #          make sure that the option DCMTK_OVERWRITE_WIN32_COMPILER_FLAGS is OFF.
-   #          otherwise dcmtk is built with /MT and not as usual with the cmake default /MD.
-   #          this will conflict with the /MD setting of this project.
-   IF (FIND_DCMTK_MANUALLY)
-      FIND_VIEWER_LIBRARY2(DCMTK_ofstd_LIBRARY ofstd "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_oflog_LIBRARY oflog "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_dcmdata_LIBRARY dcmdata "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_dcmjpeg_LIBRARY dcmjpeg "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_ijg8_LIBRARY ijg8 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_ijg12_LIBRARY ijg12 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_ijg16_LIBRARY ijg16 "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_LIBRARY2(DCMTK_dcmtls_LIBRARY dcmtls "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-      FIND_VIEWER_PATH2(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h "${DCMTK_PATH}" "${WIN32_DCMTK_PATH}")
-   ELSE (FIND_DCMTK_MANUALLY)
-      FIND_PATH(DCMTK_DIR include/dcmtk/config/osconfig.h PATHS /usr/local /usr/local/dcmtk ../dcmtk ../../dcmtk)
-      FIND_PACKAGE(DCMTK)
-   ENDIF (FIND_DCMTK_MANUALLY)
-   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
-   IF (NOT WIN32)
-      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
-   ENDIF (NOT WIN32)
-
-   ADD_DEFINITIONS(-DVIEWER_HAVE_DCMTK)
-
-ENDIF (BUILD_WITH_DCMTK)
+   ADD_DEFINITIONS(-DHAVE_DCMTK)
+ENDIF (DCMTK_FOUND)
 
 # find OpenGL dependency
 FIND_PACKAGE(OpenGL)
@@ -268,12 +263,12 @@ MACRO(MAKE_VIEWER_EXECUTABLE name)
       ${OPENGL_LIBRARIES}
       ${GLUT_LIBRARY}
       )
-   IF (BUILD_WITH_MINI)
+   IF (MINI_FOUND)
       TARGET_LINK_LIBRARIES(${name}
          ${MINI_LIBRARIES}
          )
-   ENDIF (BUILD_WITH_MINI)
-   IF (BUILD_WITH_DCMTK)
+   ENDIF (MINI_FOUND)
+   IF (DCMTK_FOUND)
       IF (FIND_DCMTK_MANUALLY)
          TARGET_LINK_LIBRARIES(${name}
             ${DCMTK_dcmdata_LIBRARY}
@@ -294,5 +289,5 @@ MACRO(MAKE_VIEWER_EXECUTABLE name)
 	    ${CMAKE_THREAD_LIBS_INIT}
             )
       ENDIF (FIND_DCMTK_MANUALLY)
-   ENDIF (BUILD_WITH_DCMTK)
+   ENDIF (DCMTK_FOUND)
 ENDMACRO(MAKE_VIEWER_EXECUTABLE)

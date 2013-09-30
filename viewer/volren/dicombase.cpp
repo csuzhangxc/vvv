@@ -6,13 +6,13 @@
 
 #include "dicombase.h"
 
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
 #include <dcmtk/dcmjpeg/djdecode.h>
 #endif
 
 DicomVolume::ImageDesc::~ImageDesc()
    {
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
    delete m_Image;
 #endif
    }
@@ -27,7 +27,7 @@ DicomVolume::~DicomVolume()
 
 void DicomVolume::deleteImages()
    {
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
    int s=m_Images.size();
    for (int i=0; i<s; i++) delete m_Images[i];
    m_Images.clear();
@@ -65,7 +65,7 @@ bool DicomVolume::loadImages(const std::vector<std::string> list,
 bool DicomVolume::dicomLoad(const char *filenamepattern,
                             void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
 
    const char *fname;
 
@@ -113,7 +113,7 @@ bool DicomVolume::dicomLoad(const char *filenamepattern,
 bool DicomVolume::dicomLoad(const std::vector<std::string> list,
                             void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
 
    unsigned int i;
 
@@ -158,7 +158,7 @@ bool check_intel()
 
 bool DicomVolume::dicomProcess()
    {
-#ifdef VIEWER_HAVE_DCMTK
+#ifdef HAVE_DCMTK
 
    unsigned int i,j;
 

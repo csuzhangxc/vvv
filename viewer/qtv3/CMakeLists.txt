@@ -8,8 +8,6 @@ PROJECT(QTV3VolumeRenderer)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
-OPTION(BUILD_WITH_MINI "Build with REK support." OFF)
-OPTION(BUILD_WITH_DCMTK "Build with DICOM support." OFF)
 OPTION(FIND_DCMTK_MANUALLY "Do not rely on CMake to find DCMTK." OFF)
 
 # path to custom cmake modules
@@ -50,19 +48,36 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # OpenGL dependency
 FIND_PACKAGE(OpenGL)
 
-IF (BUILD_WITH_MINI)
+# find libmini library
+FIND_PACKAGE(MINI)
 
-   # find libmini library
-   FIND_PACKAGE(MINI)
+# determine libmini status
+IF (MINI_FOUND)
+   INCLUDE_DIRECTORIES(${MINI_INCLUDE_DIR})
+   ADD_DEFINITIONS(-DHAVE_MINI)
+ENDIF (MINI_FOUND)
 
-   IF (MINI_FOUND)
-      INCLUDE_DIRECTORIES(${MINI_INCLUDE_DIR})
-      ADD_DEFINITIONS(-DHAVE_MINI)
-   ENDIF (MINI_FOUND)
+# find DCMTK dependencies
+IF (FIND_DCMTK_MANUALLY)
+   FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
+   FIND_PATH(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h PATHS ${DCMTK_DIR} PATH_SUFFIXES include)
+ELSE (FIND_DCMTK_MANUALLY)
+   FIND_PACKAGE(DCMTK)
+ENDIF (FIND_DCMTK_MANUALLY)
 
-ENDIF (BUILD_WITH_MINI)
-
-IF (BUILD_WITH_DCMTK)
+# determine DCMTK status
+IF (DCMTK_FOUND)
+   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
+   IF (NOT WIN32)
+      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+   ENDIF (NOT WIN32)
 
    # find threads library
    FIND_PACKAGE(Threads)
@@ -71,28 +86,8 @@ IF (BUILD_WITH_DCMTK)
    FIND_PACKAGE(ZLIB)
    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
-   # find DCMTK dependencies
-   IF (FIND_DCMTK_MANUALLY)
-      FIND_LIBRARY(DCMTK_ofstd_LIBRARY ofstd PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_oflog_LIBRARY oflog PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_dcmdata_LIBRARY dcmdata PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_dcmjpeg_LIBRARY dcmjpeg PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_ijg8_LIBRARY ijg8 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_ijg12_LIBRARY ijg12 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_ijg16_LIBRARY ijg16 PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_LIBRARY(DCMTK_dcmtls_LIBRARY dcmtls PATHS ${DCMTK_DIR} PATH_SUFFIXES lib release minsizerel relwithdebinfo)
-      FIND_PATH(DCMTK_INCLUDE_DIR dcmtk/dcmdata/dctk.h PATHS ${DCMTK_DIR} PATH_SUFFIXES include)
-   ELSE (FIND_DCMTK_MANUALLY)
-      FIND_PACKAGE(DCMTK)
-   ENDIF (FIND_DCMTK_MANUALLY)
-   INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
-   IF (NOT WIN32)
-      ADD_DEFINITIONS(-DHAVE_CONFIG_H)
-   ENDIF (NOT WIN32)
-
-   ADD_DEFINITIONS(-DVIEWER_HAVE_DCMTK)
-
-ENDIF (BUILD_WITH_DCMTK)
+   ADD_DEFINITIONS(-DHAVE_DCMTK)
+ENDIF (DCMTK_FOUND)
 
 # volren dependency
 FIND_PATH(VOLREN_PATH volren.h PATHS .. PATH_SUFFIXES volren)
@@ -130,12 +125,12 @@ TARGET_LINK_LIBRARIES(qtv3
    ${VOLREN_LIBRARY}
    ${OPENGL_LIBRARIES}
    )
-IF (BUILD_WITH_MINI)
+IF (MINI_FOUND)
    TARGET_LINK_LIBRARIES(qtv3
       ${MINI_LIBRARIES}
       )
-ENDIF (BUILD_WITH_MINI)
-IF (BUILD_WITH_DCMTK)
+ENDIF (MINI_FOUND)
+IF (DCMTK_FOUND)
    IF (FIND_DCMTK_MANUALLY)
       TARGET_LINK_LIBRARIES(qtv3
          ${DCMTK_dcmdata_LIBRARY}
@@ -156,7 +151,7 @@ IF (BUILD_WITH_DCMTK)
          ${CMAKE_THREAD_LIBS_INIT}
          )
    ENDIF (FIND_DCMTK_MANUALLY)
-ENDIF (BUILD_WITH_DCMTK)
+ENDIF (DCMTK_FOUND)
 
 # install target
 INSTALL(
