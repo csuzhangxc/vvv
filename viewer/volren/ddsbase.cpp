@@ -952,7 +952,7 @@ inline int getshort(unsigned short int *data,
                     long long i,long long j,long long k)
    {return(data[i+(j+k*height)*width]);}
 
-// helper to get a short gradient value from a volume
+// helper to get a gradient value from a volume
 inline double getgrad(unsigned short int *data,
                       long long width,long long height,long long depth,
                       long long i,long long j,long long k)
