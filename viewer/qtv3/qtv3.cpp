@@ -1,3 +1,5 @@
+// (c) by Stefan Roettger, licensed under GPL 2+
+
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
