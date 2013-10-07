@@ -1,6 +1,10 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#ifdef HAVE_MINI
+#ifndef HAVE_MINI
+#include "codebase.h"
+#else
+#include <mini/minibase.h>
+
 #include <mini/ministrip.h>
 #endif
 
