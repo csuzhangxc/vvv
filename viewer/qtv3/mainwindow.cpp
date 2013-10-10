@@ -54,6 +54,18 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
    }
 }
 
+void QTV3MainWindow::loadSurface(const char *filename)
+{
+   vrw_->loadSurface(filename);
+
+   if (label_)
+   {
+      mainLayout_->removeItem(mainLayout_->itemAt(0));
+      delete label_;
+      label_=NULL;
+   }
+}
+
 void QTV3MainWindow::setRotation(double omega)
 {
    vrw_->setRotation(omega);
@@ -322,7 +334,16 @@ void QTV3MainWindow::dropEvent(QDropEvent *event)
 
          if (url.startsWith("file://"))
          {
-            loadVolume(normalizeFile(url).toStdString().c_str());
+            url = normalizeFile(url);
+
+            if (url.endsWith(".geo"))
+            {
+               loadSurface(url.toStdString().c_str());
+            }
+            else
+            {
+               loadVolume(url.toStdString().c_str());
+            }
          }
       }
       else
@@ -365,7 +386,16 @@ void QTV3MainWindow::open()
 
    if (files.size()==1)
    {
-      loadVolume(normalizeFile(files.at(0)).toStdString().c_str());
+      QString file = normalizeFile(files.at(0));
+
+      if (file.endsWith(".geo"))
+      {
+         loadSurface(file.toStdString().c_str());
+      }
+      else
+      {
+         loadVolume(file.toStdString().c_str());
+      }
    }
    else
    {

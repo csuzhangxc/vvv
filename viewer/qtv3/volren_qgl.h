@@ -105,6 +105,14 @@ public:
       series_ = list;
    }
 
+   //! load a surface
+   void loadSurface(const char *filename)
+   {
+      if (loading_) return;
+
+      vr_->loadsurface(filename);
+   }
+
    //! set volume rotation speed
    void setRotation(double omega=30.0)
       {omega_=omega;}

@@ -91,6 +91,9 @@ public:
    //! load a DICOM series
    void loadSeries(const std::vector<std::string> list);
 
+   //! load a surface
+   void loadSurface(const char *filename);
+
    //! set volume rotation speed
    void setRotation(double omega);
 
