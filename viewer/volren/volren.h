@@ -102,6 +102,10 @@ class volren: public volscene
          }
       }
 
+   //! load the surface data
+   BOOLINT loadsurface(const char *filename)
+      {return(volscene::loadsurface(filename));}
+
    //! render the volume mipmap pyramid
    BOOLINT render(float eye_x,float eye_y,float eye_z, // eye point
                   float eye_dx,float eye_dy,float eye_dz, // viewing direction
@@ -245,7 +249,6 @@ class volren: public volscene
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
-
 
       glPopMatrix();
 

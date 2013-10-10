@@ -16,6 +16,7 @@
 #include "oglbase.h" // OpenGL base and window handling
 #include "tfbase.h" // transfer functions
 #include "tilebase.h" // volume tiles and bricks
+#include "geobase.h" // surface wrapper
 
 // the volume
 class volume
@@ -168,6 +169,9 @@ class mipmap
    //! set ambient/diffuse/specular lighting coefficients
    void set_light(float noise,float ambnt,float difus,float specl,float specx);
 
+   //! load the surface data
+   BOOLINT loadsurface(const char *filename);
+
    //! render the volume
    BOOLINT render(float ex,float ey,float ez,
                   float dx,float dy,float dz,
@@ -283,6 +287,8 @@ class mipmap
    long long GWIDTH,GHEIGHT,GDEPTH;
    unsigned int GCOMPONENTS;
    float GDSX,GDSY,GDSZ,GRADMAX;
+
+   Surface SURFACE;
 
    double ex_,ey_,ez_;
    double dx_,dy_,dz_;

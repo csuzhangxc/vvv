@@ -1,5 +1,5 @@
 This package contains the V^3, the Versatile Volume Viewer.
-Copyright (c) 2003-2012 by Stefan Roettger.
+Copyright (c) 2003-2013 by Stefan Roettger.
 
 The Versatile Volume Viewer is a volume renderer that displays regular
 volumetric data such as medical CT or MRI scans in 3D and at

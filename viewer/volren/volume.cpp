@@ -3145,6 +3145,25 @@ void mipmap::set_light(float noise,float ambnt,float difus,float specl,float spe
    for (i=0; i<VOLCNT; i++) VOL[i]->set_light(noise,ambnt,difus,specl,specx);
    }
 
+// load the surface data
+BOOLINT mipmap::loadsurface(const char *filename)
+   {
+   BOOLINT result;
+
+   result=SURFACE.readGEOfile(filename);
+
+   float maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
+
+   double mtx[16]={1/maxsize,0,0,0,
+                   0,1/maxsize,0,0,
+                   0,0,1/maxsize,0,
+                   0,0,0,1};
+
+   SURFACE.setmatrix(mtx);
+
+   return(result);
+   }
+
 // render the volume
 BOOLINT mipmap::render(float ex,float ey,float ez,
                        float dx,float dy,float dz,
@@ -3199,6 +3218,9 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glClearColor(0,0,0,0);
          glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
          }
+
+   // render surface
+   SURFACE.render();
 
    // render opaque geometry
    rendergeometry();

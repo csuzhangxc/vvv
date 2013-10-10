@@ -6,6 +6,7 @@ SET(VOLREN_HDRS
    volren/dirbase.h volren/oglbase.h
    volren/tfbase.h volren/tilebase.h volren/progs.h
    volren/volume.h volren/volren.h
+   volren/geobase.h
    )
 
 SET(VOLREN_SRCS
@@ -13,6 +14,7 @@ SET(VOLREN_SRCS
    volren/dirbase.cpp volren/oglbase.cpp
    volren/tfbase.cpp volren/tilebase.cpp
    volren/volume.cpp
+   volren/geobase.cpp
    )
 
 SET(VIEWER_HDRS
