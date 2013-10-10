@@ -340,6 +340,10 @@ protected:
 
       bool gfx_fbo=true;
 
+#ifdef HAVE_NO_FBO
+       gfx_fbo=false;
+#endif
+
 #ifdef MACOSX
       // fbo bugfix for macos x 10.5
       if (rendercount_<5) gfx_fbo=false;
