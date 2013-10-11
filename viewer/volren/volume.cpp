@@ -2950,7 +2950,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
 
    if (upload)
       {
-      maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
+      maxsize=getscale();
 
       set_data(VOLUME,
                usegrad?GRAD:NULL,
@@ -3047,7 +3047,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    xrflag=xrotate;
    zrflag=zrotate;
 
-   maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
+   maxsize=getscale();
 
    set_data(VOLUME,GRAD,
             WIDTH,HEIGHT,DEPTH,
@@ -3150,13 +3150,20 @@ BOOLINT mipmap::loadsurface(const char *filename)
    {
    BOOLINT result;
 
+   double scale;
+
    result=SURFACE.readGEOfile(filename);
 
-   float maxsize=fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1)));
+   if (has_data())
+      scale=getscale();
+   else
+      scale=SURFACE.getscale();
 
-   double mtx[16]={1/maxsize,0,0,0,
-                   0,1/maxsize,0,0,
-                   0,0,1/maxsize,0,
+   if (scale>0.0) scale=1.0/scale;
+
+   double mtx[16]={scale,0,0,0,
+                   0,scale,0,0,
+                   0,0,scale,0,
                    0,0,0,1};
 
    SURFACE.setmatrix(mtx);

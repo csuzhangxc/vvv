@@ -19,6 +19,8 @@ class Surface
    void setmatrix(double mtx[16]);
    void render();
 
+   double getscale();
+
    protected:
 
    ministrip *strip_;

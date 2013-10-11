@@ -194,6 +194,10 @@ class mipmap
    float getsizey() {return(VOL[0]->getsizey());}
    float getsizez() {return(VOL[0]->getsizez());}
 
+   // return scaling factor
+   float getscale()
+      {return(fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1))));}
+
    //! get eye point
    void get_eye(double &ex,double &ey,double &ez,
                 double &dx,double &dy,double &dz,

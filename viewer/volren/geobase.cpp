@@ -53,3 +53,17 @@ void Surface::render()
    strip_->render();
 #endif
    }
+
+double Surface::getscale()
+   {
+#ifdef HAVE_MINI
+   miniv3d bboxmin,bboxmax,bbox;
+
+   strip_->getbbox(bboxmin,bboxmax);
+   bbox=bboxmax-bboxmin;
+
+   return(fmax(bbox.x,fmax(bbox.y,bbox.z)));
+#else
+   return(0.0);
+#endif
+   }
