@@ -25,6 +25,8 @@ int Surface::readGEOfile(const char *filename)
    {
 #ifdef HAVE_MINI
    return(strip_->readGEOfile(filename));
+#else
+   return(0);
 #endif
    }
 
