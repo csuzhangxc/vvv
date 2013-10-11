@@ -19,6 +19,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
    vrw_->setRotation(30.0);
 
+   hasTeaserVolume_=true;
+
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;
 
@@ -40,6 +42,8 @@ void QTV3MainWindow::loadVolume(const char *filename)
       delete label_;
       label_=NULL;
    }
+
+   hasTeaserVolume_=false;
 }
 
 void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
@@ -52,10 +56,18 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
       delete label_;
       label_=NULL;
    }
+
+   hasTeaserVolume_=false;
 }
 
 void QTV3MainWindow::loadSurface(const char *filename)
 {
+   if (hasTeaserVolume_)
+   {
+      vrw_->clearVolume();
+      hasTeaserVolume_=false;
+   }
+
    vrw_->loadSurface(filename);
 
    if (label_)

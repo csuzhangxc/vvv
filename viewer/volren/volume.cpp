@@ -3164,6 +3164,10 @@ BOOLINT mipmap::loadsurface(const char *filename)
    return(result);
    }
 
+// check whether or not a surface is present
+BOOLINT mipmap::has_geo()
+   {return(SURFACE.has_geo());}
+
 // render the volume
 BOOLINT mipmap::render(float ex,float ey,float ez,
                        float dx,float dy,float dz,

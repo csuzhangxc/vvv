@@ -172,6 +172,8 @@ class mipmap
    //! load the surface data
    BOOLINT loadsurface(const char *filename);
 
+   BOOLINT has_geo(); // check whether or not a surface is present
+
    //! render the volume
    BOOLINT render(float ex,float ey,float ez,
                   float dx,float dy,float dz,
@@ -522,7 +524,7 @@ class volscene: public mipmap
    virtual void rendergeometry()
       {
       // wire frame box
-      if (wireframe_ || !has_data()) drawwireframe();
+      if (wireframe_ || (!has_data() && !has_geo())) drawwireframe();
 
       // quantized histogram
       if (histogram_)

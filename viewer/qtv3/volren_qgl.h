@@ -118,6 +118,17 @@ public:
       geotoload_ = strdup(filename);
    }
 
+   //! clear the volume
+   void clearVolume()
+   {
+      if (loading_) return;
+
+      if (vr_)
+         delete vr_;
+
+      vr_ = new volren();
+   }
+
    //! set volume rotation speed
    void setRotation(double omega=30.0)
       {omega_=omega;}

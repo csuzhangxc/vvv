@@ -30,6 +30,15 @@ int Surface::readGEOfile(const char *filename)
 #endif
    }
 
+int Surface::has_geo()
+   {
+#ifdef HAVE_MINI
+   return(!strip_->empty());
+#else
+   return(0);
+#endif
+   }
+
 void Surface::setmatrix(double mtx[16])
    {
 #ifdef HAVE_MINI
