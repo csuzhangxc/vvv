@@ -110,7 +110,7 @@ public:
    {
       if (loading_) return;
 
-      vr_->loadSurface(filename);
+      vr_->loadsurface(filename);
    }
 
    //! set volume rotation speed
