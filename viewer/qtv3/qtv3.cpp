@@ -17,7 +17,18 @@ int main(int argc, char *argv[])
    QStringList args = QCoreApplication::arguments();
 
    if (args.size()==2)
-      main.loadVolume(args[1].toStdString().c_str());
+   {
+      QString file=args[1];
+
+      if (file.endsWith(".geo"))
+      {
+         main.loadSurface(file.toStdString().c_str());
+      }
+      else
+      {
+         main.loadVolume(file.toStdString().c_str());
+      }
+   }
    else if (args.size()>2)
    {
       std::vector<std::string> list;

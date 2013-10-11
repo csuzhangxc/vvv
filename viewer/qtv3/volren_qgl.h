@@ -33,6 +33,7 @@ public:
 
       toload_ = NULL;
       altpath_ = NULL;
+      geotoload_ = NULL;
       loading_ = false;
 
       fps_ = 30.0;
@@ -76,6 +77,9 @@ public:
 
       if (altpath_)
          free(altpath_);
+
+      if (geotoload_)
+         free(geotoload_);
    }
 
    //! load a volume
@@ -110,7 +114,8 @@ public:
    {
       if (loading_) return;
 
-      vr_->loadsurface(filename);
+      if (geotoload_) free(geotoload_);
+      geotoload_ = strdup(filename);
    }
 
    //! set volume rotation speed
@@ -288,6 +293,7 @@ protected:
 
    char *toload_,*altpath_;
    std::vector<std::string> series_;
+   char *geotoload_;
    bool loading_;
 
    double fps_; // animated frames per second
@@ -520,6 +526,18 @@ protected:
 
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
             setGradMag(gm_);
+
+            loading_ = false;
+         }
+
+         if (geotoload_)
+         {
+            loading_ = true;
+
+            vr_->loadsurface(geotoload_);
+
+            free(geotoload_);
+            geotoload_=NULL;
 
             loading_ = false;
          }
