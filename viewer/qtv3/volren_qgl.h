@@ -127,6 +127,17 @@ public:
          delete vr_;
 
       vr_ = new volren();
+
+      if (toload_) free(toload_);
+      toload_ = NULL;
+
+      if (altpath_) free(altpath_);
+      altpath_ = NULL;
+
+      series_.clear();
+
+      if (geotoload_) free(geotoload_);
+      geotoload_ = NULL;
    }
 
    //! set volume rotation speed
