@@ -4,6 +4,7 @@
 
 #ifdef HAVE_MINI
 #include <mini/rawbase.h>
+#include <mini/rekbase.h>
 #endif
 
 static const float ratio=0.5f;
@@ -29,6 +30,7 @@ int main(int argc,char *argv[])
    char *output;
 
    output=processRAWvolume(argv[1],NULL,ratio,cell_limit);
+   if (output==NULL) output=processREKvolume(argv[1],NULL,ratio,cell_limit);
 
    if (output)
       {
