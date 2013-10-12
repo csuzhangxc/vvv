@@ -126,6 +126,14 @@ public:
       geotoload_ = strdup(filename);
    }
 
+   //! clear surface
+   void clearSurface()
+   {
+      if (loading_) return;
+
+      vr_->clearsurface();
+   }
+
    //! clear the volume
    void clearVolume()
    {

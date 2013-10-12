@@ -3234,6 +3234,10 @@ BOOLINT mipmap::loadsurface(const char *filename)
    return(result);
    }
 
+// clear the surface data
+void mipmap::clearsurface()
+   {SURFACE.clear();}
+
 // check whether or not a surface is present
 BOOLINT mipmap::has_geo()
    {return(SURFACE.has_geo());}

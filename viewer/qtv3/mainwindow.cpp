@@ -271,6 +271,9 @@ void QTV3MainWindow::createWidgets()
    QPushButton *isoButton = new QPushButton(tr("Extract"));
    connect(isoButton, SIGNAL(pressed()), this, SLOT(extractSurface()));
    l7->addWidget(isoButton);
+   QPushButton *isoClearButton = new QPushButton(tr("Clear Iso"));
+   connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearSurface()));
+   l7->addWidget(isoClearButton);
    QLabel *ll7=new QLabel("Iso Surface");
    ll7->setAlignment(Qt::AlignHCenter);
    l7->addStretch(100);
@@ -574,6 +577,11 @@ void QTV3MainWindow::samplingChanged3(bool on)
 void QTV3MainWindow::extractSurface()
 {
    vrw_->extractSurface();
+}
+
+void QTV3MainWindow::clearSurface()
+{
+   vrw_->clearSurface();
 }
 
 void QTV3MainWindow::about()

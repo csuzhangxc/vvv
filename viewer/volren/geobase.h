@@ -16,6 +16,8 @@ class Surface
    int readGEOfile(const char *filename);
    int has_geo();
 
+   void clear();
+
    void setmatrix(double mtx[16]);
    void render();
 

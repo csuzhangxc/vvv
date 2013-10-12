@@ -39,6 +39,13 @@ int Surface::has_geo()
 #endif
    }
 
+void Surface::clear()
+   {
+#ifdef HAVE_MINI
+   strip_->clear();
+#endif
+   }
+
 void Surface::setmatrix(double mtx[16])
    {
 #ifdef HAVE_MINI

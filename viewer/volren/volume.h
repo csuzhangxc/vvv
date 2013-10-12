@@ -186,6 +186,9 @@ class mipmap
    //! load the surface data
    BOOLINT loadsurface(const char *filename);
 
+   //! clear the surface data
+   void clearsurface();
+
    BOOLINT has_geo(); // check whether or not a surface is present
 
    //! render the volume
