@@ -3178,10 +3178,14 @@ char *mipmap::extractsurface(double isovalue,
          free(output);
 
          loadsurface(surface);
+
+         if (feedback!=NULL) feedback("",0,obj);
          }
-      else feedback("raw volume expected to extract iso surface",0,obj);
+      else
+         if (feedback!=NULL) feedback("raw volume expected to extract iso surface",0,obj);
       }
-   else feedback("volume required to extract iso surface",0,obj);
+   else
+      if (feedback!=NULL) feedback("volume required to extract iso surface",0,obj);
 
 #else
 
@@ -3201,7 +3205,7 @@ char *mipmap::extractTFsurface(float ratio,
 
    isovalue=TFUNC->get_nonzero_min();
 
-   return(extractsurface(isovalue));
+   return(extractsurface(isovalue,ratio,cell_limit,feedback,obj));
    }
 
 // load the surface data
