@@ -10,7 +10,7 @@
 #define QUEUEINC 1000
 
 float ISO_TARGET_RATIO=0.5f;
-long long ISO_TARGET_CELLS=10000000;
+long long ISO_TARGET_CELLS=50000000;
 
 #include "volume.h"
 
