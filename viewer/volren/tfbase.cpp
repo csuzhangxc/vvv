@@ -1028,6 +1028,8 @@ float tfunc::get_nonzero_min()
    for (i=0; i<RES; i++)
       if (RA[i]>tolerance || GA[i]>tolerance || BA[i]>tolerance) break;
 
+   if (i>0) i--;
+
    return((float)i/(RES-1));
    }
 
@@ -1040,6 +1042,8 @@ float tfunc::get_nonzero_max()
 
    for (i=RES-1; i>=0; i--)
       if (RA[i]>tolerance || GA[i]>tolerance || BA[i]>tolerance) break;
+
+   if (i<RES-1) i++;
 
    return((float)i/(RES-1));
    }

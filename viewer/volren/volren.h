@@ -102,6 +102,10 @@ class volren: public volscene
          }
       }
 
+   //! extract the surface data
+   char *extractsurface()
+      {return(volscene::extractTFsurface());}
+
    //! load the surface data
    BOOLINT loadsurface(const char *filename)
       {return(volscene::loadsurface(filename));}

@@ -3203,11 +3203,14 @@ char *mipmap::extractTFsurface(float ratio,
                                long long cell_limit,
                                void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-   double isovalue;
+   double isomin,isomax;
 
-   isovalue=TFUNC->get_nonzero_min();
+   isomin=TFUNC->get_nonzero_min();
+   isomax=TFUNC->get_nonzero_max();
 
-   return(extractsurface(isovalue,ratio,cell_limit,feedback,obj));
+   if (isomin==0.0 && isomax==1.0) isomin=0.5;
+
+   return(extractsurface(isomin,ratio,cell_limit,feedback,obj));
    }
 
 // load the surface data
