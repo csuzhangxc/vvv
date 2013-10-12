@@ -18,6 +18,9 @@
 #include "tilebase.h" // volume tiles and bricks
 #include "geobase.h" // surface wrapper
 
+extern float ISO_TARGET_RATIO;
+extern long long ISO_TARGET_CELLS;
+
 // the volume
 class volume
    {
@@ -168,6 +171,17 @@ class mipmap
 
    //! set ambient/diffuse/specular lighting coefficients
    void set_light(float noise,float ambnt,float difus,float specl,float specx);
+
+   //! extract iso surface
+   char *extractsurface(double isovalue,
+                        float ratio=ISO_TARGET_RATIO,
+                        long long cell_limit=ISO_TARGET_CELLS,
+                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
+
+   //! extract iso surface for the smallest non-zero tfunc entry
+   char *extractTFsurface(float ratio=ISO_TARGET_RATIO,
+                          long long cell_limit=ISO_TARGET_CELLS,
+                          void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    //! load the surface data
    BOOLINT loadsurface(const char *filename);

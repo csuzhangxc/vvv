@@ -9,6 +9,9 @@
 #define TILEINC 1000
 #define QUEUEINC 1000
 
+float ISO_TARGET_RATIO=0.5f;
+long long ISO_TARGET_CELLS=10000000;
+
 #include "volume.h"
 
 volume::volume(tfunc2D *tf,char *base)
@@ -3143,6 +3146,60 @@ void mipmap::set_light(float noise,float ambnt,float difus,float specl,float spe
    if (VOLCNT==0) return;
 
    for (i=0; i<VOLCNT; i++) VOL[i]->set_light(noise,ambnt,difus,specl,specx);
+   }
+
+// extract iso surface
+char *mipmap::extractsurface(double isovalue,
+                             float ratio,
+                             long long cell_limit,
+                             void (*feedback)(const char *info,float percent,void *obj),void *obj)
+   {
+   char *output;
+   char *surface;
+
+   surface=NULL;
+
+#ifdef HAVE_MINI
+
+   if (strlen(filestr)>0)
+      {
+      output=processRAWvolume(filestr, //!! +"_iso"?
+                              ratio,cell_limit,
+                              feedback,obj);
+
+      if (output==NULL)
+         output=processRAWvolume(filestr, //!! +"_iso"?
+                                 ratio,cell_limit,
+                                 feedback,obj);
+
+      if (output!=NULL)
+         {
+         surface=extractRAWvolume(output,output,isovalue,feedback,obj); //!! strip .raw suffix?
+         free(output);
+
+         loadsurface(surface);
+         }
+      else feedback("raw volume expected to extract iso surface",0,obj);
+      }
+   else feedback("volume required to extract iso surface",0,obj);
+
+#else
+
+   feedback("iso surface extraction is unavailable",0,obj);
+
+#endif
+
+   return(surface);
+   }
+
+// extract iso surface for the smallest non-zero tfunc entry
+char *mipmap::extractTFsurface(float ratio,
+                               long long cell_limit,
+                               void (*feedback)(const char *info,float percent,void *obj),void *obj)
+   {
+   double isovalue=0.5; //!! get from tf
+
+   return(extractsurface(isovalue));
    }
 
 // load the surface data
