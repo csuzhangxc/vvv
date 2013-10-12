@@ -28,7 +28,7 @@ int main(int argc,char *argv[])
 
    char *output;
 
-   output=processRAWvolume(argv[1],ratio,cell_limit);
+   output=processRAWvolume(argv[1],NULL,ratio,cell_limit);
 
    if (output)
       {

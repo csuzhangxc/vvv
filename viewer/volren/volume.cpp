@@ -3163,18 +3163,18 @@ char *mipmap::extractsurface(double isovalue,
 
    if (strlen(filestr)>0)
       {
-      output=processRAWvolume(filestr, //!! +"_iso"?
+      output=processRAWvolume(filestr,"_iso",
                               ratio,cell_limit,
                               feedback,obj);
 
       if (output==NULL)
-         output=processRAWvolume(filestr, //!! +"_iso"?
+         output=processREKvolume(filestr,"_iso",
                                  ratio,cell_limit,
                                  feedback,obj);
 
       if (output!=NULL)
          {
-         surface=extractRAWvolume(output,output,isovalue,feedback,obj); //!! strip .raw suffix?
+         surface=extractRAWvolume(output,output,isovalue,feedback,obj);
          free(output);
 
          loadsurface(surface);
