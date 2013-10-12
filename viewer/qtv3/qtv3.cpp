@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
 
 #endif
 
+   if (env.contains("QTV3_ISO_LIMIT"))
+      ISO_TARGET_CELLS=env.value("QTV3_ISO_LIMIT").toUInt()*1000000;
+
    main.show();
 
    return(app.exec());
