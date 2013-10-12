@@ -3177,6 +3177,8 @@ char *mipmap::extractsurface(double isovalue,
          surface=extractRAWvolume(output,output,isovalue,feedback,obj);
          free(output);
 
+         if (feedback!=NULL) feedback("loading geometry",0,obj);
+
          loadsurface(surface);
 
          if (feedback!=NULL) feedback("",0,obj);
