@@ -116,7 +116,11 @@ public:
 
       vr_->extractTFsurface(ISO_TARGET_RATIO,ISO_TARGET_CELLS,feedback,this);
 
-      vr_->set_tfunc();
+      tf_center_ = 0.5f;
+      tf_size_ = 1.0f;
+      tf_inverse_ = false;
+
+      vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
    }
 
    //! load a surface
