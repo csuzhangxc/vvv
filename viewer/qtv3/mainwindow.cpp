@@ -243,10 +243,10 @@ void QTV3MainWindow::createWidgets()
    l4->addWidget(ll4);
    sliderLayout_->addLayout(l4);
 
-   QFrame* line = new QFrame();
-   line->setFrameShape(QFrame::VLine);
-   line->setFrameShadow(QFrame::Raised);
-   sliderLayout_->addWidget(line);
+   QFrame* line1 = new QFrame();
+   line1->setFrameShape(QFrame::VLine);
+   line1->setFrameShadow(QFrame::Raised);
+   sliderLayout_->addWidget(line1);
 
    QVBoxLayout *l5 = new QVBoxLayout;
    l5->addWidget(s5);
@@ -261,6 +261,21 @@ void QTV3MainWindow::createWidgets()
    ll6->setAlignment(Qt::AlignHCenter);
    l6->addWidget(ll6);
    sliderLayout_->addLayout(l6);
+
+   QFrame* line2 = new QFrame();
+   line2->setFrameShape(QFrame::VLine);
+   line2->setFrameShadow(QFrame::Raised);
+   sliderLayout_->addWidget(line2);
+
+   QVBoxLayout *l7 = new QVBoxLayout;
+   QPushButton *isoButton = new QPushButton(tr("Extract"));
+   connect(isoButton, SIGNAL(pressed()), this, SLOT(extractSurface()));
+   l7->addWidget(isoButton);
+   QLabel *ll7=new QLabel("Iso Surface");
+   ll7->setAlignment(Qt::AlignHCenter);
+   l7->addStretch(100);
+   l7->addWidget(ll7);
+   sliderLayout_->addLayout(l7);
 
    viewerSplitter->addWidget(vrw_);
 
