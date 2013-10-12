@@ -106,6 +106,12 @@ class tfunc
    // randomize transfer function
    void randomize();
 
+   // get minimum scalar value with non-zero opacity
+   float get_nonzero_min();
+
+   // get maximum scalar value with non-zero opacity
+   float get_nonzero_max();
+
    unsigned char *get_pre_e() {return(EDATA);} // get pre-integrated emission table
    unsigned char *get_pre_a() {return(ADATA);} // get pre-integrated absorption table
 
@@ -297,6 +303,12 @@ class tfunc2D
 
    // randomize transfer function
    void randomize();
+
+   // get minimum scalar value with non-zero opacity
+   float get_nonzero_min();
+
+   // get maximum scalar value with non-zero opacity
+   float get_nonzero_max();
 
    int get_eid() {return(EID);} // get texture id of pre-integrated emission
    int get_aid() {return(AID);} // get texture id of pre-integrated absorption

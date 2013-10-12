@@ -137,6 +137,8 @@ protected:
    {
       if (event->key() == Qt::Key_Q)
          emit close();
+      else if (event->key() == Qt::Key_I)
+         extractSurface();
 
       QMainWindow::keyPressEvent(event);
    }
@@ -178,6 +180,7 @@ protected slots:
    void samplingChanged1(bool on);
    void samplingChanged2(bool on);
    void samplingChanged3(bool on);
+   void extractSurface();
    void about();
 
    void update_slot(QString text);

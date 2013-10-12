@@ -3197,7 +3197,9 @@ char *mipmap::extractTFsurface(float ratio,
                                long long cell_limit,
                                void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-   double isovalue=0.5; //!! get from tf
+   double isovalue;
+
+   isovalue=TFUNC->get_nonzero_min();
 
    return(extractsurface(isovalue));
    }

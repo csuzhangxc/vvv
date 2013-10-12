@@ -556,6 +556,11 @@ void QTV3MainWindow::samplingChanged3(bool on)
    if (on) vrw_->setOversampling(2.0);
 }
 
+void QTV3MainWindow::extractSurface()
+{
+   vrw_->extractSurface();
+}
+
 void QTV3MainWindow::about()
 {
    QMessageBox::about(this, tr("About this program"),

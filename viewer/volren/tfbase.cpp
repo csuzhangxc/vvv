@@ -1018,6 +1018,32 @@ void tfunc::randomize()
    free(val);
    }
 
+// get minimum scalar value with non-zero opacity
+float tfunc::get_nonzero_min()
+   {
+   const float tolerance=1.0E-6f;
+
+   int i;
+
+   for (i=0; i<RES; i++)
+      if (RA[i]>tolerance || GA[i]>tolerance || BA[i]>tolerance) break;
+
+   return((float)i/(RES-1));
+   }
+
+// get maximum scalar value with non-zero opacity
+float tfunc::get_nonzero_max()
+   {
+   const float tolerance=1.0E-6f;
+
+   int i;
+
+   for (i=RES-1; i>=0; i--)
+      if (RA[i]>tolerance || GA[i]>tolerance || BA[i]>tolerance) break;
+
+   return((float)i/(RES-1));
+   }
+
 // save2file
 void tfunc::save(FILE *file)
    {
@@ -1845,6 +1871,36 @@ void tfunc2D::randomize()
 
    TF[0]->randomize();
    update();
+   }
+
+// get minimum scalar value with non-zero opacity
+float tfunc2D::get_nonzero_min()
+   {
+   int i;
+
+   float nzmin;
+
+   nzmin=1.0f;
+
+   for (i=0; i<NUM; i++)
+      nzmin=fmin(nzmin,TF[i]->get_nonzero_min());
+
+   return(nzmin);
+   }
+
+// get maximum scalar value with non-zero opacity
+float tfunc2D::get_nonzero_max()
+   {
+   int i;
+
+   float nzmax;
+
+   nzmax=0.0f;
+
+   for (i=0; i<NUM; i++)
+      nzmax=fmax(nzmax,TF[i]->get_nonzero_max());
+
+   return(nzmax);
    }
 
 // save2file

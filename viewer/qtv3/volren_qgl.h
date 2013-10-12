@@ -109,6 +109,14 @@ public:
       series_ = list;
    }
 
+   //! extract a surface
+   void extractSurface()
+   {
+      if (loading_) return;
+
+      vr_->extractTFsurface(ISO_TARGET_RATIO,ISO_TARGET_CELLS,feedback,this);
+   }
+
    //! load a surface
    void loadSurface(const char *filename)
    {
