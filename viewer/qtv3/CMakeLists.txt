@@ -162,9 +162,10 @@ IF (DCMTK_FOUND)
    ENDIF (FIND_DCMTK_MANUALLY)
 ENDIF (DCMTK_FOUND)
 
-# icon bundle destination
+# bundle icon
+SET(MACOSX_BUNDLE_ICON_FILE "qtv3.icns")
 SET_SOURCE_FILES_PROPERTIES(
-   qtv3.icns
+   ${MACOSX_BUNDLE_ICON_FILE}
    PROPERTIES
    MACOSX_PACKAGE_LOCATION Resources
    )
@@ -174,7 +175,7 @@ INSTALL(
    TARGETS qtv3
    RUNTIME DESTINATION bin
    BUNDLE DESTINATION /Applications
-)
+   )
 
 # install .desktop file and icon for KDE4 (and Gnome)
 IF (UNIX AND NOT APPLE)
