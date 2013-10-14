@@ -3154,7 +3154,6 @@ char *mipmap::extractsurface(double isovalue,
                              long long cell_limit,
                              void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-   char *output;
    char *surface;
 
    surface=NULL;
@@ -3163,6 +3162,8 @@ char *mipmap::extractsurface(double isovalue,
 
    if (strlen(filestr)>0)
       {
+      char *output;
+
       output=processRAWvolume(filestr,"_iso",
                               ratio,cell_limit,
                               feedback,obj);
