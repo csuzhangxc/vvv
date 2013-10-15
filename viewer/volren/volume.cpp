@@ -9,8 +9,11 @@
 #define TILEINC 1000
 #define QUEUEINC 1000
 
+float VOL_TARGET_RATIO=0.5f;
+long long VOL_TARGET_CELLS=250000000;
+
 float ISO_TARGET_RATIO=0.5f;
-long long ISO_TARGET_CELLS=50000000;
+long long ISO_TARGET_CELLS=10000000;
 
 #include "volume.h"
 
@@ -2797,7 +2800,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       if (volume==NULL)
          volume=readREKvolume_ooc(filename,width,height,depth,components,
                                   scalex,scaley,scalez,
-                                  REK_TARGET_RATIO,REK_TARGET_CELLS,
+                                  VOL_TARGET_RATIO,VOL_TARGET_CELLS,
                                   feedback,obj);
 
       // read a REK volume
