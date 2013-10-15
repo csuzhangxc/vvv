@@ -18,6 +18,9 @@
 #include "tilebase.h" // volume tiles and bricks
 #include "geobase.h" // surface wrapper
 
+extern float VOL_TARGET_RATIO;
+extern long long VOL_TARGET_CELLS;
+
 extern float ISO_TARGET_RATIO;
 extern long long ISO_TARGET_CELLS;
 
