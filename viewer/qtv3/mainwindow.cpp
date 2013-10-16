@@ -26,15 +26,13 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    clipNum_=0;
 
-   prefs_=NULL;
+   prefs_=new QTV3PrefWindow;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
 {
    delete vrw_;
-
-   if (prefs_)
-      delete prefs_;
+   delete prefs_;
 }
 
 void QTV3MainWindow::loadVolume(const char *filename)
@@ -597,9 +595,6 @@ void QTV3MainWindow::clearSurface()
 
 void QTV3MainWindow::prefs()
 {
-   if (!prefs_)
-      prefs_=new QTV3PrefWindow;
-
    prefs_->show();
 }
 
