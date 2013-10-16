@@ -6,6 +6,7 @@
 #include <QtGui>
 
 #include "volren_qgl.h"
+#include "prefwindow.h"
 
 class QTV3VolRenWidget: public QGLVolRenWidget
 {
@@ -130,6 +131,8 @@ private:
 
    QTV3Slider *emiSlider_;
    QTV3Slider *attSlider_;
+
+   QTV3PrefWindow *prefs_;
 
 protected:
 

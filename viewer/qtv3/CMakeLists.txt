@@ -106,11 +106,13 @@ INCLUDE_DIRECTORIES(${VOLREN_PATH})
 SET(LIB_HDRS
    volren_qgl.h
    mainwindow.h
+   prefwindow.h
    )
 
 # module list
 SET(LIB_SRCS
    mainwindow.cpp
+   prefwindow.cpp
    )
 
 # check for fbo

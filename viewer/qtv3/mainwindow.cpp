@@ -25,11 +25,16 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    flipYZ1_=flipYZ2_=0;
 
    clipNum_=0;
+
+   prefs_=NULL;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
 {
    delete vrw_;
+
+   if (prefs_)
+      delete prefs_;
 }
 
 void QTV3MainWindow::loadVolume(const char *filename)
@@ -92,12 +97,12 @@ void QTV3MainWindow::createMenus()
 
    QAction *openAction = new QAction(tr("O&pen"), this);
    openAction->setShortcuts(QKeySequence::Open);
-   openAction->setStatusTip(tr("Open volume"));
+   openAction->setStatusTip(tr("Open Volume File"));
    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
    QAction *prefAction = new QAction(tr("P&references"), this);
    prefAction->setShortcuts(QKeySequence::Preferences);
-   prefAction->setStatusTip(tr("Set Preferences"));
+   prefAction->setStatusTip(tr("Set Volume Rendering Preferences"));
    connect(prefAction, SIGNAL(triggered()), this, SLOT(prefs()));
 
    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -592,7 +597,10 @@ void QTV3MainWindow::clearSurface()
 
 void QTV3MainWindow::prefs()
 {
-   //!! set vol and iso size limits
+   if (!prefs_)
+      prefs_=new QTV3PrefWindow;
+
+   prefs_->show();
 }
 
 void QTV3MainWindow::about()
