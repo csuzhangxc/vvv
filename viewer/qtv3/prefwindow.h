@@ -22,6 +22,19 @@ public:
 
    //! return preferred window size
    QSize sizeHint() const;
+
+   long long vol_maxsize_;
+   long long iso_maxsize_;
+
+private:
+
+   QGroupBox *createEdit(QString name, QString value,
+                         QLineEdit **lineEdit);
+
+protected slots:
+
+   void volMaxSizeChange(QString);
+   void isoMaxSizeChange(QString);
 };
 
 #endif
