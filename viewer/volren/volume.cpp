@@ -3306,31 +3306,31 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
          }
 
-   // render surface
-   SURFACE.render();
-
    // render opaque geometry
    rendergeometry();
+
+   // enable clipping planes
+   for (i=0; i<6; i++)
+      if (clip_on[i])
+         {
+         GLdouble equ[4];
+
+         equ[0]=clip_a[i];
+         equ[1]=clip_b[i];
+         equ[2]=clip_c[i];
+         equ[3]=clip_d[i];
+
+         glClipPlane(GL_CLIP_PLANE0+i,equ);
+
+         glEnable(GL_CLIP_PLANE0+i);
+         }
+
+   // render surface
+   SURFACE.render();
 
    // render transparent volume
    if (VOLCNT>0)
       {
-      // enable clipping planes
-      for (i=0; i<6; i++)
-         if (clip_on[i])
-            {
-            GLdouble equ[4];
-
-            equ[0]=clip_a[i];
-            equ[1]=clip_b[i];
-            equ[2]=clip_c[i];
-            equ[3]=clip_d[i];
-
-            glClipPlane(GL_CLIP_PLANE0+i,equ);
-
-            glEnable(GL_CLIP_PLANE0+i);
-            }
-
       // choose volume
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;
@@ -3343,12 +3343,12 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                                1.0f/get_slab(),
                                lighting,
                                abort,abortdata);
-
-      // disable clipping planes
-      for (i=0; i<6; i++)
-         if (clip_on[i])
-            glDisable(GL_CLIP_PLANE0+i);
       }
+
+   // disable clipping planes
+   for (i=0; i<6; i++)
+      if (clip_on[i])
+         glDisable(GL_CLIP_PLANE0+i);
 
    // render from fbo
    if (HASFBO && usefbo)
