@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "volume.h"
+
 #include "prefwindow.h"
 
 QTV3PrefWindow::QTV3PrefWindow(QWidget *parent)
@@ -21,7 +23,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent)
    layout->addWidget(vol_maxsize_group);
 
    QLineEdit *lineEdit_iso_maxsize = new QLineEdit;
-   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
+   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size For Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout->addWidget(iso_maxsize_group);
 
@@ -32,8 +34,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent)
 }
 
 QTV3PrefWindow::~QTV3PrefWindow()
-{
-}
+{}
 
 QSize QTV3PrefWindow::minimumSizeHint() const
 {
@@ -59,9 +60,15 @@ QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,
 void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
 {
    vol_maxsize_ = maxsize.toUInt();
+
+   if (vol_maxsize_>0)
+      VOL_TARGET_CELLS = vol_maxsize_*vol_maxsize_*vol_maxsize_;
 }
 
 void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 {
    iso_maxsize_ = maxsize.toUInt();
+
+   if (iso_maxsize_>0)
+      ISO_TARGET_CELLS = iso_maxsize_*iso_maxsize_*iso_maxsize_;
 }
