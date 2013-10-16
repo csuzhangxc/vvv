@@ -95,8 +95,14 @@ void QTV3MainWindow::createMenus()
    openAction->setStatusTip(tr("Open volume"));
    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
+   QAction *prefAction = new QAction(tr("P&references"), this);
+   prefAction->setShortcuts(QKeySequence::Preferences);
+   prefAction->setStatusTip(tr("Set Preferences"));
+   connect(prefAction, SIGNAL(triggered()), this, SLOT(prefs()));
+
    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
    fileMenu->addAction(openAction);
+   fileMenu->addAction(prefAction);
    fileMenu->addAction(quitAction);
 
    QAction *aboutAction = new QAction(tr("&About"), this);
@@ -271,7 +277,7 @@ void QTV3MainWindow::createWidgets()
    QPushButton *isoButton = new QPushButton(tr("Extract"));
    connect(isoButton, SIGNAL(pressed()), this, SLOT(extractSurface()));
    l7->addWidget(isoButton);
-   QPushButton *isoClearButton = new QPushButton(tr("Clear Iso"));
+   QPushButton *isoClearButton = new QPushButton(tr("Clear"));
    connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearSurface()));
    l7->addWidget(isoClearButton);
    QLabel *ll7=new QLabel("Iso Surface");
@@ -582,6 +588,11 @@ void QTV3MainWindow::extractSurface()
 void QTV3MainWindow::clearSurface()
 {
    vrw_->clearSurface();
+}
+
+void QTV3MainWindow::prefs()
+{
+   //!! set vol and iso size limits
 }
 
 void QTV3MainWindow::about()

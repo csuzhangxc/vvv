@@ -182,6 +182,7 @@ protected slots:
    void samplingChanged3(bool on);
    void extractSurface();
    void clearSurface();
+   void prefs();
    void about();
 
    void update_slot(QString text);
