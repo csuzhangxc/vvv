@@ -100,6 +100,9 @@ public:
 
 private:
 
+   QMenu *fileMenu_;
+   QMenu *helpMenu_;
+
    QVBoxLayout *mainLayout_;
    QSplitter *mainSplitter_;
 
@@ -112,6 +115,7 @@ private:
 
    void createMenus();
    void createWidgets();
+   void createDocks();
 
    QStringList browse(QString path="",
                       bool newfile=false);

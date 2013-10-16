@@ -5,7 +5,7 @@
 
 #include <QtGui>
 
-class QTV3PrefWindow: public QWidget
+class QTV3PrefWindow: public QDockWidget
 {
    Q_OBJECT; // Qt Metacall object for signal/slot connections
 

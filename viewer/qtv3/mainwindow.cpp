@@ -10,6 +10,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 {
    createMenus();
    createWidgets();
+   createDocks();
 
    // accept drag and drop
    setAcceptDrops(true);
@@ -25,8 +26,6 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    flipYZ1_=flipYZ2_=0;
 
    clipNum_=0;
-
-   prefs_=new QTV3PrefWindow;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -103,18 +102,18 @@ void QTV3MainWindow::createMenus()
    prefAction->setStatusTip(tr("Set Volume Rendering Preferences"));
    connect(prefAction, SIGNAL(triggered()), this, SLOT(prefs()));
 
-   QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-   fileMenu->addAction(openAction);
-   fileMenu->addAction(prefAction);
-   fileMenu->addAction(quitAction);
+   fileMenu_ = menuBar()->addMenu(tr("&File"));
+   fileMenu_->addAction(openAction);
+   fileMenu_->addAction(prefAction);
+   fileMenu_->addAction(quitAction);
 
    QAction *aboutAction = new QAction(tr("&About"), this);
    aboutAction->setShortcut(tr("Ctrl+A"));
    aboutAction->setStatusTip(tr("About this program"));
    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
-   QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
-   helpMenu->addAction(aboutAction);
+   helpMenu_ = menuBar()->addMenu(tr("&Help"));
+   helpMenu_->addAction(aboutAction);
 }
 
 void QTV3MainWindow::createWidgets()
@@ -292,6 +291,15 @@ void QTV3MainWindow::createWidgets()
    viewerSplitter->addWidget(vrw_);
 
    setCentralWidget(mainGroup);
+}
+
+void QTV3MainWindow::createDocks()
+{
+   prefs_ = new QTV3PrefWindow(this);
+   prefs_->setAllowedAreas(Qt::RightDockWidgetArea);
+
+   addDockWidget(Qt::RightDockWidgetArea, prefs_);
+   prefs_->hide();
 }
 
 QStringList QTV3MainWindow::browse(QString path,
