@@ -547,7 +547,7 @@ protected:
             volren *vr = new volren();
 
             // set maximum volume size
-            vr_->set_vol_maxsize(vol_maxsize_,vol_ratio_);
+            vr->set_vol_maxsize(vol_maxsize_,vol_ratio_);
 
             // try to load from regular file path
             if (!loadFile(vr, toload_))

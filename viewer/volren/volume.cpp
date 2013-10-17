@@ -9,12 +9,6 @@
 #define TILEINC 1000
 #define QUEUEINC 1000
 
-float VOL_TARGET_RATIO=0.5f;
-long long VOL_TARGET_CELLS=250000000;
-
-float ISO_TARGET_RATIO=0.5f;
-long long ISO_TARGET_CELLS=10000000;
-
 #include "volume.h"
 
 volume::volume(tfunc2D *tf,char *base)
@@ -356,6 +350,9 @@ mipmap::mipmap(char *base,int res)
    nx_=ny_=nz_=0.0;
 
    disable_clip();
+
+   set_vol_maxsize(512);
+   set_iso_maxsize(256);
 
    CACHE=NULL;
 
@@ -2800,7 +2797,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       if (volume==NULL)
          volume=readREKvolume_ooc(filename,width,height,depth,components,
                                   scalex,scaley,scalez,
-                                  VOL_TARGET_RATIO,VOL_TARGET_CELLS,
+                                  vol_ratio_,vol_target_cells_,
                                   feedback,obj);
 
       // read a REK volume
@@ -3153,8 +3150,6 @@ void mipmap::set_light(float noise,float ambnt,float difus,float specl,float spe
 
 // extract iso surface
 char *mipmap::extractsurface(double isovalue,
-                             float ratio,
-                             long long cell_limit,
                              void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    char *surface;
@@ -3168,12 +3163,12 @@ char *mipmap::extractsurface(double isovalue,
       char *output;
 
       output=processRAWvolume(filestr,"_iso",
-                              ratio,cell_limit,
+                              iso_ratio_,iso_target_cells_,
                               feedback,obj);
 
       if (output==NULL)
          output=processREKvolume(filestr,"_iso",
-                                 ratio,cell_limit,
+                                 iso_ratio_,iso_target_cells_,
                                  feedback,obj);
 
       if (output!=NULL)
@@ -3203,9 +3198,7 @@ char *mipmap::extractsurface(double isovalue,
    }
 
 // extract iso surface for the smallest non-zero tfunc entry
-char *mipmap::extractTFsurface(float ratio,
-                               long long cell_limit,
-                               void (*feedback)(const char *info,float percent,void *obj),void *obj)
+char *mipmap::extractTFsurface(void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
    double isomin,isomax;
 
@@ -3214,7 +3207,7 @@ char *mipmap::extractTFsurface(float ratio,
 
    if (isomin==0.0 && isomax==1.0) isomin=0.5;
 
-   return(extractsurface(isomin,ratio,cell_limit,feedback,obj));
+   return(extractsurface(isomin,feedback,obj));
    }
 
 // load the surface data
@@ -3250,6 +3243,28 @@ void mipmap::clearsurface()
 // check whether or not a surface is present
 BOOLINT mipmap::has_geo()
    {return(SURFACE.has_geo());}
+
+// set limit for maximum displayable volume size
+void mipmap::set_vol_maxsize(long long maxsize,
+                             float ratio)
+   {
+   if (maxsize>1)
+      {
+      vol_target_cells_=maxsize*maxsize*maxsize;
+      vol_ratio_=ratio;
+      }
+   }
+
+// set limit for maximum volume size for iso surface extraction
+void mipmap::set_iso_maxsize(long long maxsize,
+                             float ratio)
+   {
+   if (maxsize>1)
+      {
+      iso_target_cells_=maxsize*maxsize*maxsize;
+      iso_ratio_=ratio;
+      }
+   }
 
 // render the volume
 BOOLINT mipmap::render(float ex,float ey,float ez,

@@ -16,7 +16,7 @@ int main(int argc,char *argv[])
 
    if (argc!=2 && argc!=3)
       {
-      printf("usage: %s <input.raw> [<volume size limit in mb>]\n",argv[0]);
+      printf("usage: %s <input.raw> [<volume size limit>]\n",argv[0]);
       exit(1);
       }
 

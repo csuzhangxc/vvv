@@ -18,12 +18,6 @@
 #include "tilebase.h" // volume tiles and bricks
 #include "geobase.h" // surface wrapper
 
-extern float VOL_TARGET_RATIO;
-extern long long VOL_TARGET_CELLS;
-
-extern float ISO_TARGET_RATIO;
-extern long long ISO_TARGET_CELLS;
-
 // the volume
 class volume
    {
@@ -107,6 +101,7 @@ class volume
                 BOOLINT lighting=FALSE,
                 BOOLINT (*abort)(void *abortdata)=NULL,
                 void *abortdata=NULL);
+
    };
 
 typedef volume *volumeptr;
@@ -177,14 +172,10 @@ class mipmap
 
    //! extract iso surface
    char *extractsurface(double isovalue,
-                        float ratio=ISO_TARGET_RATIO,
-                        long long cell_limit=ISO_TARGET_CELLS,
                         void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    //! extract iso surface for the smallest non-zero tfunc entry
-   char *extractTFsurface(float ratio=ISO_TARGET_RATIO,
-                          long long cell_limit=ISO_TARGET_CELLS,
-                          void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
+   char *extractTFsurface(void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
    //! load the surface data
    BOOLINT loadsurface(const char *filename);
@@ -193,6 +184,14 @@ class mipmap
    void clearsurface();
 
    BOOLINT has_geo(); // check whether or not a surface is present
+
+   //! set limit for maximum displayable volume size
+   void set_vol_maxsize(long long maxsize,
+                        float ratio=0.25f);
+
+   //! set limit for maximum volume size for iso surface extraction
+   void set_iso_maxsize(long long maxsize,
+                        float ratio=0.25f);
 
    //! render the volume
    BOOLINT render(float ex,float ey,float ez,
@@ -328,6 +327,12 @@ class mipmap
    double clip_b[6];
    double clip_c[6];
    double clip_d[6];
+
+   long long vol_target_cells_;
+   float vol_ratio_;
+
+   long long iso_target_cells_;
+   float iso_ratio_;
 
    // render opaque geometry
    virtual void rendergeometry() = 0;
@@ -512,6 +517,7 @@ class mipmap
    unsigned char *scale(unsigned char *volume,
                         long long width,long long height,long long depth,
                         long long nwidth,long long nheight,long long ndepth);
+
    };
 
 //! the volume scene
