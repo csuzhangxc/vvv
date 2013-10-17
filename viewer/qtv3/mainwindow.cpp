@@ -295,7 +295,7 @@ void QTV3MainWindow::createWidgets()
 
 void QTV3MainWindow::createDocks()
 {
-   prefs_ = new QTV3PrefWindow(this);
+   prefs_ = new QTV3PrefWindow(this, vrw_);
    prefs_->setAllowedAreas(Qt::RightDockWidgetArea);
 
    addDockWidget(Qt::RightDockWidgetArea, prefs_);

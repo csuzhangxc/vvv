@@ -2,18 +2,55 @@
 
 #include <iostream>
 
-#include "volume.h"
+#include "volren_qgl.h"
 
 #include "prefwindow.h"
 
-QTV3PrefWindow::QTV3PrefWindow(QWidget *parent)
+QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
    : QDockWidget(parent)
 {
    setWindowTitle("QTV3 Volume Rendering Preferences");
 
-   vol_maxsize_=512;
-   iso_maxsize_=256;
+   vrw_ = vrw;
 
+   vol_maxsize_ = 512;
+   iso_maxsize_ = 256;
+
+   ratio_ = 0.25f;
+
+   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+   if (env.contains("QTV3_VOL_LIMIT"))
+   {
+      vol_maxsize_ = env.value("QTV3_VOL_LIMIT").toUInt();
+   }
+
+   if (env.contains("QTV3_ISO_LIMIT"))
+   {
+      iso_maxsize_ = env.value("QTV3_ISO_LIMIT").toUInt();
+   }
+
+   vrw_->set_vol_maxsize(vol_maxsize_, ratio_);
+   vrw_->set_iso_maxsize(iso_maxsize_, ratio_);
+
+   createWidgets();
+}
+
+QTV3PrefWindow::~QTV3PrefWindow()
+{}
+
+QSize QTV3PrefWindow::minimumSizeHint() const
+{
+   return(QSize(256, 100));
+}
+
+QSize QTV3PrefWindow::sizeHint() const
+{
+   return(QSize(256, 768));
+}
+
+void QTV3PrefWindow::createWidgets()
+{
    QGroupBox *group = new QGroupBox;
    QVBoxLayout *layout = new QVBoxLayout;
 
@@ -33,19 +70,6 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent)
    setWidget(group);
 }
 
-QTV3PrefWindow::~QTV3PrefWindow()
-{}
-
-QSize QTV3PrefWindow::minimumSizeHint() const
-{
-   return(QSize(256, 100));
-}
-
-QSize QTV3PrefWindow::sizeHint() const
-{
-   return(QSize(256, 768));
-}
-
 QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,
                                       QLineEdit **lineEdit)
 {
@@ -60,15 +84,11 @@ QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,
 void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
 {
    vol_maxsize_ = maxsize.toUInt();
-
-   if (vol_maxsize_>0)
-      VOL_TARGET_CELLS = vol_maxsize_*vol_maxsize_*vol_maxsize_;
+   vrw_->set_vol_maxsize(vol_maxsize_, ratio_);
 }
 
 void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 {
    iso_maxsize_ = maxsize.toUInt();
-
-   if (iso_maxsize_>0)
-      ISO_TARGET_CELLS = iso_maxsize_*iso_maxsize_*iso_maxsize_;
+   vrw_->set_iso_maxsize(iso_maxsize_, ratio_);
 }

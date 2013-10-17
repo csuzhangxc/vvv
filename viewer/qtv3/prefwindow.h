@@ -5,6 +5,8 @@
 
 #include <QtGui>
 
+class QGLVolRenWidget;
+
 class QTV3PrefWindow: public QDockWidget
 {
    Q_OBJECT; // Qt Metacall object for signal/slot connections
@@ -12,7 +14,7 @@ class QTV3PrefWindow: public QDockWidget
 public:
 
    //! default ctor
-   QTV3PrefWindow(QWidget *parent = 0);
+   QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw);
 
    //! dtor
    ~QTV3PrefWindow();
@@ -26,7 +28,13 @@ public:
    long long vol_maxsize_;
    long long iso_maxsize_;
 
-private:
+   float ratio_;
+
+protected:
+
+   QGLVolRenWidget *vrw_;
+
+   void createWidgets();
 
    QGroupBox *createEdit(QString name, QString value,
                          QLineEdit **lineEdit);

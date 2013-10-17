@@ -36,20 +36,6 @@ int main(int argc, char *argv[])
       main.loadSeries(list);
    }
 
-   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
-   if (env.contains("QTV3_VOL_LIMIT"))
-   {
-      long long maxsize=env.value("QTV3_VOL_LIMIT").toUInt();
-      VOL_TARGET_CELLS=maxsize*maxsize*maxsize;
-   }
-
-   if (env.contains("QTV3_ISO_LIMIT"))
-   {
-      long long maxsize=env.value("QTV3_ISO_LIMIT").toUInt();
-      ISO_TARGET_CELLS=maxsize*maxsize*maxsize;
-   }
-
    main.show();
 
    return(app.exec());

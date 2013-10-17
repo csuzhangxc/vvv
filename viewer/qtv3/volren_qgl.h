@@ -3,12 +3,13 @@
 #ifndef VOLREN_QGL_H
 #define VOLREN_QGL_H
 
-#include "volren.h"
-
+#include <QtGui/QApplication>
 #include <QtOpenGL/qgl.h>
 
 #include <QMouseEvent>
 #include <QWheelEvent>
+
+#include "volren.h"
 
 #define VOLREN_DEFAULT_RED 0.5f
 #define VOLREN_DEFAULT_GREEN 1.0f
@@ -35,6 +36,9 @@ public:
       altpath_ = NULL;
       geotoload_ = NULL;
       loading_ = false;
+
+      set_vol_maxsize(512);
+      set_iso_maxsize(256);
 
       fps_ = 30.0;
       angle_ = 0.0;
@@ -114,7 +118,8 @@ public:
    {
       if (loading_) return;
 
-      vr_->extractTFsurface(ISO_TARGET_RATIO,ISO_TARGET_CELLS,feedback,this);
+      vr_->set_iso_maxsize(iso_maxsize_,iso_ratio_);
+      vr_->extractTFsurface(feedback,this);
 
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
@@ -160,6 +165,22 @@ public:
 
       if (geotoload_) free(geotoload_);
       geotoload_ = NULL;
+   }
+
+   //! set limit for maximum displayable volume size
+   void set_vol_maxsize(long long maxsize,
+                        float ratio=0.25f)
+   {
+      vol_maxsize_=maxsize;
+      vol_ratio_=ratio;
+   }
+
+   //! set limit for maximum volume size for iso surface extraction
+   void set_iso_maxsize(long long maxsize,
+                        float ratio=0.25f)
+   {
+      iso_maxsize_=maxsize;
+      iso_ratio_=ratio;
    }
 
    //! set volume rotation speed
@@ -340,6 +361,11 @@ protected:
    char *geotoload_;
    bool loading_;
 
+   long long vol_maxsize_;
+   float vol_ratio_;
+   long long iso_maxsize_;
+   float iso_ratio_;
+
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
@@ -406,15 +432,15 @@ protected:
       double tf_ra_scale,tf_ga_scale,tf_ba_scale;
 
       if (gm_)
-         {
+      {
          tf_re_scale=tf_ge_scale=tf_be_scale=1.5*emi_gm_;
          tf_ra_scale=tf_ga_scale=tf_ba_scale=att_gm_;
-         }
+      }
       else
-         {
+      {
          tf_re_scale=tf_ge_scale=tf_be_scale=emi_;
          tf_ra_scale=tf_ga_scale=tf_ba_scale=att_;
-         }
+      }
 
       double vol_over=oversampling_;
 
@@ -454,7 +480,7 @@ protected:
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)
-         {
+      {
          glMatrixMode(GL_MODELVIEW);
          glPushMatrix();
          glLoadIdentity();
@@ -494,7 +520,7 @@ protected:
          glMatrixMode(GL_PROJECTION);
          glPopMatrix();
          glMatrixMode(GL_MODELVIEW);
-         }
+      }
 
       angle_+=omega_/fps_;
 
@@ -520,17 +546,20 @@ protected:
 
             volren *vr = new volren();
 
+            // set maximum volume size
+            vr_->set_vol_maxsize(vol_maxsize_,vol_ratio_);
+
             // try to load from regular file path
             if (!loadFile(vr, toload_))
                if (altpath_!=NULL)
-                  {
+               {
                   char *toload=strdup2(altpath_,toload_);
 
                   // load from alternate file path
                   loadFile(vr, toload);
 
                   free(toload);
-                  }
+               }
 
             free(toload_);
             toload_=NULL;
