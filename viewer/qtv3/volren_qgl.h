@@ -414,6 +414,9 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
+      bool sfx=false;
+      double sfx_base=0.05;
+
       bool gfx_fbo=true;
 
 #ifdef HAVE_NO_FBO
@@ -459,24 +462,82 @@ protected:
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
 
       // call volume renderer
-      vr_->render(eye_tx,eye_ty,eye_tz, // view point
-                  eye_tdx,eye_tdy,eye_tdz, // viewing direction
-                  eye_tux,eye_tuy,eye_tuz, // up vector
-                  gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
-                  gfx_fbo, // use fbo
-                  angle_, // volume rotation in degrees
-                  tiltXY_,tiltYZ_, // volume rotation in degrees
-                  0.0f,0.0f,0.0f, // volume translation
-                  vol_emission,vol_density, // global emi and att
-                  tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
-                  tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
-                  TRUE,TRUE, // pre-multiplication and pre-integration
-                  TRUE, // white background
-                  inv_, // inverse mode
-                  vol_over, // oversampling
-                  TRUE, // lighting
-                  TRUE, // view-aligned clipping
-                  dist_); // clipping distance relative to origin
+      if (!sfx)
+         vr_->render(eye_tx,eye_ty,eye_tz, // view point
+                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                     eye_tux,eye_tuy,eye_tuz, // up vector
+                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                     gfx_fbo, // use fbo
+                     angle_, // volume rotation in degrees
+                     tiltXY_,tiltYZ_, // volume rotation in degrees
+                     0.0f,0.0f,0.0f, // volume translation
+                     vol_emission,vol_density, // global emi and att
+                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                     TRUE,TRUE, // pre-multiplication and pre-integration
+                     TRUE, // white background
+                     inv_, // inverse mode
+                     vol_over, // oversampling
+                     TRUE, // lighting
+                     TRUE, // view-aligned clipping
+                     dist_); // clipping distance relative to origin
+      else
+      {
+         double eye_rx,eye_ry,eye_rz;
+
+         eye_rx=eye_dy*eye_uz-eye_dz*eye_uy;
+         eye_ry=eye_dz*eye_ux-eye_dx*eye_uz;
+         eye_rz=eye_dx*eye_uy-eye_dy*eye_ux;
+
+         double eye_tlx,eye_tly,eye_tlz;
+         double eye_trx,eye_try,eye_trz;
+
+         eye_tlx=eye_tx-sfx_base*eye_rx;
+         eye_tly=eye_ty-sfx_base*eye_ry;
+         eye_tlz=eye_tz-sfx_base*eye_rz;
+
+         eye_trx=eye_tx+sfx_base*eye_rx;
+         eye_try=eye_ty+sfx_base*eye_ry;
+         eye_trz=eye_tz+sfx_base*eye_rz;
+
+         vr_->render(eye_tlx,eye_tly,eye_tlz, // left view point
+                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                     eye_tux,eye_tuy,eye_tuz, // up vector
+                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                     gfx_fbo, // use fbo
+                     angle_, // volume rotation in degrees
+                     tiltXY_,tiltYZ_, // volume rotation in degrees
+                     0.0f,0.0f,0.0f, // volume translation
+                     vol_emission,vol_density, // global emi and att
+                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                     TRUE,TRUE, // pre-multiplication and pre-integration
+                     TRUE, // white background
+                     inv_, // inverse mode
+                     vol_over, // oversampling
+                     TRUE, // lighting
+                     TRUE, // view-aligned clipping
+                     dist_); // clipping distance relative to origin
+
+         vr_->render(eye_trx,eye_try,eye_trz, // right view point
+                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                     eye_tux,eye_tuy,eye_tuz, // up vector
+                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                     gfx_fbo, // use fbo
+                     angle_, // volume rotation in degrees
+                     tiltXY_,tiltYZ_, // volume rotation in degrees
+                     0.0f,0.0f,0.0f, // volume translation
+                     vol_emission,vol_density, // global emi and att
+                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                     TRUE,TRUE, // pre-multiplication and pre-integration
+                     TRUE, // white background
+                     inv_, // inverse mode
+                     vol_over, // oversampling
+                     TRUE, // lighting
+                     TRUE, // view-aligned clipping
+                     dist_); // clipping distance relative to origin
+      }
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)
