@@ -203,14 +203,14 @@ void QTV3MainWindow::createWidgets()
    l3->addWidget(s3);
    l3->addStretch(1000);
    QHBoxLayout *h1 = new QHBoxLayout;
-   QCheckBox *invModeCheck = new QCheckBox(tr("Inverse Mode"));
-   invModeCheck->setChecked(false);
-   connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
-   h1->addWidget(invModeCheck);
    QCheckBox *gradMagCheck = new QCheckBox(tr("Gradient Magnitude"));
    gradMagCheck->setChecked(false);
    connect(gradMagCheck, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
    h1->addWidget(gradMagCheck);
+   QCheckBox *invModeCheck = new QCheckBox(tr("Inverse Mode"));
+   invModeCheck->setChecked(false);
+   connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
+   h1->addWidget(invModeCheck);
    QHBoxLayout *h2 = new QHBoxLayout;
    QCheckBox *flipCheckXY1 = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1->setChecked(false);
@@ -517,16 +517,16 @@ void QTV3MainWindow::absorption(int v)
    vrw_->setAbsorption(att);
 }
 
-void QTV3MainWindow::checkInvMode(int on)
-{
-   vrw_->setInvMode(on);
-}
-
 void QTV3MainWindow::checkGradMag(int on)
 {
    vrw_->setGradMag(on);
    emiSlider_->setValue(16*100*vrw_->getEmission());
    attSlider_->setValue(16*100*vrw_->getAbsorption());
+}
+
+void QTV3MainWindow::checkInvMode(int on)
+{
+   vrw_->setInvMode(on);
 }
 
 void QTV3MainWindow::setTilt()

@@ -178,8 +178,8 @@ protected slots:
    void clear();
    void emission(int v);
    void absorption(int v);
-   void checkInvMode(int on);
    void checkGradMag(int on);
+   void checkInvMode(int on);
    void checkFlipXY1(int on);
    void checkFlipXY2(int on);
    void checkFlipYZ1(int on);
