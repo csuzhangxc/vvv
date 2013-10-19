@@ -25,10 +25,11 @@ class QGLVolRenWidget: public QGLWidget
 public:
 
    //! default ctor
-   QGLVolRenWidget(QWidget *parent = 0)
+   QGLVolRenWidget(QWidget *parent = 0, bool stereo = false)
       : QGLWidget(parent)
    {
-      setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
+      if (stereo) setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
+      else setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::StereoBuffers));
 
       vr_ = NULL;
 
@@ -58,7 +59,7 @@ public:
       inv_ = false;
       gm_ = false;
       sfx_ = false;
-      ana_ = true;
+      sfx_ana_ = true;
       tf_ = false;
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
@@ -298,7 +299,7 @@ public:
    //! set anaglyph mode
    void setAnaglyph(bool on=false)
    {
-      ana_=on;
+      sfx_ana_=on;
    }
 
    //! use linear transfer function
@@ -396,7 +397,7 @@ protected:
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
    bool sfx_; // stereo mode?
-   bool ana_; // anaglyph mode?
+   bool sfx_ana_; // anaglyph mode?
    bool tf_; // tfunc given?
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
@@ -436,7 +437,7 @@ protected:
       if (sfx_)
       {
          sfx_base=0.025;
-         sfx_ana=ana_;
+         sfx_ana=sfx_ana_;
       }
 
       bool gfx_fbo=true;
@@ -569,12 +570,12 @@ protected:
                      TRUE, // lighting
                      TRUE, // view-aligned clipping
                      dist_); // clipping distance relative to origin
-      }
 
-      if (sfx_ana)
-         glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-      else
-         glDrawBuffer(GL_BACK);
+         if (sfx_ana)
+            glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+         else
+            glDrawBuffer(GL_BACK);
+      }
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)

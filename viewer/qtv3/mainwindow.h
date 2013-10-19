@@ -14,8 +14,8 @@ class QTV3VolRenWidget: public QGLVolRenWidget
 
 public:
 
-   QTV3VolRenWidget(QWidget * parent = 0)
-      : QGLVolRenWidget(parent)
+   QTV3VolRenWidget(QWidget * parent = 0, bool stereo = false)
+      : QGLVolRenWidget(parent, stereo)
    {timer_.start();}
 
 protected:
@@ -105,6 +105,7 @@ private:
 
    QVBoxLayout *mainLayout_;
    QSplitter *mainSplitter_;
+   QSplitter *viewerSplitter_;
 
    QVBoxLayout *viewerLayout_;
    QHBoxLayout *sliderLayout_;

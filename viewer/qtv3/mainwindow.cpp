@@ -124,7 +124,7 @@ void QTV3MainWindow::createWidgets()
    mainSplitter_ = new QSplitter;
    QGroupBox *viewerGroup = new QGroupBox;
    viewerLayout_ = new QVBoxLayout;
-   QSplitter *viewerSplitter = new QSplitter;
+   viewerSplitter_ = new QSplitter;
    QGroupBox *sliderGroup = new QGroupBox;
    sliderLayout_ = new QHBoxLayout;
 
@@ -138,10 +138,10 @@ void QTV3MainWindow::createWidgets()
    mainLayout_->addWidget(mainSplitter_);
    mainGroup->setLayout(mainLayout_);
 
-   viewerLayout_->addWidget(viewerSplitter);
-   viewerSplitter->setOrientation(Qt::Horizontal);
+   viewerLayout_->addWidget(viewerSplitter_);
+   viewerSplitter_->setOrientation(Qt::Horizontal);
 
-   vrw_ = new QTV3VolRenWidget(viewerSplitter);
+   vrw_ = new QTV3VolRenWidget(viewerSplitter_);
 
    label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) into the window\n"
                        "to display it with the volume renderer!");
@@ -186,7 +186,7 @@ void QTV3MainWindow::createWidgets()
 
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
-   viewerSplitter->addWidget(g1);
+   viewerSplitter_->addWidget(g1);
 
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
@@ -298,7 +298,7 @@ void QTV3MainWindow::createWidgets()
    l7->addWidget(ll7);
    sliderLayout_->addLayout(l7);
 
-   viewerSplitter->addWidget(vrw_);
+   viewerSplitter_->addWidget(vrw_);
 
    setCentralWidget(mainGroup);
 }
@@ -546,7 +546,16 @@ void QTV3MainWindow::checkSFX(int on)
 
 void QTV3MainWindow::checkAnaMode(int on)
 {
+   /*
+   delete vrw_;
+   vrw_ = new QTV3VolRenWidget(viewerSplitter_, !on);
+   connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
+   viewerSplitter_->addWidget(vrw_);
    vrw_->setAnaglyph(on);
+
+   delete prefs_;
+   createDocks();
+   */
 }
 
 void QTV3MainWindow::setTilt()
