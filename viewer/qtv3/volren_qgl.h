@@ -432,6 +432,7 @@ protected:
       double gfx_far=10.0;
 
       double sfx_base=0.0;
+      double sfx_focus=0.2*gfx_far;
       bool sfx_ana=true;
 
       if (sfx_)
@@ -523,13 +524,24 @@ protected:
          eye_try=eye_ty+sfx_base*eye_ry;
          eye_trz=eye_tz+sfx_base*eye_rz;
 
+         double eye_tdlx,eye_tdly,eye_tdlz;
+         double eye_tdrx,eye_tdry,eye_tdrz;
+
+         eye_tdlx=eye_tdx+sfx_base/sfx_focus*eye_rx;
+         eye_tdly=eye_tdy+sfx_base/sfx_focus*eye_ry;
+         eye_tdlz=eye_tdz+sfx_base/sfx_focus*eye_rz;
+
+         eye_tdrx=eye_tdx-sfx_base/sfx_focus*eye_rx;
+         eye_tdry=eye_tdy-sfx_base/sfx_focus*eye_ry;
+         eye_tdrz=eye_tdz-sfx_base/sfx_focus*eye_rz;
+
          if (sfx_ana)
             glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
          else
             glDrawBuffer(GL_BACK_LEFT);
 
          vr_->render(eye_tlx,eye_tly,eye_tlz, // left view point
-                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                     eye_tdlx,eye_tdly,eye_tdlz, // viewing direction
                      eye_tux,eye_tuy,eye_tuz, // up vector
                      gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                      gfx_fbo, // use fbo
@@ -553,7 +565,7 @@ protected:
             glDrawBuffer(GL_BACK_RIGHT);
 
          vr_->render(eye_trx,eye_try,eye_trz, // right view point
-                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                     eye_tdrx,eye_tdry,eye_tdrz, // viewing direction
                      eye_tux,eye_tuy,eye_tuz, // up vector
                      gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
                      gfx_fbo, // use fbo
