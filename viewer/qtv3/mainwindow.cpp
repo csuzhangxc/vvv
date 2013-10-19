@@ -550,6 +550,8 @@ void QTV3MainWindow::checkAnaMode(int on)
    vrw_ = new QTV3VolRenWidget(viewerSplitter_, !on);
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    viewerSplitter_->addWidget(vrw_);
+
+   vrw_->setSFX(true);
    vrw_->setAnaglyph(on);
 
    delete prefs_;
