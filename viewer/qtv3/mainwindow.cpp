@@ -546,7 +546,6 @@ void QTV3MainWindow::checkSFX(int on)
 
 void QTV3MainWindow::checkAnaMode(int on)
 {
-   /*
    delete vrw_;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_, !on);
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
@@ -555,7 +554,6 @@ void QTV3MainWindow::checkAnaMode(int on)
 
    delete prefs_;
    createDocks();
-   */
 }
 
 void QTV3MainWindow::setTilt()
