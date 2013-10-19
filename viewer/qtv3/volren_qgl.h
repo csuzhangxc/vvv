@@ -28,7 +28,7 @@ public:
    QGLVolRenWidget(QWidget *parent = 0, bool stereo = false)
       : QGLWidget(parent)
    {
-      if (stereo) setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
+      if (!stereo) setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
       else setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::StereoBuffers));
 
       vr_ = NULL;
