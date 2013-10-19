@@ -212,7 +212,7 @@ void QTV3MainWindow::createWidgets()
    connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck);
    QHBoxLayout *h2 = new QHBoxLayout;
-   QCheckBox *sfxModeCheck = new QCheckBox(tr("Stereo"));
+   QCheckBox *sfxModeCheck = new QCheckBox(tr("Stereo Rendering"));
    sfxModeCheck->setChecked(false);
    connect(sfxModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkSFX(int)));
    h2->addWidget(sfxModeCheck);
