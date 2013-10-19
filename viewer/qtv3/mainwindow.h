@@ -118,6 +118,7 @@ private:
    void createMenus();
    void createWidgets();
    void createDocks();
+   void reset();
 
    QStringList browse(QString path="",
                       bool newfile=false);
@@ -143,6 +144,10 @@ private:
 
    QCheckBox *gradMagCheck_;
    QCheckBox *invModeCheck_;
+
+   QRadioButton *sfxOffCheck_;
+   QRadioButton *anaModeCheck_;
+   QRadioButton *sfxOnCheck_;
 
    QCheckBox *flipCheckXY1_;
    QCheckBox *flipCheckXY2_;

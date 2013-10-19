@@ -17,15 +17,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 
    setWindowTitle(APP_NAME" "APP_VERSION);
 
-   vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
-   vrw_->setRotation(30.0);
-
-   hasTeaserVolume_=true;
-
-   flipXY1_=flipXY2_=0;
-   flipYZ1_=flipYZ2_=0;
-
-   clipNum_=0;
+   reset();
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -211,22 +203,21 @@ void QTV3MainWindow::createWidgets()
    gradMagCheck_->setChecked(false);
    connect(gradMagCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
    h1->addWidget(gradMagCheck_);
-   QCheckBox *invModeCheck_ = new QCheckBox(tr("Inverse Mode"));
+   invModeCheck_ = new QCheckBox(tr("Inverse Mode"));
    invModeCheck_->setChecked(false);
    connect(invModeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck_);
    QHBoxLayout *h2 = new QHBoxLayout;
-   QRadioButton *sfxOffCheck = new QRadioButton(tr("Normal Rendering"));
-   sfxOffCheck->setChecked(true);
-   connect(sfxOffCheck, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
-   h2->addWidget(sfxOffCheck);
-   QRadioButton *anaModeCheck = new QRadioButton(tr("Anaglyph Stereo Mode"));
-   connect(anaModeCheck, SIGNAL(toggled(bool)), this, SLOT(checkAnaMode(bool)));
-   h2->addWidget(anaModeCheck);
-   QRadioButton *sfxOnCheck = new QRadioButton(tr("Dual Buffer Stereo Mode"));
-   connect(sfxOnCheck, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
-   h2->addWidget(sfxOnCheck);
-   sfxOffCheck->setChecked(true);
+   sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
+   connect(sfxOffCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
+   h2->addWidget(sfxOffCheck_);
+   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo Mode"));
+   connect(anaModeCheck_, SIGNAL(toggled(bool)), this, SLOT(checkAnaMode(bool)));
+   h2->addWidget(anaModeCheck_);
+   sfxOnCheck_ = new QRadioButton(tr("Dual Buffer Stereo Mode"));
+   connect(sfxOnCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
+   h2->addWidget(sfxOnCheck_);
+   sfxOffCheck_->setChecked(true);
    QHBoxLayout *h3 = new QHBoxLayout;
    flipCheckXY1_ = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1_->setChecked(false);
@@ -317,6 +308,34 @@ void QTV3MainWindow::createDocks()
 
    addDockWidget(Qt::RightDockWidgetArea, prefs_);
    prefs_->hide();
+}
+
+void QTV3MainWindow::reset()
+{
+   vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
+   vrw_->setRotation(30.0);
+
+   hasTeaserVolume_=true;
+
+   flipXY1_=flipXY2_=0;
+   flipYZ1_=flipYZ2_=0;
+
+   clipNum_=0;
+
+   clipSlider_->setValue(16*0);
+   zoomSlider_->setValue(16*0);
+   rotSlider_->setValue(16*0);
+   tiltSlider_->setValue(16*0);
+   emiSlider_->setValue(16*25);
+   attSlider_->setValue(16*25);
+
+   gradMagCheck_->setChecked(false);
+   invModeCheck_->setChecked(false);
+   flipCheckXY1_->setChecked(false);
+   flipCheckXY2_->setChecked(false);
+   flipCheckYZ1_->setChecked(false);
+   flipCheckYZ2_->setChecked(false);
+   sampleButton2_->setChecked(true);
 }
 
 QStringList QTV3MainWindow::browse(QString path,
@@ -556,6 +575,8 @@ void QTV3MainWindow::checkSFX(bool stereo)
       viewerSplitter_->addWidget(vrw_);
 
       vrw_stereo_ = stereo;
+
+      reset();
    }
 }
 
