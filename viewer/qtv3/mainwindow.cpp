@@ -212,14 +212,18 @@ void QTV3MainWindow::createWidgets()
    connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck);
    QHBoxLayout *h2 = new QHBoxLayout;
-   QCheckBox *sfxModeCheck = new QCheckBox(tr("Stereo Rendering"));
-   sfxModeCheck->setChecked(false);
-   connect(sfxModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkSFX(int)));
-   h2->addWidget(sfxModeCheck);
-   QCheckBox *anaModeCheck = new QCheckBox(tr("Anaglyph Mode"));
-   anaModeCheck->setChecked(true);
-   connect(anaModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkAnaMode(int)));
+   QRadioButton *sfxOffCheck = new QRadioButton(tr("Normal Rendering"));
+   sfxOffCheck->setChecked(true);
+   connect(sfxOffCheck, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
+   h2->addWidget(sfxOffCheck);
+   QRadioButton *anaModeCheck = new QRadioButton(tr("Anaglyph Stereo Mode"));
+   anaModeCheck->setChecked(false);
+   connect(anaModeCheck, SIGNAL(toggled(bool)), this, SLOT(checkAnaMode(bool)));
    h2->addWidget(anaModeCheck);
+   QRadioButton *sfxOnCheck = new QRadioButton(tr("Dual Buffer Stereo Mode"));
+   sfxOnCheck->setChecked(false);
+   connect(sfxOnCheck, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
+   h2->addWidget(sfxOnCheck);
    QHBoxLayout *h3 = new QHBoxLayout;
    QCheckBox *flipCheckXY1 = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1->setChecked(false);
@@ -539,23 +543,36 @@ void QTV3MainWindow::checkInvMode(int on)
    vrw_->setInvMode(on);
 }
 
-void QTV3MainWindow::checkSFX(int on)
+void QTV3MainWindow::checkSFXoff(bool on)
 {
-   vrw_->setSFX(on);
+   if (on)
+      vrw_->setSFX(false);
 }
 
-void QTV3MainWindow::checkAnaMode(int on)
+void QTV3MainWindow::checkAnaMode(bool on)
 {
-   delete vrw_;
-   vrw_ = new QTV3VolRenWidget(viewerSplitter_, !on);
-   connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
-   viewerSplitter_->addWidget(vrw_);
+   if (on)
+   {
+      vrw_->setSFX(true);
+      vrw_->setAnaglyph(on);
+   }
+}
 
-   vrw_->setSFX(true);
-   vrw_->setAnaglyph(on);
+void QTV3MainWindow::checkSFXon(bool on)
+{
+   if (on)
+   {
+      delete vrw_;
+      vrw_ = new QTV3VolRenWidget(viewerSplitter_, true);
+      connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
+      viewerSplitter_->addWidget(vrw_);
 
-   delete prefs_;
-   createDocks();
+      vrw_->setSFX(true);
+      vrw_->setAnaglyph(false);
+
+      delete prefs_;
+      createDocks();
+   }
 }
 
 void QTV3MainWindow::setTilt()

@@ -181,8 +181,9 @@ protected slots:
    void absorption(int v);
    void checkGradMag(int on);
    void checkInvMode(int on);
-   void checkSFX(int on);
-   void checkAnaMode(int on);
+   void checkSFXoff(bool on);
+   void checkAnaMode(bool on);
+   void checkSFXon(bool on);
    void checkFlipXY1(int on);
    void checkFlipXY2(int on);
    void checkFlipYZ1(int on);
