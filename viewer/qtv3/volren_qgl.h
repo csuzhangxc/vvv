@@ -57,6 +57,8 @@ public:
       att_gm_ = 0.25;
       inv_ = false;
       gm_ = false;
+      sfx_ = false;
+      ana_ = true;
       tf_ = false;
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
@@ -287,6 +289,18 @@ public:
          }
    }
 
+   //! set stereo mode
+   void setSFX(bool on=false)
+   {
+      sfx_=on;
+   }
+
+   //! set anaglyph mode
+   void setAnaglyph(bool on=false)
+   {
+      ana_=on;
+   }
+
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   BOOLINT inverse=FALSE)
@@ -381,6 +395,8 @@ protected:
    double att_gm_; // volume absorption for gradmag
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
+   bool sfx_; // stereo mode?
+   bool ana_; // anaglyph mode?
    bool tf_; // tfunc given?
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
@@ -416,6 +432,12 @@ protected:
 
       double sfx_base=0.0;
       bool sfx_ana=true;
+
+      if (sfx_)
+      {
+         sfx_base=0.025;
+         sfx_ana=ana_;
+      }
 
       bool gfx_fbo=true;
 

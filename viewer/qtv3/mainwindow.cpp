@@ -212,23 +212,32 @@ void QTV3MainWindow::createWidgets()
    connect(invModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck);
    QHBoxLayout *h2 = new QHBoxLayout;
+   QCheckBox *sfxModeCheck = new QCheckBox(tr("Stereo"));
+   sfxModeCheck->setChecked(false);
+   connect(sfxModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkSFX(int)));
+   h2->addWidget(sfxModeCheck);
+   QCheckBox *anaModeCheck = new QCheckBox(tr("Anaglyph Mode"));
+   anaModeCheck->setChecked(true);
+   connect(anaModeCheck, SIGNAL(stateChanged(int)), this, SLOT(checkAnaMode(int)));
+   h2->addWidget(anaModeCheck);
+   QHBoxLayout *h3 = new QHBoxLayout;
    QCheckBox *flipCheckXY1 = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1->setChecked(false);
    connect(flipCheckXY1, SIGNAL(stateChanged(int)), this, SLOT(checkFlipXY1(int)));
-   h2->addWidget(flipCheckXY1);
+   h3->addWidget(flipCheckXY1);
    QCheckBox *flipCheckXY2 = new QCheckBox(tr("Flip -XY"));
    flipCheckXY2->setChecked(false);
    connect(flipCheckXY2, SIGNAL(stateChanged(int)), this, SLOT(checkFlipXY2(int)));
-   h2->addWidget(flipCheckXY2);
+   h3->addWidget(flipCheckXY2);
    QCheckBox *flipCheckYZ1 = new QCheckBox(tr("Flip +YZ"));
    flipCheckYZ1->setChecked(false);
    connect(flipCheckYZ1, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ1(int)));
-   h2->addWidget(flipCheckYZ1);
+   h3->addWidget(flipCheckYZ1);
    QCheckBox *flipCheckYZ2 = new QCheckBox(tr("Flip -YZ"));
    flipCheckYZ2->setChecked(false);
    connect(flipCheckYZ2, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ2(int)));
-   h2->addWidget(flipCheckYZ2);
-   QHBoxLayout *h3 = new QHBoxLayout;
+   h3->addWidget(flipCheckYZ2);
+   QHBoxLayout *h4 = new QHBoxLayout;
    QRadioButton *sampleButton1 = new QRadioButton(tr("Undersampling"), this);
    QRadioButton *sampleButton2 = new QRadioButton(tr("Regular Sampling"), this);
    QRadioButton *sampleButton3 = new QRadioButton(tr("Oversampling"), this);
@@ -236,12 +245,13 @@ void QTV3MainWindow::createWidgets()
    connect(sampleButton1, SIGNAL(toggled(bool)), this, SLOT(samplingChanged1(bool)));
    connect(sampleButton2, SIGNAL(toggled(bool)), this, SLOT(samplingChanged2(bool)));
    connect(sampleButton3, SIGNAL(toggled(bool)), this, SLOT(samplingChanged3(bool)));
-   h3->addWidget(sampleButton1);
-   h3->addWidget(sampleButton2);
-   h3->addWidget(sampleButton3);
+   h4->addWidget(sampleButton1);
+   h4->addWidget(sampleButton2);
+   h4->addWidget(sampleButton3);
    l3->addLayout(h1);
    l3->addLayout(h2);
    l3->addLayout(h3);
+   l3->addLayout(h4);
    sliderLayout_->addLayout(l3);
 
    QVBoxLayout *l4 = new QVBoxLayout;
@@ -527,6 +537,16 @@ void QTV3MainWindow::checkGradMag(int on)
 void QTV3MainWindow::checkInvMode(int on)
 {
    vrw_->setInvMode(on);
+}
+
+void QTV3MainWindow::checkSFX(int on)
+{
+   vrw_->setSFX(on);
+}
+
+void QTV3MainWindow::checkAnaMode(int on)
+{
+   vrw_->setAnaglyph(on);
 }
 
 void QTV3MainWindow::setTilt()
