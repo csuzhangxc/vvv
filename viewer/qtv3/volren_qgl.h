@@ -414,8 +414,8 @@ protected:
       double gfx_near=0.01;
       double gfx_far=10.0;
 
-      bool sfx=false;
-      double sfx_base=0.05;
+      double sfx_base=0.0;
+      bool sfx_ana=true;
 
       bool gfx_fbo=true;
 
@@ -462,7 +462,7 @@ protected:
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
 
       // call volume renderer
-      if (!sfx)
+      if (sfx_base==0.0)
          vr_->render(eye_tx,eye_ty,eye_tz, // view point
                      eye_tdx,eye_tdy,eye_tdz, // viewing direction
                      eye_tux,eye_tuy,eye_tuz, // up vector
@@ -500,6 +500,11 @@ protected:
          eye_try=eye_ty+sfx_base*eye_ry;
          eye_trz=eye_tz+sfx_base*eye_rz;
 
+         if (sfx_ana)
+            glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
+         else
+            glDrawBuffer(GL_BACK_LEFT);
+
          vr_->render(eye_tlx,eye_tly,eye_tlz, // left view point
                      eye_tdx,eye_tdy,eye_tdz, // viewing direction
                      eye_tux,eye_tuy,eye_tuz, // up vector
@@ -518,6 +523,11 @@ protected:
                      TRUE, // lighting
                      TRUE, // view-aligned clipping
                      dist_); // clipping distance relative to origin
+
+         if (sfx_ana)
+            glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
+         else
+            glDrawBuffer(GL_BACK_RIGHT);
 
          vr_->render(eye_trx,eye_try,eye_trz, // right view point
                      eye_tdx,eye_tdy,eye_tdz, // viewing direction
@@ -538,6 +548,11 @@ protected:
                      TRUE, // view-aligned clipping
                      dist_); // clipping distance relative to origin
       }
+
+      if (sfx_ana)
+         glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+      else
+         glDrawBuffer(GL_BACK);
 
       // show histogram and tfunc
       if (vr_->has_data() && bLeftButtonDown)
