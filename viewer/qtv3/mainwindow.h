@@ -135,8 +135,23 @@ private:
    QTV3Slider *clipSlider_;
    int clipNum_;
 
+   QTV3Slider *zoomSlider_;
+   QTV3Slider *rotSlider_;
+   QTV3Slider *tiltSlider_;
    QTV3Slider *emiSlider_;
    QTV3Slider *attSlider_;
+
+   QCheckBox *gradMagCheck_;
+   QCheckBox *invModeCheck_;
+
+   QCheckBox *flipCheckXY1_;
+   QCheckBox *flipCheckXY2_;
+   QCheckBox *flipCheckYZ1_;
+   QCheckBox *flipCheckYZ2_;
+
+   QRadioButton *sampleButton1_;
+   QRadioButton *sampleButton2_;
+   QRadioButton *sampleButton3_;
 
    QTV3PrefWindow *prefs_;
 
