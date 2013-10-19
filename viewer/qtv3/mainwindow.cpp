@@ -142,6 +142,7 @@ void QTV3MainWindow::createWidgets()
    viewerSplitter_->setOrientation(Qt::Horizontal);
 
    vrw_ = new QTV3VolRenWidget(viewerSplitter_);
+   vrw_stereo_ = false;
 
    label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) into the window\n"
                        "to display it with the volume renderer!");
@@ -543,14 +544,31 @@ void QTV3MainWindow::checkInvMode(int on)
    vrw_->setInvMode(on);
 }
 
+void QTV3MainWindow::checkSFX(bool stereo)
+{
+   if (stereo!=vrw_stereo_)
+   {
+      delete vrw_;
+      vrw_ = new QTV3VolRenWidget(viewerSplitter_, stereo);
+      connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
+      viewerSplitter_->addWidget(vrw_);
+
+      vrw_stereo_ = stereo;
+   }
+}
+
 void QTV3MainWindow::checkSFXoff(bool on)
 {
+   checkSFX(false);
+
    if (on)
       vrw_->setSFX(false);
 }
 
 void QTV3MainWindow::checkAnaMode(bool on)
 {
+   checkSFX(false);
+
    if (on)
    {
       vrw_->setSFX(true);
@@ -560,6 +578,8 @@ void QTV3MainWindow::checkAnaMode(bool on)
 
 void QTV3MainWindow::checkSFXon(bool on)
 {
+   checkSFX(true);
+
    if (on)
    {
       delete vrw_;

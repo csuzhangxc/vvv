@@ -111,6 +111,7 @@ private:
    QHBoxLayout *sliderLayout_;
 
    QTV3VolRenWidget *vrw_;
+   bool vrw_stereo_;
 
    QLabel *label_,*update_;
 
@@ -197,6 +198,10 @@ protected slots:
    void about();
 
    void update_slot(QString text);
+
+private:
+
+   void checkSFX(bool stereo);
 };
 
 #endif
