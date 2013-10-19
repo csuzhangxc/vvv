@@ -56,6 +56,7 @@ void Surface::setmatrix(double mtx[16])
 void Surface::render()
    {
 #ifdef HAVE_MINI
+   ministrip::setglobal_invariant(TRUE);
    ministrip::setglobal_shade(TRUE);
    strip_->render();
 #endif
