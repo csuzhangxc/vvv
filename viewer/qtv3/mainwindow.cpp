@@ -10,7 +10,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
 {
    createMenus();
    createWidgets();
-   createDocks();
+
+   prefs_=NULL;
 
    // accept drag and drop
    setAcceptDrops(true);
@@ -303,6 +304,8 @@ void QTV3MainWindow::createWidgets()
 
 void QTV3MainWindow::createDocks()
 {
+   if (prefs_) delete prefs_;
+
    prefs_ = new QTV3PrefWindow(this, vrw_);
    prefs_->setAllowedAreas(Qt::RightDockWidgetArea);
 
@@ -336,6 +339,8 @@ void QTV3MainWindow::reset()
    flipCheckYZ1_->setChecked(false);
    flipCheckYZ2_->setChecked(false);
    sampleButton2_->setChecked(true);
+
+   createDocks();
 }
 
 QStringList QTV3MainWindow::browse(QString path,
@@ -605,16 +610,8 @@ void QTV3MainWindow::checkSFXon(bool on)
 
    if (on)
    {
-      delete vrw_;
-      vrw_ = new QTV3VolRenWidget(viewerSplitter_, true);
-      connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
-      viewerSplitter_->addWidget(vrw_);
-
       vrw_->setSFX(true);
       vrw_->setAnaglyph(false);
-
-      delete prefs_;
-      createDocks();
    }
 }
 
