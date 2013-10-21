@@ -6,8 +6,8 @@
 #  MINISFX_LIBRARIES
 
 FIND_PATH(MINI_INCLUDE_DIR mini/mini.h PATHS . .. DOC "Directory containing libMini headers")
-FIND_LIBRARY(MINI_LIBRARY NAMES Mini libMini PATHS . .. mini ../mini PATH_SUFFIXES lib release minsizerel relwithdebinfo DOC "Path to libMini library")
-FIND_LIBRARY(MINISFX_LIBRARY NAMES MiniSFX libMiniSFX PATHS . .. mini ../mini PATH_SUFFIXES lib release minsizerel relwithdebinfo DOC "Path to libMini SFX library")
+FIND_LIBRARY(MINI_LIBRARY NAMES Mini libMini PATHS . mini .. ../mini PATH_SUFFIXES lib lib64 release minsizerel relwithdebinfo DOC "Path to libMini library")
+FIND_LIBRARY(MINISFX_LIBRARY NAMES MiniSFX libMiniSFX PATHS . mini .. ../mini PATH_SUFFIXES lib lib64 release minsizerel relwithdebinfo DOC "Path to libMini SFX library")
 
 SET(MINI_LIBRARIES ${MINI_LIBRARY})
 
