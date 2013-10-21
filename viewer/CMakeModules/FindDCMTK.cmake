@@ -3,7 +3,7 @@
 # - find DCMTK libraries and applications
 #
 
-#  DCMTK_INCLUDE_DIRS   - Directories to include to use DCMTK
+#  DCMTK_INCLUDE_DIRS  - Directories to include to use DCMTK
 #  DCMTK_LIBRARIES     - Files to link against to use DCMTK
 #  DCMTK_FOUND         - If false, don't try to use DCMTK
 #  DCMTK_DIR           - (optional) Source directory for DCMTK
@@ -86,6 +86,7 @@ foreach(lib
     ${DCMTK_DIR}/${lib}/libsrc/Release
     ${DCMTK_DIR}/${lib}/Release
     ${DCMTK_DIR}/lib
+    ${DCMTK_DIR}/lib64
     ${DCMTK_DIR}/lib/Release
     ${DCMTK_DIR}/dcmjpeg/lib${lib}/Release
     NO_DEFAULT_PATH
@@ -99,6 +100,7 @@ foreach(lib
     ${DCMTK_DIR}/${lib}/libsrc/Debug
     ${DCMTK_DIR}/${lib}/Debug
     ${DCMTK_DIR}/lib
+    ${DCMTK_DIR}/lib64
     ${DCMTK_DIR}/lib/Debug
     ${DCMTK_DIR}/dcmjpeg/lib${lib}/Debug
     NO_DEFAULT_PATH
@@ -230,4 +232,3 @@ find_package_handle_standard_args(DCMTK
   FAIL_MESSAGE "Please set DCMTK_DIR and re-run configure")
 
 message(STATUS "Trying to find DCMTK relying on FindDCMTK.cmake - ok")
-
