@@ -3165,6 +3165,7 @@ char *mipmap::extractsurface(double isovalue,
 #ifdef HAVE_MINI
 
    char *output=NULL;
+   char *output2;
 
    if (strlen(filestr)>0)
       {
@@ -3184,6 +3185,14 @@ char *mipmap::extractsurface(double isovalue,
    if (output==NULL)
       if (fileseries.size()!=0)
          output=processDICOMvolume(fileseries);
+
+   if (output!=NULL)
+      {
+      output2=processRAWvolume(output,"_tmp",0.0f,0,feedback,obj);
+
+      free(output);
+      output=output2;
+      }
 
    if (output!=NULL)
       {
