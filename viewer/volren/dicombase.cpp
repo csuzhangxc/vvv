@@ -413,7 +413,7 @@ bool DicomVolume::check_intel()
    }
 
 // copy a DICOM series to a RAW volume
-char *processDICOMseries(const std::vector<std::string> list)
+char *processDICOMvolume(const std::vector<std::string> list)
    {
    unsigned char *volume;
 

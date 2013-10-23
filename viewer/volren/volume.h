@@ -351,6 +351,8 @@ class mipmap
    char commstr[MAXSTR];
    char zerostr[MAXSTR];
 
+   std::vector<std::string> fileseries;
+
    BOOLINT xsflag,ysflag,zsflag;
    BOOLINT xrflag,zrflag;
 

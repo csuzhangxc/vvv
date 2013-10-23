@@ -336,6 +336,8 @@ mipmap::mipmap(char *base,int res)
    strncpy(commstr,"",MAXSTR);
    strncpy(zerostr,"",MAXSTR);
 
+   fileseries.clear();
+
    xsflag=FALSE; ysflag=FALSE; zsflag=FALSE;
    xrflag=FALSE; zrflag=FALSE;
 
@@ -2909,6 +2911,8 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       strncpy(gradstr,"",MAXSTR);
       strncpy(commstr,commands,MAXSTR);
 
+      fileseries.clear();
+
       xsflag=xswap;
       ysflag=yswap;
       zsflag=zswap;
@@ -3043,6 +3047,8 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    strncpy(gradstr,"",MAXSTR);
    strncpy(commstr,"",MAXSTR);
 
+   fileseries=list;
+
    xsflag=xswap;
    ysflag=yswap;
    zsflag=zswap;
@@ -3158,10 +3164,10 @@ char *mipmap::extractsurface(double isovalue,
 
 #ifdef HAVE_MINI
 
+   char *output=NULL;
+
    if (strlen(filestr)>0)
       {
-      char *output;
-
       output=processRAWvolume(filestr,"_iso",
                               iso_ratio_,iso_target_cells_,
                               feedback,obj);
@@ -3173,23 +3179,25 @@ char *mipmap::extractsurface(double isovalue,
 
       if (output==NULL)
          output=processPVMvolume(filestr);
+      }
 
-      if (output!=NULL)
-         {
-         surface=extractRAWvolume(output,output,isovalue,feedback,obj);
-         free(output);
+   if (output==NULL)
+      if (fileseries.size()!=0)
+         output=processDICOMvolume(fileseries);
 
-         if (feedback!=NULL) feedback("loading geometry",0,obj);
+   if (output!=NULL)
+      {
+      surface=extractRAWvolume(output,output,isovalue,feedback,obj);
+      free(output);
 
-         loadsurface(surface);
+      if (feedback!=NULL) feedback("loading geometry",0,obj);
 
-         if (feedback!=NULL) feedback("",0,obj);
-         }
-      else
-         if (feedback!=NULL) feedback("unable to extract iso surface",0,obj);
+      loadsurface(surface);
+
+      if (feedback!=NULL) feedback("",0,obj);
       }
    else
-      if (feedback!=NULL) feedback("volume required to extract iso surface",0,obj);
+      if (feedback!=NULL) feedback("unable to extract iso surface",0,obj);
 
 #else
 

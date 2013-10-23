@@ -107,6 +107,6 @@ unsigned char *readDICOMvolume(const std::vector<std::string> list,
                                void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL);
 
 // copy a DICOM series to a RAW volume
-char *processDICOMseries(const std::vector<std::string> list);
+char *processDICOMvolume(const std::vector<std::string> list);
 
 #endif
