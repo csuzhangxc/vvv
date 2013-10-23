@@ -679,7 +679,8 @@ void QTV3MainWindow::samplingChanged3(bool on)
 
 void QTV3MainWindow::extractSurface()
 {
-   vrw_->extractSurface();
+   if (!hasTeaserVolume_)
+      vrw_->extractSurface();
 }
 
 void QTV3MainWindow::clearSurface()
