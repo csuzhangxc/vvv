@@ -145,7 +145,8 @@ public:
    {
       if (loading_) return;
 
-      vr_->clearsurface();
+      if (vr_)
+         vr_->clearsurface();
    }
 
    //! clear the volume

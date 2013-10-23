@@ -29,6 +29,8 @@ QTV3MainWindow::~QTV3MainWindow()
 
 void QTV3MainWindow::loadVolume(const char *filename)
 {
+   reset();
+
    vrw_->loadVolume(filename);
 
    if (label_)
@@ -43,6 +45,8 @@ void QTV3MainWindow::loadVolume(const char *filename)
 
 void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 {
+   reset();
+
    vrw_->loadSeries(list);
 
    if (label_)
@@ -316,6 +320,8 @@ void QTV3MainWindow::createDocks()
 void QTV3MainWindow::reset()
 {
    vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
+   vrw_->clearSurface();
+
    vrw_->setRotation(30.0);
 
    hasTeaserVolume_=true;
