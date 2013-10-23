@@ -141,7 +141,7 @@ void QTV3MainWindow::createWidgets()
    vrw_stereo_ = false;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
 
-   label_ = new QLabel("Drag and drop a volume file (.pvm .ima .dcm .rek .raw) into the window\n"
+   label_ = new QLabel("Drag and drop a volume file (.pvm .rek) or dicom series (.ima .dcm) into the window\n"
                        "to display it with the volume renderer!");
 
    label_->setAlignment(Qt::AlignHCenter);
