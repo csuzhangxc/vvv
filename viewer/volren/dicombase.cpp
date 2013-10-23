@@ -10,6 +10,10 @@
 #include <dcmtk/dcmjpeg/djdecode.h>
 #endif
 
+#ifdef HAVE_MINI
+#include <mini/rawbase.h>
+#endif
+
 DicomVolume::ImageDesc::~ImageDesc()
    {
 #ifdef HAVE_DCMTK
@@ -406,4 +410,51 @@ bool DicomVolume::check_intel()
    {
    static unsigned short int INTEL=1;
    return(*((unsigned char *)(&INTEL)+1)==0);
+   }
+
+// copy a DICOM series to a RAW volume
+char *processDICOMseries(const std::vector<std::string> list)
+   {
+   unsigned char *volume;
+
+   long long width,height,depth;
+   unsigned int components;
+
+   float scalex,scaley,scalez;
+
+   char *output,*dot;
+   char *outname;
+
+   // read DICOM volume
+   if ((volume=readDICOMvolume(list,
+                               &width,&height,&depth,&components,
+                               &scalex,&scaley,&scalez))==NULL) return(NULL);
+
+   // use input file name as output prefix
+   output=strdup(list[0].c_str());
+   dot=strrchr(output,'.');
+
+   // remove suffix from output
+   if (dot!=NULL)
+      {
+      if (strcasecmp(dot,".dcm")==0) *dot='\0';
+      if (strcasecmp(dot,".ima")==0) *dot='\0';
+      }
+
+   outname=NULL;
+
+#ifdef HAVE_MINI
+
+   // copy PVM data to RAW file
+   outname=writeRAWvolume(output,volume,
+                          width,height,depth,1,
+                          components,8,FALSE,TRUE,
+                          scalex,scaley,scalez);
+
+#endif
+
+   free(volume);
+   free(output);
+
+   return(outname);
    }
