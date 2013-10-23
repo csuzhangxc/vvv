@@ -3186,7 +3186,7 @@ char *mipmap::extractsurface(double isovalue,
          if (feedback!=NULL) feedback("",0,obj);
          }
       else
-         if (feedback!=NULL) feedback("raw volume expected to extract iso surface",0,obj);
+         if (feedback!=NULL) feedback("unable to extract iso surface",0,obj);
       }
    else
       if (feedback!=NULL) feedback("volume required to extract iso surface",0,obj);

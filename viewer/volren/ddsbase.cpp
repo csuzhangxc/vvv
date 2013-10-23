@@ -1098,6 +1098,7 @@ char *processPVMvolume(const char *filename)
    float scalex,scaley,scalez;
 
    char *output,*dot;
+   char *outname;
 
    // read and uncompress PVM volume
    if ((volume=readPVMvolume(filename,
@@ -1112,28 +1113,20 @@ char *processPVMvolume(const char *filename)
    if (dot!=NULL)
       if (strcasecmp(dot,".pvm")==0) *dot='\0';
 
+   outname=NULL;
+
 #ifdef HAVE_MINI
 
    // copy PVM data to RAW file
-   if (!writeRAWvolume(output,volume,
-                       width,height,depth,1,
-                       components,8,FALSE,TRUE,
-                       scalex,scaley,scalez))
-      {
-      free(volume);
-      free(output);
-      return(NULL);
-      }
-
-#else
-
-   free(volume);
-   free(output);
-   return(NULL);
+   outname=writeRAWvolume(output,volume,
+                          width,height,depth,1,
+                          components,8,FALSE,TRUE,
+                          scalex,scaley,scalez);
 
 #endif
 
    free(volume);
+   free(output);
 
-   return(output);
+   return(outname);
    }
