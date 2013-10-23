@@ -448,7 +448,7 @@ char *processDICOMvolume(const std::vector<std::string> list)
    // copy PVM data to RAW file
    outname=writeRAWvolume(output,volume,
                           width,height,depth,1,
-                          components,8,FALSE,TRUE,
+                          components,8,FALSE,FALSE,
                           scalex,scaley,scalez);
 
 #endif
