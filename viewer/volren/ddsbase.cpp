@@ -2,6 +2,10 @@
 
 #include "ddsbase.h"
 
+#ifdef HAVE_MINI
+#include <mini/rawbase.h>
+#endif
+
 #define DDS_MAXSTR (256)
 
 #define DDS_BLOCKSIZE (1<<20)
@@ -1081,4 +1085,55 @@ unsigned char *quantize(unsigned char *data,
    free(data3);
 
    return(data2);
+   }
+
+// copy a PVM volume to a RAW volume
+char *processPVMvolume(const char *filename)
+   {
+   unsigned char *volume;
+
+   unsigned int width,height,depth,
+                components;
+
+   float scalex,scaley,scalez;
+
+   char *output,*dot;
+
+   // read and uncompress PVM volume
+   if ((volume=readPVMvolume(filename,
+                             &width,&height,&depth,&components,
+                             &scalex,&scaley,&scalez))==NULL) return(NULL);
+
+   // use input file name as output prefix
+   output=strdup(filename);
+   dot=strrchr(output,'.');
+
+   // remove suffix from output
+   if (dot!=NULL)
+      if (strcasecmp(dot,".pvm")==0) *dot='\0';
+
+#ifdef HAVE_MINI
+
+   // copy PVM data to RAW file
+   if (!writeRAWvolume(output,volume,
+                       width,height,depth,1,
+                       components,8,FALSE,TRUE,
+                       scalex,scaley,scalez))
+      {
+      free(volume);
+      free(output);
+      return(NULL);
+      }
+
+#else
+
+   free(volume);
+   free(output);
+   return(NULL);
+
+#endif
+
+   free(volume);
+
+   return(output);
    }

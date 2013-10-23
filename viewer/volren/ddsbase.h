@@ -42,4 +42,6 @@ unsigned char *quantize(unsigned char *volume,
                         BOOLINT msb=TRUE,
                         BOOLINT linear=FALSE,BOOLINT nofree=FALSE);
 
+char *processPVMvolume(const char *filename);
+
 #endif

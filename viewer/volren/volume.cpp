@@ -3171,6 +3171,9 @@ char *mipmap::extractsurface(double isovalue,
                                  iso_ratio_,iso_target_cells_,
                                  feedback,obj);
 
+      if (output==NULL)
+         output=processPVMvolume(filestr);
+
       if (output!=NULL)
          {
          surface=extractRAWvolume(output,output,isovalue,feedback,obj);
