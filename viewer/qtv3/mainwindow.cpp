@@ -478,30 +478,31 @@ void QTV3MainWindow::open()
 {
    QStringList files = browse();
 
-   if (files.size()==1)
-   {
-      QString file = normalizeFile(files.at(0));
-
-      if (file.endsWith(".geo"))
+   if (files.size()>0)
+      if (files.size()==1)
       {
-         loadSurface(file.toStdString().c_str());
+         QString file = normalizeFile(files.at(0));
+
+         if (file.endsWith(".geo"))
+         {
+            loadSurface(file.toStdString().c_str());
+         }
+         else
+         {
+            loadVolume(file.toStdString().c_str());
+         }
       }
       else
       {
-         loadVolume(file.toStdString().c_str());
-      }
-   }
-   else
-   {
-      std::vector<std::string> list;
+         std::vector<std::string> list;
 
-      for (int i=0; i<files.size(); i++)
-      {
-         list.push_back(normalizeFile(files.at(i)).toStdString());
-      }
+         for (int i=0; i<files.size(); i++)
+         {
+            list.push_back(normalizeFile(files.at(i)).toStdString());
+         }
 
-      loadSeries(list);
-   }
+         loadSeries(list);
+      }
 }
 
 void QTV3MainWindow::zoom(int v)
