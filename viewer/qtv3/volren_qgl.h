@@ -438,7 +438,7 @@ protected:
 
       if (sfx_)
       {
-         sfx_base=0.025;
+         sfx_base=0.005;
          sfx_ana=sfx_ana_;
       }
 
