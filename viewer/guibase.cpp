@@ -362,7 +362,7 @@ void GUI::wheeldrawY(void *data1,void *data2)
 void GUI::drawline(float x1,float y1,float x2,float y2,
                    float hue,float sat,float val,float alpha)
    {
-   float rgb[3];
+   float rgb[3]={0};
 
    hsv2rgb(hue,sat,val,rgb);
 

@@ -996,7 +996,7 @@ void tfunc::randomize()
 
    float *hue,*sat,*val;
 
-   float rgb[3];
+   float rgb[3]={0};
 
    hue=pn_perlin(RES,16,NULL,0.5f);
    sat=pn_perlin(RES,16,NULL,0.5f);
