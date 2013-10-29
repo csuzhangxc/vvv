@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
 
    if (!QGLFormat::hasOpenGL()) return(1);
 
+   setlocale(LC_NUMERIC, "C");
+
    QTV3MainWindow main;
 
    QStringList args = QCoreApplication::arguments();
