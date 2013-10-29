@@ -11,8 +11,8 @@
 
 #include <QtOpenGL/qgl.h>
 
-#include <QMouseEvent>
-#include <QWheelEvent>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
 
 #include "volren.h"
 

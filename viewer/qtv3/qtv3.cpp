@@ -1,7 +1,12 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
+#ifdef HAVE_QT5
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QWidget>
+#else
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
+#endif
 
 #include "volren_qgl.h"
 #include "mainwindow.h"
