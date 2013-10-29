@@ -3,7 +3,11 @@
 #ifndef PREFWINDOW_H
 #define PREFWINDOW_H
 
+#ifdef HAVE_QT5
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 class QGLVolRenWidget;
 

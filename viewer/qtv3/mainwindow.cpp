@@ -358,7 +358,11 @@ QStringList QTV3MainWindow::browse(QString path,
    else fd->setFileMode(QFileDialog::AnyFile);
    fd->setViewMode(QFileDialog::List);
    if (newfile) fd->setAcceptMode(QFileDialog::AcceptSave);
+#ifdef HAVE_QT5
+   fd->setFilter(QDir::Files);
+#else
    fd->setFilter("All Files (*);;GIF Files (*.gif);;JPEG Files (*.jpg);;TIFF Files(*.tif *.tiff)");
+#endif
 
    if (path!="") fd->setDirectory(path);
 

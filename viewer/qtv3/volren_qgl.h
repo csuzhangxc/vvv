@@ -3,7 +3,12 @@
 #ifndef VOLREN_QGL_H
 #define VOLREN_QGL_H
 
+#ifdef HAVE_QT5
+#include <QtWidgets/QApplication>
+#else
 #include <QtGui/QApplication>
+#endif
+
 #include <QtOpenGL/qgl.h>
 
 #include <QMouseEvent>

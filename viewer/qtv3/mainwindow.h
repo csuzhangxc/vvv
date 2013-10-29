@@ -3,7 +3,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#ifdef HAVE_QT5
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 #include "volren_qgl.h"
 #include "prefwindow.h"
