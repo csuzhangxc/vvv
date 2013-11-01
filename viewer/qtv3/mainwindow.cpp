@@ -212,6 +212,7 @@ void QTV3MainWindow::createWidgets()
    invModeCheck_->setChecked(false);
    connect(invModeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck_);
+   QGroupBox *gb1 = new QGroupBox;
    QHBoxLayout *h2 = new QHBoxLayout;
    sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
    connect(sfxOffCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
@@ -223,6 +224,7 @@ void QTV3MainWindow::createWidgets()
    connect(sfxOnCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
    h2->addWidget(sfxOnCheck_);
    sfxOffCheck_->setChecked(true);
+   //!!gb1->setLayout(h2);
    QHBoxLayout *h3 = new QHBoxLayout;
    flipCheckXY1_ = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1_->setChecked(false);
@@ -240,6 +242,7 @@ void QTV3MainWindow::createWidgets()
    flipCheckYZ2_->setChecked(false);
    connect(flipCheckYZ2_, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ2(int)));
    h3->addWidget(flipCheckYZ2_);
+   QGroupBox *gb2 = new QGroupBox;
    QHBoxLayout *h4 = new QHBoxLayout;
    sampleButton1_ = new QRadioButton(tr("Undersampling"), this);
    sampleButton2_ = new QRadioButton(tr("Regular Sampling"), this);
@@ -251,9 +254,12 @@ void QTV3MainWindow::createWidgets()
    h4->addWidget(sampleButton1_);
    h4->addWidget(sampleButton2_);
    h4->addWidget(sampleButton3_);
+   //!!gb2->setLayout(h4);
    l3->addLayout(h1);
+   //!!l3->addWidget(gb1);
    l3->addLayout(h2);
    l3->addLayout(h3);
+   //!!l3->addWidget(gb2);
    l3->addLayout(h4);
    sliderLayout_->addLayout(l3);
 
