@@ -55,12 +55,13 @@
 #define FALSE (0)
 #endif
 
+#define WARNMSG() errormsg(__FILE__,__LINE__,FALSE)
 #define ERRORMSG() errormsg(__FILE__,__LINE__)
 
-inline void errormsg(const char *file,int line)
+inline void errormsg(const char *file,int line,int fatal=TRUE)
    {
-   fprintf(stderr,"fatal error in <%s> at line %d!\n",file,line);
-   exit(EXIT_FAILURE);
+   fprintf(stderr,"error in <%s> at line %d!\n",file,line);
+   if (fatal) exit(EXIT_FAILURE);
    }
 
 #define PI (3.141593f)
