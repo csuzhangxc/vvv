@@ -235,7 +235,7 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0, BOOLINT opaque=TRUE) //!!
+   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
    {
       dist_=dist;
       opaque_=opaque;
@@ -876,32 +876,33 @@ protected:
                       BOOLINT (*abort)(void *abortdata)=NULL,
                       void *abortdata=NULL)
    {
-      if (vol_clip_opaque)
-      {
-         vr_->renderslice(eye_x,eye_y,eye_z,
+      BOOLINT aborted;
+
+      aborted=vr_->render(eye_x,eye_y,eye_z,
                           eye_dx,eye_dy,eye_dz,
                           eye_ux,eye_uy,eye_uz,
+                          gfx_fovy,gfx_aspect,gfx_near,gfx_far,
+                          gfx_fbo,
                           vol_rot,vol_tltXY,vol_tltYZ,
                           vol_dx,vol_dy,vol_dz,
-                          vol_clip_dist);
+                          vol_emi,vol_att,
+                          tf_re_scale,tf_ge_scale,tf_be_scale,
+                          tf_ra_scale,tf_ga_scale,tf_ba_scale,
+                          tf_premult,tf_preint,
+                          vol_white,vol_inv,vol_over,vol_light,
+                          vol_clip,vol_clip_dist,
+                          abort,abortdata);
 
-         vol_clip=FALSE;
-      }
+      if (!aborted)
+         if (vol_clip_opaque)
+            vr_->renderslice(eye_x,eye_y,eye_z,
+                             eye_dx,eye_dy,eye_dz,
+                             eye_ux,eye_uy,eye_uz,
+                             vol_rot,vol_tltXY,vol_tltYZ,
+                             vol_dx,vol_dy,vol_dz,
+                             vol_clip_dist);
 
-      return(vr_->render(eye_x,eye_y,eye_z,
-                         eye_dx,eye_dy,eye_dz,
-                         eye_ux,eye_uy,eye_uz,
-                         gfx_fovy,gfx_aspect,gfx_near,gfx_far,
-                         gfx_fbo,
-                         vol_rot,vol_tltXY,vol_tltYZ,
-                         vol_dx,vol_dy,vol_dz,
-                         vol_emi,vol_att,
-                         tf_re_scale,tf_ge_scale,tf_be_scale,
-                         tf_ra_scale,tf_ga_scale,tf_ba_scale,
-                         tf_premult,tf_preint,
-                         vol_white,vol_inv,vol_over,vol_light,
-                         vol_clip,vol_clip_dist,
-                         abort,abortdata));
+      return(aborted);
    }
 
    void qgl_drawquad(float x,float y,float width,float height,
