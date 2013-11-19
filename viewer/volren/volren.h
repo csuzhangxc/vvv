@@ -259,6 +259,90 @@ class volren: public volscene
       return(aborted);
       }
 
+   //! render a volume slice
+   void renderslice(float eye_x,float eye_y,float eye_z, // eye point
+                    float eye_dx,float eye_dy,float eye_dz, // viewing direction
+                    float eye_ux,float eye_uy,float eye_uz, // up vector
+                    float vol_rot, // volume rotation in degrees
+                    float vol_tltXY, // volume tilt in degrees
+                    float vol_tltYZ, // volume tilt in degrees
+                    float vol_dx,float vol_dy,float vol_dz, // volume translation
+                    float slice_dist) // volume slice distance
+      {
+      float ex0,ey0,ez0,
+            dx0,dy0,dz0,
+            ux0,uy0,uz0;
+
+      float ex,ey,ez,
+            dx,dy,dz,
+            ux,uy,uz;
+
+      vol_rot*=PI/180.0f;
+      vol_tltXY*=PI/180.0f;
+      vol_tltYZ*=PI/180.0f;
+
+      // move:
+
+      ex0=eye_x+vol_dx;
+      ey0=eye_y+vol_dy;
+      ez0=eye_z+vol_dz;
+
+      dx0=eye_dx;
+      dy0=eye_dy;
+      dz0=eye_dz;
+
+      ux0=eye_ux;
+      uy0=eye_uy;
+      uz0=eye_uz;
+
+      // rotate:
+
+      ex=fcos(vol_rot)*ex0+fsin(vol_rot)*ez0;
+      ey=ey0;
+      ez=-fsin(vol_rot)*ex0+fcos(vol_rot)*ez0;
+
+      dx=fcos(vol_rot)*dx0+fsin(vol_rot)*dz0;
+      dy=dy0;
+      dz=-fsin(vol_rot)*dx0+fcos(vol_rot)*dz0;
+
+      ux=fcos(vol_rot)*ux0+fsin(vol_rot)*uz0;
+      uy=uy0;
+      uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
+
+      // tiltXY:
+
+      ex0=fcos(vol_tltXY)*ex-fsin(vol_tltXY)*ey;
+      ey0=fsin(vol_tltXY)*ex+fcos(vol_tltXY)*ey;
+      ez0=ez;
+
+      dx0=fcos(vol_tltXY)*dx-fsin(vol_tltXY)*dy;
+      dy0=fsin(vol_tltXY)*dx+fcos(vol_tltXY)*dy;
+      dz0=dz;
+
+      ux0=fcos(vol_tltXY)*ux-fsin(vol_tltXY)*uy;
+      uy0=fsin(vol_tltXY)*ux+fcos(vol_tltXY)*uy;
+      uz0=uz;
+
+      // tiltYZ:
+
+      ex=ex0;
+      ey=fcos(vol_tltYZ)*ey0-fsin(vol_tltYZ)*ez0;
+      ez=fsin(vol_tltYZ)*ey0+fcos(vol_tltYZ)*ez0;
+
+      dx=dx0;
+      dy=fcos(vol_tltYZ)*dy0-fsin(vol_tltYZ)*dz0;
+      dz=fsin(vol_tltYZ)*dy0+fcos(vol_tltYZ)*dz0;
+
+      ux=ux0;
+      uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
+      uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
+
+      volscene::renderslice(ex,ey,ez,
+                            dx,dy,dz,
+                            ux,uy,uz,
+                            slice_dist);
+      }
+
    };
 
 #endif

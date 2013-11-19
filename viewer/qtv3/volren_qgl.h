@@ -235,7 +235,7 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
+   void setClipDist(double dist=0.0, BOOLINT opaque=TRUE)
    {
       dist_=dist;
       opaque_=opaque;
@@ -878,13 +878,14 @@ protected:
    {
       if (vol_clip_opaque)
       {
-         vr_->renderslice(eye_x+eye_dx*vol_clip_dist,
-                          eye_x+eye_dx*vol_clip_dist,
-                          eye_x+eye_dx*vol_clip_dist,
-                          eye_dx,eye_dy,eye_dz);
+         vr_->renderslice(eye_x,eye_y,eye_z,
+                          eye_dx,eye_dy,eye_dz,
+                          eye_ux,eye_uy,eye_uz,
+                          vol_rot,vol_tltXY,vol_tltYZ,
+                          vol_dx,vol_dy,vol_dz,
+                          vol_clip_dist);
 
          vol_clip=FALSE;
-         vol_clip_dist=0.0;
       }
 
       return(vr_->render(eye_x,eye_y,eye_z,
