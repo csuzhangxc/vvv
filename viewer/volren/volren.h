@@ -205,7 +205,8 @@ class volren: public volscene
                     float vol_tltXY, // volume tilt in degrees
                     float vol_tltYZ, // volume tilt in degrees
                     float vol_dx,float vol_dy,float vol_dz, // volume translation
-                    float slice_dist) // volume slice distance
+                    float slice_dist, // volume slice distance
+                    float slice_alpha=1.0f) // volume slice opacity
       {
       transform(eye_x,eye_y,eye_z,
                 eye_dx,eye_dy,eye_dz,
@@ -213,10 +214,17 @@ class volren: public volscene
                 vol_rot,vol_tltXY,vol_tltYZ,
                 vol_dx,vol_dy,vol_dz);
 
+      glPushMatrix();
+      glLoadIdentity();
+      gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
+
       volscene::renderslice(eye_x,eye_y,eye_z,
                             eye_dx,eye_dy,eye_dz,
                             eye_ux,eye_uy,eye_uz,
-                            sqrt(eye_x*eye_x+eye_y*eye_y+eye_z*eye_z)-slice_dist);
+                            sqrt(eye_x*eye_x+eye_y*eye_y+eye_z*eye_z)-slice_dist,
+                            slice_alpha);
+
+      glPopMatrix();
       }
 
    private:

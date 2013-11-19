@@ -3455,7 +3455,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
 void mipmap::renderslice(float ex,float ey,float ez,
                          float dx,float dy,float dz,
                          float ux,float uy,float uz,
-                         float nearp)
+                         float nearp,
+                         float alpha)
    {
    // save eye point
    ex_=ex;
@@ -3483,12 +3484,13 @@ void mipmap::renderslice(float ex,float ey,float ez,
    nz_=dz;
 
    // render opaque slice
-   renderslice(px_,py_,pz_,nx_,ny_,nz_);
+   renderslice(px_,py_,pz_,nx_,ny_,nz_,alpha);
    }
 
 // render a volume slice
 void mipmap::renderslice(float ox,float oy,float oz,
-                         float nx,float ny,float nz)
+                         float nx,float ny,float nz,
+                         float alpha)
    {
    int i;
 
@@ -3510,7 +3512,19 @@ void mipmap::renderslice(float ox,float oy,float oz,
 
    // render opaque slice
    if (VOLCNT>0)
+      {
+      if (alpha<1.0f)
+         {
+         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+         glEnable(GL_BLEND);
+         }
+
+      glColor4f(1,1,1,alpha);
       VOL[0]->renderslice(ox,oy,oz,nx,ny,nz);
+
+      if (alpha<1.0f)
+         glDisable(GL_BLEND);
+      }
 
    // disable clipping planes
    for (i=0; i<6; i++)

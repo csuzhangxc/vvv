@@ -900,7 +900,8 @@ protected:
                              eye_ux,eye_uy,eye_uz,
                              vol_rot,vol_tltXY,vol_tltYZ,
                              vol_dx,vol_dy,vol_dz,
-                             vol_clip_dist);
+                             vol_clip_dist,
+                             0.75f); //!!
 
       return(aborted);
    }

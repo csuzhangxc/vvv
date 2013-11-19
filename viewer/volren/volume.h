@@ -211,11 +211,13 @@ class mipmap
    void renderslice(float ex,float ey,float ez,
                     float dx,float dy,float dz,
                     float ux,float uy,float uz,
-                    float nearp);
+                    float nearp,
+                    float alpha=1.0f);
 
    // render a volume slice
    void renderslice(float ox,float oy,float oz,
-                    float nx,float ny,float nz);
+                    float nx,float ny,float nz,
+                    float alpha=1.0f);
 
    //! return center of bounding box
    float getcenterx() {return(VOL[0]->getcenterx());}
