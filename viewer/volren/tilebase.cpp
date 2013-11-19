@@ -1506,7 +1506,7 @@ inline void tile::intersecttetra(const float p1x,const float p1y,const float p1z
    dmin=fmin(fmin(d1,d2),fmin(d3,d4));
    dmax=fmax(fmax(d1,d2),fmax(d3,d4));
 
-   if (dmin<=0.0 && dmax>=0.0)
+   if (dmin*dmax<=0.0f)
       {
       flag=0;
 

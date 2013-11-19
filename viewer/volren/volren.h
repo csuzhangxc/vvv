@@ -340,7 +340,7 @@ class volren: public volscene
       volscene::renderslice(ex,ey,ez,
                             dx,dy,dz,
                             ux,uy,uz,
-                            slice_dist);
+                            sqrt(ex*ex+ey*ey+ez*ez)-slice_dist);
       }
 
    };
