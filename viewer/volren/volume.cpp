@@ -3457,8 +3457,6 @@ void mipmap::renderslice(float ex,float ey,float ez,
                          float ux,float uy,float uz,
                          float nearp)
    {
-   int i;
-
    // save eye point
    ex_=ex;
    ey_=ey;
@@ -3484,6 +3482,16 @@ void mipmap::renderslice(float ex,float ey,float ez,
    ny_=dy;
    nz_=dz;
 
+   // render opaque slice
+   renderslice(px_,py_,pz_,nx_,ny_,nz_);
+   }
+
+// render a volume slice
+void mipmap::renderslice(float ox,float oy,float oz,
+                         float nx,float ny,float nz)
+   {
+   int i;
+
    // enable clipping planes
    for (i=0; i<6; i++)
       if (clip_on[i])
@@ -3502,7 +3510,7 @@ void mipmap::renderslice(float ex,float ey,float ez,
 
    // render opaque slice
    if (VOLCNT>0)
-      VOL[0]->renderslice(ex+nearp*dx,ey+nearp*dy,ez+nearp*dz,dx,dy,dz);
+      VOL[0]->renderslice(ox,oy,oz,nx,ny,nz);
 
    // disable clipping planes
    for (i=0; i<6; i++)

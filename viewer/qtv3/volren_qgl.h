@@ -53,6 +53,7 @@ public:
       tilt_ = 0.0;
       zoom_ = 0.0;
       dist_ = 1.0;
+      opaque_ = FALSE;
       oversampling_ = 1.0;
       red_ = VOLREN_DEFAULT_RED;
       green_ = VOLREN_DEFAULT_GREEN;
@@ -234,8 +235,11 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0)
-      {dist_=dist;}
+   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
+   {
+      dist_=dist;
+      opaque_=opaque;
+   }
 
    //! set oversampling rate
    void setOversampling(double rate=1.0)
@@ -394,6 +398,7 @@ protected:
    double tilt_; // tilt angle in degrees
    double zoom_; // zoom into volume
    double dist_; // clipping distance
+   BOOLINT opaque_; // opaque clipping
    double oversampling_; // oversampling rate
    double red_,green_,blue_; // default color
    double emi_; // volume emission
@@ -493,24 +498,25 @@ protected:
 
       // call volume renderer
       if (sfx_base==0.0)
-         vr_->render(eye_tx,eye_ty,eye_tz, // view point
-                     eye_tdx,eye_tdy,eye_tdz, // viewing direction
-                     eye_tux,eye_tuy,eye_tuz, // up vector
-                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
-                     gfx_fbo, // use fbo
-                     angle_, // volume rotation in degrees
-                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                     0.0f,0.0f,0.0f, // volume translation
-                     vol_emission,vol_density, // global emi and att
-                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
-                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
-                     TRUE,TRUE, // pre-multiplication and pre-integration
-                     TRUE, // white background
-                     inv_, // inverse mode
-                     vol_over, // oversampling
-                     TRUE, // lighting
-                     TRUE, // view-aligned clipping
-                     dist_); // clipping distance relative to origin
+         qgl_render(eye_tx,eye_ty,eye_tz, // view point
+                    eye_tdx,eye_tdy,eye_tdz, // viewing direction
+                    eye_tux,eye_tuy,eye_tuz, // up vector
+                    gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                    gfx_fbo, // use fbo
+                    angle_, // volume rotation in degrees
+                    tiltXY_,tiltYZ_, // volume rotation in degrees
+                    0.0f,0.0f,0.0f, // volume translation
+                    vol_emission,vol_density, // global emi and att
+                    tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                    tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                    TRUE,TRUE, // pre-multiplication and pre-integration
+                    TRUE, // white background
+                    inv_, // inverse mode
+                    vol_over, // oversampling
+                    TRUE, // lighting
+                    TRUE, // view-aligned clipping
+                    dist_, // clipping distance relative to origin
+                    opaque_); // opaque clipping plane
       else
       {
          double eye_rx,eye_ry,eye_rz;
@@ -546,48 +552,50 @@ protected:
          else
             glDrawBuffer(GL_BACK_LEFT);
 
-         vr_->render(eye_tlx,eye_tly,eye_tlz, // left view point
-                     eye_tdlx,eye_tdly,eye_tdlz, // viewing direction
-                     eye_tux,eye_tuy,eye_tuz, // up vector
-                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
-                     gfx_fbo, // use fbo
-                     angle_, // volume rotation in degrees
-                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                     0.0f,0.0f,0.0f, // volume translation
-                     vol_emission,vol_density, // global emi and att
-                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
-                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
-                     TRUE,TRUE, // pre-multiplication and pre-integration
-                     TRUE, // white background
-                     inv_, // inverse mode
-                     vol_over, // oversampling
-                     TRUE, // lighting
-                     TRUE, // view-aligned clipping
-                     dist_); // clipping distance relative to origin
+         qgl_render(eye_tlx,eye_tly,eye_tlz, // left view point
+                    eye_tdlx,eye_tdly,eye_tdlz, // viewing direction
+                    eye_tux,eye_tuy,eye_tuz, // up vector
+                    gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                    gfx_fbo, // use fbo
+                    angle_, // volume rotation in degrees
+                    tiltXY_,tiltYZ_, // volume rotation in degrees
+                    0.0f,0.0f,0.0f, // volume translation
+                    vol_emission,vol_density, // global emi and att
+                    tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                    tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                    TRUE,TRUE, // pre-multiplication and pre-integration
+                    TRUE, // white background
+                    inv_, // inverse mode
+                    vol_over, // oversampling
+                    TRUE, // lighting
+                    TRUE, // view-aligned clipping
+                    dist_, // clipping distance relative to origin
+                    opaque_); // opaque clipping plane
 
          if (sfx_ana)
             glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
          else
             glDrawBuffer(GL_BACK_RIGHT);
 
-         vr_->render(eye_trx,eye_try,eye_trz, // right view point
-                     eye_tdrx,eye_tdry,eye_tdrz, // viewing direction
-                     eye_tux,eye_tuy,eye_tuz, // up vector
-                     gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
-                     gfx_fbo, // use fbo
-                     angle_, // volume rotation in degrees
-                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                     0.0f,0.0f,0.0f, // volume translation
-                     vol_emission,vol_density, // global emi and att
-                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
-                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
-                     TRUE,TRUE, // pre-multiplication and pre-integration
-                     TRUE, // white background
-                     inv_, // inverse mode
-                     vol_over, // oversampling
-                     TRUE, // lighting
-                     TRUE, // view-aligned clipping
-                     dist_); // clipping distance relative to origin
+         qgl_render(eye_trx,eye_try,eye_trz, // right view point
+                    eye_tdrx,eye_tdry,eye_tdrz, // viewing direction
+                    eye_tux,eye_tuy,eye_tuz, // up vector
+                    gfx_fovy,gfx_aspect,gfx_near,gfx_far, // frustum
+                    gfx_fbo, // use fbo
+                    angle_, // volume rotation in degrees
+                    tiltXY_,tiltYZ_, // volume rotation in degrees
+                    0.0f,0.0f,0.0f, // volume translation
+                    vol_emission,vol_density, // global emi and att
+                    tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
+                    tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
+                    TRUE,TRUE, // pre-multiplication and pre-integration
+                    TRUE, // white background
+                    inv_, // inverse mode
+                    vol_over, // oversampling
+                    TRUE, // lighting
+                    TRUE, // view-aligned clipping
+                    dist_, // clipping distance relative to origin
+                    opaque_); // opaque clipping plane
 
          if (sfx_ana)
             glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
@@ -843,6 +851,56 @@ protected:
                             NULL,
                             histmin,histfreq,kneigh,histstep,
                             feedback,this));
+   }
+
+   BOOLINT qgl_render(float eye_x,float eye_y,float eye_z, // eye point
+                      float eye_dx,float eye_dy,float eye_dz, // viewing direction
+                      float eye_ux,float eye_uy,float eye_uz, // up vector
+                      float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+                      BOOLINT gfx_fbo, // use frame buffer object
+                      float vol_rot, // volume rotation in degrees
+                      float vol_tltXY, // volume tilt in degrees
+                      float vol_tltYZ, // volume tilt in degrees
+                      float vol_dx,float vol_dy,float vol_dz, // volume translation
+                      float vol_emi,float vol_att, // global volume emi and att
+                      float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
+                      float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
+                      BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
+                      BOOLINT vol_white=TRUE, // white background
+                      BOOLINT vol_inv=FALSE, // inverse mode
+                      float vol_over=1.0f, // oversampling
+                      BOOLINT vol_light=FALSE, // lighting
+                      BOOLINT vol_clip=FALSE, // view-aligned clipping
+                      float vol_clip_dist=0.0f, // clipping distance relative to origin
+                      BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
+                      BOOLINT (*abort)(void *abortdata)=NULL,
+                      void *abortdata=NULL)
+   {
+      if (vol_clip_opaque)
+      {
+         vr_->renderslice(eye_x+eye_dx*vol_clip_dist,
+                          eye_x+eye_dx*vol_clip_dist,
+                          eye_x+eye_dx*vol_clip_dist,
+                          eye_dx,eye_dy,eye_dz);
+
+         vol_clip=FALSE;
+         vol_clip_dist=0.0;
+      }
+
+      return(vr_->render(eye_x,eye_y,eye_z,
+                         eye_dx,eye_dy,eye_dz,
+                         eye_ux,eye_uy,eye_uz,
+                         gfx_fovy,gfx_aspect,gfx_near,gfx_far,
+                         gfx_fbo,
+                         vol_rot,vol_tltXY,vol_tltYZ,
+                         vol_dx,vol_dy,vol_dz,
+                         vol_emi,vol_att,
+                         tf_re_scale,tf_ge_scale,tf_be_scale,
+                         tf_ra_scale,tf_ga_scale,tf_ba_scale,
+                         tf_premult,tf_preint,
+                         vol_white,vol_inv,vol_over,vol_light,
+                         vol_clip,vol_clip_dist,
+                         abort,abortdata));
    }
 
    void qgl_drawquad(float x,float y,float width,float height,
