@@ -3494,6 +3494,8 @@ void mipmap::renderslice(float ox,float oy,float oz,
    {
    int i;
 
+   if (alpha==0.0f) return;
+
    // enable clipping planes
    for (i=0; i<6; i++)
       if (clip_on[i])

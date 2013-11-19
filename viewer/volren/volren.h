@@ -208,6 +208,8 @@ class volren: public volscene
                     float slice_dist, // volume slice distance
                     float slice_alpha=1.0f) // volume slice opacity
       {
+      if (alpha==0.0f) return;
+
       transform(eye_x,eye_y,eye_z,
                 eye_dx,eye_dy,eye_dz,
                 eye_ux,eye_uy,eye_uz,
