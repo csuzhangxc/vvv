@@ -54,6 +54,7 @@ public:
       zoom_ = 0.0;
       dist_ = 1.0;
       opaque_ = FALSE;
+      opacity_ = 1.0f;
       oversampling_ = 1.0;
       red_ = VOLREN_DEFAULT_RED;
       green_ = VOLREN_DEFAULT_GREEN;
@@ -398,7 +399,8 @@ protected:
    double tilt_; // tilt angle in degrees
    double zoom_; // zoom into volume
    double dist_; // clipping distance
-   BOOLINT opaque_; // opaque clipping
+   BOOLINT opaque_; // opaque clipping plane
+   float opacity_; // clipping plane opacity
    double oversampling_; // oversampling rate
    double red_,green_,blue_; // default color
    double emi_; // volume emission
@@ -516,7 +518,8 @@ protected:
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
                     dist_, // clipping distance relative to origin
-                    opaque_); // opaque clipping plane
+                    opaque_, // opaque clipping plane
+                    opacity_); // clipping plane opacity
       else
       {
          double eye_rx,eye_ry,eye_rz;
@@ -570,7 +573,8 @@ protected:
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
                     dist_, // clipping distance relative to origin
-                    opaque_); // opaque clipping plane
+                    opaque_, // opaque clipping plane
+                    opacity_); // clipping plane opacity
 
          if (sfx_ana)
             glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
@@ -595,7 +599,8 @@ protected:
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
                     dist_, // clipping distance relative to origin
-                    opaque_); // opaque clipping plane
+                    opaque_, // opaque clipping plane
+                    opacity_); // clipping plane opacity
 
          if (sfx_ana)
             glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
@@ -873,6 +878,7 @@ protected:
                       BOOLINT vol_clip=FALSE, // view-aligned clipping
                       float vol_clip_dist=0.0f, // clipping distance relative to origin
                       BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
+                      float vol_clip_opacity=1.0f, // clipping plane opacity
                       BOOLINT (*abort)(void *abortdata)=NULL,
                       void *abortdata=NULL)
    {
@@ -900,8 +906,7 @@ protected:
                              eye_ux,eye_uy,eye_uz,
                              vol_rot,vol_tltXY,vol_tltYZ,
                              vol_dx,vol_dy,vol_dz,
-                             vol_clip_dist,
-                             0.75f); //!!
+                             vol_clip_dist,vol_clip_opacity);
 
       return(aborted);
    }
