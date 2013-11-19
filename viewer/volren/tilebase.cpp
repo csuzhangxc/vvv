@@ -738,6 +738,22 @@ void tile::drawhexa(const float p1x,const float p1y,const float p1z,
    if (f4) slicetetra(p8x,p8y,p8z,p3x,p3y,p3z,p1x,p1y,p1z,p4x,p4y,p4z,slab);
    }
 
+// bind 3D texture map
+void tile::bindtexmap(int texid3D)
+   {
+   if (texid3D>0)
+      {
+      glBindTexture(GL_TEXTURE_3D,texid3D);
+      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_WRAP_R,GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_3D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+      glEnable(GL_TEXTURE_3D);
+      }
+   else glDisable(GL_TEXTURE_3D);
+   }
+
 // bind 3D texture map using dependent 2D lookup
 void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA)
    {
@@ -1402,4 +1418,178 @@ void tile::render(float ex,float ey,float ez,
    glEnable(GL_CULL_FACE);
 
    glDisable(GL_BLEND);
+   }
+
+// extract triangle from tetrahedron
+inline void tile::intersecttetra1(const float p1x,const float p1y,const float p1z,const float d1,
+                                  const float p2x,const float p2y,const float p2z,const float d2,
+                                  const float p3x,const float p3y,const float p3z,const float d3,
+                                  const float p4x,const float p4y,const float p4z,const float d4)
+   {
+   float pp1x,pp1y,pp1z,
+         pp2x,pp2y,pp2z,
+         pp3x,pp3y,pp3z;
+
+   pp1x=(d2*p1x+d1*p2x)/(d1+d2);
+   pp1y=(d2*p1y+d1*p2y)/(d1+d2);
+   pp1z=(d2*p1z+d1*p2z)/(d1+d2);
+   pp2x=(d3*p1x+d1*p3x)/(d1+d3);
+   pp2y=(d3*p1y+d1*p3y)/(d1+d3);
+   pp2z=(d3*p1z+d1*p3z)/(d1+d3);
+   pp3x=(d4*p1x+d1*p4x)/(d1+d4);
+   pp3y=(d4*p1y+d1*p4y)/(d1+d4);
+   pp3z=(d4*p1z+d1*p4z)/(d1+d4);
+
+   glBegin(GL_TRIANGLE_FAN);
+   glTexCoord3f(pp1x,pp1y,pp1z);
+   glVertex3f(pp1x,pp1y,pp1z);
+   glTexCoord3f(pp2x,pp2y,pp2z);
+   glVertex3f(pp2x,pp2y,pp2z);
+   glTexCoord3f(pp3x,pp3y,pp3z);
+   glVertex3f(pp3x,pp3y,pp3z);
+   glEnd();
+   }
+
+// extract quad from tetrahedron
+inline void tile::intersecttetra2(const float p1x,const float p1y,const float p1z,const float d1,
+                                  const float p2x,const float p2y,const float p2z,const float d2,
+                                  const float p3x,const float p3y,const float p3z,const float d3,
+                                  const float p4x,const float p4y,const float p4z,const float d4)
+   {
+   float pp1x,pp1y,pp1z,
+         pp2x,pp2y,pp2z,
+         pp3x,pp3y,pp3z,
+         pp4x,pp4y,pp4z;
+
+   pp1x=(d3*p1x+d1*p3x)/(d1+d3);
+   pp1y=(d3*p1y+d1*p3y)/(d1+d3);
+   pp1z=(d3*p1z+d1*p3z)/(d1+d3);
+   pp2x=(d3*p2x+d2*p3x)/(d2+d3);
+   pp2y=(d3*p2y+d2*p3y)/(d2+d3);
+   pp2z=(d3*p2z+d2*p3z)/(d2+d3);
+   pp3x=(d4*p1x+d1*p4x)/(d1+d4);
+   pp3y=(d4*p1y+d1*p4y)/(d1+d4);
+   pp3z=(d4*p1z+d1*p4z)/(d1+d4);
+   pp4x=(d4*p2x+d2*p4x)/(d2+d4);
+   pp4y=(d4*p2y+d2*p4y)/(d2+d4);
+   pp4z=(d4*p2z+d2*p4z)/(d2+d4);
+
+   glBegin(GL_TRIANGLE_FAN);
+   glTexCoord3f(pp1x,pp1y,pp1z);
+   glVertex3f(pp1x,pp1y,pp1z);
+   glTexCoord3f(pp2x,pp2y,pp2z);
+   glVertex3f(pp2x,pp2y,pp2z);
+   glTexCoord3f(pp4x,pp4y,pp4z);
+   glVertex3f(pp4x,pp4y,pp4z);
+   glTexCoord3f(pp3x,pp3y,pp3z);
+   glVertex3f(pp3x,pp3y,pp3z);
+   glEnd();
+   }
+
+// intersect tetrahedron with plane
+inline void tile::intersecttetra(const float p1x,const float p1y,const float p1z,
+                                 const float p2x,const float p2y,const float p2z,
+                                 const float p3x,const float p3y,const float p3z,
+                                 const float p4x,const float p4y,const float p4z,
+                                 const float ox,const float oy,const float oz,
+                                 const float nx,const float ny,const float nz)
+   {
+   int flag;
+
+   float d1,d2,d3,d4,dmin,dmax;
+
+   d1=(p1x-ox)*nx+(p1y-oy)*ny+(p1z-oz)*nz;
+   d2=(p2x-ox)*nx+(p2y-oy)*ny+(p2z-oz)*nz;
+   d3=(p3x-ox)*nx+(p3y-oy)*ny+(p3z-oz)*nz;
+   d4=(p4x-ox)*nx+(p4y-oy)*ny+(p4z-oz)*nz;
+
+   dmin=fmin(fmin(d1,d2),fmin(d3,d4));
+   dmax=fmax(fmax(d1,d2),fmax(d3,d4));
+
+   if (dmin<=0.0 && dmax>=0.0)
+      {
+      flag=0;
+
+      if (d1<0.0f) flag|=1;
+      if (d2<0.0f) flag|=2;
+      if (d3<0.0f) flag|=4;
+      if (d4<0.0f) flag|=8;
+
+      switch (flag)
+         {
+         case 1: case 14: intersecttetra1(p1x,p1y,p1z,fabs(d1),p2x,p2y,p2z,fabs(d2),p3x,p3y,p3z,fabs(d3),p4x,p4y,p4z,fabs(d4)); break;
+         case 2: case 13: intersecttetra1(p2x,p2y,p2z,fabs(d2),p1x,p1y,p1z,fabs(d1),p3x,p3y,p3z,fabs(d3),p4x,p4y,p4z,fabs(d4)); break;
+         case 4: case 11: intersecttetra1(p3x,p3y,p3z,fabs(d3),p1x,p1y,p1z,fabs(d1),p2x,p2y,p2z,fabs(d2),p4x,p4y,p4z,fabs(d4)); break;
+         case 8: case 7: intersecttetra1(p4x,p4y,p4z,fabs(d4),p1x,p1y,p1z,fabs(d1),p2x,p2y,p2z,fabs(d2),p3x,p3y,p3z,fabs(d3)); break;
+
+         case 3: intersecttetra2(p1x,p1y,p1z,fabs(d1),p2x,p2y,p2z,fabs(d2),p3x,p3y,p3z,fabs(d3),p4x,p4y,p4z,fabs(d4)); break;
+         case 5: intersecttetra2(p1x,p1y,p1z,fabs(d1),p3x,p3y,p3z,fabs(d3),p2x,p2y,p2z,fabs(d2),p4x,p4y,p4z,fabs(d4)); break;
+         case 6: intersecttetra2(p2x,p2y,p2z,fabs(d2),p3x,p3y,p3z,fabs(d3),p1x,p1y,p1z,fabs(d1),p4x,p4y,p4z,fabs(d4)); break;
+         case 9: intersecttetra2(p1x,p1y,p1z,fabs(d1),p4x,p4y,p4z,fabs(d4),p2x,p2y,p2z,fabs(d2),p3x,p3y,p3z,fabs(d3)); break;
+         case 10: intersecttetra2(p2x,p2y,p2z,fabs(d2),p4x,p4y,p4z,fabs(d4),p1x,p1y,p1z,fabs(d1),p3x,p3y,p3z,fabs(d3)); break;
+         case 12: intersecttetra2(p3x,p3y,p3z,fabs(d3),p4x,p4y,p4z,fabs(d4),p1x,p1y,p1z,fabs(d1),p2x,p2y,p2z,fabs(d2)); break;
+         }
+      }
+   }
+
+// intersect hexahedron by breaking it up into 5 tetrahedra
+void tile::intersecthexa(const float p1x,const float p1y,const float p1z,
+                         const float p2x,const float p2y,const float p2z,
+                         const float p3x,const float p3y,const float p3z,
+                         const float p4x,const float p4y,const float p4z,
+                         const float p5x,const float p5y,const float p5z,
+                         const float p6x,const float p6y,const float p6z,
+                         const float p7x,const float p7y,const float p7z,
+                         const float p8x,const float p8y,const float p8z,
+                         const float ox,const float oy,const float oz,
+                         const float nx,const float ny,const float nz)
+   {
+   intersecttetra(p1x,p1y,p1z,p8x,p8y,p8z,p6x,p6y,p6z,p3x,p3y,p3z,ox,oy,oz,nx,ny,nz);
+   intersecttetra(p1x,p1y,p1z,p6x,p6y,p6z,p8x,p8y,p8z,p5x,p5y,p5z,ox,oy,oz,nx,ny,nz);
+   intersecttetra(p3x,p3y,p3z,p8x,p8y,p8z,p6x,p6y,p6z,p7x,p7y,p7z,ox,oy,oz,nx,ny,nz);
+   intersecttetra(p6x,p6y,p6z,p1x,p1y,p1z,p3x,p3y,p3z,p2x,p2y,p2z,ox,oy,oz,nx,ny,nz);
+   intersecttetra(p8x,p8y,p8z,p3x,p3y,p3z,p1x,p1y,p1z,p4x,p4y,p4z,ox,oy,oz,nx,ny,nz);
+   }
+
+// render a tile slice
+void tile::renderslice(float ox,float oy,float oz,
+                       float nx,float ny,float nz)
+   {
+   glDisable(GL_CULL_FACE);
+
+   bindtexmap(BRICK->get_id());
+
+   glMatrixMode(GL_TEXTURE);
+
+   glPushMatrix();
+   glLoadIdentity();
+
+   glTranslatef((0.5f+BORDER)/BSIZE,(0.5f+BORDER)/BSIZE,(0.5f+BORDER)/BSIZE);
+   glScalef((float)(BSIZE-1-2*BORDER)/BSIZE,
+            (float)(BSIZE-1-2*BORDER)/BSIZE,
+            (float)(BSIZE-1-2*BORDER)/BSIZE);
+
+   glTranslatef(0.5f,0.5f,0.5f);
+   glScalef(1.0f/SX,1.0f/SY,1.0f/SZ);
+   glTranslatef(-MX,-MY,-MZ);
+
+   glMatrixMode(GL_MODELVIEW);
+
+   intersecthexa(MX2-0.5f*SX2,MY2-0.5f*SY2,MZ2+0.5f*SZ2,
+                 MX2+0.5f*SX2,MY2-0.5f*SY2,MZ2+0.5f*SZ2,
+                 MX2+0.5f*SX2,MY2-0.5f*SY2,MZ2-0.5f*SZ2,
+                 MX2-0.5f*SX2,MY2-0.5f*SY2,MZ2-0.5f*SZ2,
+                 MX2-0.5f*SX2,MY2+0.5f*SY2,MZ2+0.5f*SZ2,
+                 MX2+0.5f*SX2,MY2+0.5f*SY2,MZ2+0.5f*SZ2,
+                 MX2+0.5f*SX2,MY2+0.5f*SY2,MZ2-0.5f*SZ2,
+                 MX2-0.5f*SX2,MY2+0.5f*SY2,MZ2-0.5f*SZ2,
+                 ox,oy,oz,nx,ny,nz);
+
+   glMatrixMode(GL_TEXTURE);
+   glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
+
+   bindtexmap(0);
+
+   glEnable(GL_CULL_FACE);
    }

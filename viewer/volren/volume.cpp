@@ -263,6 +263,16 @@ BOOLINT volume::render(float ex,float ey,float ez,
    return(aborted);
    }
 
+// render a volume slice
+void volume::renderslice(float ox,float oy,float oz,
+                         float nx,float ny,float nz)
+   {
+   int i;
+
+   for (i=0; i<TILECNT; i++)
+      TILE[i]->renderslice(ox,oy,oz,nx,ny,nz);
+   }
+
 // draw the surrounding wire frame box
 void volume::drawwireframe(float mx,float my,float mz,
                            float sx,float sy,float sz)
@@ -3360,10 +3370,10 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glEnable(GL_CLIP_PLANE0+i);
          }
 
-   // render surface
+   // render opaque surface
    SURFACE.render();
 
-   // render transparent volume
+   // render semi-transparent volume
    if (VOLCNT>0)
       {
       // choose volume
@@ -3439,6 +3449,65 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    if (TFUNC->get_invmode()) invertbuffer();
 
    return(aborted);
+   }
+
+// render a volume slice
+void mipmap::renderslice(float ex,float ey,float ez,
+                         float dx,float dy,float dz,
+                         float ux,float uy,float uz,
+                         float nearp)
+   {
+   int i;
+
+   // save eye point
+   ex_=ex;
+   ey_=ey;
+   ez_=ez;
+
+   // save viewing direction
+   dx_=dx;
+   dy_=dy;
+   dz_=dz;
+
+   // save up vector
+   ux_=ux;
+   uy_=uy;
+   uz_=uz;
+
+   // save near plane point
+   px_=ex+dx*nearp;
+   py_=ey+dy*nearp;
+   pz_=ez+dz*nearp;
+
+   // save near plane normal
+   nx_=dx;
+   ny_=dy;
+   nz_=dz;
+
+   // enable clipping planes
+   for (i=0; i<6; i++)
+      if (clip_on[i])
+         {
+         GLdouble equ[4];
+
+         equ[0]=clip_a[i];
+         equ[1]=clip_b[i];
+         equ[2]=clip_c[i];
+         equ[3]=clip_d[i];
+
+         glClipPlane(GL_CLIP_PLANE0+i,equ);
+
+         glEnable(GL_CLIP_PLANE0+i);
+         }
+
+   // render opaque slice
+   if (VOLCNT>0)
+      VOL[0]->renderslice(ex+nearp*dx,ey+nearp*dy,ez+nearp*dz,dx,dy,dz);
+
+   // disable clipping planes
+   for (i=0; i<6; i++)
+      if (clip_on[i])
+         glDisable(GL_CLIP_PLANE0+i);
    }
 
 // draw the surrounding wire frame box

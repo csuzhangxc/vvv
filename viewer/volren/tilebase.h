@@ -100,6 +100,10 @@ class tile
                BOOLINT lighting=FALSE,
                BOOLINT depth=TRUE);
 
+   // render a tile slice
+   void renderslice(float ox,float oy,float oz,
+                    float nx,float ny,float nz);
+
    protected:
 
    int BSIZE; // block size in voxels
@@ -165,6 +169,34 @@ class tile
                  const float p8x,const float p8y,const float p8z,
                  const float slab);
 
+   inline void intersecttetra1(const float p1x,const float p1y,const float p1z,const float d1,
+                               const float p2x,const float p2y,const float p2z,const float d2,
+                               const float p3x,const float p3y,const float p3z,const float d3,
+                               const float p4x,const float p4y,const float p4z,const float d4);
+
+   inline void intersecttetra2(const float p1x,const float p1y,const float p1z,const float d1,
+                               const float p2x,const float p2y,const float p2z,const float d2,
+                               const float p3x,const float p3y,const float p3z,const float d3,
+                               const float p4x,const float p4y,const float p4z,const float d4);
+
+   inline void intersecttetra(const float p1x,const float p1y,const float p1z,
+                              const float p2x,const float p2y,const float p2z,
+                              const float p3x,const float p3y,const float p3z,
+                              const float p4x,const float p4y,const float p4z,
+                              const float ox,const float oy,const float oz,
+                              const float nx,const float ny,const float nz);
+
+   void intersecthexa(const float p1x,const float p1y,const float p1z,
+                      const float p2x,const float p2y,const float p2z,
+                      const float p3x,const float p3y,const float p3z,
+                      const float p4x,const float p4y,const float p4z,
+                      const float p5x,const float p5y,const float p5z,
+                      const float p6x,const float p6y,const float p6z,
+                      const float p7x,const float p7y,const float p7z,
+                      const float p8x,const float p8y,const float p8z,
+                      const float ox,const float oy,const float oz,
+                      const float nx,const float ny,const float nz);
+
    private:
 
    // eye parameters:
@@ -176,6 +208,7 @@ class tile
    float NEARP;
 
    // texture shader and fragment program setup
+   void bindtexmap(int texid3D);
    void bindtexmaps(int texid3D,int texid2DE,int texid2DA);
    void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA);
    void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA);

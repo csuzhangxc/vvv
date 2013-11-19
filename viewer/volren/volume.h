@@ -56,6 +56,10 @@ class volume
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL);
 
+   // render a volume slice
+   void renderslice(float ox,float oy,float oz,
+                    float nx,float ny,float nz);
+
    // render the wire frame
    static void drawwireframe(float mx=0.0f,float my=0.0f,float mz=0.0f,
                              float sx=1.0f,float sy=1.0f,float sz=1.0f);
@@ -202,6 +206,12 @@ class mipmap
                   BOOLINT usefbo=FALSE,
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL);
+
+   // render a volume slice
+   void renderslice(float ex,float ey,float ez,
+                    float dx,float dy,float dz,
+                    float ux,float uy,float uz,
+                    float nearp);
 
    //! return center of bounding box
    float getcenterx() {return(VOL[0]->getcenterx());}
