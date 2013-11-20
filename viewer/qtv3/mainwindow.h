@@ -148,6 +148,7 @@ private:
 
    QCheckBox *gradMagCheck_;
    QCheckBox *invModeCheck_;
+   QCheckBox *planeCheck_;
 
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;
@@ -206,6 +207,7 @@ protected slots:
    void absorption(int v);
    void checkGradMag(int on);
    void checkInvMode(int on);
+   void checkPlane(int on);
    void checkSFXoff(bool on);
    void checkAnaMode(bool on);
    void checkSFXon(bool on);

@@ -236,10 +236,16 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
+   void setClipDist(double dist=0.0)
    {
       dist_=dist;
+   }
+
+   //! set clipping plane opacity
+   void setClipOpacity(BOOLINT opaque=FALSE,float opacity=1.0f)
+   {
       opaque_=opaque;
+      opacity_=opacity;
    }
 
    //! set oversampling rate

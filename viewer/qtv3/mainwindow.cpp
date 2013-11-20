@@ -184,6 +184,10 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
+   planeCheck_ = new QCheckBox(tr("Clip Plane"));
+   planeCheck_->setChecked(false);
+   connect(planeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkPlane(int)));
+   l1->addWidget(planeCheck_);
 
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
@@ -587,6 +591,11 @@ void QTV3MainWindow::checkGradMag(int on)
 void QTV3MainWindow::checkInvMode(int on)
 {
    vrw_->setInvMode(on);
+}
+
+void QTV3MainWindow::checkPlane(int on)
+{
+   vrw_->setClipOpacity(on, 0.5f);
 }
 
 void QTV3MainWindow::checkSFX(bool stereo)
