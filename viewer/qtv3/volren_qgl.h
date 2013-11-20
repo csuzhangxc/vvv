@@ -236,7 +236,7 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
+   void setClipDist(double dist=0.0, BOOLINT opaque=TRUE)
    {
       dist_=dist;
       opaque_=opaque;
@@ -551,7 +551,10 @@ protected:
          eye_tdrz=eye_tdz-sfx_base/sfx_focus*eye_rz;
 
          if (sfx_ana)
-            glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
+            if (!inv_)
+               glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
+            else
+               glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
          else
             glDrawBuffer(GL_BACK_LEFT);
 
@@ -577,7 +580,10 @@ protected:
                     opacity_); // clipping plane opacity
 
          if (sfx_ana)
-            glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
+            if (!inv_)
+               glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
+            else
+               glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
          else
             glDrawBuffer(GL_BACK_RIGHT);
 
@@ -884,10 +890,13 @@ protected:
    {
       BOOLINT aborted;
 
+      vr_->begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
+                 vol_white,vol_inv);
+
       aborted=vr_->render(eye_x,eye_y,eye_z,
                           eye_dx,eye_dy,eye_dz,
                           eye_ux,eye_uy,eye_uz,
-                          gfx_fovy,gfx_aspect,gfx_near,gfx_far,
+                          gfx_near,
                           gfx_fbo,
                           vol_rot,vol_tltXY,vol_tltYZ,
                           vol_dx,vol_dy,vol_dz,
@@ -895,7 +904,7 @@ protected:
                           tf_re_scale,tf_ge_scale,tf_be_scale,
                           tf_ra_scale,tf_ga_scale,tf_ba_scale,
                           tf_premult,tf_preint,
-                          vol_white,vol_inv,vol_over,vol_light,
+                          vol_inv,vol_over,vol_light,
                           vol_clip,vol_clip_dist,
                           abort,abortdata);
 

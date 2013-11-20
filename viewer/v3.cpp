@@ -1517,10 +1517,13 @@ void handler(float time)
    VOLREN->enablewireframe(GUI_wire);
    VOLREN->enablehistogram(GUI_points);
 
+   VOLREN->begin(EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR,
+                 GUI_white,GUI_inv);
+
    VOLREN->render(EYE_X,EYE_Y,EYE_Z,
                   EYE_DX,EYE_DY,EYE_DZ,
                   EYE_UX,EYE_UY,EYE_UZ,
-                  EYE_FOVY,getaspect(),EYE_NEAR,EYE_FAR,
+                  EYE_NEAR,
                   GUI_fbo,
                   360.0f*GUI_rot,0.0f,0.0f,
                   0.0f,4.0f*(GUI_height-0.5f),0.0f,
@@ -1528,7 +1531,7 @@ void handler(float time)
                   GUI_re_scale,GUI_ge_scale,GUI_be_scale,
                   GUI_ra_scale,GUI_ga_scale,GUI_ba_scale,
                   GUI_premult,GUI_preint,
-                  GUI_white,GUI_inv,
+                  GUI_inv,
                   over,
                   GUI_light,
                   GUI_clip,GUI_clip_dist);

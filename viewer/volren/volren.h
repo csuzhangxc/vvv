@@ -110,11 +110,35 @@ class volren: public volscene
    BOOLINT loadsurface(const char *filename)
       {return(volscene::loadsurface(filename));}
 
+   //! begin rendering
+   void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+              BOOLINT vol_white=TRUE, // white background
+              BOOLINT vol_inv=FALSE) // inverse mode
+      {
+      // volren setup:
+
+      if (vol_white)
+         if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
+         else setbackground(1.0f,1.0f,1.0f);
+      else setbackground(0.0f,0.0f,0.0f);
+
+      clearbuffer();
+
+      set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
+
+      // perspective:
+
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
+      glMatrixMode(GL_MODELVIEW);
+      }
+
    //! render the volume mipmap pyramid
    BOOLINT render(float eye_x,float eye_y,float eye_z, // eye point
                   float eye_dx,float eye_dy,float eye_dz, // viewing direction
                   float eye_ux,float eye_uy,float eye_uz, // up vector
-                  float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+                  float gfx_near, // near plane
                   BOOLINT gfx_fbo, // use frame buffer object
                   float vol_rot, // volume rotation in degrees
                   float vol_tltXY, // volume tilt in degrees
@@ -124,7 +148,6 @@ class volren: public volscene
                   float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
                   float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
                   BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
-                  BOOLINT vol_white=TRUE, // white background
                   BOOLINT vol_inv=FALSE, // inverse mode
                   float vol_over=1.0f, // oversampling
                   BOOLINT vol_light=FALSE, // lighting
@@ -141,6 +164,12 @@ class volren: public volscene
                 vol_rot,vol_tltXY,vol_tltYZ,
                 vol_dx,vol_dy,vol_dz);
 
+      // model view:
+
+      glPushMatrix();
+      glLoadIdentity();
+      gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
+
       // tf setup:
 
       get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
@@ -150,28 +179,6 @@ class volren: public volscene
 
       get_tfunc()->refresh(vol_emi,vol_att,get_slab()*vol_over,
                            tf_premult,tf_preint,vol_light);
-
-      // volren setup:
-
-      set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
-
-      if (vol_white)
-         if (!vol_inv) setbackground(0.85f,0.85f,0.85f);
-         else setbackground(1.0f,1.0f,1.0f);
-      else setbackground(0.0f,0.0f,0.0f);
-
-      clearbuffer();
-
-      // model view:
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      gluPerspective(gfx_fovy,gfx_aspect,gfx_near,gfx_far);
-      glMatrixMode(GL_MODELVIEW);
-
-      glPushMatrix();
-      glLoadIdentity();
-      gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
 
       // render:
 
@@ -187,7 +194,7 @@ class volren: public volscene
          aborted=volscene::render(eye_x,eye_y,eye_z,
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
-                                  sqrt(eye_x*eye_x+eye_y*eye_y+eye_z*eye_z)-vol_clip_dist,get_slab()*vol_over,
+                                  eye_x*eye_dx+eye_y*eye_dy+eye_z*eye_dz-vol_clip_dist,get_slab()*vol_over,
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
@@ -216,14 +223,53 @@ class volren: public volscene
                 vol_rot,vol_tltXY,vol_tltYZ,
                 vol_dx,vol_dy,vol_dz);
 
+      // model view:
+
       glPushMatrix();
       glLoadIdentity();
       gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
 
+      // render:
+
       volscene::renderslice(eye_x,eye_y,eye_z,
                             eye_dx,eye_dy,eye_dz,
                             eye_ux,eye_uy,eye_uz,
-                            sqrt(eye_x*eye_x+eye_y*eye_y+eye_z*eye_z)-slice_dist,
+                            eye_x*eye_dx+eye_y*eye_dy+eye_z*eye_dz-slice_dist,
+                            slice_alpha);
+
+      glPopMatrix();
+      }
+
+   //! render a volume slice
+   void renderslice(float eye_x,float eye_y,float eye_z, // eye point
+                    float eye_dx,float eye_dy,float eye_dz, // viewing direction
+                    float eye_ux,float eye_uy,float eye_uz, // up vector
+                    float vol_rot, // volume rotation in degrees
+                    float vol_tltXY, // volume tilt in degrees
+                    float vol_tltYZ, // volume tilt in degrees
+                    float vol_dx,float vol_dy,float vol_dz, // volume translation
+                    float slice_x,float slice_y,float slice_z, // volume slice point
+                    float slice_nx,float slice_ny,float slice_nz, // volume slice normal
+                    float slice_alpha=1.0f) // volume slice opacity
+      {
+      if (slice_alpha==0.0f) return;
+
+      transform(eye_x,eye_y,eye_z,
+                eye_dx,eye_dy,eye_dz,
+                eye_ux,eye_uy,eye_uz,
+                vol_rot,vol_tltXY,vol_tltYZ,
+                vol_dx,vol_dy,vol_dz);
+
+      // model view:
+
+      glPushMatrix();
+      glLoadIdentity();
+      gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
+
+      // render:
+
+      volscene::renderslice(slice_x,slice_y,slice_z,
+                            slice_nx,slice_ny,slice_nz,
                             slice_alpha);
 
       glPopMatrix();
