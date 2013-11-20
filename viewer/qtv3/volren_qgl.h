@@ -46,6 +46,8 @@ public:
       set_vol_maxsize(512);
       set_iso_maxsize(256);
 
+      set_slice_opacity(0.5f);
+
       fps_ = 30.0;
       angle_ = 0.0;
       omega_ = 0.0;
@@ -241,10 +243,15 @@ public:
       dist_=dist;
    }
 
-   //! set clipping plane opacity
-   void setClipOpacity(BOOLINT opaque=FALSE,float opacity=1.0f)
+   //! set clip plane opacity
+   void setClipOpacity(BOOLINT opaque=FALSE)
    {
       opaque_=opaque;
+   }
+
+   //! set clip plane slice opacity
+   void set_slice_opacity(float opacity=0.5f)
+   {
       opacity_=opacity;
    }
 

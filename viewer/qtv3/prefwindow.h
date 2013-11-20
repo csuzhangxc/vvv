@@ -32,7 +32,9 @@ public:
    long long vol_maxsize_;
    long long iso_maxsize_;
 
-   float ratio_;
+   float border_ratio_;
+
+   float slice_opacity_;
 
 protected:
 
@@ -47,6 +49,8 @@ protected slots:
 
    void volMaxSizeChange(QString);
    void isoMaxSizeChange(QString);
+
+   void sliceOpacityChange(QString);
 };
 
 #endif

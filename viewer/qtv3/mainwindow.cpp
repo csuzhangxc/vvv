@@ -595,7 +595,7 @@ void QTV3MainWindow::checkInvMode(int on)
 
 void QTV3MainWindow::checkPlane(int on)
 {
-   vrw_->setClipOpacity(on, 0.5f);
+   vrw_->setClipOpacity(on);
 }
 
 void QTV3MainWindow::checkSFX(bool stereo)

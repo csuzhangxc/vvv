@@ -16,7 +16,9 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
    vol_maxsize_ = 512;
    iso_maxsize_ = 256;
 
-   ratio_ = 0.25f;
+   border_ratio_ = 0.25f;
+
+   slice_opacity_ = 0.5f;
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -30,8 +32,10 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
       iso_maxsize_ = env.value("QTV3_ISO_LIMIT").toUInt();
    }
 
-   vrw_->set_vol_maxsize(vol_maxsize_, ratio_);
-   vrw_->set_iso_maxsize(iso_maxsize_, ratio_);
+   vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
+   vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
+
+   vrw_->set_slice_opacity(slice_opacity_);
 
    createWidgets();
 }
@@ -60,9 +64,19 @@ void QTV3PrefWindow::createWidgets()
    layout->addWidget(vol_maxsize_group);
 
    QLineEdit *lineEdit_iso_maxsize = new QLineEdit;
-   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size For Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
+   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout->addWidget(iso_maxsize_group);
+
+   QFrame* line = new QFrame();
+   line->setFrameShape(QFrame::VLine);
+   line->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line);
+
+   QLineEdit *lineEdit_slice_opacity = new QLineEdit;
+   QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity);
+   connect(lineEdit_slice_opacity,SIGNAL(textChanged(QString)),this,SLOT(sliceOpacityChange(QString)));
+   layout->addWidget(slice_opacity_group);
 
    layout->addStretch(1000);
 
@@ -84,11 +98,17 @@ QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,
 void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
 {
    vol_maxsize_ = maxsize.toUInt();
-   vrw_->set_vol_maxsize(vol_maxsize_, ratio_);
+   vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
 }
 
 void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 {
    iso_maxsize_ = maxsize.toUInt();
-   vrw_->set_iso_maxsize(iso_maxsize_, ratio_);
+   vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
+}
+
+void QTV3PrefWindow::sliceOpacityChange(QString opacity)
+{
+   slice_opacity_ = opacity.toFloat();
+   vrw_->set_slice_opacity(slice_opacity_);
 }
