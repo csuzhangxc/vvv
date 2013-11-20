@@ -194,7 +194,7 @@ class volren: public volscene
          aborted=volscene::render(eye_x,eye_y,eye_z,
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
-                                  eye_x*eye_dx+eye_y*eye_dy+eye_z*eye_dz-vol_clip_dist,get_slab()*vol_over,
+                                  -eye_x*eye_dx-eye_y*eye_dy-eye_z*eye_dz-vol_clip_dist,get_slab()*vol_over,
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
@@ -234,7 +234,7 @@ class volren: public volscene
       volscene::renderslice(eye_x,eye_y,eye_z,
                             eye_dx,eye_dy,eye_dz,
                             eye_ux,eye_uy,eye_uz,
-                            eye_x*eye_dx+eye_y*eye_dy+eye_z*eye_dz-slice_dist,
+                            -eye_x*eye_dx-eye_y*eye_dy-eye_z*eye_dz-slice_dist,
                             slice_alpha);
 
       glPopMatrix();

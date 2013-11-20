@@ -236,7 +236,7 @@ public:
    }
 
    //! set clipping distance
-   void setClipDist(double dist=0.0, BOOLINT opaque=TRUE)
+   void setClipDist(double dist=0.0, BOOLINT opaque=FALSE)
    {
       dist_=dist;
       opaque_=opaque;
