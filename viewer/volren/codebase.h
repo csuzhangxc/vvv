@@ -32,7 +32,6 @@
 #include <sys/time.h>
 #endif
 #ifdef WINOS
-#define NOMINMAX
 #include <windows.h>
 #include <winbase.h>
 #endif
@@ -80,11 +79,15 @@ inline void errormsg(const char *file,int line,int fatal=TRUE)
 inline double FABS(const double x) {return((x<0.0)?-x:x);}
 #define fabs(x) FABS(x)
 
+#ifndef min
 inline int min(const int a,const int b) {return((a<b)?a:b);}
+#endif
 inline double FMIN(const double a,const double b) {return((a<b)?a:b);}
 #define fmin(a,b) FMIN(a,b)
 
+#ifndef max
 inline int max(const int a,const int b) {return((a>b)?a:b);}
+#endif
 inline double FMAX(const double a,const double b) {return((a>b)?a:b);}
 #define fmax(a,b) FMAX(a,b)
 
