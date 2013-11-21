@@ -3412,6 +3412,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
          glEnable(GL_BLEND);
 
+         glDepthMask(GL_FALSE);
+
          glMatrixMode(GL_PROJECTION);
          glPushMatrix();
          glLoadIdentity();
@@ -3436,6 +3438,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glMatrixMode(GL_PROJECTION);
          glPopMatrix();
          glMatrixMode(GL_MODELVIEW);
+
+         glDepthMask(GL_TRUE);
 
          glBindTexture(GL_TEXTURE_2D, 0);
          glDisable(GL_TEXTURE_2D);
