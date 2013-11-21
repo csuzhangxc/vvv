@@ -40,10 +40,15 @@ protected:
 
    QGLVolRenWidget *vrw_;
 
+   QLineEdit *lineEdit_slice_opacity_;
+   QSlider *slice_opacity_slider_;
+
    void createWidgets();
 
    QGroupBox *createEdit(QString name, QString value,
                          QLineEdit **lineEdit);
+
+   QSlider *createSlider(int minimum, int maximum, int value);
 
 protected slots:
 
@@ -51,6 +56,7 @@ protected slots:
    void isoMaxSizeChange(QString);
 
    void sliceOpacityChange(QString);
+   void sliceOpacityChange(int);
 };
 
 #endif

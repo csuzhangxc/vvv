@@ -35,7 +35,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
    vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
    vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
 
-   vrw_->set_slice_opacity(slice_opacity_);
+   vrw_->setSliceOpacity(slice_opacity_);
 
    createWidgets();
 }
@@ -69,13 +69,16 @@ void QTV3PrefWindow::createWidgets()
    layout->addWidget(iso_maxsize_group);
 
    QFrame* line = new QFrame();
-   line->setFrameShape(QFrame::VLine);
+   line->setFrameShape(QFrame::HLine);
    line->setFrameShadow(QFrame::Raised);
    layout->addWidget(line);
 
-   QLineEdit *lineEdit_slice_opacity = new QLineEdit;
-   QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity);
-   connect(lineEdit_slice_opacity,SIGNAL(textChanged(QString)),this,SLOT(sliceOpacityChange(QString)));
+   lineEdit_slice_opacity_ = new QLineEdit;
+   QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity_);
+   connect(lineEdit_slice_opacity_,SIGNAL(textChanged(QString)),this,SLOT(sliceOpacityChange(QString)));
+   slice_opacity_slider_=createSlider(0,100,50);
+   slice_opacity_group->layout()->addWidget(slice_opacity_slider_);
+   connect(slice_opacity_slider_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange(int)));
    layout->addWidget(slice_opacity_group);
 
    layout->addStretch(1000);
@@ -95,6 +98,18 @@ QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,
    return(lineEditGroup);
 }
 
+QSlider *QTV3PrefWindow::createSlider(int minimum, int maximum, int value)
+{
+   QSlider *slider = new QSlider(Qt::Horizontal);
+   slider->setRange(minimum * 16, maximum * 16);
+   slider->setSingleStep(16);
+   slider->setPageStep((maximum - minimum) / 10 * 16);
+   slider->setTickInterval((maximum - minimum) / 10 * 16);
+   slider->setTickPosition(QSlider::TicksBelow);
+   slider->setValue(value * 16);
+   return(slider);
+}
+
 void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
 {
    vol_maxsize_ = maxsize.toUInt();
@@ -110,5 +125,13 @@ void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 void QTV3PrefWindow::sliceOpacityChange(QString opacity)
 {
    slice_opacity_ = opacity.toFloat();
-   vrw_->set_slice_opacity(slice_opacity_);
+   vrw_->setSliceOpacity(slice_opacity_);
+   slice_opacity_slider_->setValue(slice_opacity_ * 100 * 16);
+}
+
+void QTV3PrefWindow::sliceOpacityChange(int opacity)
+{
+   slice_opacity_ = opacity / 100.0f / 16.0f;
+   vrw_->setSliceOpacity(slice_opacity_);
+   lineEdit_slice_opacity_->setText(QString::number(slice_opacity_));
 }
