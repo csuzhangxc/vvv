@@ -352,6 +352,7 @@ void QTV3MainWindow::reset()
 
    gradMagCheck_->setChecked(false);
    invModeCheck_->setChecked(false);
+   planeCheck_->setChecked(false);
    flipCheckXY1_->setChecked(false);
    flipCheckXY2_->setChecked(false);
    flipCheckYZ1_->setChecked(false);
