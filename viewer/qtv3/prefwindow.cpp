@@ -18,7 +18,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
 
    border_ratio_ = 0.25f;
 
-   slice_opacity_ = 0.9f;
+   slice_opacity_ = 0.75f;
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
