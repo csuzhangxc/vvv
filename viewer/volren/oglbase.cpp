@@ -75,6 +75,8 @@ void invertbuffer()
    glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
    glEnable(GL_BLEND);
 
+   glDepthMask(GL_FALSE);
+
    glBegin(GL_QUADS);
    glColor3f(1.0f,1.0f,1.0f);
    glVertex2f(-1.0f,-1.0f);
@@ -82,6 +84,8 @@ void invertbuffer()
    glVertex2f(1.0f,1.0f);
    glVertex2f(-1.0f,1.0f);
    glEnd();
+
+   glDepthMask(GL_TRUE);
 
    glDisable(GL_BLEND);
 
