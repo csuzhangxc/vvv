@@ -18,7 +18,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
 
    border_ratio_ = 0.25f;
 
-   slice_opacity_ = 0.5f;
+   slice_opacity_ = 0.9f;
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -76,7 +76,7 @@ void QTV3PrefWindow::createWidgets()
    lineEdit_slice_opacity_ = new QLineEdit;
    QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity_);
    connect(lineEdit_slice_opacity_,SIGNAL(textChanged(QString)),this,SLOT(sliceOpacityChange(QString)));
-   slice_opacity_slider_=createSlider(0,100,50);
+   slice_opacity_slider_=createSlider(0,100,100*slice_opacity_);
    slice_opacity_group->layout()->addWidget(slice_opacity_slider_);
    connect(slice_opacity_slider_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange(int)));
    layout->addWidget(slice_opacity_group);
