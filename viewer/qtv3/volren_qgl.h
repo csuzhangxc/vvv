@@ -815,10 +815,7 @@ protected:
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
          }
          else if (bRightButtonDown)
-            if (getRotation()==0.0)
-               setRotation(shift?-10.0:10.0);
-            else
-               setRotation(0.0);
+         {}
          else
             event->ignore();
       else

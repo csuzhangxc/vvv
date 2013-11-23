@@ -80,6 +80,8 @@ void QTV3MainWindow::loadSurface(const char *filename)
 void QTV3MainWindow::setRotation(double omega)
 {
    vrw_->setRotation(omega);
+
+   rotateCheck_->setChecked(true);
 }
 
 void QTV3MainWindow::createMenus()
@@ -216,6 +218,14 @@ void QTV3MainWindow::createWidgets()
    invModeCheck_->setChecked(false);
    connect(invModeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
    h1->addWidget(invModeCheck_);
+   rotateCheck_ = new QCheckBox(tr("Rotate"));
+   rotateCheck_->setChecked(true);
+   connect(rotateCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkRotate(int)));
+   h1->addWidget(rotateCheck_);
+   reverseCheck_ = new QCheckBox(tr("Reverse"));
+   reverseCheck_->setChecked(false);
+   connect(reverseCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkReverse(int)));
+   h1->addWidget(reverseCheck_);
    QHBoxLayout *h2 = new QHBoxLayout;
    QButtonGroup *gb1 = new QButtonGroup(this);
    sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
@@ -352,6 +362,8 @@ void QTV3MainWindow::reset()
 
    gradMagCheck_->setChecked(false);
    invModeCheck_->setChecked(false);
+   rotateCheck_->setChecked(true);
+   reverseCheck_->setChecked(false);
    planeCheck_->setChecked(false);
    flipCheckXY1_->setChecked(false);
    flipCheckXY2_->setChecked(false);
@@ -532,6 +544,8 @@ void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
    vrw_->setAngle(angle);
+
+   rotateCheck_->setChecked(false);
 }
 
 void QTV3MainWindow::tilt(int v)
@@ -592,6 +606,26 @@ void QTV3MainWindow::checkGradMag(int on)
 void QTV3MainWindow::checkInvMode(int on)
 {
    vrw_->setInvMode(on);
+}
+
+void QTV3MainWindow::checkRotate(int on)
+{
+   if (on)
+      if (!reverseCheck_->isChecked())
+         vrw_->setRotation(30);
+      else
+         vrw_->setRotation(-30);
+   else
+      vrw_->setRotation(0);
+}
+
+void QTV3MainWindow::checkReverse(int on)
+{
+   if (rotateCheck_->isChecked())
+      if (!on)
+         vrw_->setRotation(30);
+      else
+         vrw_->setRotation(-30);
 }
 
 void QTV3MainWindow::checkPlane(int on)
