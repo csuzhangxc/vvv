@@ -54,6 +54,7 @@ public:
       tiltXY_ = tiltYZ_ = 0.0;
       tilt_ = 0.0;
       zoom_ = 0.0;
+      vol_dx_ = vol_dy_ = vol_dz_ = 0.0;
       dist_ = 1.0;
       opaque_ = FALSE;
       opacity_ = 1.0f;
@@ -78,6 +79,9 @@ public:
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
+
+      bMouseMove = false;
+      mouseLastX = mouseLastY = 0.5f;
 
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
    }
@@ -410,6 +414,7 @@ protected:
    double angle_; // rotation angle in degrees
    double tiltXY_,tiltYZ_; // rotation angle in degrees
    double tilt_; // tilt angle in degrees
+   double vol_dx_,vol_dy_,vol_dz_; // volume translation
    double zoom_; // zoom into volume
    double dist_; // clipping distance
    BOOLINT opaque_; // opaque clipping plane
@@ -478,6 +483,10 @@ protected:
       if (rendercount_<5) gfx_fbo=false;
 #endif
 
+      float vol_dx=vol_dx_;
+      float vol_dy=vol_dy_;
+      float vol_dz=vol_dz_;
+
       double vol_emission=1000.0;
       double vol_density=1000.0;
 
@@ -520,7 +529,7 @@ protected:
                     gfx_fbo, // use fbo
                     angle_, // volume rotation in degrees
                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                    0.0f,0.0f,0.0f, // volume translation
+                    vol_dx,vol_dy,vol_dz, // volume translation
                     vol_emission,vol_density, // global emi and att
                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
@@ -578,7 +587,7 @@ protected:
                     gfx_fbo, // use fbo
                     angle_, // volume rotation in degrees
                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                    0.0f,0.0f,0.0f, // volume translation
+                    vol_dx,vol_dy,vol_dz, // volume translation
                     vol_emission,vol_density, // global emi and att
                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
@@ -607,7 +616,7 @@ protected:
                     gfx_fbo, // use fbo
                     angle_, // volume rotation in degrees
                     tiltXY_,tiltYZ_, // volume rotation in degrees
-                    0.0f,0.0f,0.0f, // volume translation
+                    vol_dx,vol_dy,vol_dz, // volume translation
                     vol_emission,vol_density, // global emi and att
                     tf_re_scale,tf_ge_scale,tf_be_scale, // emi scale
                     tf_ra_scale,tf_ga_scale,tf_ba_scale, // att scale
@@ -768,6 +777,9 @@ protected:
 
    bool bLeftButtonDown,bRightButtonDown;
 
+   bool bMouseMove;
+   float mouseLastX,mouseLastY;
+
    void mousePressEvent(QMouseEvent *event)
    {
       if (event->buttons() & Qt::LeftButton)
@@ -780,6 +792,8 @@ protected:
          bRightButtonDown = true;
       else
          event->ignore();
+
+      bMouseMove = false;
    }
 
    void mouseReleaseEvent(QMouseEvent *event)
@@ -788,6 +802,8 @@ protected:
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
+
+      bMouseMove = false;
    }
 
    void mouseDoubleClickEvent(QMouseEvent *event)
@@ -796,6 +812,8 @@ protected:
 
       bLeftButtonDown = false;
       bRightButtonDown = false;
+
+      bMouseMove = false;
    }
 
    void mouseMoveEvent(QMouseEvent *event)
@@ -815,11 +833,25 @@ protected:
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
          }
          else if (bRightButtonDown)
-         {}
+         {
+            if (bMouseMove)
+               if (!shift)
+               {
+                  vol_dx_ += mouseLastX-x;
+                  vol_dy_ += y-mouseLastY;
+               }
+               else
+                  vol_dz_ += y-mouseLastY;
+         }
          else
             event->ignore();
       else
          event->ignore();
+
+      mouseLastX = x;
+      mouseLastY = y;
+
+      bMouseMove = true;
    }
 
    void wheelEvent(QWheelEvent *event)
