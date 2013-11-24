@@ -215,6 +215,12 @@ public:
       angle_=angle;
    }
 
+   //! get volume rotation angle
+   double getAngle()
+   {
+      return(angle_);
+   }
+
    //! set volume rotation angle
    void setTiltXY(double tiltXY=0.0)
    {

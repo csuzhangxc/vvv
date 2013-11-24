@@ -610,6 +610,8 @@ void QTV3MainWindow::checkInvMode(int on)
 
 void QTV3MainWindow::checkRotate(int on)
 {
+   rotSlider_->setValue(vrw_->getAngle() * 16);
+
    if (on)
       if (!reverseCheck_->isChecked())
          vrw_->setRotation(30);

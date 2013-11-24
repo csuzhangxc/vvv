@@ -1065,7 +1065,7 @@ unsigned char *mipmap::gradmagML(unsigned char *data,
                                  float *gradmax,
                                  void (*feedback)(const char *info,float percent,void *obj),void *obj)
    {
-   static const int maxlevel=2;
+   static const int maxlevel=1;
    static const float mingrad=0.1f;
 
    long long i,j,k;
