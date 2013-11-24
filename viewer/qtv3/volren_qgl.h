@@ -688,6 +688,9 @@ protected:
 
       angle_+=omega_/fps_;
 
+      if (angle_>180.0) angle_-=360.0;
+      else if (angle_<-180.0) angle_+=360.0;
+
       if (vr_->has_data()) rendercount_++;
    }
 
