@@ -369,7 +369,7 @@ unsigned char *readDICOMvolume(const char *filename,
    *height=data.getRows();
    *depth=data.getSlis();
 
-   *components=2;
+   if (components!=NULL) *components=2;
 
    if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
    if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
@@ -396,7 +396,7 @@ unsigned char *readDICOMvolume(const std::vector<std::string> list,
    *height=data.getRows();
    *depth=data.getSlis();
 
-   *components=2;
+   if (components!=NULL) *components=2;
 
    if (scalex!=NULL) *scalex=data.getBound(0)/data.getCols();
    if (scaley!=NULL) *scaley=data.getBound(1)/data.getRows();
