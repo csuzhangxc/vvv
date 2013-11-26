@@ -315,11 +315,15 @@ public:
 
    //! get absorption
    double getAbsorption()
-      {return(gm_?att_gm_:att_);}
+   {
+      return(gm_?att_gm_:att_);
+   }
 
    //! set inverse mode
    void setInvMode(bool on=false)
-      {inv_=on;}
+   {
+      inv_=on;
+   }
 
    //! set gradient magnitude mode
    void setGradMag(bool on=false)
@@ -401,7 +405,9 @@ public:
 
    //! return volume renderer
    volren *getVR()
-      {return(vr_);}
+   {
+      return(vr_);
+   }
 
    //! return preferred minimum window size
    QSize minimumSizeHint() const
@@ -564,7 +570,8 @@ protected:
                     clipdist_, // clipping distance relative to origin
                     clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
-                    opacity_); // clipping plane opacity
+                    opacity_, // clipping plane opacity
+                    geo_show_); // show surface geometry
       else
       {
          double eye_rx,eye_ry,eye_rz;
@@ -623,7 +630,8 @@ protected:
                     clipdist_, // clipping distance relative to origin
                     clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
-                    opacity_); // clipping plane opacity
+                    opacity_, // clipping plane opacity
+                    geo_show_); // show surface geometry
 
          if (sfx_ana)
             if (!inv_)
@@ -653,7 +661,8 @@ protected:
                     clipdist_, // clipping distance relative to origin
                     clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
-                    opacity_); // clipping plane opacity
+                    opacity_, // clipping plane opacity
+                    geo_show_); // show surface geometry
 
          if (sfx_ana)
             glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
@@ -935,36 +944,37 @@ protected:
    }
 
    bool qgl_render(float eye_x,float eye_y,float eye_z, // eye point
-                      float eye_dx,float eye_dy,float eye_dz, // viewing direction
-                      float eye_ux,float eye_uy,float eye_uz, // up vector
-                      float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
-                      BOOLINT gfx_fbo, // use frame buffer object
-                      float vol_rot, // volume rotation in degrees
-                      float vol_tltXY, // volume tilt in degrees
-                      float vol_tltYZ, // volume tilt in degrees
-                      float vol_dx,float vol_dy,float vol_dz, // volume translation
-                      float vol_emi,float vol_att, // global volume emi and att
-                      float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
-                      float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
-                      BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
-                      BOOLINT vol_white=TRUE, // white background
-                      BOOLINT vol_inv=FALSE, // inverse mode
-                      float vol_over=1.0f, // oversampling
-                      BOOLINT vol_light=FALSE, // lighting
-                      BOOLINT vol_clip=FALSE, // view-aligned clipping
-                      float vol_clip_dist=0.0f, // clipping distance relative to origin
-                      BOOLINT vol_clip_near=FALSE, // clip at near plane
-                      BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
-                      float vol_clip_opacity=1.0f, // clipping plane opacity
-                      BOOLINT (*abort)(void *abortdata)=NULL,
-                      void *abortdata=NULL)
+                   float eye_dx,float eye_dy,float eye_dz, // viewing direction
+                   float eye_ux,float eye_uy,float eye_uz, // up vector
+                   float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
+                   BOOLINT gfx_fbo, // use frame buffer object
+                   float vol_rot, // volume rotation in degrees
+                   float vol_tltXY, // volume tilt in degrees
+                   float vol_tltYZ, // volume tilt in degrees
+                   float vol_dx,float vol_dy,float vol_dz, // volume translation
+                   float vol_emi,float vol_att, // global volume emi and att
+                   float tf_re_scale,float tf_ge_scale,float tf_be_scale, // emi scale
+                   float tf_ra_scale,float tf_ga_scale,float tf_ba_scale, // att scale
+                   BOOLINT tf_premult=TRUE,BOOLINT tf_preint=TRUE, // pre-multiplication and pre-integration
+                   BOOLINT vol_white=TRUE, // white background
+                   BOOLINT vol_inv=FALSE, // inverse mode
+                   float vol_over=1.0f, // oversampling
+                   BOOLINT vol_light=FALSE, // lighting
+                   BOOLINT vol_clip=FALSE, // view-aligned clipping
+                   float vol_clip_dist=0.0f, // clipping distance relative to origin
+                   BOOLINT vol_clip_near=FALSE, // clip at near plane
+                   BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
+                   float vol_clip_opacity=1.0f, // clipping plane opacity
+                   BOOLINT geo_show=TRUE, // show surface geometry
+                   BOOLINT (*abort)(void *abortdata)=NULL,
+                   void *abortdata=NULL)
    {
       BOOLINT aborted;
 
       vr_->begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
                  vol_white,vol_inv);
 
-      vr_->showsurface(geo_show_);
+      vr_->showsurface(geo_show);
 
       aborted=vr_->render(eye_x,eye_y,eye_z,
                           eye_dx,eye_dy,eye_dz,
