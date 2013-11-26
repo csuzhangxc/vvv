@@ -18,6 +18,8 @@
 #include "tilebase.h" // volume tiles and bricks
 #include "geobase.h" // surface wrapper
 
+#define MAX_CLIP_PLANES 6
+
 // the volume
 class volume
    {
@@ -272,7 +274,7 @@ class mipmap
    void define_clip(int n,
                     double a,double b,double c,double d)
       {
-      if (n<0 || n>=6) return;
+      if (n<0 || n>=MAX_CLIP_PLANES) return;
 
       clip_a[n]=a;
       clip_b[n]=b;
@@ -301,7 +303,7 @@ class mipmap
    //! enable clip plane
    void enable_clip(int n,int on)
       {
-      if (n<0 || n>=6) return;
+      if (n<0 || n>=MAX_CLIP_PLANES) return;
 
       clip_on[n]=on;
       }
@@ -311,7 +313,7 @@ class mipmap
       {
       int i;
 
-      for (i=0; i<6; i++)
+      for (i=0; i<MAX_CLIP_PLANES; i++)
          clip_on[i]=0;
       }
 
@@ -342,11 +344,11 @@ class mipmap
    double px_,py_,pz_;
    double nx_,ny_,nz_;
 
-   int clip_on[6];
-   double clip_a[6];
-   double clip_b[6];
-   double clip_c[6];
-   double clip_d[6];
+   int clip_on[MAX_CLIP_PLANES];
+   double clip_a[MAX_CLIP_PLANES];
+   double clip_b[MAX_CLIP_PLANES];
+   double clip_c[MAX_CLIP_PLANES];
+   double clip_d[MAX_CLIP_PLANES];
 
    long long vol_target_cells_;
    float vol_ratio_;

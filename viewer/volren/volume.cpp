@@ -3363,7 +3363,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    rendergeometry();
 
    // enable clipping planes
-   for (i=0; i<6; i++)
+   for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
          {
          GLdouble equ[4];
@@ -3399,7 +3399,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       }
 
    // disable clipping planes
-   for (i=0; i<6; i++)
+   for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
          glDisable(GL_CLIP_PLANE0+i);
 
@@ -3509,7 +3509,7 @@ void mipmap::renderslice(float ox,float oy,float oz,
    if (alpha==0.0f) return;
 
    // enable clipping planes
-   for (i=0; i<6; i++)
+   for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
          {
          GLdouble equ[4];
@@ -3541,7 +3541,7 @@ void mipmap::renderslice(float ox,float oy,float oz,
       }
 
    // disable clipping planes
-   for (i=0; i<6; i++)
+   for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
          glDisable(GL_CLIP_PLANE0+i);
    }
