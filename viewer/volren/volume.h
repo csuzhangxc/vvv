@@ -208,6 +208,7 @@ class mipmap
                   float dx,float dy,float dz,
                   float ux,float uy,float uz,
                   float nearp,float slab,
+                  BOOLINT clipnear=FALSE,
                   BOOLINT lighting=FALSE,
                   BOOLINT usefbo=FALSE,
                   BOOLINT (*abort)(void *abortdata)=NULL,

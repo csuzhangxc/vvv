@@ -3309,6 +3309,7 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
                        float dx,float dy,float dz,
                        float ux,float uy,float uz,
                        float nearp,float slab,
+                       BOOLINT clipnear,
                        BOOLINT lighting,
                        BOOLINT usefbo,
                        BOOLINT (*abort)(void *abortdata),
@@ -3319,6 +3320,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    BOOLINT aborted=FALSE;
 
    int map=0;
+
+   int plane;
 
    // save eye point
    ex_=ex;
@@ -3362,21 +3365,63 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    // render opaque geometry
    rendergeometry();
 
+   plane=0;
+
    // enable clipping planes
    for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
          {
          GLdouble equ[4];
 
-         equ[0]=clip_a[i];
-         equ[1]=clip_b[i];
-         equ[2]=clip_c[i];
-         equ[3]=clip_d[i];
+         equ[0]=clip_a[plane];
+         equ[1]=clip_b[plane];
+         equ[2]=clip_c[plane];
+         equ[3]=clip_d[plane];
 
-         glClipPlane(GL_CLIP_PLANE0+i,equ);
+         glClipPlane(GL_CLIP_PLANE0+plane,equ);
 
-         glEnable(GL_CLIP_PLANE0+i);
+         glEnable(GL_CLIP_PLANE0+plane);
+
+         plane++;
          }
+
+   // enable near clip plane
+   if (clipnear)
+      {
+      double px,py,pz;
+      double nx,ny,nz;
+
+      px=ex+dx*nearp;
+      py=ey+dy*nearp;
+      pz=ez+dz*nearp;
+
+      nx=dx;
+      ny=dy;
+      nz=dz;
+
+      double l;
+
+      l=sqrt(nx*nx+ny*ny+nz*nz);
+
+      nx/=l;
+      ny/=l;
+      nz/=l;
+
+      l=nx*px+ny*py+nz*pz;
+
+      GLdouble equ[4];
+
+      equ[0]=nx;
+      equ[1]=ny;
+      equ[2]=nz;
+      equ[3]=-l;
+
+      glClipPlane(GL_CLIP_PLANE0+plane,equ);
+
+      glEnable(GL_CLIP_PLANE0+plane);
+
+      plane++;
+      }
 
    // render opaque surface
    SURFACE.render();
@@ -3399,9 +3444,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       }
 
    // disable clipping planes
-   for (i=0; i<MAX_CLIP_PLANES; i++)
-      if (clip_on[i])
-         glDisable(GL_CLIP_PLANE0+i);
+   for (i=0; i<plane; i++)
+      glDisable(GL_CLIP_PLANE0+i);
 
    // render from fbo
    if (HASFBO && usefbo)
@@ -3506,7 +3550,11 @@ void mipmap::renderslice(float ox,float oy,float oz,
    {
    int i;
 
+   int plane;
+
    if (alpha==0.0f) return;
+
+   plane=0;
 
    // enable clipping planes
    for (i=0; i<MAX_CLIP_PLANES; i++)
@@ -3514,14 +3562,16 @@ void mipmap::renderslice(float ox,float oy,float oz,
          {
          GLdouble equ[4];
 
-         equ[0]=clip_a[i];
-         equ[1]=clip_b[i];
-         equ[2]=clip_c[i];
-         equ[3]=clip_d[i];
+         equ[0]=clip_a[plane];
+         equ[1]=clip_b[plane];
+         equ[2]=clip_c[plane];
+         equ[3]=clip_d[plane];
 
-         glClipPlane(GL_CLIP_PLANE0+i,equ);
+         glClipPlane(GL_CLIP_PLANE0+plane,equ);
 
-         glEnable(GL_CLIP_PLANE0+i);
+         glEnable(GL_CLIP_PLANE0+plane);
+
+         plane++;
          }
 
    // render opaque slice
@@ -3541,9 +3591,8 @@ void mipmap::renderslice(float ox,float oy,float oz,
       }
 
    // disable clipping planes
-   for (i=0; i<MAX_CLIP_PLANES; i++)
-      if (clip_on[i])
-         glDisable(GL_CLIP_PLANE0+i);
+   for (i=0; i<plane; i++)
+      glDisable(GL_CLIP_PLANE0+i);
    }
 
 // draw the surrounding wire frame box

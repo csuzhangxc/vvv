@@ -191,6 +191,7 @@ class volren: public volscene
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
                                   gfx_near,get_slab()*vol_over,
+                                  TRUE, //!!
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
@@ -199,6 +200,7 @@ class volren: public volscene
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
                                   -eye_x*eye_dx-eye_y*eye_dy-eye_z*eye_dz-vol_clip_dist,get_slab()*vol_over,
+                                  TRUE, //!!
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
