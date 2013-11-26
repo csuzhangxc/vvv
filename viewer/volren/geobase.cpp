@@ -11,6 +11,7 @@ Surface::Surface()
    {
 #ifdef HAVE_MINI
    strip_=new ministrip();
+   is_shown_=TRUE;
 #endif
    }
 
@@ -39,10 +40,26 @@ int Surface::has_geo()
 #endif
    }
 
+int Surface::has_geo_shown()
+   {
+#ifdef HAVE_MINI
+   return(!strip_->empty() && is_shown_);
+#else
+   return(0);
+#endif
+   }
+
 void Surface::clear()
    {
 #ifdef HAVE_MINI
    strip_->clear();
+#endif
+   }
+
+void Surface::show(int yes)
+   {
+#ifdef HAVE_MINI
+   is_shown_=yes;
 #endif
    }
 
@@ -58,7 +75,7 @@ void Surface::render()
 #ifdef HAVE_MINI
    ministrip::setglobal_invariant(TRUE);
    ministrip::setglobal_shade(TRUE);
-   strip_->render();
+   if (is_shown_) strip_->render();
 #endif
    }
 

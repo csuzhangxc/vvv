@@ -3266,6 +3266,10 @@ BOOLINT mipmap::loadsurface(const char *filename)
    return(result);
    }
 
+// show the surface data
+void mipmap::showsurface(BOOLINT yes)
+   {SURFACE.show(yes);}
+
 // clear the surface data
 void mipmap::clearsurface()
    {SURFACE.clear();}
@@ -3273,6 +3277,10 @@ void mipmap::clearsurface()
 // check whether or not a surface is present
 BOOLINT mipmap::has_geo()
    {return(SURFACE.has_geo());}
+
+// check whether or not a surface is shown
+BOOLINT mipmap::has_geo_shown()
+   {return(SURFACE.has_geo_shown());}
 
 // set limit for maximum displayable volume size
 void mipmap::set_vol_maxsize(long long maxsize,

@@ -14,10 +14,13 @@ class Surface
    ~Surface();
 
    int readGEOfile(const char *filename);
+
    int has_geo();
+   int has_geo_shown();
 
    void clear();
 
+   void show(int yes);
    void setmatrix(double mtx[16]);
    void render();
 
@@ -26,6 +29,7 @@ class Surface
    protected:
 
    ministrip *strip_;
+   int is_shown_;
    };
 
 #endif

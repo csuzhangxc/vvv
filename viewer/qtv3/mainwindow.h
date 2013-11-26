@@ -151,6 +151,8 @@ private:
    QCheckBox *rotateCheck_;
    QCheckBox *reverseCheck_;
    QCheckBox *planeCheck_;
+   QCheckBox *showIsoCheck_;
+   QCheckBox *clipIsoCheck_;
 
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;
@@ -212,6 +214,8 @@ protected slots:
    void checkRotate(int on);
    void checkReverse(int on);
    void checkPlane(int on);
+   void checkShowIso(int on);
+   void checkClipIso(int on);
    void checkSFXoff(bool on);
    void checkAnaMode(bool on);
    void checkSFXon(bool on);

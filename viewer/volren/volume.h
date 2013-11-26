@@ -184,10 +184,14 @@ class mipmap
    //! load the surface data
    BOOLINT loadsurface(const char *filename);
 
+   //! show the surface data
+   void showsurface(BOOLINT yes=TRUE);
+
    //! clear the surface data
    void clearsurface();
 
    BOOLINT has_geo(); // check whether or not a surface is present
+   BOOLINT has_geo_shown(); // check whether or not a surface is shown
 
    //! set limit for maximum displayable volume size
    void set_vol_maxsize(long long maxsize,

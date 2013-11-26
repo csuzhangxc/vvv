@@ -110,6 +110,10 @@ class volren: public volscene
    BOOLINT loadsurface(const char *filename)
       {return(volscene::loadsurface(filename));}
 
+   //! show the surface data
+   void showsurface(BOOLINT yes)
+      {volscene::showsurface(yes);}
+
    //! begin rendering
    void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
               BOOLINT vol_white=TRUE, // white background

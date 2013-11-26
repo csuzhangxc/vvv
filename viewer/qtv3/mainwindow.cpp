@@ -317,6 +317,14 @@ void QTV3MainWindow::createWidgets()
    QPushButton *isoClearButton = new QPushButton(tr("Clear"));
    connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearSurface()));
    l7->addWidget(isoClearButton);
+   showIsoCheck_ = new QCheckBox(tr("Show"));
+   showIsoCheck_->setChecked(true);
+   connect(showIsoCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkShowIso(int)));
+   l7->addWidget(showIsoCheck_);
+   clipIsoCheck_ = new QCheckBox(tr("Clip"));
+   clipIsoCheck_->setChecked(true);
+   connect(clipIsoCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkClipIso(int)));
+   l7->addWidget(clipIsoCheck_);
    QLabel *ll7=new QLabel("Iso Surface");
    ll7->setAlignment(Qt::AlignHCenter);
    l7->addStretch(100);
@@ -365,6 +373,8 @@ void QTV3MainWindow::reset()
    rotateCheck_->setChecked(true);
    reverseCheck_->setChecked(false);
    planeCheck_->setChecked(false);
+   showIsoCheck_->setChecked(true);
+   clipIsoCheck_->setChecked(true);
    flipCheckXY1_->setChecked(false);
    flipCheckXY2_->setChecked(false);
    flipCheckYZ1_->setChecked(false);
@@ -633,6 +643,16 @@ void QTV3MainWindow::checkReverse(int on)
 void QTV3MainWindow::checkPlane(int on)
 {
    vrw_->setClipOpacity(on);
+}
+
+void QTV3MainWindow::checkShowIso(int on)
+{
+   vrw_->showSurface(on);
+}
+
+void QTV3MainWindow::checkClipIso(int on)
+{
+   //!!
 }
 
 void QTV3MainWindow::checkSFX(bool stereo)

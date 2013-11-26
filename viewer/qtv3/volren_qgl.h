@@ -74,6 +74,7 @@ public:
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
       tf_inverse_ = false;
+      geo_show_ = true;
 
       rendercount_ = 0;
 
@@ -151,6 +152,12 @@ public:
 
       if (geotoload_) free(geotoload_);
       geotoload_ = strdup(filename);
+   }
+
+   //! show the surface
+   void showSurface(int on)
+   {
+      geo_show_ = on;
    }
 
    //! clear surface
@@ -439,6 +446,7 @@ protected:
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
    float tf_inverse_; // inverse tfunc
+   BOOLINT geo_show_; // show geometry
 
    unsigned int rendercount_;
 
@@ -943,6 +951,8 @@ protected:
 
       vr_->begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
                  vol_white,vol_inv);
+
+      vr_->showsurface(geo_show_);
 
       aborted=vr_->render(eye_x,eye_y,eye_z,
                           eye_dx,eye_dy,eye_dz,
