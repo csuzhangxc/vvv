@@ -157,6 +157,7 @@ class volren: public volscene
                   BOOLINT vol_light=FALSE, // lighting
                   BOOLINT vol_clip=FALSE, // view-aligned clipping
                   float vol_clip_dist=0.0f, // clipping distance relative to origin
+                  BOOLINT vol_clip_near=FALSE, // clip at near plane
                   BOOLINT (*abort)(void *abortdata)=NULL,
                   void *abortdata=NULL)
       {
@@ -191,7 +192,7 @@ class volren: public volscene
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
                                   gfx_near,get_slab()*vol_over,
-                                  TRUE, //!!
+                                  vol_clip_near,
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);
@@ -200,7 +201,7 @@ class volren: public volscene
                                   eye_dx,eye_dy,eye_dz,
                                   eye_ux,eye_uy,eye_uz,
                                   -eye_x*eye_dx-eye_y*eye_dy-eye_z*eye_dz-vol_clip_dist,get_slab()*vol_over,
-                                  TRUE, //!!
+                                  vol_clip_near,
                                   vol_light,
                                   gfx_fbo,
                                   abort,abortdata);

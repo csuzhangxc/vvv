@@ -321,8 +321,8 @@ void QTV3MainWindow::createWidgets()
    showIsoCheck_->setChecked(true);
    connect(showIsoCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkShowIso(int)));
    l7->addWidget(showIsoCheck_);
-   clipIsoCheck_ = new QCheckBox(tr("Clip"));
-   clipIsoCheck_->setChecked(true);
+   clipIsoCheck_ = new QCheckBox(tr("Clip Plane"));
+   clipIsoCheck_->setChecked(false);
    connect(clipIsoCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkClipIso(int)));
    l7->addWidget(clipIsoCheck_);
    QLabel *ll7=new QLabel("Iso Surface");
@@ -374,7 +374,7 @@ void QTV3MainWindow::reset()
    reverseCheck_->setChecked(false);
    planeCheck_->setChecked(false);
    showIsoCheck_->setChecked(true);
-   clipIsoCheck_->setChecked(true);
+   clipIsoCheck_->setChecked(false);
    flipCheckXY1_->setChecked(false);
    flipCheckXY2_->setChecked(false);
    flipCheckYZ1_->setChecked(false);
@@ -652,7 +652,7 @@ void QTV3MainWindow::checkShowIso(int on)
 
 void QTV3MainWindow::checkClipIso(int on)
 {
-   //!!
+   vrw_->enableGeoClip(on);
 }
 
 void QTV3MainWindow::checkSFX(bool stereo)

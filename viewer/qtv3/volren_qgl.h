@@ -55,7 +55,8 @@ public:
       tilt_ = 0.0;
       zoom_ = 0.0;
       vol_dx_ = vol_dy_ = vol_dz_ = 0.0;
-      dist_ = 1.0;
+      clipdist_ = 1.0;
+      clipgeo_ = FALSE;
       opaque_ = FALSE;
       opacity_ = 1.0f;
       oversampling_ = 1.0;
@@ -257,11 +258,17 @@ public:
    //! set clipping distance
    void setClipDist(double dist=0.0)
    {
-      dist_=dist;
+      clipdist_=dist;
+   }
+
+   //! enable clipping of geometry at clipping distance
+   void enableGeoClip(bool geo=FALSE)
+   {
+      clipgeo_=geo;
    }
 
    //! set clip plane opacity
-   void setClipOpacity(BOOLINT opaque=FALSE)
+   void setClipOpacity(bool opaque=FALSE)
    {
       opaque_=opaque;
    }
@@ -345,7 +352,7 @@ public:
 
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
-                  BOOLINT inverse=FALSE)
+                  bool inverse=FALSE)
    {
       if (vr_)
          vr_->set_tfunc(center,size, red_,green_,blue_, inverse);
@@ -429,8 +436,9 @@ protected:
    double tilt_; // tilt angle in degrees
    double vol_dx_,vol_dy_,vol_dz_; // volume translation
    double zoom_; // zoom into volume
-   double dist_; // clipping distance
-   BOOLINT opaque_; // opaque clipping plane
+   double clipdist_; // clipping distance
+   bool clipgeo_; // geometry clipping enabled?
+   bool opaque_; // opaque clipping plane enabled?
    float opacity_; // clipping plane opacity
    double oversampling_; // oversampling rate
    double red_,green_,blue_; // default color
@@ -446,7 +454,7 @@ protected:
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
    float tf_inverse_; // inverse tfunc
-   BOOLINT geo_show_; // show geometry
+   bool geo_show_; // show geometry?
 
    unsigned int rendercount_;
 
@@ -553,7 +561,8 @@ protected:
                     vol_over, // oversampling
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
-                    dist_, // clipping distance relative to origin
+                    clipdist_, // clipping distance relative to origin
+                    clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
                     opacity_); // clipping plane opacity
       else
@@ -611,7 +620,8 @@ protected:
                     vol_over, // oversampling
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
-                    dist_, // clipping distance relative to origin
+                    clipdist_, // clipping distance relative to origin
+                    clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
                     opacity_); // clipping plane opacity
 
@@ -640,7 +650,8 @@ protected:
                     vol_over, // oversampling
                     TRUE, // lighting
                     TRUE, // view-aligned clipping
-                    dist_, // clipping distance relative to origin
+                    clipdist_, // clipping distance relative to origin
+                    clipgeo_, // clip geometry at clipping distance
                     opaque_, // opaque clipping plane
                     opacity_); // clipping plane opacity
 
@@ -904,7 +915,7 @@ protected:
 
 protected:
 
-   BOOLINT loadFile(volren *vr, const char *filename)
+   bool loadFile(volren *vr, const char *filename)
    {
       int histmin = 5;
       float histfreq = 7.0f;
@@ -923,7 +934,7 @@ protected:
                             feedback,this));
    }
 
-   BOOLINT qgl_render(float eye_x,float eye_y,float eye_z, // eye point
+   bool qgl_render(float eye_x,float eye_y,float eye_z, // eye point
                       float eye_dx,float eye_dy,float eye_dz, // viewing direction
                       float eye_ux,float eye_uy,float eye_uz, // up vector
                       float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
@@ -942,6 +953,7 @@ protected:
                       BOOLINT vol_light=FALSE, // lighting
                       BOOLINT vol_clip=FALSE, // view-aligned clipping
                       float vol_clip_dist=0.0f, // clipping distance relative to origin
+                      BOOLINT vol_clip_near=FALSE, // clip at near plane
                       BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
                       float vol_clip_opacity=1.0f, // clipping plane opacity
                       BOOLINT (*abort)(void *abortdata)=NULL,
@@ -966,7 +978,7 @@ protected:
                           tf_ra_scale,tf_ga_scale,tf_ba_scale,
                           tf_premult,tf_preint,
                           vol_inv,vol_over,vol_light,
-                          vol_clip,vol_clip_dist,
+                          vol_clip,vol_clip_dist,vol_clip_near,
                           abort,abortdata);
 
       if (!aborted)
