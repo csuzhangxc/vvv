@@ -2798,12 +2798,12 @@ unsigned char *mipmap::readANYvolume(const char *filename,
 
 #ifdef HAVE_MINI
 
-      long long steps;
-
       // read a RAW volume
       if (volume==NULL)
-         volume=readRAWvolume(filename,width,height,depth,&steps,components,
-                              NULL,NULL,&order,scalex,scaley,scalez);
+         volume=readRAWvolume_ooc(filename,width,height,depth,components,
+                                  scalex,scaley,scalez,
+                                  vol_ratio_,vol_target_cells_,
+                                  feedback,obj);
 
       // read a REK volume out-of-core
       if (volume==NULL)
@@ -2815,8 +2815,7 @@ unsigned char *mipmap::readANYvolume(const char *filename,
       // read a REK volume
       if (volume==NULL)
          if ((volume=readREKvolume(filename,width,height,depth,components,
-                                   scalex,scaley,scalez))!=NULL)
-            order=FALSE;
+                                   scalex,scaley,scalez))!=NULL) order=FALSE;
 
 #endif
 
