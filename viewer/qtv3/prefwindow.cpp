@@ -20,6 +20,16 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
 
    slice_opacity_ = 0.75f;
 
+   QSettings settings("www.open-terrain.org", "qtv3");
+
+   if (settings.contains("vol_maxsize"))
+      vol_maxsize_ = settings.value("vol_maxsize").toInt();
+   if (settings.contains("iso_maxsize"))
+      iso_maxsize_ = settings.value("iso_maxsize").toInt();
+
+   if (settings.contains("slice_opacity"))
+      slice_opacity_ = settings.value("slice_opacity").toFloat();
+
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
    if (env.contains("QTV3_VOL_LIMIT"))
@@ -41,7 +51,14 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
 }
 
 QTV3PrefWindow::~QTV3PrefWindow()
-{}
+{
+   QSettings settings("www.open-terrain.org", "qtv3");
+
+   settings.setValue("vol_maxsize", vol_maxsize_);
+   settings.setValue("iso_maxsize", iso_maxsize_);
+
+   settings.setValue("slice_opacity", slice_opacity_);
+}
 
 QSize QTV3PrefWindow::minimumSizeHint() const
 {
