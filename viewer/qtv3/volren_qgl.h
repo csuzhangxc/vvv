@@ -895,6 +895,8 @@ protected:
    {
       double numDegrees = event->delta()/8.0;
 
+      vol_dz_ += numDegrees/360.0;
+
       event->accept();
    }
 
