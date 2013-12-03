@@ -76,12 +76,12 @@ void QTV3PrefWindow::createWidgets()
    QVBoxLayout *layout = new QVBoxLayout;
 
    QLineEdit *lineEdit_vol_maxsize = new QLineEdit;
-   QGroupBox *vol_maxsize_group = createEdit("Maximum Displayable Volume Size", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
+   QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
    connect(lineEdit_vol_maxsize,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
    layout->addWidget(vol_maxsize_group);
 
    QLineEdit *lineEdit_iso_maxsize = new QLineEdit;
-   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
+   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout->addWidget(iso_maxsize_group);
 

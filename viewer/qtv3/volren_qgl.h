@@ -56,7 +56,7 @@ public:
       zoom_ = 0.0;
       vol_dx_ = vol_dy_ = vol_dz_ = 0.0;
       clipdist_ = 1.0;
-      clipgeo_ = FALSE;
+      clipgeo_ = TRUE;
       opaque_ = FALSE;
       opacity_ = 1.0f;
       oversampling_ = 1.0;
