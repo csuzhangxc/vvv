@@ -18,7 +18,7 @@ class QTV3PrefWindow: public QDockWidget
 public:
 
    //! default ctor
-   QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw);
+   QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_stereo);
 
    //! dtor
    ~QTV3PrefWindow();
@@ -39,6 +39,11 @@ public:
 protected:
 
    QGLVolRenWidget *vrw_;
+   bool vrw_stereo_;
+
+   QRadioButton *sfxOffCheck_;
+   QRadioButton *anaModeCheck_;
+   QRadioButton *sfxOnCheck_;
 
    QLineEdit *lineEdit_slice_opacity_;
    QSlider *slice_opacity_slider_;

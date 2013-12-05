@@ -348,10 +348,22 @@ public:
       sfx_=on;
    }
 
+   //! get stereo mode
+   bool getSFX()
+   {
+      return(sfx_);
+   }
+
    //! set anaglyph mode
    void setAnaglyph(bool on=false)
    {
       sfx_ana_=on;
+   }
+
+   //! get anaglyph mode
+   bool getAnaglyph()
+   {
+      return(sfx_ana_);
    }
 
    //! use linear transfer function

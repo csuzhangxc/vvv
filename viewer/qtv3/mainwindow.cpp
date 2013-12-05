@@ -228,6 +228,7 @@ void QTV3MainWindow::createWidgets()
    h1->addWidget(reverseCheck_);
    QHBoxLayout *h2 = new QHBoxLayout;
    QButtonGroup *gb1 = new QButtonGroup(this);
+#if 0
    sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
    connect(sfxOffCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
    h2->addWidget(sfxOffCheck_);
@@ -241,6 +242,7 @@ void QTV3MainWindow::createWidgets()
    h2->addWidget(sfxOnCheck_);
    gb1->addButton(sfxOnCheck_);
    sfxOffCheck_->setChecked(true);
+#endif
    QHBoxLayout *h3 = new QHBoxLayout;
    flipCheckXY1_ = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1_->setChecked(false);
@@ -340,7 +342,7 @@ void QTV3MainWindow::createDocks()
 {
    if (prefs_) delete prefs_;
 
-   prefs_ = new QTV3PrefWindow(this, vrw_);
+   prefs_ = new QTV3PrefWindow(this, vrw_, vrw_stereo_);
    prefs_->setAllowedAreas(Qt::RightDockWidgetArea);
 
    addDockWidget(Qt::RightDockWidgetArea, prefs_);

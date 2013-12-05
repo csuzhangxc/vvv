@@ -6,12 +6,13 @@
 
 #include "prefwindow.h"
 
-QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw)
+QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_stereo)
    : QDockWidget(parent)
 {
    setWindowTitle("QTV3 Volume Rendering Preferences");
 
    vrw_ = vrw;
+   vrw_stereo_ = vrw_stereo;
 
    vol_maxsize_ = 512;
    iso_maxsize_ = 256;
@@ -85,10 +86,33 @@ void QTV3PrefWindow::createWidgets()
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout->addWidget(iso_maxsize_group);
 
-   QFrame* line = new QFrame();
-   line->setFrameShape(QFrame::HLine);
-   line->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line);
+   QFrame* line1 = new QFrame();
+   line1->setFrameShape(QFrame::HLine);
+   line1->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line1);
+
+   QVBoxLayout *vl = new QVBoxLayout;
+   QButtonGroup *gb = new QButtonGroup(this);
+   sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
+   connect(sfxOffCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkSFXoff(bool)));
+   vl->addWidget(sfxOffCheck_);
+   gb->addButton(sfxOffCheck_);
+   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo Mode"));
+   connect(anaModeCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkAnaMode(bool)));
+   vl->addWidget(anaModeCheck_);
+   gb->addButton(anaModeCheck_);
+   sfxOnCheck_ = new QRadioButton(tr("Dual Buffer Stereo Mode"));
+   connect(sfxOnCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkSFXon(bool)));
+   vl->addWidget(sfxOnCheck_);
+   gb->addButton(sfxOnCheck_);
+   if (vrw_stereo_) sfxOnCheck_->setChecked(true);
+   else sfxOffCheck_->setChecked(true);
+   layout->addLayout(vl);
+
+   QFrame* line2 = new QFrame();
+   line2->setFrameShape(QFrame::HLine);
+   line2->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line2);
 
    lineEdit_slice_opacity_ = new QLineEdit;
    QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity_);
