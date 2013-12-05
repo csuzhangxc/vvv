@@ -228,7 +228,6 @@ void QTV3MainWindow::createWidgets()
    h1->addWidget(reverseCheck_);
    QHBoxLayout *h2 = new QHBoxLayout;
    QButtonGroup *gb1 = new QButtonGroup(this);
-#if 0
    sfxOffCheck_ = new QRadioButton(tr("Normal Rendering"));
    connect(sfxOffCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
    h2->addWidget(sfxOffCheck_);
@@ -242,7 +241,9 @@ void QTV3MainWindow::createWidgets()
    h2->addWidget(sfxOnCheck_);
    gb1->addButton(sfxOnCheck_);
    sfxOffCheck_->setChecked(true);
-#endif
+   sfxOffCheck_->hide();
+   anaModeCheck_->hide();
+   sfxOnCheck_->hide();
    QHBoxLayout *h3 = new QHBoxLayout;
    flipCheckXY1_ = new QCheckBox(tr("Flip +XY"));
    flipCheckXY1_->setChecked(false);
