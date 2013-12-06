@@ -397,9 +397,10 @@ QStringList QTV3MainWindow::browse(QString path,
    fd->setViewMode(QFileDialog::List);
    if (newfile) fd->setAcceptMode(QFileDialog::AcceptSave);
 #ifdef HAVE_QT5
-   fd->setFilter(QDir::Files);
+   fd->setFilter(QDir::Dirs|QDir::Files);
+   fd->setNameFilter("All Files (*);;PVM Files(*.pvm);;DICOM Files(*.dcm *.ima);;REK Files(*.rek);;RAW Files(*.raw);;GEO Files(*.geo)");
 #else
-   fd->setFilter("All Files (*);;GIF Files (*.gif);;JPEG Files (*.jpg);;TIFF Files(*.tif *.tiff)");
+   fd->setFilter("All Files (*);;PVM Files(*.pvm);;DICOM Files(*.dcm *.ima);;REK Files(*.rek);;RAW Files(*.raw);;GEO Files(*.geo)");
 #endif
 
    if (path!="") fd->setDirectory(path);
