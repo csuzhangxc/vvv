@@ -33,6 +33,12 @@ void QTV3MainWindow::loadVolume(const char *filename)
 
    vrw_->loadVolume(filename);
 
+   prefs_->setLabelFileName(filename);
+   prefs_->setLabelDim(0,0,0);
+   prefs_->setLabelVoxel(0,0,0);
+   //!!prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
+   //!!prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
+
    if (label_)
    {
       mainLayout_->removeItem(mainLayout_->itemAt(0));
@@ -48,6 +54,10 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
    reset();
 
    vrw_->loadSeries(list);
+
+   prefs_->setLabelFileName("dicom series");
+   prefs_->setLabelDim(0,0,0);
+   prefs_->setLabelVoxel(0,0,0);
 
    if (label_)
    {

@@ -23,6 +23,15 @@ public:
    //! dtor
    ~QTV3PrefWindow();
 
+   //! set label about actual filename
+   void setLabelFileName(QString fname);
+
+   //! set label about actual volume dimension
+   void setLabelDim(long long sx,long long sy,long long sz);
+
+   //! set label about actual voxel size
+   void setLabelVoxel(float dx,float dy,float dz);
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const;
 
@@ -40,6 +49,10 @@ protected:
 
    QGLVolRenWidget *vrw_;
    bool vrw_stereo_;
+
+   QLabel *label_filename_;
+   QLabel *label_dim_;
+   QLabel *label_voxel_;
 
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;

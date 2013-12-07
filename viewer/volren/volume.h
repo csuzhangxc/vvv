@@ -236,6 +236,16 @@ class mipmap
    float getsizey() {return(VOL[0]->getsizey());}
    float getsizez() {return(VOL[0]->getsizez());}
 
+   //! return dimension of volume
+   long long getdimx() {return(WIDTH);}
+   long long getdimy() {return(HEIGHT);}
+   long long getdimz() {return(DEPTH);}
+
+   //! return voxel size
+   float getvoxelx() {return(DSX);}
+   float getvoxely() {return(DSY);}
+   float getvoxelz() {return(DSZ);}
+
    // return scaling factor
    float getscale()
       {return(fmax(DSX*(WIDTH-1),fmax(DSY*(HEIGHT-1),DSZ*(DEPTH-1))));}

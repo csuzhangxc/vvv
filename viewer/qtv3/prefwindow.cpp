@@ -61,6 +61,25 @@ QTV3PrefWindow::~QTV3PrefWindow()
    settings.setValue("slice_opacity", slice_opacity_);
 }
 
+void QTV3PrefWindow::setLabelFileName(QString fname)
+{
+   label_filename_->setText(QString("Volume: %1").arg(fname));
+}
+
+void QTV3PrefWindow::setLabelDim(long long sx,long long sy,long long sz)
+{
+   label_dim_->setText(QString("Voxels: %1x%2x%3").arg(sx).arg(sy).arg(sz));
+}
+
+void QTV3PrefWindow::setLabelVoxel(float dx,float dy,float dz)
+{
+   int dxi = int(dx*1E6f+0.5f);
+   int dyi = int(dy*1E6f+0.5f);
+   int dzi = int(dz*1E6f+0.5f);
+
+   label_voxel_->setText(QString("Resolution in micro meters: %1/%2/%3").arg(dxi).arg(dyi).arg(dzi));
+}
+
 QSize QTV3PrefWindow::minimumSizeHint() const
 {
    return(QSize(256, 100));
@@ -76,6 +95,18 @@ void QTV3PrefWindow::createWidgets()
    QGroupBox *group = new QGroupBox;
    QVBoxLayout *layout = new QVBoxLayout;
 
+   label_filename_ = new QLabel;
+   layout->addWidget(label_filename_);
+   label_dim_ = new QLabel;
+   layout->addWidget(label_dim_);
+   label_voxel_ = new QLabel;
+   layout->addWidget(label_voxel_);
+
+   QFrame* line1 = new QFrame();
+   line1->setFrameShape(QFrame::HLine);
+   line1->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line1);
+
    QLineEdit *lineEdit_vol_maxsize = new QLineEdit;
    QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
    connect(lineEdit_vol_maxsize,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
@@ -86,10 +117,10 @@ void QTV3PrefWindow::createWidgets()
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout->addWidget(iso_maxsize_group);
 
-   QFrame* line1 = new QFrame();
-   line1->setFrameShape(QFrame::HLine);
-   line1->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line1);
+   QFrame* line2 = new QFrame();
+   line2->setFrameShape(QFrame::HLine);
+   line2->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line2);
 
    QVBoxLayout *vl = new QVBoxLayout;
    QButtonGroup *gb = new QButtonGroup(this);
@@ -109,10 +140,10 @@ void QTV3PrefWindow::createWidgets()
    else sfxOffCheck_->setChecked(true);
    layout->addLayout(vl);
 
-   QFrame* line2 = new QFrame();
-   line2->setFrameShape(QFrame::HLine);
-   line2->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line2);
+   QFrame* line3 = new QFrame();
+   line3->setFrameShape(QFrame::HLine);
+   line3->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line3);
 
    lineEdit_slice_opacity_ = new QLineEdit;
    QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity_);
