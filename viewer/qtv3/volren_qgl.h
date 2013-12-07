@@ -383,9 +383,10 @@ public:
    //! get eye point
    void getEyePoint(double &ex,double &ey,double &ez,
                     double &dx,double &dy,double &dz,
-                    double &ux,double &uy,double &uz)
+                    double &ux,double &uy,double &uz,
+                    double &rx,double &ry,double &rz)
    {
-      vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz);
+      vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
    }
 
    //! get near plane
@@ -884,13 +885,31 @@ protected:
          else if (bRightButtonDown)
          {
             if (bMouseMove)
+            {
+               double ex,ey,ez;
+               double dx,dy,dz;
+               double ux,uy,uz;
+               double rx,ry,rz;
+
+               vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
                if (!shift)
                {
-                  vol_dx_ += mouseLastX-x;
-                  vol_dy_ += y-mouseLastY;
+                  vol_dx_ += rx*(mouseLastX-x);
+                  vol_dy_ += ry*(mouseLastX-x);
+                  vol_dz_ += rz*(mouseLastX-x);
+
+                  vol_dx_ += ux*(y-mouseLastY);
+                  vol_dy_ += uy*(y-mouseLastY);
+                  vol_dz_ += uz*(y-mouseLastY);
                }
                else
-                  vol_dz_ += y-mouseLastY;
+               {
+                  vol_dx_ += dx*(y-mouseLastY);
+                  vol_dy_ += dy*(y-mouseLastY);
+                  vol_dz_ += dz*(y-mouseLastY);
+               }
+            }
          }
          else
             event->ignore();
@@ -907,7 +926,16 @@ protected:
    {
       double numDegrees = event->delta()/8.0;
 
-      vol_dz_ += numDegrees/360.0;
+      double ex,ey,ez;
+      double dx,dy,dz;
+      double ux,uy,uz;
+      double rx,ry,rz;
+
+      vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+      vol_dx_ -= dx*(numDegrees/360.0);
+      vol_dy_ -= dy*(numDegrees/360.0);
+      vol_dz_ -= dz*(numDegrees/360.0);
 
       event->accept();
    }

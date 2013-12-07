@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "3.7.5 as of 28.November.2013"
+#define VERSION "3.7.5 as of 7.December.2013"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base rendering

@@ -365,33 +365,19 @@ class volren: public volscene
       vol_tltXY*=PI/180.0f;
       vol_tltYZ*=PI/180.0f;
 
-      // move:
-
-      ex0=eye_x+vol_dx;
-      ey0=eye_y+vol_dy;
-      ez0=eye_z+vol_dz;
-
-      dx0=eye_dx;
-      dy0=eye_dy;
-      dz0=eye_dz;
-
-      ux0=eye_ux;
-      uy0=eye_uy;
-      uz0=eye_uz;
-
       // rotate:
 
-      ex=fcos(vol_rot)*ex0+fsin(vol_rot)*ez0;
-      ey=ey0;
-      ez=-fsin(vol_rot)*ex0+fcos(vol_rot)*ez0;
+      ex=fcos(vol_rot)*eye_x+fsin(vol_rot)*eye_z;
+      ey=eye_y;
+      ez=-fsin(vol_rot)*eye_x+fcos(vol_rot)*eye_z;
 
-      dx=fcos(vol_rot)*dx0+fsin(vol_rot)*dz0;
-      dy=dy0;
-      dz=-fsin(vol_rot)*dx0+fcos(vol_rot)*dz0;
+      dx=fcos(vol_rot)*eye_dx+fsin(vol_rot)*eye_dz;
+      dy=eye_dy;
+      dz=-fsin(vol_rot)*eye_dx+fcos(vol_rot)*eye_dz;
 
-      ux=fcos(vol_rot)*ux0+fsin(vol_rot)*uz0;
-      uy=uy0;
-      uz=-fsin(vol_rot)*ux0+fcos(vol_rot)*uz0;
+      ux=fcos(vol_rot)*eye_ux+fsin(vol_rot)*eye_uz;
+      uy=eye_uy;
+      uz=-fsin(vol_rot)*eye_ux+fcos(vol_rot)*eye_uz;
 
       // tiltXY:
 
@@ -420,6 +406,12 @@ class volren: public volscene
       eye_ux=ux0;
       eye_uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
       eye_uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
+
+      // move:
+
+      eye_x+=vol_dx;
+      eye_y+=vol_dy;
+      eye_z+=vol_dz;
       }
 
    };

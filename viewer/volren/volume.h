@@ -243,7 +243,8 @@ class mipmap
    //! get eye point
    void get_eye(double &ex,double &ey,double &ez,
                 double &dx,double &dy,double &dz,
-                double &ux,double &uy,double &uz)
+                double &ux,double &uy,double &uz,
+                double &rx,double &ry,double &rz)
       {
       ex=ex_;
       ey=ey_;
@@ -256,6 +257,10 @@ class mipmap
       ux=ux_;
       uy=uy_;
       uz=uz_;
+
+      rx=dy_*uz_-dz_*uy_;
+      ry=dz_*ux_-dx_*uz_;
+      rz=dx_*uy_-dy_*ux_;
       }
 
    //! get near plane
