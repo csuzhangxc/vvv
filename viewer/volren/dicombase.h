@@ -78,10 +78,10 @@ class DicomVolume
    long long m_Cols;
    long long m_Rows;
 
-   float m_PixSpaceRow;
-   float m_PixSpaceCol;
+   float m_PixSpaceRow; // millimeters
+   float m_PixSpaceCol; // millimeters
 
-   float m_Bounds[3];
+   float m_Bounds[3]; // meters
    float m_VolDir[3];
 
    unsigned long m_SmallestPixVal;

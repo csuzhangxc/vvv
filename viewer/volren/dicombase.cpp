@@ -272,10 +272,10 @@ bool DicomVolume::dicomProcess()
       if (largestPixVal>m_LargestPixVal) m_LargestPixVal=largestPixVal;
       }
 
-   // calculate bounds
-   m_Bounds[0]=m_PixSpaceCol*(m_Cols-1);
-   m_Bounds[1]=m_PixSpaceRow*(m_Rows-1);
-   m_Bounds[2]=maxPos-minPos;
+   // calculate bounds (map millimeters to meters)
+   m_Bounds[0]=m_PixSpaceCol*(m_Cols-1)*1E3;
+   m_Bounds[1]=m_PixSpaceRow*(m_Rows-1)*1E3;
+   m_Bounds[2]=(maxPos-minPos)*1E3;
 
    // sort images
    sortImages();
