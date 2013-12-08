@@ -31,20 +31,16 @@ void QTV3MainWindow::loadVolume(const char *filename)
 {
    reset();
 
-   vrw_->loadVolume(filename);
-
-   prefs_->setLabelFileName(filename);
-   prefs_->setLabelDim(0,0,0);
-   prefs_->setLabelVoxel(0,0,0);
-   //!!prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
-   //!!prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
-
    if (label_)
    {
       mainLayout_->removeItem(mainLayout_->itemAt(0));
       delete label_;
       label_=NULL;
    }
+
+   prefs_->setLabelFileName(filename);
+
+   vrw_->loadVolume(filename);
 
    hasTeaserVolume_=false;
 }
@@ -53,18 +49,16 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 {
    reset();
 
-   vrw_->loadSeries(list);
-
-   prefs_->setLabelFileName("dicom series");
-   prefs_->setLabelDim(0,0,0);
-   prefs_->setLabelVoxel(0,0,0);
-
    if (label_)
    {
       mainLayout_->removeItem(mainLayout_->itemAt(0));
       delete label_;
       label_=NULL;
    }
+
+   prefs_->setLabelFileName("dicom series");
+
+   vrw_->loadSeries(list);
 
    hasTeaserVolume_=false;
 }
@@ -161,7 +155,9 @@ void QTV3MainWindow::createWidgets()
 
    update_ = new QLabel("");
    update_->setAlignment(Qt::AlignHCenter);
+   connect(vrw_, SIGNAL(updating_signal()), this, SLOT(update_slot()));
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
+   connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    mainSplitter_->addWidget(update_);
 
    QTV3Slider *s1=createSlider(0,100,0,true);
@@ -395,6 +391,8 @@ void QTV3MainWindow::reset()
    sampleButton2_->setChecked(true);
 
    createDocks();
+
+   prefs_->setLabelFileName("teaser text");
 }
 
 QStringList QTV3MainWindow::browse(QString path,
@@ -803,7 +801,19 @@ void QTV3MainWindow::about()
                       "\n"APP_DISCLAIMER);
 }
 
+void QTV3MainWindow::updating_slot()
+{
+   prefs_->setLabelDim(0,0,0);
+   prefs_->setLabelVoxel(0,0,0);
+}
+
 void QTV3MainWindow::update_slot(QString text)
 {
    update_->setText(text);
+}
+
+void QTV3MainWindow::updated_slot()
+{
+   prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
+   prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
 }

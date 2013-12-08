@@ -24,6 +24,11 @@ public:
 
 protected:
 
+   virtual void updating()
+   {
+      emit updating_signal();
+   }
+
    virtual void update(const char *info,float percent)
    {
       QString text;
@@ -43,11 +48,18 @@ protected:
       }
    }
 
+   virtual void updated()
+   {
+      emit updated_signal();
+   }
+
    QTime timer_;
 
 signals:
 
+   void updating_signal();
    void update_signal(QString text);
+   void updated_signal();
 };
 
 class QTV3Slider: public QSlider
@@ -231,7 +243,9 @@ protected slots:
    void prefs();
    void about();
 
+   void updating_slot();
    void update_slot(QString text);
+   void updated_slot();
 
 private:
 

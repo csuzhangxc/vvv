@@ -747,6 +747,8 @@ protected:
       {
          if (toload_)
          {
+            updating();
+
             loading_ = true;
 
             delete vr_;
@@ -779,10 +781,14 @@ protected:
             setGradMag(gm_);
 
             loading_ = false;
+
+            updated();
          }
 
          if (series_.size()>0)
          {
+            updating();
+
             loading_ = true;
 
             delete vr_;
@@ -809,6 +815,8 @@ protected:
             setGradMag(gm_);
 
             loading_ = false;
+
+            updated();
          }
 
          if (geotoload_)
@@ -940,6 +948,11 @@ protected:
       event->accept();
    }
 
+   virtual void updating()
+   {
+      printf("updating volume\n");
+   }
+
    virtual void update(const char *info,float percent)
    {
       int act;
@@ -956,6 +969,11 @@ protected:
          printf("%s\n",info);
          last=0;
       }
+   }
+
+   virtual void updated()
+   {
+      printf("updated volume\n");
    }
 
    static void feedback(const char *info,float percent,void *obj)
