@@ -2885,6 +2885,8 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
          return(FALSE);
          }
 
+      COMPONENTS=1;
+
       VOLUME=swap(VOLUME,
                   &WIDTH,&HEIGHT,&DEPTH,
                   &DSX,&DSY,&DSZ,
