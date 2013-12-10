@@ -2831,7 +2831,27 @@ unsigned char *mipmap::readANYvolume(const char *filename,
          }
       }
 
-   if (msb!=NULL) *msb=order;
+   if (volume!=NULL)
+      {
+      BOOLINT check=TRUE;
+
+      if (*width<2) check=FALSE;
+      if (*height<2) check=FALSE;
+      if (*depth<2) check=FALSE;
+
+      if (*scalex<=0.0f) check=FALSE;
+      if (*scaley<=0.0f) check=FALSE;
+      if (*scalez<=0.0f) check=FALSE;
+
+      if (!check)
+         {
+         free(volume);
+         volume=NULL;
+         }
+      }
+
+   if (volume!=NULL)
+      if (msb!=NULL) *msb=order;
 
    return(volume);
    }
