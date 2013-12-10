@@ -155,7 +155,7 @@ void QTV3MainWindow::createWidgets()
 
    update_ = new QLabel("");
    update_->setAlignment(Qt::AlignHCenter);
-   connect(vrw_, SIGNAL(updating_signal()), this, SLOT(update_slot()));
+   connect(vrw_, SIGNAL(updating_signal()), this, SLOT(updating_slot()));
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    mainSplitter_->addWidget(update_);
