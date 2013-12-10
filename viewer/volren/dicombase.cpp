@@ -181,6 +181,24 @@ bool DicomVolume::dicomProcess()
    DcmDataset *firstImage=m_Images[0]->m_Image->getDataset();
    DcmDataset *lastImage=m_Images[last]->m_Image->getDataset();
 
+   // read columns and rows
+   if (firstImage->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
+   sscanf(tmp.c_str(),"%lld",&m_Cols);
+   if (firstImage->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
+   sscanf(tmp.c_str(),"%lld",&m_Rows);
+
+   // read pixel spacing
+   if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,0).bad()) return(false);
+   sscanf(tmp.c_str(),"%g",&m_PixSpaceRow);
+   if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,1).bad()) return(false);
+   sscanf(tmp.c_str(),"%g",&m_PixSpaceCol);
+
+   // read pixel value range
+   if (firstImage->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) m_SmallestPixVal=0;
+   else sscanf(tmp.c_str(),"%lu",&m_SmallestPixVal);
+   if (firstImage->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) m_LargestPixVal=65535;
+   else sscanf(tmp.c_str(),"%lu",&m_LargestPixVal);
+
    // get position of first image
    if (firstImage->findAndGetOFString(DCM_ImagePositionPatient,tmp,0).bad()) return(false);
    sscanf(tmp.c_str(),"%g",&position0[0]);
@@ -206,28 +224,13 @@ bool DicomVolume::dicomProcess()
    float minPos=m_Images[0]->m_pos=0.0;
    float maxPos=sqrt(m_VolDir[0]*m_VolDir[0]+m_VolDir[1]*m_VolDir[1]+m_VolDir[2]*m_VolDir[2]);
 
+   // safety check
+   if (maxPos==0.0f) maxPos=0.5f*(m_PixSpaceCol+m_PixSpaceRow)*m_Images.size();
+
    // direction vector should be normalized
    m_VolDir[0]/=maxPos;
    m_VolDir[1]/=maxPos;
    m_VolDir[2]/=maxPos;
-
-   // read columns and rows
-   if (firstImage->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%lld",&m_Cols);
-   if (firstImage->findAndGetOFString(DCM_Rows,tmp).bad()) return(false);
-   sscanf(tmp.c_str(),"%lld",&m_Rows);
-
-   // read pixel spacing
-   if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,0).bad()) return(false);
-   sscanf(tmp.c_str(),"%g",&m_PixSpaceRow);
-   if (firstImage->findAndGetOFString(DCM_PixelSpacing,tmp,1).bad()) return(false);
-   sscanf(tmp.c_str(),"%g",&m_PixSpaceCol);
-
-   // read pixel value range
-   if (firstImage->findAndGetOFString(DCM_SmallestImagePixelValue,tmp).bad()) m_SmallestPixVal=0;
-   else sscanf(tmp.c_str(),"%lu",&m_SmallestPixVal);
-   if (firstImage->findAndGetOFString(DCM_LargestImagePixelValue,tmp).bad()) m_LargestPixVal=4095;
-   else sscanf(tmp.c_str(),"%lu",&m_LargestPixVal);
 
    // now calculate the position of the slices along the direction vector
    for (i=1; i<=last; i++)
