@@ -174,6 +174,8 @@ int main(int argc,char *argv[])
       exit(1);
       }
 
+   setlocale(LC_NUMERIC,"C");
+
 #ifdef HAVE_MINI
 
    if ((volume=readRAWvolume(argv[1],&width,&height,&depth,&steps,&components,NULL,NULL,&msb))!=NULL)

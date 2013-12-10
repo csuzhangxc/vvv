@@ -3031,6 +3031,8 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
       return(FALSE);
       }
 
+   COMPONENTS=1;
+
    VOLUME=swap(VOLUME,
                &WIDTH,&HEIGHT,&DEPTH,
                &DSX,&DSY,&DSZ,

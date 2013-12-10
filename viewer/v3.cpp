@@ -1571,6 +1571,8 @@ int main(int argc,char *argv[])
    {
    char title[STR_MAX];
 
+   setlocale(LC_NUMERIC,"C");
+
    snprintf(title,STR_MAX,"V^3 %s: Versatile Volume Viewer (c) by Stefan Roettger",VERSION);
    openwindow(WIN_WIDTH,WIN_HEIGHT,WIN_FPS,title);
 
