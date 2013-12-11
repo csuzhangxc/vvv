@@ -181,6 +181,8 @@ bool DicomVolume::dicomProcess()
    DcmDataset *firstImage=m_Images[0]->m_Image->getDataset();
    DcmDataset *lastImage=m_Images[last]->m_Image->getDataset();
 
+   bool sorted=false;
+
    // read columns and rows
    if (firstImage->findAndGetOFString(DCM_Columns,tmp).bad()) return(false);
    sscanf(tmp.c_str(),"%lld",&m_Cols);
@@ -225,7 +227,11 @@ bool DicomVolume::dicomProcess()
    float maxPos=sqrt(m_VolDir[0]*m_VolDir[0]+m_VolDir[1]*m_VolDir[1]+m_VolDir[2]*m_VolDir[2]);
 
    // safety check
-   if (maxPos==0.0f) maxPos=0.5f*(m_PixSpaceCol+m_PixSpaceRow)*m_Images.size();
+   if (maxPos==0.0f)
+      {
+      maxPos=0.5f*(m_PixSpaceCol+m_PixSpaceRow)*m_Images.size();
+      sorted=true;
+      }
 
    // direction vector should be normalized
    m_VolDir[0]/=maxPos;
@@ -281,7 +287,7 @@ bool DicomVolume::dicomProcess()
    m_Bounds[2]=(maxPos-minPos)/1E3;
 
    // sort images
-   sortImages();
+   if (!sorted) sortImages();
 
    // create the volume:
 
