@@ -121,16 +121,19 @@ void tile::setup(char *base)
 
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 
-         if (errorPos==0) printf("warning: fragment programs unavailable\n");
+         if (errorPos==0)
+            {
+            WARNMSG("shader programs unavailable");
+            WARNMSG((char *)glGetString(GL_PROGRAM_ERROR_STRING_ARB));
+            }
          else
             {
             if (errorPos!=-1)
                {
-               printf("fragment program error at position=%d in program #%d\n",errorPos,i+1);
+               WARNMSG((char *)glGetString(GL_PROGRAM_ERROR_STRING_ARB));
                ERRORMSG();
                }
-
-            if (isNative!=1) printf("warning: fragment program #%d is not native\n",i+1);
+            if (isNative!=1) WARNMSG("shader program non-native");
             }
 
 #endif

@@ -54,12 +54,13 @@
 #define FALSE (0)
 #endif
 
-#define WARNMSG() errormsg(__FILE__,__LINE__,FALSE)
-#define ERRORMSG() errormsg(__FILE__,__LINE__)
+#define ERRORMSG() errormsg(__FILE__,__LINE__,TRUE)
+#define WARNMSG(msg) errormsg(__FILE__,__LINE__,FALSE,msg)
 
-inline void errormsg(const char *file,int line,int fatal=TRUE)
+inline void errormsg(const char *file,int line,int fatal,const char *msg=NULL)
    {
    fprintf(stderr,"error in <%s> at line %d!\n",file,line);
+   if (msg!=NULL) fprintf(stderr,"description: %s\n",msg);
    if (fatal) exit(EXIT_FAILURE);
    }
 
