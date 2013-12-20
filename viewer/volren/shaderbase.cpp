@@ -100,7 +100,7 @@ void setprogpar(int n,float p1,float p2,float p3,float p4,bool vtxorfrg)
 #endif
    }
 
-void setprogpars(int n,int count,const float *params,BOOLINT vtxorfrg)
+void setprogpars(int n,int count,const float *params,bool vtxorfrg)
    {
 #if defined(GL_ARB_vertex_program) && defined(GL_ARB_fragment_program)
    if (vtxorfrg)
