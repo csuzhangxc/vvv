@@ -85,7 +85,7 @@ void tile::setup(char *base)
 
    if (strstr(GL_EXTs,"ARB_multitexture")==NULL ||
        strstr(GL_EXTs,"ARB_fragment_program")==NULL)
-      printf("warning: necessary rendering extensions not fully supported\n");
+      WARNMSG("necessary rendering extensions not fully supported");
 
    if (!LOADED)
       {

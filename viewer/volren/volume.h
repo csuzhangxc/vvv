@@ -14,6 +14,7 @@
 #include <mini/rawbase.h> // raw file reader
 #endif
 #include "oglbase.h" // OpenGL base and window handling
+#include "shaderbase.h" // OpenGL shader program handling
 #include "tfbase.h" // transfer functions
 #include "tilebase.h" // volume tiles and bricks
 #include "geobase.h" // surface wrapper
