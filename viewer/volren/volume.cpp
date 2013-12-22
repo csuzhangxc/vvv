@@ -3575,6 +3575,15 @@ void mipmap::renderslice(float ox,float oy,float oz,
                          float nx,float ny,float nz,
                          float alpha)
    {
+   static const char slicer_frgprg[]=
+      "!!ARBfp1.0\n"
+      "TEMP col,tmp;\n"
+      "MOV col,fragment.color; \n"
+      "TEX tmp.x, fragment.texcoord[0], texture[0], 3D;\n"
+      "MUL col.xyz,col,tmp.x; \n"
+      "MOV result.color,col; \n"
+      "END\n";
+
    int i;
 
    int plane;
@@ -3585,7 +3594,7 @@ void mipmap::renderslice(float ox,float oy,float oz,
 
    // create slicing shader
    if (SHADERID==0)
-      SHADERID=buildfrgprog(default_frgprg);
+      SHADERID=buildfrgprog(slicer_frgprg);
 
    // enable slicing shader
    bindfrgprog(SHADERID);
