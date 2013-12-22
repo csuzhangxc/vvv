@@ -3539,7 +3539,7 @@ void mipmap::renderslice(float ex,float ey,float ez,
                          float dx,float dy,float dz,
                          float ux,float uy,float uz,
                          float nearp,
-                         float alpha)
+                         float alpha,float alpha2)
    {
    // save eye point
    ex_=ex;
@@ -3567,13 +3567,14 @@ void mipmap::renderslice(float ex,float ey,float ez,
    nz_=dz;
 
    // render opaque slice
-   renderslice(px_,py_,pz_,nx_,ny_,nz_,alpha);
+   renderslice(px_,py_,pz_,nx_,ny_,nz_,
+               alpha,alpha2);
    }
 
 // render a volume slice
 void mipmap::renderslice(float ox,float oy,float oz,
                          float nx,float ny,float nz,
-                         float alpha)
+                         float alpha,float alpha2)
    {
    static const char slicer_frgprg[]=
       "!!ARBfp1.0\n"
@@ -3606,7 +3607,7 @@ void mipmap::renderslice(float ox,float oy,float oz,
    // get non-zero tf range
    tfmin=TFUNC->get_nonzero_min();
    tfmax=TFUNC->get_nonzero_max();
-   setfrgprogpar(0,tfmin,tfmax,0.0f,0.1f);
+   setfrgprogpar(0,tfmin,tfmax,0.0f,alpha2);
 
    // enable slicing shader
    bindfrgprog(SHADERID);

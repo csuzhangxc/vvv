@@ -220,12 +220,14 @@ class mipmap
                     float dx,float dy,float dz,
                     float ux,float uy,float uz,
                     float nearp,
-                    float alpha=1.0f);
+                    float alpha=1.0f,
+                    float alpha2=0.1f);
 
    // render a volume slice
    void renderslice(float ox,float oy,float oz,
                     float nx,float ny,float nz,
-                    float alpha=1.0f);
+                    float alpha=1.0f,
+                    float alpha2=0.1f);
 
    //! return center of bounding box
    float getcenterx() {return(VOL[0]->getcenterx());}
