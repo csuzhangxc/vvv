@@ -361,8 +361,6 @@ mipmap::mipmap(char *base,int res)
    px_=py_=pz_=0.0;
    nx_=ny_=nz_=0.0;
 
-   disable_clip();
-
    set_vol_maxsize(512);
    set_iso_maxsize(256);
 
@@ -378,6 +376,10 @@ mipmap::mipmap(char *base,int res)
    QUEUEX=new int[QUEUEMAX];
    QUEUEY=new int[QUEUEMAX];
    QUEUEZ=new int[QUEUEMAX];
+
+   disable_clip();
+
+   SHADERID=0;
 
    HASFBO=FALSE;
    fboWidth=fboHeight=0;
@@ -402,6 +404,8 @@ mipmap::~mipmap()
    delete QUEUEX;
    delete QUEUEY;
    delete QUEUEZ;
+
+   if (SHADERID!=0) deletefrgprog(SHADERID);
 
    destroy();
    }
@@ -3579,6 +3583,13 @@ void mipmap::renderslice(float ox,float oy,float oz,
 
    plane=0;
 
+   // create slicing shader
+   if (SHADERID==0)
+      SHADERID=buildfrgprog(default_frgprg);
+
+   // enable slicing shader
+   bindfrgprog(SHADERID);
+
    // enable clipping planes
    for (i=0; i<MAX_CLIP_PLANES; i++)
       if (clip_on[i])
@@ -3616,6 +3627,9 @@ void mipmap::renderslice(float ox,float oy,float oz,
    // disable clipping planes
    for (i=0; i<plane; i++)
       glDisable(GL_CLIP_PLANE0+i);
+
+   // disable slicing shader
+   bindfrgprog(0);
    }
 
 // draw the surrounding wire frame box

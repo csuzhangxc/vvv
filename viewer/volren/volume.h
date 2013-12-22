@@ -361,12 +361,6 @@ class mipmap
    double px_,py_,pz_;
    double nx_,ny_,nz_;
 
-   int clip_on[MAX_CLIP_PLANES];
-   double clip_a[MAX_CLIP_PLANES];
-   double clip_b[MAX_CLIP_PLANES];
-   double clip_c[MAX_CLIP_PLANES];
-   double clip_d[MAX_CLIP_PLANES];
-
    long long vol_target_cells_;
    float vol_ratio_;
 
@@ -405,6 +399,18 @@ class mipmap
 
    int *QUEUEX,*QUEUEY,*QUEUEZ;
    unsigned int QUEUEMAX,QUEUECNT,QUEUESTART,QUEUEEND;
+
+   // clipping planes:
+
+   int clip_on[MAX_CLIP_PLANES];
+   double clip_a[MAX_CLIP_PLANES];
+   double clip_b[MAX_CLIP_PLANES];
+   double clip_c[MAX_CLIP_PLANES];
+   double clip_d[MAX_CLIP_PLANES];
+
+   // slicing shader:
+
+   int SHADERID;
 
    // frame buffer object:
 
