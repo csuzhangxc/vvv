@@ -3577,10 +3577,10 @@ void mipmap::renderslice(float ox,float oy,float oz,
    {
    static const char slicer_frgprg[]=
       "!!ARBfp1.0\n"
-      "PARAM range=program.env[0];"
-      "TEMP col,tmp;\n"
+      "PARAM range=program.env[0]; \n"
+      "TEMP col,tmp; \n"
       "MOV col,fragment.color; \n"
-      "TEX tmp.x, fragment.texcoord[0], texture[0], 3D;\n"
+      "TEX tmp.x, fragment.texcoord[0], texture[0], 3D; \n"
       "MUL col.xyz,col,tmp.x; \n"
       "SUB tmp.w,tmp.x,range.x; \n"
       "CMP col.w,tmp.w,range.w,col.w; \n"
