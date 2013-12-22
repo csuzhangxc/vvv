@@ -3577,16 +3577,23 @@ void mipmap::renderslice(float ox,float oy,float oz,
    {
    static const char slicer_frgprg[]=
       "!!ARBfp1.0\n"
+      "PARAM range=program.env[0];"
       "TEMP col,tmp;\n"
       "MOV col,fragment.color; \n"
       "TEX tmp.x, fragment.texcoord[0], texture[0], 3D;\n"
       "MUL col.xyz,col,tmp.x; \n"
+      "SUB tmp.w,tmp.x,range.x; \n"
+      "CMP col.w,tmp.w,range.w,col.w; \n"
+      "SUB tmp.w,tmp.x,range.y; \n"
+      "CMP col.w,tmp.w,col.w,range.w; \n"
       "MOV result.color,col; \n"
       "END\n";
 
    int i;
 
    int plane;
+
+   float tfmin,tfmax;
 
    if (alpha==0.0f) return;
 
@@ -3595,6 +3602,11 @@ void mipmap::renderslice(float ox,float oy,float oz,
    // create slicing shader
    if (SHADERID==0)
       SHADERID=buildfrgprog(slicer_frgprg);
+
+   // get non-zero tf range
+   tfmin=TFUNC->get_nonzero_min();
+   tfmax=TFUNC->get_nonzero_max();
+   setfrgprogpar(0,tfmin,tfmax,0.0f,0.1f);
 
    // enable slicing shader
    bindfrgprog(SHADERID);
@@ -3620,17 +3632,18 @@ void mipmap::renderslice(float ox,float oy,float oz,
    // render opaque slice
    if (VOLCNT>0)
       {
-      if (alpha<1.0f)
-         {
-         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-         glEnable(GL_BLEND);
-         }
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+
+      glAlphaFunc(GL_GREATER,0.0f);
+      glEnable(GL_ALPHA_TEST);
 
       glColor4f(1,1,1,alpha);
       VOL[0]->renderslice(ox,oy,oz,nx,ny,nz);
 
-      if (alpha<1.0f)
-         glDisable(GL_BLEND);
+      glDisable(GL_ALPHA_TEST);
+
+      glDisable(GL_BLEND);
       }
 
    // disable clipping planes
