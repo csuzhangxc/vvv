@@ -564,7 +564,9 @@ protected:
       double vol_over=oversampling_;
 
       // zoom
-      eye_z=(1.0-zoom_)*eye_z+zoom_*gfx_near;
+      eye_x=(1.0-zoom_)*eye_x;
+      eye_y=(1.0-zoom_)*eye_y;
+      eye_z=(1.0-zoom_)*eye_z;
 
       // tilt
       double eye_tx=eye_x;
