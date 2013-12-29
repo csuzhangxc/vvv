@@ -48,6 +48,18 @@ public:
 
       setSliceOpacity(0.75f);
 
+      eye_x_ = 0;
+      eye_y_ = 0;
+      eye_z_ = 2;
+
+      eye_dx_ = 0;
+      eye_dy_ = 0;
+      eye_dz_ = -1;
+
+      eye_ux_ = 0;
+      eye_uy_ = 1;
+      eye_uz_ = 0;
+
       fps_ = 30.0;
       angle_ = 0.0;
       omega_ = 0.0;
@@ -448,6 +460,10 @@ protected:
    long long iso_maxsize_;
    float iso_ratio_;
 
+   float eye_x_,eye_y_,eye_z_;
+   float eye_dx_,eye_dy_,eye_dz_;
+   float eye_ux_,eye_uy_,eye_uz_;
+
    double fps_; // animated frames per second
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
@@ -494,9 +510,9 @@ protected:
       if (!vr_)
          vr_ = new volren();
 
-      double eye_x=0,eye_y=0,eye_z=2;
-      double eye_dx=0,eye_dy=0,eye_dz=-1;
-      double eye_ux=0,eye_uy=1,eye_uz=0;
+      double eye_x=eye_x_,eye_y=eye_y_,eye_z=eye_z_;
+      double eye_dx=eye_dx_,eye_dy=eye_dy_,eye_dz=eye_dz_;
+      double eye_ux=eye_ux_,eye_uy=eye_uy_,eye_uz=eye_uz_;
 
       double gfx_fovy=60.0;
       double gfx_aspect=(double)width()/height();

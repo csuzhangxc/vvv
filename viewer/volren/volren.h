@@ -343,6 +343,85 @@ class volren: public volscene
       return(aborted);
       }
 
+   // rotate about anchor point
+   void rotate(float ax,float ay,float az,
+               float angle1,float angle2,
+               float &eye_x,float &eye_y,float &eye_z,
+               float &eye_dx,float &eye_dy,float &eye_dz,
+               float &eye_ux,float &eye_uy,float &eye_uz)
+      {
+      float ex,ey,ez;
+      float dx,dy,dz;
+      float ux,uy,uz;
+
+      angle1*=PI/180.0f;
+      angle2*=PI/180.0f;
+
+      // sub anchor:
+
+      eye_x-=ax;
+      eye_y-=ay;
+      eye_z-=az;
+
+      // tilt:
+
+      ex=eye_x;
+      ey=fcos(angle2)*eye_y-fsin(angle2)*eye_z;
+      ez=fsin(angle2)*eye_y+fcos(angle2)*eye_z;
+
+      dx=eye_dx;
+      dy=fcos(angle2)*eye_dy-fsin(angle2)*eye_dz;
+      dz=fsin(angle2)*eye_dy+fcos(angle2)*eye_dz;
+
+      ux=eye_ux;
+      uy=fcos(angle2)*eye_uy-fsin(angle2)*eye_uz;
+      uz=fsin(angle2)*eye_uy+fcos(angle2)*eye_uz;
+
+      eye_x=ex;
+      eye_y=ey;
+      eye_z=ez;
+
+      eye_dx=dx;
+      eye_dy=dy;
+      eye_dz=dz;
+
+      eye_ux=ux;
+      eye_uy=uy;
+      eye_uz=uz;
+
+      // rotate:
+
+      ex=fcos(angle1)*eye_x+fsin(angle1)*eye_z;
+      ey=eye_y;
+      ez=-fsin(angle1)*eye_x+fcos(angle1)*eye_z;
+
+      dx=fcos(angle1)*eye_dx+fsin(angle1)*eye_dz;
+      dy=eye_dy;
+      dz=-fsin(angle1)*eye_dx+fcos(angle1)*eye_dz;
+
+      ux=fcos(angle1)*eye_ux+fsin(angle1)*eye_uz;
+      uy=eye_uy;
+      uz=-fsin(angle1)*eye_ux+fcos(angle1)*eye_uz;
+
+      eye_x=ex;
+      eye_y=ey;
+      eye_z=ez;
+
+      eye_dx=dx;
+      eye_dy=dy;
+      eye_dz=dz;
+
+      eye_ux=ux;
+      eye_uy=uy;
+      eye_uz=uz;
+
+      // add anchor:
+
+      eye_x+=ax;
+      eye_y+=ay;
+      eye_z+=az;
+      }
+
    private:
 
    void transform(float &eye_x,float &eye_y,float &eye_z, // eye point
