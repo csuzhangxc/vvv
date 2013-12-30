@@ -851,22 +851,37 @@ protected:
       }
    }
 
-   void getAnchor(float &ax,float &ay,float &az)
+   void getAnchorPlane(float &ax,float &ay,float &az,
+                       float &dx,float &dy,float &dz)
    {
-      ax=-eye_dx_*clipdist_;
-      ay=-eye_dy_*clipdist_;
-      az=-eye_dz_*clipdist_;
+      float d;
+
+      d=-eye_dx_*eye_x_+
+        -eye_dy_*eye_y_+
+        -eye_dz_*eye_z_;
+
+      d-=clipdist_;
+
+      ax=-eye_x_+eye_dx_*d;
+      ay=-eye_y_+eye_dy_*d;
+      az=-eye_z_+eye_dz_*d;
+
+      dx=eye_dx_;
+      dx=eye_dy_;
+      dx=eye_dz_;
    }
 
-   void rotateAnchor(float angle1,float angle2)
+   void rotateAnchorPlane(float angle1,float angle2)
    {
       float ax,ay,az;
+      float dx,dy,dz;
 
       float d1,d2;
 
       if (vr_)
       {
-         getAnchor(ax,ay,az);
+         getAnchorPlane(ax,ay,az,
+                        dx,dy,dz);
 
          d1=-eye_dx_*eye_x_+
             -eye_dy_*eye_y_+
