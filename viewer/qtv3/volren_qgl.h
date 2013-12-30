@@ -851,6 +851,41 @@ protected:
       }
    }
 
+   void getAnchor(float &ax,float &ay,float &az)
+   {
+      ax=-eye_dx_*clipdist_;
+      ay=-eye_dy_*clipdist_;
+      az=-eye_dz_*clipdist_;
+   }
+
+   void rotateAnchor(float angle1,float angle2)
+   {
+      float ax,ay,az;
+
+      float d1,d2;
+
+      if (vr_)
+      {
+         getAnchor(ax,ay,az);
+
+         d1=-eye_dx_*eye_x_+
+            -eye_dy_*eye_y_+
+            -eye_dz_*eye_z_;
+
+         vr_->rotate(ax,ay,az,
+                     angle1,angle2,
+                     eye_x_,eye_y_,eye_z_,
+                     eye_dx_,eye_dy_,eye_dz_,
+                     eye_ux_,eye_uy_,eye_uz_);
+
+         d2=-eye_dx_*eye_x_+
+            -eye_dy_*eye_y_+
+            -eye_dz_*eye_z_;
+
+         clipdist_+=d2-d1;
+      }
+   }
+
    bool bLeftButtonDown,bRightButtonDown;
 
    bool bMouseMove;
