@@ -92,6 +92,7 @@ public:
       rendercount_ = 0;
 
       bLeftButtonDown = false;
+      bMiddleButtonDown = false;
       bRightButtonDown = false;
 
       bMouseMove = false;
@@ -901,7 +902,9 @@ protected:
       }
    }
 
-   bool bLeftButtonDown,bRightButtonDown;
+   bool bLeftButtonDown;
+   bool bMiddleButtonDown;
+   bool bRightButtonDown;
 
    bool bMouseMove;
    float mouseLastX,mouseLastY;
@@ -914,6 +917,8 @@ protected:
             bRightButtonDown = true;
          else
             bLeftButtonDown = true;
+      else if (event->buttons() & Qt::MiddleButton)
+         bMiddleButtonDown = true;
       else if (event->buttons() & Qt::RightButton)
          bRightButtonDown = true;
       else
@@ -927,6 +932,7 @@ protected:
       mouseMoveEvent(event);
 
       bLeftButtonDown = false;
+      bMiddleButtonDown = false;
       bRightButtonDown = false;
 
       bMouseMove = false;
@@ -937,6 +943,7 @@ protected:
       mouseMoveEvent(event);
 
       bLeftButtonDown = false;
+      bMiddleButtonDown = false;
       bRightButtonDown = false;
 
       bMouseMove = false;
@@ -957,6 +964,13 @@ protected:
             tf_inverse_ = !shift;
 
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+         }
+         else if (bMiddleButtonDown)
+         {
+            if (bMouseMove)
+            {
+               rotateAnchorPlane(180*(x-mouseLastX),180*(y-mouseLastY));
+            }
          }
          else if (bRightButtonDown)
          {
