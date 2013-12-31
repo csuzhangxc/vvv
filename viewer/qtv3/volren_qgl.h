@@ -969,7 +969,8 @@ protected:
          {
             if (bMouseMove)
             {
-               rotateAnchorPlane(180*(x-mouseLastX),180*(y-mouseLastY));
+               rotateAnchorPlane(180*(x-mouseLastX),
+                                 180*(y-mouseLastY));
             }
          }
          else if (bRightButtonDown)
