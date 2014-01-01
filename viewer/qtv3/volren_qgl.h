@@ -863,13 +863,13 @@ protected:
 
       d-=clipdist_;
 
-      ax=-eye_x_+eye_dx_*d;
-      ay=-eye_y_+eye_dy_*d;
-      az=-eye_z_+eye_dz_*d;
+      ax=eye_x_+eye_dx_*d;
+      ay=eye_y_+eye_dy_*d;
+      az=eye_z_+eye_dz_*d;
 
       dx=eye_dx_;
-      dx=eye_dy_;
-      dx=eye_dz_;
+      dy=eye_dy_;
+      dz=eye_dz_;
    }
 
    void rotateAnchorPlane(float angle1,float angle2)
