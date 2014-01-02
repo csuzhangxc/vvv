@@ -355,14 +355,60 @@ class volren: public volscene
       float dx,dy,dz;
       float ux,uy,uz;
 
+      float arx,ary,arz;
+      float aux,auy,auz;
+      float adx,ady,adz;
+
+      float tx,ty,tz;
+
       angle1*=PI/180.0f;
       angle2*=PI/180.0f;
 
-      // sub anchor:
+      // compute anchor coords:
+
+      arx=eye_dy*eye_uz-eye_dz*eye_uy;
+      ary=eye_dz*eye_ux-eye_dx*eye_uz;
+      arz=eye_dx*eye_uy-eye_dy*eye_ux;
+
+      aux=eye_ux;
+      auy=eye_uy;
+      auz=eye_uz;
+
+      adx=eye_dx;
+      ady=eye_dy;
+      adz=eye_dz;
+
+      // translate to anchor coords:
 
       eye_x-=ax;
       eye_y-=ay;
       eye_z-=az;
+
+      // transform into anchor coords:
+
+      ex=eye_x;
+      ey=eye_y;
+      ez=eye_z;
+
+      eye_x=ex*arx+ey*ary+ez*arz;
+      eye_y=ex*aux+ey*auy+ez*auz;
+      eye_z=ex*adx+ey*ady+ez*adz;
+
+      tx=eye_dx*arx+eye_dy*ary+eye_dz*arz;
+      ty=eye_dx*aux+eye_dy*auy+eye_dz*auz;
+      tz=eye_dx*adx+eye_dy*ady+eye_dz*adz;
+
+      eye_dx=tx;
+      eye_dy=ty;
+      eye_dz=tz;
+
+      tx=eye_ux*arx+eye_uy*ary+eye_uz*arz;
+      ty=eye_ux*aux+eye_uy*auy+eye_uz*auz;
+      tz=eye_ux*adx+eye_uy*ady+eye_uz*adz;
+
+      eye_ux=tx;
+      eye_uy=ty;
+      eye_uz=tz;
 
       // tilt:
 
@@ -416,7 +462,33 @@ class volren: public volscene
       eye_uy=uy;
       eye_uz=uz;
 
-      // add anchor:
+      // transform from anchor coords:
+
+      ex=eye_x;
+      ey=eye_y;
+      ez=eye_z;
+
+      eye_x=ex*arx+ey*auy+ez*adz;
+      eye_y=ex*arx+ey*auy+ez*adz;
+      eye_z=ex*arx+ey*auy+ez*adz;
+
+      tx=eye_dx*arx+eye_dy*auy+eye_dz*adz;
+      ty=eye_dx*arx+eye_dy*auy+eye_dz*adz;
+      tz=eye_dx*arx+eye_dy*auy+eye_dz*adz;
+
+      eye_dx=tx;
+      eye_dy=ty;
+      eye_dz=tz;
+
+      tx=eye_ux*arx+eye_uy*auy+eye_uz*adz;
+      ty=eye_ux*arx+eye_uy*auy+eye_uz*adz;
+      tz=eye_ux*arx+eye_uy*auy+eye_uz*adz;
+
+      eye_ux=tx;
+      eye_uy=ty;
+      eye_uz=tz;
+
+      // translate to world coords:
 
       eye_x+=ax;
       eye_y+=ay;
