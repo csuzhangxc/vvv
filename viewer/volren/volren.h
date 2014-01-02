@@ -468,21 +468,21 @@ class volren: public volscene
       ey=eye_y;
       ez=eye_z;
 
-      eye_x=ex*arx+ey*auy+ez*adz;
-      eye_y=ex*arx+ey*auy+ez*adz;
-      eye_z=ex*arx+ey*auy+ez*adz;
+      eye_x=ex*arx+ey*aux+ez*adx;
+      eye_y=ex*ary+ey*auy+ez*ady;
+      eye_z=ex*arz+ey*auz+ez*adz;
 
-      tx=eye_dx*arx+eye_dy*auy+eye_dz*adz;
-      ty=eye_dx*arx+eye_dy*auy+eye_dz*adz;
-      tz=eye_dx*arx+eye_dy*auy+eye_dz*adz;
+      tx=eye_dx*arx+eye_dy*aux+eye_dz*adx;
+      ty=eye_dx*ary+eye_dy*auy+eye_dz*ady;
+      tz=eye_dx*arz+eye_dy*auz+eye_dz*adz;
 
       eye_dx=tx;
       eye_dy=ty;
       eye_dz=tz;
 
-      tx=eye_ux*arx+eye_uy*auy+eye_uz*adz;
-      ty=eye_ux*arx+eye_uy*auy+eye_uz*adz;
-      tz=eye_ux*arx+eye_uy*auy+eye_uz*adz;
+      tx=eye_ux*arx+eye_uy*aux+eye_uz*adx;
+      ty=eye_ux*ary+eye_uy*auy+eye_uz*ady;
+      tz=eye_ux*arz+eye_uy*auz+eye_uz*adz;
 
       eye_ux=tx;
       eye_uy=ty;
