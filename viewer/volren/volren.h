@@ -432,10 +432,6 @@ class volren: public volscene
       eye_uy=ty;
       eye_uz=tz;
 
-      printf("d=%g %g %g\n",adx,ady,adz); //!!
-      printf("u=%g %g %g\n",aux,auy,auz); //!!
-      printf("r=%g %g %g\n",arx,ary,arz); //!!
-
       // tilt:
 
       ex=eye_x;
@@ -519,6 +515,22 @@ class volren: public volscene
       eye_x+=ax;
       eye_y+=ay;
       eye_z+=az;
+
+      // normalize:
+
+      if ((l=fsqrt(eye_dx*eye_dx+eye_dy*eye_dy+eye_dz*eye_dz))>0.0f)
+         {
+         eye_dx/=l;
+         eye_dy/=l;
+         eye_dz/=l;
+         }
+
+      if ((l=fsqrt(eye_ux*eye_ux+eye_uy*eye_uy+eye_uz*eye_uz))>0.0f)
+         {
+         eye_ux/=l;
+         eye_uy/=l;
+         eye_uz/=l;
+         }
       }
 
    private:
