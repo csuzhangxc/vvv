@@ -384,7 +384,7 @@ class volren: public volscene
       eye_y-=ay;
       eye_z-=az;
 
-      // transform into anchor coords:
+      // rotate to anchor coords:
 
       ex=eye_x;
       ey=eye_y;
@@ -462,7 +462,7 @@ class volren: public volscene
       eye_uy=uy;
       eye_uz=uz;
 
-      // transform from anchor coords:
+      // rotate to world coords:
 
       ex=eye_x;
       ey=eye_y;
