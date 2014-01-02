@@ -360,6 +360,7 @@ class volren: public volscene
       float adx,ady,adz;
 
       float tx,ty,tz;
+      float l;
 
       angle1*=PI/180.0f;
       angle2*=PI/180.0f;
@@ -370,13 +371,34 @@ class volren: public volscene
       ary=eye_dz*eye_ux-eye_dx*eye_uz;
       arz=eye_dx*eye_uy-eye_dy*eye_ux;
 
+      if ((l=fsqrt(arx*arx+ary*ary+arz*arz))>0.0f)
+         {
+         arx/=l;
+         ary/=l;
+         arz/=l;
+         }
+
       aux=eye_ux;
       auy=eye_uy;
       auz=eye_uz;
 
+      if ((l=fsqrt(aux*aux+auy*auy+auz*auz))>0.0f)
+         {
+         aux/=l;
+         auy/=l;
+         auz/=l;
+         }
+
       adx=eye_dx;
       ady=eye_dy;
       adz=eye_dz;
+
+      if ((l=fsqrt(adx*adx+ady*ady+adz*adz))>0.0f)
+         {
+         adx/=l;
+         ady/=l;
+         adz/=l;
+         }
 
       // translate to anchor coords:
 
@@ -409,6 +431,10 @@ class volren: public volscene
       eye_ux=tx;
       eye_uy=ty;
       eye_uz=tz;
+
+      printf("d=%g %g %g\n",adx,ady,adz); //!!
+      printf("u=%g %g %g\n",aux,auy,auz); //!!
+      printf("r=%g %g %g\n",arx,ary,arz); //!!
 
       // tilt:
 
