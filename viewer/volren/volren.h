@@ -400,6 +400,10 @@ class volren: public volscene
          adz/=l;
          }
 
+      printf("r=%g/%g/%g\n",arx,ary,arz); //!!
+      printf("u=%g/%g/%g\n",aux,auy,auz); //!!
+      printf("d=%g/%g/%g\n",adx,ady,adz); //!!
+
       // translate to anchor coords:
 
       eye_x-=ax;

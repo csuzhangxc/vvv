@@ -877,16 +877,10 @@ protected:
       float ax,ay,az;
       float dx,dy,dz;
 
-      float d1,d2;
-
       if (vr_)
       {
          getAnchorPlane(ax,ay,az,
                         dx,dy,dz);
-
-         d1=-eye_dx_*eye_x_+
-            -eye_dy_*eye_y_+
-            -eye_dz_*eye_z_;
 
          vr_->rotate(ax,ay,az,
                      angle1,angle2,
@@ -894,11 +888,9 @@ protected:
                      eye_dx_,eye_dy_,eye_dz_,
                      eye_ux_,eye_uy_,eye_uz_);
 
-         d2=-eye_dx_*eye_x_+
-            -eye_dy_*eye_y_+
-            -eye_dz_*eye_z_;
-
-         clipdist_+=d2-d1;
+         clipdist_=-eye_dx_*ax+
+                   -eye_dy_*ay+
+                   -eye_dz_*az;
       }
    }
 
