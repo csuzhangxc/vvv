@@ -957,7 +957,7 @@ protected:
 
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
          }
-         else if (bRightButtonDown) //!!
+         else if (bMiddleButtonDown)
          {
             if (bMouseMove)
             {

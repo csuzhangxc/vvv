@@ -400,10 +400,6 @@ class volren: public volscene
          adz/=l;
          }
 
-      printf("r=%g/%g/%g\n",arx,ary,arz); //!!
-      printf("u=%g/%g/%g\n",aux,auy,auz); //!!
-      printf("d=%g/%g/%g\n",adx,ady,adz); //!!
-
       // translate to anchor coords:
 
       eye_x-=ax;
@@ -535,6 +531,16 @@ class volren: public volscene
          eye_uy/=l;
          eye_uz/=l;
          }
+
+      // orthogonalize:
+
+      arx=eye_dy*eye_uz-eye_dz*eye_uy;
+      ary=eye_dz*eye_ux-eye_dx*eye_uz;
+      arz=eye_dx*eye_uy-eye_dy*eye_ux;
+
+      eye_ux=ary*eye_dz-arz*eye_dy;
+      eye_uy=arz*eye_dx-arx*eye_dz;
+      eye_uz=arx*eye_dy-ary*eye_dx;
       }
 
    private:
