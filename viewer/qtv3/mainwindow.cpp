@@ -808,7 +808,11 @@ void QTV3MainWindow::modeChanged1(bool on)
 
 void QTV3MainWindow::modeChanged2(bool on)
 {
-   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Move);
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Move);
+   }
 }
 
 void QTV3MainWindow::modeChanged3(bool on)
@@ -822,7 +826,11 @@ void QTV3MainWindow::modeChanged3(bool on)
 
 void QTV3MainWindow::modeChanged4(bool on)
 {
-   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+   }
 }
 
 void QTV3MainWindow::extractSurface()
