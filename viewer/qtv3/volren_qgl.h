@@ -726,7 +726,7 @@ protected:
       }
 
       // show histogram and tfunc
-      if (vr_->has_data() && bLeftButtonDown)
+      if (vr_->has_data() && bLeftButtonDown && mode_==InteractionMode_Window)
       {
          glMatrixMode(GL_MODELVIEW);
          glPushMatrix();

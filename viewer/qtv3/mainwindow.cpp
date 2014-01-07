@@ -341,8 +341,10 @@ void QTV3MainWindow::createWidgets()
    l7->addWidget(ll7);
    sliderLayout_->addLayout(l7);
 
+   // add volren widget
    viewerSplitter_->addWidget(vrw_);
 
+   // add interaction tool box
    QVBoxLayout *l8 = new QVBoxLayout;
    modeButton1_ = new QRadioButton(tr("Window"));
    modeButton2_ = new QRadioButton(tr("Move"));
@@ -352,14 +354,20 @@ void QTV3MainWindow::createWidgets()
    connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
    connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
-   l1->addWidget(modeButton1_);
-   l2->addWidget(modeButton2_);
-   l3->addWidget(modeButton3_);
-   l3->addWidget(modeButton4_);
-
+   l8->addWidget(modeButton1_);
+   l8->addWidget(modeButton2_);
+   l8->addWidget(modeButton3_);
+   l8->addWidget(modeButton4_);
+   modeButton1_->setChecked(true);
    QGroupBox *g2 = new QGroupBox;
    g2->setLayout(l8);
    viewerSplitter_->addWidget(g2);
+
+   // collapse slider widgets
+   QList<int> mainSizes = mainSplitter_->sizes();
+   mainSizes[2]--;
+   mainSplitter_->setSizes(mainSizes);
+   mainSplitter_->refresh();
 
    setCentralWidget(mainGroup);
 }
