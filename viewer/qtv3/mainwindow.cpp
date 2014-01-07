@@ -85,7 +85,7 @@ void QTV3MainWindow::setRotation(double omega)
 {
    vrw_->setRotation(omega);
 
-   rotateCheck_->setChecked(true);
+   rotateCheck_->setChecked(omega!=0.0);
 }
 
 void QTV3MainWindow::createMenus()
