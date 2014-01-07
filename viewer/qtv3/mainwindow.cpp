@@ -813,7 +813,11 @@ void QTV3MainWindow::modeChanged2(bool on)
 
 void QTV3MainWindow::modeChanged3(bool on)
 {
-   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Rotate);
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Rotate);
+   }
 }
 
 void QTV3MainWindow::modeChanged4(bool on)
