@@ -357,10 +357,18 @@ void QTV3MainWindow::createWidgets()
    connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
    connect(modeButton5_, SIGNAL(toggled(bool)), this, SLOT(modeChanged5(bool)));
    l8->addWidget(modeButton1_);
+   l8->addStretch(1);
    l8->addWidget(modeButton2_);
+   l8->addStretch(1);
    l8->addWidget(modeButton3_);
+   l8->addStretch(1);
    l8->addWidget(modeButton4_);
+   l8->addStretch(1);
    l8->addWidget(modeButton5_);
+   l8->addStretch(1);
+   QLabel *ll8=new QLabel("Interaction");
+   ll8->setAlignment(Qt::AlignLeft);
+   l8->addWidget(ll8);
    modeButton1_->setChecked(true);
    resetButton_ = new QPushButton(tr("Reset"));
    connect(resetButton_, SIGNAL(pressed()), this, SLOT(resetInteractions()));
