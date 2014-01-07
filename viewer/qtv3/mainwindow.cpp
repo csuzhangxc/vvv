@@ -890,4 +890,7 @@ void QTV3MainWindow::updated_slot()
 {
    prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
    prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
+
+   double dist = 0.5*(1-vrw_->getClipDist());
+   clipSlider_->setValue(dist*100*16);
 }

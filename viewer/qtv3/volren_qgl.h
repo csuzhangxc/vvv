@@ -951,6 +951,8 @@ public:
          clipdist_=-eye_dx_*ax+
                    -eye_dy_*ay+
                    -eye_dz_*az;
+
+         updated_clipping();
       }
    }
 
@@ -1065,6 +1067,8 @@ protected:
                if (bMouseMove)
                {
                   clipdist_ += y-mouseLastY;
+
+                  updated_clipping();
                }
             }
          }
@@ -1131,6 +1135,8 @@ protected:
       else
       {
          clipdist_ -= numDegrees/360.0;
+
+         updated_clipping();
       }
 
       event->accept();
@@ -1170,7 +1176,10 @@ protected:
       w->update(info,percent);
    }
 
-protected:
+   virtual void updated_clipping()
+   {
+      printf("updating clipping\n");
+   }
 
    bool loadFile(volren *vr, const char *filename)
    {

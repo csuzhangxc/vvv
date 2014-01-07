@@ -53,6 +53,11 @@ protected:
       emit updated_signal();
    }
 
+   virtual void updated_clipping()
+   {
+      emit updated_signal();
+   }
+
    QTime timer_;
 
 signals:
