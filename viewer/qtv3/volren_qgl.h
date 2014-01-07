@@ -564,9 +564,9 @@ protected:
       if (rendercount_<5) gfx_fbo=false;
 #endif
 
-      float vol_dx=vol_dx_;
-      float vol_dy=vol_dy_;
-      float vol_dz=vol_dz_;
+      float vol_dx=0.0f;
+      float vol_dy=0.0f;
+      float vol_dz=0.0f;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -875,6 +875,28 @@ protected:
       }
    }
 
+   void getEyeCoords(double &ex,double &ey,double &ez,
+                     double &dx,double &dy,double &dz,
+                     double &ux,double &uy,double &uz,
+                     double &rx,double &ry,double &rz)
+      {
+      ex=eye_x_;
+      ey=eye_y_;
+      ez=eye_z_;
+
+      dx=eye_dx_;
+      dy=eye_dy_;
+      dz=eye_dz_;
+
+      ux=eye_ux_;
+      uy=eye_uy_;
+      uz=eye_uz_;
+
+      rx=dy*uz-dz*uy;
+      ry=dz*ux-dx*uz;
+      rz=dx*uy-dy*ux;
+      }
+
    void getAnchorPlane(float &ax,float &ay,float &az,
                        float &dx,float &dy,float &dz)
    {
@@ -991,15 +1013,15 @@ protected:
             {
                if (bMouseMove)
                {
-                  vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+                  getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-                  vol_dx_ += rx*(mouseLastX-x);
-                  vol_dy_ += ry*(mouseLastX-x);
-                  vol_dz_ += rz*(mouseLastX-x);
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
 
-                  vol_dx_ += ux*(y-mouseLastY);
-                  vol_dy_ += uy*(y-mouseLastY);
-                  vol_dz_ += uz*(y-mouseLastY);
+                  eye_x_ += ux*(y-mouseLastY);
+                  eye_y_ += uy*(y-mouseLastY);
+                  eye_z_ += uz*(y-mouseLastY);
                }
             }
             else if (mode_ == InteractionMode_Rotate)
@@ -1014,11 +1036,11 @@ protected:
             {
                if (bMouseMove)
                {
-                  vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+                  getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-                  vol_dx_ += dx*(y-mouseLastY);
-                  vol_dy_ += dy*(y-mouseLastY);
-                  vol_dz_ += dz*(y-mouseLastY);
+                  eye_x_ += dx*(y-mouseLastY);
+                  eye_y_ += dy*(y-mouseLastY);
+                  eye_z_ += dz*(y-mouseLastY);
                }
             }
          }
@@ -1034,23 +1056,23 @@ protected:
          {
             if (bMouseMove)
             {
-               vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+               getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
                if (!shift)
                {
-                  vol_dx_ += rx*(mouseLastX-x);
-                  vol_dy_ += ry*(mouseLastX-x);
-                  vol_dz_ += rz*(mouseLastX-x);
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
 
-                  vol_dx_ += ux*(y-mouseLastY);
-                  vol_dy_ += uy*(y-mouseLastY);
-                  vol_dz_ += uz*(y-mouseLastY);
+                  eye_x_ += ux*(y-mouseLastY);
+                  eye_y_ += uy*(y-mouseLastY);
+                  eye_z_ += uz*(y-mouseLastY);
                }
                else
                {
-                  vol_dx_ += dx*(y-mouseLastY);
-                  vol_dy_ += dy*(y-mouseLastY);
-                  vol_dz_ += dz*(y-mouseLastY);
+                  eye_x_ += dx*(y-mouseLastY);
+                  eye_y_ += dy*(y-mouseLastY);
+                  eye_z_ += dz*(y-mouseLastY);
                }
             }
          }
@@ -1074,11 +1096,11 @@ protected:
       double ux,uy,uz;
       double rx,ry,rz;
 
-      vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+      getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-      vol_dx_ -= dx*(numDegrees/360.0);
-      vol_dy_ -= dy*(numDegrees/360.0);
-      vol_dz_ -= dz*(numDegrees/360.0);
+      eye_x_ -= dx*(numDegrees/360.0);
+      eye_y_ -= dy*(numDegrees/360.0);
+      eye_z_ -= dz*(numDegrees/360.0);
 
       event->accept();
    }
