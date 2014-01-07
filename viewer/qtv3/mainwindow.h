@@ -179,6 +179,11 @@ private:
    QRadioButton *sampleButton2_;
    QRadioButton *sampleButton3_;
 
+   QRadioButton *modeButton1_;
+   QRadioButton *modeButton2_;
+   QRadioButton *modeButton3_;
+   QRadioButton *modeButton4_;
+
    QTV3PrefWindow *prefs_;
 
 protected:
@@ -238,6 +243,10 @@ protected slots:
    void samplingChanged1(bool on);
    void samplingChanged2(bool on);
    void samplingChanged3(bool on);
+   void modeChanged1(bool on);
+   void modeChanged2(bool on);
+   void modeChanged3(bool on);
+   void modeChanged4(bool on);
    void extractSurface();
    void clearSurface();
    void prefs();

@@ -147,7 +147,8 @@ void QTV3MainWindow::createWidgets()
    vrw_stereo_ = false;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
 
-   label_ = new QLabel("Drag and drop a volume file (.pvm .rek) or dicom series (.ima .dcm) into the window\n"
+   label_ = new QLabel("Drag and drop a volume file (.pvm .rek .raw)\n"
+                       "or drop a dicom series (*.ima *.dcm) into the window\n"
                        "to display it with the volume renderer!");
 
    label_->setAlignment(Qt::AlignHCenter);
@@ -341,6 +342,24 @@ void QTV3MainWindow::createWidgets()
    sliderLayout_->addLayout(l7);
 
    viewerSplitter_->addWidget(vrw_);
+
+   QVBoxLayout *l8 = new QVBoxLayout;
+   modeButton1_ = new QRadioButton(tr("Window"));
+   modeButton2_ = new QRadioButton(tr("Move"));
+   modeButton3_ = new QRadioButton(tr("Rotate"));
+   modeButton4_ = new QRadioButton(tr("Zoom"));
+   connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
+   connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
+   connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
+   connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
+   l1->addWidget(modeButton1_);
+   l2->addWidget(modeButton2_);
+   l3->addWidget(modeButton3_);
+   l3->addWidget(modeButton4_);
+
+   QGroupBox *g2 = new QGroupBox;
+   g2->setLayout(l8);
+   viewerSplitter_->addWidget(g2);
 
    setCentralWidget(mainGroup);
 }
@@ -772,6 +791,26 @@ void QTV3MainWindow::samplingChanged2(bool on)
 void QTV3MainWindow::samplingChanged3(bool on)
 {
    if (on) vrw_->setOversampling(2.0);
+}
+
+void QTV3MainWindow::modeChanged1(bool on)
+{
+   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
+}
+
+void QTV3MainWindow::modeChanged2(bool on)
+{
+   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Move);
+}
+
+void QTV3MainWindow::modeChanged3(bool on)
+{
+   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Rotate);
+}
+
+void QTV3MainWindow::modeChanged4(bool on)
+{
+   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
 }
 
 void QTV3MainWindow::extractSurface()

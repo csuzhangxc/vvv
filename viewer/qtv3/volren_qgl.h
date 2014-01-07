@@ -29,6 +29,13 @@ class QGLVolRenWidget: public QGLWidget
 {
 public:
 
+   enum InteractionMode {
+      InteractionMode_Window,
+      InteractionMode_Move,
+      InteractionMode_Rotate,
+      InteractionMode_Zoom
+   };
+
    //! default ctor
    QGLVolRenWidget(QWidget *parent = 0, bool stereo = false)
       : QGLWidget(parent)
@@ -90,6 +97,8 @@ public:
       geo_show_ = true;
 
       rendercount_ = 0;
+
+      mode_ = InteractionMode_Window;
 
       bLeftButtonDown = false;
       bMiddleButtonDown = false;
@@ -223,11 +232,15 @@ public:
 
    //! set volume rotation speed
    void setRotation(double omega=30.0)
-      {omega_=omega;}
+   {
+      omega_=omega;
+   }
 
    //! get volume rotation speed
    double getRotation()
-      {return(omega_);}
+   {
+      return(omega_);
+   }
 
    //! set volume rotation angle
    void setAngle(double angle=0.0)
@@ -315,7 +328,9 @@ public:
 
    //! get emission
    double getEmission()
-      {return(gm_?emi_gm_:emi_);}
+   {
+      return(gm_?emi_gm_:emi_);
+   }
 
    //! set absorption
    void setAbsorption(double att=0.0)
@@ -435,6 +450,12 @@ public:
       return(vr_);
    }
 
+   //! set interaction mode
+   void setInteractionMode(int mode)
+   {
+      mode_=mode;
+   }
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
@@ -493,6 +514,8 @@ protected:
    bool geo_show_; // show geometry?
 
    unsigned int rendercount_;
+
+   int mode_;
 
    void initializeGL()
    {
@@ -943,6 +966,11 @@ protected:
 
    void mouseMoveEvent(QMouseEvent *event)
    {
+      double ex,ey,ez;
+      double dx,dy,dz;
+      double ux,uy,uz;
+      double rx,ry,rz;
+
       float x = (float)(event->x())/width();
       float y = (float)(event->y())/height();
 
@@ -951,11 +979,48 @@ protected:
       if (!tf_)
          if (bLeftButtonDown)
          {
-            tf_center_ = x;
-            tf_size_ = 1.0f-y;
-            tf_inverse_ = !shift;
+            if (mode_ == InteractionMode_Window)
+            {
+               tf_center_ = x;
+               tf_size_ = 1.0f-y;
+               tf_inverse_ = !shift;
 
-            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+               vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+            }
+            else if (mode_ == InteractionMode_Move)
+            {
+               if (bMouseMove)
+               {
+                  vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+                  vol_dx_ += rx*(mouseLastX-x);
+                  vol_dy_ += ry*(mouseLastX-x);
+                  vol_dz_ += rz*(mouseLastX-x);
+
+                  vol_dx_ += ux*(y-mouseLastY);
+                  vol_dy_ += uy*(y-mouseLastY);
+                  vol_dz_ += uz*(y-mouseLastY);
+               }
+            }
+            else if (mode_ == InteractionMode_Rotate)
+            {
+               if (bMouseMove)
+               {
+                  rotateAnchorPlane(180*(x-mouseLastX),
+                                    180*(y-mouseLastY));
+               }
+            }
+            else if (mode_ == InteractionMode_Zoom)
+            {
+               if (bMouseMove)
+               {
+                  vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+                  vol_dx_ += dx*(y-mouseLastY);
+                  vol_dy_ += dy*(y-mouseLastY);
+                  vol_dz_ += dz*(y-mouseLastY);
+               }
+            }
          }
          else if (bMiddleButtonDown)
          {
@@ -969,11 +1034,6 @@ protected:
          {
             if (bMouseMove)
             {
-               double ex,ey,ez;
-               double dx,dy,dz;
-               double ux,uy,uz;
-               double rx,ry,rz;
-
                vr_->get_eye(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
                if (!shift)
