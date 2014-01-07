@@ -33,7 +33,8 @@ public:
       InteractionMode_Window,
       InteractionMode_Move,
       InteractionMode_Rotate,
-      InteractionMode_Zoom
+      InteractionMode_Zoom,
+      InteractionMode_Clip
    };
 
    //! default ctor
@@ -371,15 +372,15 @@ public:
       gm_=on;
 
       if (gm_ && vr_->has_grad())
-         {
+      {
          vr_->get_tfunc()->set_num(32);
          vr_->get_tfunc()->set_mode(7);
-         }
+      }
       else
-         {
+      {
          vr_->get_tfunc()->set_num(1);
          vr_->get_tfunc()->set_mode(0);
-         }
+      }
    }
 
    //! set stereo mode
@@ -1059,6 +1060,13 @@ protected:
                   eye_z_ += dz*(y-mouseLastY);
                }
             }
+            else if (mode_ == InteractionMode_Clip)
+            {
+               if (bMouseMove)
+               {
+                  clipdist_ += y-mouseLastY;
+               }
+            }
          }
          else if (bMiddleButtonDown)
          {
@@ -1112,11 +1120,18 @@ protected:
       double ux,uy,uz;
       double rx,ry,rz;
 
-      getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+      if (mode_ != InteractionMode_Clip)
+      {
+         getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-      eye_x_ -= dx*(numDegrees/360.0);
-      eye_y_ -= dy*(numDegrees/360.0);
-      eye_z_ -= dz*(numDegrees/360.0);
+         eye_x_ -= dx*(numDegrees/360.0);
+         eye_y_ -= dy*(numDegrees/360.0);
+         eye_z_ -= dz*(numDegrees/360.0);
+      }
+      else
+      {
+         clipdist_ -= numDegrees/360.0;
+      }
 
       event->accept();
    }

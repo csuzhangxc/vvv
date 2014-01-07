@@ -350,14 +350,17 @@ void QTV3MainWindow::createWidgets()
    modeButton2_ = new QRadioButton(tr("Move"));
    modeButton3_ = new QRadioButton(tr("Rotate"));
    modeButton4_ = new QRadioButton(tr("Zoom"));
+   modeButton5_ = new QRadioButton(tr("Clip"));
    connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
    connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
    connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
+   connect(modeButton5_, SIGNAL(toggled(bool)), this, SLOT(modeChanged5(bool)));
    l8->addWidget(modeButton1_);
    l8->addWidget(modeButton2_);
    l8->addWidget(modeButton3_);
    l8->addWidget(modeButton4_);
+   l8->addWidget(modeButton5_);
    modeButton1_->setChecked(true);
    QGroupBox *g2 = new QGroupBox;
    g2->setLayout(l8);
@@ -365,7 +368,9 @@ void QTV3MainWindow::createWidgets()
 
    // collapse slider widgets
    QList<int> mainSizes = mainSplitter_->sizes();
-   mainSizes[2]--;
+   mainSizes[0]=MAIN_HEIGHT;
+   mainSizes[1]=0;
+   mainSizes[2]=1;
    mainSplitter_->setSizes(mainSizes);
    mainSplitter_->refresh();
 
@@ -830,6 +835,16 @@ void QTV3MainWindow::modeChanged4(bool on)
    {
       setRotation(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+   }
+}
+
+void QTV3MainWindow::modeChanged5(bool on)
+{
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
+      planeCheck_->setChecked(true);
    }
 }
 
