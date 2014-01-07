@@ -274,6 +274,12 @@ public:
          tilt_=tilt;
    }
 
+   //! get volume tilt angle
+   double getTilt()
+   {
+      return(tilt_);
+   }
+
    //! set zoom factor
    void setZoom(double zoom=0.0)
    {
@@ -285,6 +291,12 @@ public:
    void setClipDist(double dist=0.0)
    {
       clipdist_=dist;
+   }
+
+   //! get clipping distance
+   double getClipDist()
+   {
+      return(clipdist_);
    }
 
    //! enable clipping of geometry at clipping distance
@@ -564,9 +576,9 @@ protected:
       if (rendercount_<5) gfx_fbo=false;
 #endif
 
-      float vol_dx=0.0f;
-      float vol_dy=0.0f;
-      float vol_dz=0.0f;
+      float vol_dx=vol_dx_;
+      float vol_dy=vol_dy_;
+      float vol_dz=vol_dz_;
 
       double vol_emission=1000.0;
       double vol_density=1000.0;
@@ -875,7 +887,9 @@ protected:
       }
    }
 
-   void getEyeCoords(double &ex,double &ey,double &ez,
+public:
+
+   void getViewPlane(double &ex,double &ey,double &ez,
                      double &dx,double &dy,double &dz,
                      double &ux,double &uy,double &uz,
                      double &rx,double &ry,double &rz)
@@ -902,9 +916,9 @@ protected:
    {
       float d;
 
-      d=-eye_dx_*eye_x_+
-        -eye_dy_*eye_y_+
-        -eye_dz_*eye_z_;
+      d=-eye_dx_*(eye_x_-vol_dx_)+
+        -eye_dy_*(eye_y_-vol_dy_)+
+        -eye_dz_*(eye_z_-vol_dz_);
 
       d-=clipdist_;
 
@@ -938,6 +952,8 @@ protected:
                    -eye_dz_*az;
       }
    }
+
+protected:
 
    bool bLeftButtonDown;
    bool bMiddleButtonDown;
@@ -1013,7 +1029,7 @@ protected:
             {
                if (bMouseMove)
                {
-                  getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
                   eye_x_ += rx*(mouseLastX-x);
                   eye_y_ += ry*(mouseLastX-x);
@@ -1036,7 +1052,7 @@ protected:
             {
                if (bMouseMove)
                {
-                  getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
                   eye_x_ += dx*(y-mouseLastY);
                   eye_y_ += dy*(y-mouseLastY);
@@ -1056,7 +1072,7 @@ protected:
          {
             if (bMouseMove)
             {
-               getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+               getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
                if (!shift)
                {
@@ -1096,7 +1112,7 @@ protected:
       double ux,uy,uz;
       double rx,ry,rz;
 
-      getEyeCoords(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+      getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
       eye_x_ -= dx*(numDegrees/360.0);
       eye_y_ -= dy*(numDegrees/360.0);

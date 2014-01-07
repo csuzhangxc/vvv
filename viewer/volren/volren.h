@@ -565,6 +565,12 @@ class volren: public volscene
       vol_tltXY*=PI/180.0f;
       vol_tltYZ*=PI/180.0f;
 
+      // move:
+
+      eye_x+=vol_dx;
+      eye_y+=vol_dy;
+      eye_z+=vol_dz;
+
       // rotate:
 
       ex=fcos(vol_rot)*eye_x+fsin(vol_rot)*eye_z;
@@ -606,12 +612,6 @@ class volren: public volscene
       eye_ux=ux0;
       eye_uy=fcos(vol_tltYZ)*uy0-fsin(vol_tltYZ)*uz0;
       eye_uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
-
-      // move:
-
-      eye_x+=vol_dx;
-      eye_y+=vol_dy;
-      eye_z+=vol_dz;
       }
 
    };
