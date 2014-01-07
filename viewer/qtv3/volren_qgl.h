@@ -469,6 +469,26 @@ public:
       mode_=mode;
    }
 
+   //! reset interactions
+   void resetInteractions()
+   {
+      eye_x_ = 0;
+      eye_y_ = 0;
+      eye_z_ = 2;
+
+      eye_dx_ = 0;
+      eye_dy_ = 0;
+      eye_dz_ = -1;
+
+      eye_ux_ = 0;
+      eye_uy_ = 1;
+      eye_uz_ = 0;
+
+      clipdist_ = 1.0;
+
+      updated_clipping();
+   }
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {

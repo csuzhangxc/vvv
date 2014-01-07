@@ -362,6 +362,9 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(modeButton4_);
    l8->addWidget(modeButton5_);
    modeButton1_->setChecked(true);
+   resetButton_ = new QPushButton(tr("Reset"));
+   connect(resetButton_, SIGNAL(pressed()), this, SLOT(resetInteractions()));
+   l8->addWidget(resetButton_);
    QGroupBox *g2 = new QGroupBox;
    g2->setLayout(l8);
    viewerSplitter_->addWidget(g2);
@@ -390,6 +393,7 @@ void QTV3MainWindow::createDocks()
 
 void QTV3MainWindow::reset()
 {
+   vrw_->resetInteractions();
    vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
    vrw_->clearSurface();
 
@@ -848,6 +852,11 @@ void QTV3MainWindow::modeChanged5(bool on)
    }
 }
 
+void QTV3MainWindow::resetInteractions()
+{
+   vrw_->resetInteractions();
+}
+
 void QTV3MainWindow::extractSurface()
 {
    if (!hasTeaserVolume_)
@@ -888,8 +897,11 @@ void QTV3MainWindow::update_slot(QString text)
 
 void QTV3MainWindow::updated_slot()
 {
-   prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
-   prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
+   if (prefs_)
+   {
+      prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
+      prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
+   }
 
    double dist = 0.5*(1-vrw_->getClipDist());
    clipSlider_->setValue(dist*100*16);

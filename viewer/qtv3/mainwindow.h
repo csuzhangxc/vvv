@@ -190,6 +190,8 @@ private:
    QRadioButton *modeButton4_;
    QRadioButton *modeButton5_;
 
+   QPushButton *resetButton_;
+
    QTV3PrefWindow *prefs_;
 
 protected:
@@ -254,6 +256,7 @@ protected slots:
    void modeChanged3(bool on);
    void modeChanged4(bool on);
    void modeChanged5(bool on);
+   void resetInteractions();
    void extractSurface();
    void clearSurface();
    void prefs();
