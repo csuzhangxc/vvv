@@ -3585,8 +3585,8 @@ void mipmap::renderslice(float ox,float oy,float oz,
       "MUL col.xyz,col,tmp.x; \n"
       "SUB tmp.w,tmp.x,range.x; \n"
       "CMP col.w,tmp.w,range.w,col.w; \n"
-      "SUB tmp.w,tmp.x,range.y; \n"
-      "CMP col.w,tmp.w,col.w,range.w; \n"
+      "SUB tmp.w,range.y,tmp.x; \n"
+      "CMP col.w,tmp.w,range.w,col.w; \n"
       "MOV result.color,col; \n"
       "END\n";
 
