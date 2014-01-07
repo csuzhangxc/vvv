@@ -34,7 +34,8 @@ public:
       InteractionMode_Move,
       InteractionMode_Rotate,
       InteractionMode_Zoom,
-      InteractionMode_Clip
+      InteractionMode_Clip,
+      InteractionMode_Opacity
    };
 
    //! default ctor
@@ -1091,6 +1092,25 @@ protected:
                   updated_clipping();
                }
             }
+            else if (mode_ == InteractionMode_Opacity)
+            {
+               if (bMouseMove)
+               {
+                  emi_ += mouseLastY-y;
+                  att_ += mouseLastY-y;
+
+                  emi_gm_ += mouseLastY-y;
+                  att_gm_ += mouseLastY-y;
+
+                  if (emi_<0.0) emi_=0.0;
+                  if (att_<0.0) att_=0.0;
+
+                  if (emi_gm_<0.0) emi_gm_=0.0;
+                  if (att_gm_<0.0) att_gm_=0.0;
+
+                  updated_opacity();
+               }
+            }
          }
          else if (bMiddleButtonDown)
          {
@@ -1144,19 +1164,38 @@ protected:
       double ux,uy,uz;
       double rx,ry,rz;
 
-      if (mode_ != InteractionMode_Clip)
+      if (mode_ == InteractionMode_Clip)
+      {
+         clipdist_ -= numDegrees/360.0;
+
+         updated_clipping();
+      }
+      else if (mode_ == InteractionMode_Opacity)
+      {
+         if (bMouseMove)
+         {
+            emi_ += numDegrees/360.0;
+            att_ += numDegrees/360.0;
+
+            emi_gm_ += numDegrees/360.0;
+            att_gm_ += numDegrees/360.0;
+
+            if (emi_<0.0) emi_=0.0;
+            if (att_<0.0) att_=0.0;
+
+            if (emi_gm_<0.0) emi_gm_=0.0;
+            if (att_gm_<0.0) att_gm_=0.0;
+
+            updated_opacity();
+         }
+      }
+      else
       {
          getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
          eye_x_ -= dx*(numDegrees/360.0);
          eye_y_ -= dy*(numDegrees/360.0);
          eye_z_ -= dz*(numDegrees/360.0);
-      }
-      else
-      {
-         clipdist_ -= numDegrees/360.0;
-
-         updated_clipping();
       }
 
       event->accept();
@@ -1198,7 +1237,12 @@ protected:
 
    virtual void updated_clipping()
    {
-      printf("updating clipping\n");
+      printf("updated clipping\n");
+   }
+
+   virtual void updated_opacity()
+   {
+      printf("updated opacity\n");
    }
 
    bool loadFile(volren *vr, const char *filename)

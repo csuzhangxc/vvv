@@ -58,6 +58,11 @@ protected:
       emit updated_signal();
    }
 
+   virtual void updated_opacity()
+   {
+      emit updated_signal();
+   }
+
    QTime timer_;
 
 signals:
@@ -189,6 +194,7 @@ private:
    QRadioButton *modeButton3_;
    QRadioButton *modeButton4_;
    QRadioButton *modeButton5_;
+   QRadioButton *modeButton6_;
 
    QPushButton *resetButton_;
 
@@ -256,6 +262,7 @@ protected slots:
    void modeChanged3(bool on);
    void modeChanged4(bool on);
    void modeChanged5(bool on);
+   void modeChanged6(bool on);
    void resetInteractions();
    void extractSurface();
    void clearSurface();

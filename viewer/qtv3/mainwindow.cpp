@@ -124,6 +124,7 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *mainGroup = new QGroupBox(this);
    mainLayout_ = new QVBoxLayout(mainGroup);
 
+   // create main group
    mainSplitter_ = new QSplitter;
    QGroupBox *viewerGroup = new QGroupBox;
    viewerLayout_ = new QVBoxLayout;
@@ -131,8 +132,8 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *sliderGroup = new QGroupBox;
    sliderLayout_ = new QHBoxLayout;
 
+   // create main splitter group
    mainSplitter_->setOrientation(Qt::Vertical);
-
    mainSplitter_->addWidget(viewerGroup);
    mainSplitter_->addWidget(sliderGroup);
    viewerGroup->setLayout(viewerLayout_);
@@ -144,9 +145,11 @@ void QTV3MainWindow::createWidgets()
    viewerLayout_->addWidget(viewerSplitter_);
    viewerSplitter_->setOrientation(Qt::Horizontal);
 
+   // create qtv3 volren widget
    vrw_stereo_ = false;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
 
+   // create usage hint label
    label_ = new QLabel("Drag and drop a volume file (.pvm .rek .raw)\n"
                        "or drop a dicom series (*.ima *.dcm) into the window\n"
                        "to display it with the volume renderer!");
@@ -154,6 +157,7 @@ void QTV3MainWindow::createWidgets()
    label_->setAlignment(Qt::AlignHCenter);
    mainLayout_->insertWidget(0,label_);
 
+   // create update info label
    update_ = new QLabel("");
    update_->setAlignment(Qt::AlignHCenter);
    connect(vrw_, SIGNAL(updating_signal()), this, SLOT(updating_slot()));
@@ -161,6 +165,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    mainLayout_->addWidget(update_);
 
+   // create sliders
    QTV3Slider *s1=createSlider(0,100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
    QTV3Slider *s3=createSlider(-180,180,0,false);
@@ -182,6 +187,7 @@ void QTV3MainWindow::createWidgets()
    connect(s5, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
    connect(s6, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
 
+   // create clipping section
    QVBoxLayout *l1 = new QVBoxLayout;
    l1->addWidget(s1);
    QLabel *ll1=new QLabel("Clipping");
@@ -202,6 +208,7 @@ void QTV3MainWindow::createWidgets()
    g1->setLayout(l1);
    viewerSplitter_->addWidget(g1);
 
+   // create zoom section
    QVBoxLayout *l2 = new QVBoxLayout;
    l2->addWidget(s2);
    QLabel *ll2=new QLabel("Zoom");
@@ -209,6 +216,7 @@ void QTV3MainWindow::createWidgets()
    l2->addWidget(ll2);
    sliderLayout_->addLayout(l2);
 
+   // create rotation and options section
    QVBoxLayout *l3 = new QVBoxLayout;
    QLabel *ll3=new QLabel("Rotation");
    ll3->setAlignment(Qt::AlignHCenter);
@@ -289,6 +297,7 @@ void QTV3MainWindow::createWidgets()
    l3->addLayout(h4);
    sliderLayout_->addLayout(l3);
 
+   // create tilt section
    QVBoxLayout *l4 = new QVBoxLayout;
    l4->addWidget(s4);
    QLabel *ll4=new QLabel("Tilt");
@@ -301,6 +310,7 @@ void QTV3MainWindow::createWidgets()
    line1->setFrameShadow(QFrame::Raised);
    sliderLayout_->addWidget(line1);
 
+   // create emission section
    QVBoxLayout *l5 = new QVBoxLayout;
    l5->addWidget(s5);
    QLabel *ll5=new QLabel("Emission");
@@ -308,6 +318,7 @@ void QTV3MainWindow::createWidgets()
    l5->addWidget(ll5);
    sliderLayout_->addLayout(l5);
 
+   // create absorption section
    QVBoxLayout *l6 = new QVBoxLayout;
    l6->addWidget(s6);
    QLabel *ll6=new QLabel("Absorption");
@@ -320,6 +331,7 @@ void QTV3MainWindow::createWidgets()
    line2->setFrameShadow(QFrame::Raised);
    sliderLayout_->addWidget(line2);
 
+   // create iso surface section
    QVBoxLayout *l7 = new QVBoxLayout;
    QPushButton *isoButton = new QPushButton(tr("Extract"));
    connect(isoButton, SIGNAL(pressed()), this, SLOT(extractSurface()));
@@ -351,11 +363,13 @@ void QTV3MainWindow::createWidgets()
    modeButton3_ = new QRadioButton(tr("Rotate"));
    modeButton4_ = new QRadioButton(tr("Zoom"));
    modeButton5_ = new QRadioButton(tr("Clip"));
+   modeButton6_ = new QRadioButton(tr("Opacity"));
    connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
    connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
    connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
    connect(modeButton5_, SIGNAL(toggled(bool)), this, SLOT(modeChanged5(bool)));
+   connect(modeButton6_, SIGNAL(toggled(bool)), this, SLOT(modeChanged6(bool)));
    l8->addWidget(modeButton1_);
    l8->addStretch(1);
    l8->addWidget(modeButton2_);
@@ -366,7 +380,9 @@ void QTV3MainWindow::createWidgets()
    l8->addStretch(1);
    l8->addWidget(modeButton5_);
    l8->addStretch(1);
-   QLabel *ll8=new QLabel("Interaction");
+   l8->addWidget(modeButton6_);
+   l8->addStretch(1);
+   QLabel *ll8=new QLabel("Interactions");
    ll8->setAlignment(Qt::AlignLeft);
    l8->addWidget(ll8);
    modeButton1_->setChecked(true);
@@ -804,22 +820,26 @@ void QTV3MainWindow::checkFlipYZ2(int on)
 
 void QTV3MainWindow::samplingChanged1(bool on)
 {
-   if (on) vrw_->setOversampling(0.5);
+   if (on)
+      vrw_->setOversampling(0.5);
 }
 
 void QTV3MainWindow::samplingChanged2(bool on)
 {
-   if (on) vrw_->setOversampling(1.0);
+   if (on)
+      vrw_->setOversampling(1.0);
 }
 
 void QTV3MainWindow::samplingChanged3(bool on)
 {
-   if (on) vrw_->setOversampling(2.0);
+   if (on)
+      vrw_->setOversampling(2.0);
 }
 
 void QTV3MainWindow::modeChanged1(bool on)
 {
-   if (on) vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
+   if (on)
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
 }
 
 void QTV3MainWindow::modeChanged2(bool on)
@@ -857,6 +877,12 @@ void QTV3MainWindow::modeChanged5(bool on)
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
       planeCheck_->setChecked(true);
    }
+}
+
+void QTV3MainWindow::modeChanged6(bool on)
+{
+   if (on)
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Opacity);
 }
 
 void QTV3MainWindow::resetInteractions()
@@ -912,4 +938,7 @@ void QTV3MainWindow::updated_slot()
 
    double dist = 0.5*(1-vrw_->getClipDist());
    clipSlider_->setValue(dist*100*16);
+
+   emiSlider_->setValue(16*100*vrw_->getEmission());
+   attSlider_->setValue(16*100*vrw_->getAbsorption());
 }

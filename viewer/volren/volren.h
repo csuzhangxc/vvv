@@ -177,6 +177,14 @@ class volren: public volscene
 
       // tf setup:
 
+      if (tf_re_scale<0.0f) tf_re_scale=0.0f;
+      if (tf_ge_scale<0.0f) tf_ge_scale=0.0f;
+      if (tf_be_scale<0.0f) tf_be_scale=0.0f;
+
+      if (tf_ra_scale<0.0f) tf_ra_scale=0.0f;
+      if (tf_ga_scale<0.0f) tf_ga_scale=0.0f;
+      if (tf_ba_scale<0.0f) tf_ba_scale=0.0f;
+
       get_tfunc()->set_escale(fsqr(tf_re_scale),fsqr(tf_ge_scale),fsqr(tf_be_scale));
       get_tfunc()->set_ascale(fsqr(tf_ra_scale),fsqr(tf_ga_scale),fsqr(tf_ba_scale));
 
