@@ -159,7 +159,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(updating_signal()), this, SLOT(updating_slot()));
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
-   mainSplitter_->addWidget(update_);
+   mainLayout_->addWidget(update_);
 
    QTV3Slider *s1=createSlider(0,100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
@@ -379,9 +379,8 @@ void QTV3MainWindow::createWidgets()
 
    // collapse slider widgets
    QList<int> mainSizes = mainSplitter_->sizes();
-   mainSizes[0]=MAIN_HEIGHT;
+   mainSizes[0]=1;
    mainSizes[1]=0;
-   mainSizes[2]=1;
    mainSplitter_->setSizes(mainSizes);
    mainSplitter_->refresh();
 
