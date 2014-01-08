@@ -199,7 +199,7 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
-   planeCheck_ = new QCheckBox(tr("Clip Plane"));
+   planeCheck_ = new QCheckBox(tr("Show Plane"));
    planeCheck_->setChecked(false);
    connect(planeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkPlane(int)));
    l1->addWidget(planeCheck_);
