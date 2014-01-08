@@ -1098,9 +1098,9 @@ protected:
                {
                   getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-                  eye_x_ += dx*(y-mouseLastY);
-                  eye_y_ += dy*(y-mouseLastY);
-                  eye_z_ += dz*(y-mouseLastY);
+                  eye_x_ -= dx*(y-mouseLastY);
+                  eye_y_ -= dy*(y-mouseLastY);
+                  eye_z_ -= dz*(y-mouseLastY);
                }
             }
             else if (mode_ == InteractionMode_Clip)
@@ -1116,11 +1116,11 @@ protected:
             {
                if (bMouseMove)
                {
-                  emi_ += mouseLastY-y;
-                  att_ += mouseLastY-y;
+                  emi_ -= y-mouseLastY;
+                  att_ -= y-mouseLastY;
 
-                  emi_gm_ += mouseLastY-y;
-                  att_gm_ += mouseLastY-y;
+                  emi_gm_ -= y-mouseLastY;
+                  att_gm_ -= y-mouseLastY;
 
                   if (emi_<0.0) emi_=0.0;
                   if (att_<0.0) att_=0.0;
