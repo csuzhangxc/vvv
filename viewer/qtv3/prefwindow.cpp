@@ -20,6 +20,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
    border_ratio_ = 0.25f;
 
    slice_opacity_ = 0.75f;
+   slice_opacity2_ = 0.1f;
 
    QSettings settings("www.open-terrain.org", "qtv3");
 
@@ -30,6 +31,8 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
 
    if (settings.contains("slice_opacity"))
       slice_opacity_ = settings.value("slice_opacity").toFloat();
+   if (settings.contains("slice_opacity2"))
+      slice_opacity2_ = settings.value("slice_opacity2").toFloat();
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -47,6 +50,7 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
    vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
 
    vrw_->setSliceOpacity(slice_opacity_);
+   vrw_->setOuterOpacity(slice_opacity2_);
 
    createWidgets();
 }
@@ -59,6 +63,7 @@ QTV3PrefWindow::~QTV3PrefWindow()
    settings.setValue("iso_maxsize", iso_maxsize_);
 
    settings.setValue("slice_opacity", slice_opacity_);
+   settings.setValue("slice_opacity2", slice_opacity2_);
 }
 
 void QTV3PrefWindow::setLabelFileName(QString fname)
@@ -153,6 +158,14 @@ void QTV3PrefWindow::createWidgets()
    connect(slice_opacity_slider_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange(int)));
    layout->addWidget(slice_opacity_group);
 
+   lineEdit_slice_opacity2_ = new QLineEdit;
+   QGroupBox *slice_opacity_group2 = createEdit("Opacity of Outer Clip Plane", QString::number(slice_opacity2_), &lineEdit_slice_opacity2_);
+   connect(lineEdit_slice_opacity2_,SIGNAL(textChanged(QString)),this,SLOT(sliceOpacityChange2(QString)));
+   slice_opacity_slider2_=createSlider(0,100,100*slice_opacity2_);
+   slice_opacity_group2->layout()->addWidget(slice_opacity_slider2_);
+   connect(slice_opacity_slider2_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange2(int)));
+   layout->addWidget(slice_opacity_group2);
+
    layout->addStretch(1000);
 
    group->setLayout(layout);
@@ -206,4 +219,18 @@ void QTV3PrefWindow::sliceOpacityChange(int opacity)
    slice_opacity_ = opacity / 100.0f / 16.0f;
    vrw_->setSliceOpacity(slice_opacity_);
    lineEdit_slice_opacity_->setText(QString::number(slice_opacity_));
+}
+
+void QTV3PrefWindow::sliceOpacityChange2(QString opacity)
+{
+   slice_opacity2_ = opacity.toFloat();
+   vrw_->setOuterOpacity(slice_opacity2_);
+   slice_opacity_slider2_->setValue(slice_opacity2_ * 100 * 16);
+}
+
+void QTV3PrefWindow::sliceOpacityChange2(int opacity)
+{
+   slice_opacity2_ = opacity / 100.0f / 16.0f;
+   vrw_->setOuterOpacity(slice_opacity2_);
+   lineEdit_slice_opacity2_->setText(QString::number(slice_opacity2_));
 }

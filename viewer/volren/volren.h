@@ -229,9 +229,10 @@ class volren: public volscene
                     float vol_tltYZ, // volume tilt in degrees
                     float vol_dx,float vol_dy,float vol_dz, // volume translation
                     float slice_dist, // volume slice distance
-                    float slice_alpha=1.0f) // volume slice opacity
+                    float slice_alpha=1.0f, // volume slice opacity
+                    float slice_alpha2=0.1f) // outer slice opacity
       {
-      if (slice_alpha==0.0f) return;
+      if (slice_alpha==0.0f && slice_alpha2==0.0f) return;
 
       transform(eye_x,eye_y,eye_z,
                 eye_dx,eye_dy,eye_dz,
@@ -251,7 +252,7 @@ class volren: public volscene
                             eye_dx,eye_dy,eye_dz,
                             eye_ux,eye_uy,eye_uz,
                             -eye_x*eye_dx-eye_y*eye_dy-eye_z*eye_dz-slice_dist,
-                            slice_alpha);
+                            slice_alpha,slice_alpha2);
 
       glPopMatrix();
       }
@@ -266,9 +267,10 @@ class volren: public volscene
                     float vol_dx,float vol_dy,float vol_dz, // volume translation
                     float slice_x,float slice_y,float slice_z, // volume slice point
                     float slice_nx,float slice_ny,float slice_nz, // volume slice normal
-                    float slice_alpha=1.0f) // volume slice opacity
+                    float slice_alpha=1.0f, // volume slice opacity
+                    float slice_alpha2=0.1f) // outer slice opacity
       {
-      if (slice_alpha==0.0f) return;
+      if (slice_alpha==0.0f && slice_alpha2==0.0f) return;
 
       transform(eye_x,eye_y,eye_z,
                 eye_dx,eye_dy,eye_dz,
@@ -286,7 +288,7 @@ class volren: public volscene
 
       volscene::renderslice(slice_x,slice_y,slice_z,
                             slice_nx,slice_ny,slice_nz,
-                            slice_alpha);
+                            slice_alpha,slice_alpha2);
 
       glPopMatrix();
       }
@@ -314,6 +316,7 @@ class volren: public volscene
                        BOOLINT vol_clip_near=FALSE, // clip at near plane
                        BOOLINT vol_clip_opaque=FALSE, // opaque clipping plane
                        float vol_clip_opacity=1.0f, // clipping plane opacity
+                       float vol_outer_opacity=0.1f, // outer clipping plane opacity
                        BOOLINT geo_show=TRUE, // show surface geometry
                        BOOLINT (*abort)(void *abortdata)=NULL,
                        void *abortdata=NULL)
@@ -347,7 +350,7 @@ class volren: public volscene
                         eye_ux,eye_uy,eye_uz,
                         vol_rot,vol_tltXY,vol_tltYZ,
                         vol_dx,vol_dy,vol_dz,
-                        vol_clip_dist,vol_clip_opacity);
+                        vol_clip_dist,vol_clip_opacity,vol_outer_opacity);
 
       return(aborted);
       }

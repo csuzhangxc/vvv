@@ -44,6 +44,7 @@ public:
    float border_ratio_;
 
    float slice_opacity_;
+   float slice_opacity2_;
 
 protected:
 
@@ -61,6 +62,9 @@ protected:
    QLineEdit *lineEdit_slice_opacity_;
    QSlider *slice_opacity_slider_;
 
+   QLineEdit *lineEdit_slice_opacity2_;
+   QSlider *slice_opacity_slider2_;
+
    void createWidgets();
 
    QGroupBox *createEdit(QString name, QString value,
@@ -75,6 +79,9 @@ protected slots:
 
    void sliceOpacityChange(QString);
    void sliceOpacityChange(int);
+
+   void sliceOpacityChange2(QString);
+   void sliceOpacityChange2(int);
 };
 
 #endif

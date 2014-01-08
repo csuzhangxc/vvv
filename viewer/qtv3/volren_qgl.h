@@ -56,6 +56,7 @@ public:
       set_iso_maxsize(256);
 
       setSliceOpacity(0.75f);
+      setOuterOpacity(0.1f);
 
       eye_x_ = 0;
       eye_y_ = 0;
@@ -79,7 +80,8 @@ public:
       clipdist_ = 1.0;
       clipgeo_ = TRUE;
       opaque_ = FALSE;
-      opacity_ = 1.0f;
+      opacity_ = 0.75f;
+      opacity2_ = 0.1f;
       oversampling_ = 1.0;
       red_ = VOLREN_DEFAULT_RED;
       green_ = VOLREN_DEFAULT_GREEN;
@@ -321,6 +323,12 @@ public:
       opacity_=opacity;
    }
 
+   //! set outer plane slice opacity
+   void setOuterOpacity(float opacity=0.1f)
+   {
+      opacity2_=opacity;
+   }
+
    //! set oversampling rate
    void setOversampling(double rate=1.0)
       {oversampling_=1.0/rate;}
@@ -537,6 +545,7 @@ protected:
    bool clipgeo_; // geometry clipping enabled?
    bool opaque_; // opaque clipping plane enabled?
    float opacity_; // clipping plane opacity
+   float opacity2_; // outer clipping plane opacity
    double oversampling_; // oversampling rate
    double red_,green_,blue_; // default color
    double emi_; // volume emission
@@ -666,6 +675,7 @@ protected:
                           clipgeo_, // clip geometry at clipping distance
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
+                          opacity2_, // outer clipping plane opacity
                           geo_show_); // show surface geometry
       else
       {
@@ -726,6 +736,7 @@ protected:
                           clipgeo_, // clip geometry at clipping distance
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
+                          opacity2_, // outer clipping plane opacity
                           geo_show_); // show surface geometry
 
          if (sfx_ana)
@@ -757,6 +768,7 @@ protected:
                           clipgeo_, // clip geometry at clipping distance
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
+                          opacity2_, // outer clipping plane opacity
                           geo_show_); // show surface geometry
 
          if (sfx_ana)
