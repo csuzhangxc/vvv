@@ -204,6 +204,10 @@ void QTV3MainWindow::createWidgets()
    planeCheck_->setChecked(false);
    connect(planeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkPlane(int)));
    l1->addWidget(planeCheck_);
+   gradMagCheck_ = new QCheckBox(tr("GradMag"));
+   gradMagCheck_->setChecked(false);
+   connect(gradMagCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
+   l1->addWidget(gradMagCheck_);
 
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
@@ -226,10 +230,6 @@ void QTV3MainWindow::createWidgets()
    l3->addWidget(s3);
    l3->addStretch(1000);
    QHBoxLayout *h1 = new QHBoxLayout;
-   gradMagCheck_ = new QCheckBox(tr("Gradient Magnitude"));
-   gradMagCheck_->setChecked(false);
-   connect(gradMagCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
-   h1->addWidget(gradMagCheck_);
    invModeCheck_ = new QCheckBox(tr("Inverse Mode"));
    invModeCheck_->setChecked(false);
    connect(invModeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkInvMode(int)));
