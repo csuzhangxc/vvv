@@ -874,6 +874,7 @@ void QTV3MainWindow::modeChanged5(bool on)
    {
       setRotation(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
+
       planeCheck_->setChecked(true);
    }
 }
@@ -886,6 +887,7 @@ void QTV3MainWindow::modeChanged6(bool on)
 
 void QTV3MainWindow::resetInteractions()
 {
+   setRotation(0.0);
    vrw_->resetInteractions();
 }
 
