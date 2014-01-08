@@ -249,6 +249,8 @@ public:
    {
       omega_=0.0;
       angle_=angle;
+
+      updated_rotation();
    }
 
    //! get volume rotation angle
@@ -484,6 +486,10 @@ public:
       eye_ux_ = 0;
       eye_uy_ = 1;
       eye_uz_ = 0;
+
+      angle_ = 0.0;
+
+      updated_rotation();
 
       clipdist_ = 1.0;
 
@@ -804,6 +810,8 @@ protected:
       }
 
       angle_+=omega_/fps_;
+
+      if (omega_!=0.0) updated_rotation();
 
       if (angle_>180.0) angle_-=360.0;
       else if (angle_<-180.0) angle_+=360.0;
@@ -1233,6 +1241,11 @@ protected:
    {
       QGLVolRenWidget *w=(QGLVolRenWidget *)obj;
       w->update(info,percent);
+   }
+
+   virtual void updated_rotation()
+   {
+      printf("updated rotation\n");
    }
 
    virtual void updated_clipping()

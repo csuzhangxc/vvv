@@ -163,6 +163,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(updating_signal()), this, SLOT(updating_slot()));
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
+   connect(vrw_, SIGNAL(interaction_signal()), this, SLOT(interaction_slot()));
    mainLayout_->addWidget(update_);
 
    // create sliders
@@ -691,8 +692,6 @@ void QTV3MainWindow::checkInvMode(int on)
 
 void QTV3MainWindow::checkRotate(int on)
 {
-   rotSlider_->setValue(vrw_->getAngle() * 16);
-
    if (on)
       if (!reverseCheck_->isChecked())
          vrw_->setRotation(30);
@@ -935,10 +934,18 @@ void QTV3MainWindow::updated_slot()
       prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
       prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
    }
+}
 
-   double dist = 0.5*(1-vrw_->getClipDist());
-   clipSlider_->setValue(dist*100*16);
+void QTV3MainWindow::interaction_slot()
+{
+   if (vrw_)
+   {
+      rotSlider_->setValue(vrw_->getAngle() * 16);
 
-   emiSlider_->setValue(16*100*vrw_->getEmission());
-   attSlider_->setValue(16*100*vrw_->getAbsorption());
+      double dist = 0.5*(1-vrw_->getClipDist());
+      clipSlider_->setValue(dist * 100*16);
+
+      emiSlider_->setValue(vrw_->getEmission() * 16*100);
+      attSlider_->setValue(vrw_->getAbsorption() * 16*100);
+   }
 }

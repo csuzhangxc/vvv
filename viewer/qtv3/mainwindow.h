@@ -53,14 +53,19 @@ protected:
       emit updated_signal();
    }
 
+   virtual void updated_rotation()
+   {
+      emit interaction_signal();
+   }
+
    virtual void updated_clipping()
    {
-      emit updated_signal();
+      emit interaction_signal();
    }
 
    virtual void updated_opacity()
    {
-      emit updated_signal();
+      emit interaction_signal();
    }
 
    QTime timer_;
@@ -70,6 +75,8 @@ signals:
    void updating_signal();
    void update_signal(QString text);
    void updated_signal();
+
+   void interaction_signal();
 };
 
 class QTV3Slider: public QSlider
@@ -272,6 +279,8 @@ protected slots:
    void updating_slot();
    void update_slot(QString text);
    void updated_slot();
+
+   void interaction_slot();
 
 private:
 
