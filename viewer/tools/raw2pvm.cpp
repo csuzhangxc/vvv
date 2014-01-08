@@ -27,6 +27,8 @@ int main(int argc,char *argv[])
       printf(" -32768=16bit/LSB/signed\n");
       printf(" 32767=16bit/MSB/signed\n");
       printf(" 4=IEEE/float\n");
+      printf(" 3=RGB\n");
+      printf(" -3=RGB intensity\n");
       exit(1);
       }
 
@@ -48,7 +50,8 @@ int main(int argc,char *argv[])
    if (components==-2) {swapbytes(data,bytes); components=2;}
    if (components==-32768) {swapbytes(data,bytes); convbytes(data,bytes); components=2;}
    if (components==32767) {convbytes(data,bytes); components=2;}
-   if (components==4) {convfloat(data,bytes); components=2; bytes/=2;}
+   if (components==4) {convfloat(&data,bytes); components=2; bytes/=2;}
+   if (components==-3) {convrgb(&data,bytes); components=1; bytes/=3;}
    if (bytes<width*height*depth*components) exit(1);
 
    if (argc==6) writePVMvolume(argv[5],data,width,height,depth,components);

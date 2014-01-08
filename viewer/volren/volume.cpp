@@ -2902,6 +2902,7 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
       if (feedback!=NULL) feedback("processing data",0,obj);
 
       if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH,msb);
+      else if (COMPONENTS==3) convrgb(&VOLUME,3*WIDTH*HEIGHT*DEPTH);
       else if (COMPONENTS!=1)
          {
          free(VOLUME);
@@ -2940,6 +2941,11 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
          parsegradcommands(VOLUME,GRAD,
                            WIDTH,HEIGHT,DEPTH,
                            commands);
+
+         GWIDTH=WIDTH;
+         GHEIGHT=HEIGHT;
+         GDEPTH=DEPTH;
+         GCOMPONENTS=1;
          }
 
       strncpy(filestr,filename,MAXSTR);
@@ -2970,6 +2976,8 @@ BOOLINT mipmap::loadvolume(const char *filename, // filename of PVM to load
 
          if (GCOMPONENTS==2) GRAD=quantize(GRAD,GWIDTH,GHEIGHT,GDEPTH,msb);
          else if (GCOMPONENTS!=1) exit(1);
+
+         GCOMPONENTS=1;
 
          GRAD=swap(GRAD,
                    &GWIDTH,&GHEIGHT,&GDEPTH,
@@ -3049,6 +3057,7 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
    if (feedback!=NULL) feedback("processing data",0,obj);
 
    if (COMPONENTS==2) VOLUME=quantize(VOLUME,WIDTH,HEIGHT,DEPTH,msb);
+   else if (COMPONENTS==3) convrgb(&VOLUME,3*WIDTH*HEIGHT*DEPTH);
    else if (COMPONENTS!=1)
       {
       free(VOLUME);
@@ -3078,6 +3087,11 @@ BOOLINT mipmap::loadseries(const std::vector<std::string> list, // DICOM series 
                         DSX,DSY,DSZ,
                         &GRADMAX,
                         feedback,obj);
+
+      GWIDTH=WIDTH;
+      GHEIGHT=HEIGHT;
+      GDEPTH=DEPTH;
+      GCOMPONENTS=1;
       }
 
    strncpy(filestr,"",MAXSTR);

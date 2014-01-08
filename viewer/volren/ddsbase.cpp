@@ -927,13 +927,13 @@ void convbytes(unsigned char *data,long long bytes)
    }
 
 // convert from float to unsigned short
-void convfloat(unsigned char *data,long long bytes)
+void convfloat(unsigned char **data,long long bytes)
    {
    long long i;
    unsigned char *ptr;
    float v,vmax;
 
-   for (vmax=1.0f,ptr=data,i=0; i<bytes/4; i++,ptr+=4)
+   for (vmax=1.0f,ptr=*data,i=0; i<bytes/4; i++,ptr+=4)
       {
       if (DDS_ISINTEL) DDS_swapuint((unsigned int *)ptr);
 
@@ -941,13 +941,27 @@ void convfloat(unsigned char *data,long long bytes)
       if (v>vmax) vmax=v;
       }
 
-   for (ptr=data,i=0; i<bytes/4; i++,ptr+=4)
+   for (ptr=*data,i=0; i<bytes/4; i++,ptr+=4)
       {
       v=fabs(*((float *)ptr))/vmax;
 
-      data[2*i]=ftrc(65535.0f*v+0.5f)/256;
-      data[2*i+1]=ftrc(65535.0f*v+0.5f)%256;
+      (*data)[2*i]=ftrc(65535.0f*v+0.5f)/256;
+      (*data)[2*i+1]=ftrc(65535.0f*v+0.5f)%256;
       }
+
+   if ((*data=(unsigned char *)realloc(*data,bytes/4*2))==NULL) ERRORMSG();
+   }
+
+// convert from rgb to byte
+void convrgb(unsigned char **data,long long bytes)
+   {
+   long long i;
+   unsigned char *ptr1,*ptr2;
+
+   for (ptr1=ptr2=*data,i=0; i<bytes/3; i++,ptr1+=3,ptr2++)
+      *ptr2=((*ptr1)+*(ptr1+1)+*(ptr1+2)+1)/3;
+
+   if ((*data=(unsigned char *)realloc(*data,bytes/3))==NULL) ERRORMSG();
    }
 
 // helper to get a short value from a volume
