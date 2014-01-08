@@ -496,6 +496,7 @@ public:
       eye_uz_ = 0;
 
       angle_ = 0.0;
+      omega_ = 0.0;
 
       updated_rotation();
 
