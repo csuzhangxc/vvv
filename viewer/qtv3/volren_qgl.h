@@ -811,10 +811,10 @@ protected:
 
       angle_+=omega_/fps_;
 
-      if (omega_!=0.0) updated_rotation();
-
       if (angle_>180.0) angle_-=360.0;
       else if (angle_<-180.0) angle_+=360.0;
+
+      if (omega_!=0.0) updated_rotation();
 
       if (vr_->has_data()) rendercount_++;
    }

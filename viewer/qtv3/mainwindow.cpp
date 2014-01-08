@@ -181,12 +181,12 @@ void QTV3MainWindow::createWidgets()
    emiSlider_=s5;
    attSlider_=s6;
 
-   connect(s1, SIGNAL(valueChanged(int)), this, SLOT(clip(int)));
-   connect(s2, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
-   connect(s3, SIGNAL(valueChanged(int)), this, SLOT(rotate(int)));
-   connect(s4, SIGNAL(valueChanged(int)), this, SLOT(tilt(int)));
-   connect(s5, SIGNAL(valueChanged(int)), this, SLOT(emission(int)));
-   connect(s6, SIGNAL(valueChanged(int)), this, SLOT(absorption(int)));
+   connect(s1, SIGNAL(sliderMoved(int)), this, SLOT(clip(int)));
+   connect(s2, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
+   connect(s3, SIGNAL(sliderMoved(int)), this, SLOT(rotate(int)));
+   connect(s4, SIGNAL(sliderMoved(int)), this, SLOT(tilt(int)));
+   connect(s5, SIGNAL(sliderMoved(int)), this, SLOT(emission(int)));
+   connect(s6, SIGNAL(sliderMoved(int)), this, SLOT(absorption(int)));
 
    // create clipping section
    QVBoxLayout *l1 = new QVBoxLayout;
@@ -200,7 +200,7 @@ void QTV3MainWindow::createWidgets()
    l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
-   planeCheck_ = new QCheckBox(tr("Show Plane"));
+   planeCheck_ = new QCheckBox(tr("Plane View"));
    planeCheck_->setChecked(false);
    connect(planeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkPlane(int)));
    l1->addWidget(planeCheck_);
@@ -452,7 +452,7 @@ void QTV3MainWindow::reset()
 
    createDocks();
 
-   prefs_->setLabelFileName("teaser text");
+   prefs_->setLabelFileName("teaser volume");
 }
 
 QStringList QTV3MainWindow::browse(QString path,
@@ -945,7 +945,7 @@ void QTV3MainWindow::interaction_slot()
       double dist = 0.5*(1-vrw_->getClipDist());
       clipSlider_->setValue(dist * 100*16);
 
-      emiSlider_->setValue(vrw_->getEmission() * 16*100);
-      attSlider_->setValue(vrw_->getAbsorption() * 16*100);
+      emiSlider_->setValue(vrw_->getEmission() * 100*16);
+      attSlider_->setValue(vrw_->getAbsorption() * 100*16);
    }
 }
