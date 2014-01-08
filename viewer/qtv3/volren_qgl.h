@@ -1159,9 +1159,9 @@ protected:
                }
                else
                {
-                  eye_x_ += dx*(y-mouseLastY);
-                  eye_y_ += dy*(y-mouseLastY);
-                  eye_z_ += dz*(y-mouseLastY);
+                  eye_x_ -= dx*(y-mouseLastY);
+                  eye_y_ -= dy*(y-mouseLastY);
+                  eye_z_ -= dz*(y-mouseLastY);
                }
             }
          }
