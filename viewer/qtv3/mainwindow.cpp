@@ -31,12 +31,7 @@ void QTV3MainWindow::loadVolume(const char *filename)
 {
    reset();
 
-   if (label_)
-   {
-      mainLayout_->removeItem(mainLayout_->itemAt(0));
-      delete label_;
-      label_=NULL;
-   }
+   removeLabel();
 
    prefs_->setLabelFileName(filename);
 
@@ -49,14 +44,13 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 {
    reset();
 
-   if (label_)
-   {
-      mainLayout_->removeItem(mainLayout_->itemAt(0));
-      delete label_;
-      label_=NULL;
-   }
+   removeLabel();
 
-   prefs_->setLabelFileName("dicom series");
+   std::string series = "dicom series (";
+   series += getPrefix(list);
+   series += ")";
+
+   prefs_->setLabelFileName(series.c_str());
 
    vrw_->loadSeries(list);
 
@@ -65,6 +59,8 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 
 void QTV3MainWindow::loadSurface(const char *filename)
 {
+   removeLabel();
+
    if (hasTeaserVolume_)
    {
       vrw_->clearVolume();
@@ -72,13 +68,13 @@ void QTV3MainWindow::loadSurface(const char *filename)
    }
 
    vrw_->loadSurface(filename);
+}
 
-   if (label_)
-   {
-      mainLayout_->removeItem(mainLayout_->itemAt(0));
-      delete label_;
-      label_=NULL;
-   }
+void QTV3MainWindow::setAngle(double angle)
+{
+   vrw_->setAngle(angle);
+
+   rotateCheck_->setChecked(false);
 }
 
 void QTV3MainWindow::setRotation(double omega)
@@ -86,6 +82,24 @@ void QTV3MainWindow::setRotation(double omega)
    vrw_->setRotation(omega);
 
    rotateCheck_->setChecked(omega!=0.0);
+}
+
+void QTV3MainWindow::clearVolume()
+{
+   removeLabel();
+
+   prefs_->setLabelFileName("");
+
+   vrw_->clearVolume();
+
+   hasTeaserVolume_=false;
+}
+
+void QTV3MainWindow::clearSurface()
+{
+   vrw_->clearSurface();
+
+   removeLabel();
 }
 
 void QTV3MainWindow::createMenus()
@@ -335,10 +349,10 @@ void QTV3MainWindow::createWidgets()
    // create iso surface section
    QVBoxLayout *l7 = new QVBoxLayout;
    QPushButton *isoButton = new QPushButton(tr("Extract"));
-   connect(isoButton, SIGNAL(pressed()), this, SLOT(extractSurface()));
+   connect(isoButton, SIGNAL(pressed()), this, SLOT(extractIso()));
    l7->addWidget(isoButton);
    QPushButton *isoClearButton = new QPushButton(tr("Clear"));
-   connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearSurface()));
+   connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearIso()));
    l7->addWidget(isoClearButton);
    showIsoCheck_ = new QCheckBox(tr("Show"));
    showIsoCheck_->setChecked(true);
@@ -415,20 +429,29 @@ void QTV3MainWindow::createDocks()
    prefs_->hide();
 }
 
-void QTV3MainWindow::reset()
+void QTV3MainWindow::reset(char *teaser, char *path)
 {
-   vrw_->resetInteractions();
-   vrw_->loadVolume("Drop.pvm","/usr/share/qtv3/");
+   resetInteractions();
+
+   if (teaser!=NULL)
+   {
+      vrw_->loadVolume(teaser,path);
+      hasTeaserVolume_=true;
+   }
+   else
+   {
+      vrw_->clearVolume();
+      hasTeaserVolume_=false;
+   }
+
    vrw_->clearSurface();
 
-   vrw_->setRotation(30.0);
-
-   hasTeaserVolume_=true;
+   setRotation(30.0);
 
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;
 
-   clipNum_=0;
+   clear();
 
    clipSlider_->setValue(16*0);
    zoomSlider_->setValue(16*0);
@@ -452,7 +475,46 @@ void QTV3MainWindow::reset()
 
    createDocks();
 
-   prefs_->setLabelFileName("teaser volume");
+   if (hasTeaserVolume_)
+      prefs_->setLabelFileName("teaser volume");
+}
+
+std::string QTV3MainWindow::getPrefix(const std::vector<std::string> list)
+{
+   unsigned int i,j;
+
+   bool finished=false;
+
+   if (list.size()==0) return("");
+   if (list.size()==1) return(list[0]);
+
+   for (i=0; !finished; i++)
+      for (j=1; j<list.size(); j++)
+         if (list[j].size()<=i || list[j-1].size()<=i)
+         {
+            finished=true;
+            break;
+         }
+         else
+            if (list[j][i]!=list[j-1][i])
+            {
+               finished=true;
+               break;
+            }
+
+   if (i==0) return("");
+
+   return(list[0].substr(0,i-1));
+}
+
+void QTV3MainWindow::removeLabel()
+{
+   if (label_)
+   {
+      mainLayout_->removeItem(mainLayout_->itemAt(0));
+      delete label_;
+      label_=NULL;
+   }
 }
 
 QStringList QTV3MainWindow::browse(QString path,
@@ -625,9 +687,7 @@ void QTV3MainWindow::zoom(int v)
 void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
-   vrw_->setAngle(angle);
-
-   rotateCheck_->setChecked(false);
+   setAngle(angle);
 }
 
 void QTV3MainWindow::tilt(int v)
@@ -651,7 +711,7 @@ void QTV3MainWindow::tack()
    vrw_->setClipPlane(clipNum_, px,py,pz, nx,ny,nz);
    vrw_->enableClipPlane(clipNum_,1);
 
-   clipSlider_->setValue(0);
+   vrw_->setClipDist(1.0);
 
    clipNum_++;
    if (clipNum_>=6) clear();
@@ -663,7 +723,7 @@ void QTV3MainWindow::clear()
 
    clipNum_=0;
 
-   clipSlider_->setValue(0);
+   vrw_->setClipDist(1.0);
 }
 
 void QTV3MainWindow::emission(int v)
@@ -891,13 +951,13 @@ void QTV3MainWindow::resetInteractions()
    vrw_->resetInteractions();
 }
 
-void QTV3MainWindow::extractSurface()
+void QTV3MainWindow::extractIso()
 {
    if (!hasTeaserVolume_)
       vrw_->extractSurface();
 }
 
-void QTV3MainWindow::clearSurface()
+void QTV3MainWindow::clearIso()
 {
    vrw_->clearSurface();
 }

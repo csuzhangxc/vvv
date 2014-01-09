@@ -128,8 +128,17 @@ public:
    //! load a surface
    void loadSurface(const char *filename);
 
+   //! set volume rotation
+   void setAngle(double angle);
+
    //! set volume rotation speed
    void setRotation(double omega);
+
+   //! clear volume
+   void clearVolume();
+
+   //! clear surface
+   void clearSurface();
 
 private:
 
@@ -151,7 +160,12 @@ private:
    void createMenus();
    void createWidgets();
    void createDocks();
-   void reset();
+
+   void reset(char *teaser="Drop.pvm", char *path="/usr/share/qtv3/");
+
+   std::string getPrefix(const std::vector<std::string> list);
+
+   void removeLabel();
 
    QStringList browse(QString path="",
                       bool newfile=false);
@@ -214,7 +228,7 @@ protected:
       if (event->key() == Qt::Key_Q)
          emit close();
       else if (event->key() == Qt::Key_I)
-         extractSurface();
+         extractIso();
 
       QMainWindow::keyPressEvent(event);
    }
@@ -271,8 +285,8 @@ protected slots:
    void modeChanged5(bool on);
    void modeChanged6(bool on);
    void resetInteractions();
-   void extractSurface();
-   void clearSurface();
+   void extractIso();
+   void clearIso();
    void prefs();
    void about();
 

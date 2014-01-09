@@ -113,7 +113,7 @@ void QTV3PrefWindow::createWidgets()
    layout->addWidget(line1);
 
    QLineEdit *lineEdit_vol_maxsize = new QLineEdit;
-   QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
+   QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
    connect(lineEdit_vol_maxsize,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
    layout->addWidget(vol_maxsize_group);
 

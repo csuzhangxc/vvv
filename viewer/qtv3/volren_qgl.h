@@ -297,6 +297,8 @@ public:
    void setClipDist(double dist=0.0)
    {
       clipdist_=dist;
+
+      updated_clipping();
    }
 
    //! get clipping distance
@@ -453,19 +455,22 @@ public:
                      double px,double py,double pz,
                      double nx,double ny,double nz)
    {
-      vr_->define_clip(n, px,py,pz, nx,ny,nz);
+      if (vr_)
+         vr_->define_clip(n, px,py,pz, nx,ny,nz);
    }
 
    //! enable clip plane
    void enableClipPlane(int n,int on)
    {
-      vr_->enable_clip(n,on);
+      if (vr_)
+         vr_->enable_clip(n,on);
    }
 
    //! disable all clip planes
    void disableClipPlanes()
    {
-      vr_->disable_clip();
+      if (vr_)
+         vr_->disable_clip();
    }
 
    //! return volume renderer
