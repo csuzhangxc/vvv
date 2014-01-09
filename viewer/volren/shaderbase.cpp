@@ -18,6 +18,7 @@
 #endif
 
 #include "codebase.h"
+#include "oglbase.h"
 
 #include "shaderbase.h"
 
