@@ -1,22 +1,5 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#ifndef __APPLE__
-#   define GL_GLEXT_PROTOTYPES
-#   include <GL/gl.h>
-#   include <GL/glu.h>
-    extern "C" {
-#   include <GL/glext.h>
-    }
-#else
-#   include <OpenGL/gl.h>
-#   include <OpenGL/glu.h>
-#   include <OpenGL/glext.h>
-#endif
-
 #include "codebase.h"
 #include "oglbase.h"
 
