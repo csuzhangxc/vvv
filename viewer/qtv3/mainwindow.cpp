@@ -429,7 +429,7 @@ void QTV3MainWindow::createDocks()
    prefs_->hide();
 }
 
-void QTV3MainWindow::reset(char *teaser, char *path)
+void QTV3MainWindow::reset(const char *teaser, const char *path)
 {
    resetInteractions();
 

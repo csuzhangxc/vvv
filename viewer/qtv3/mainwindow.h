@@ -161,7 +161,7 @@ private:
    void createWidgets();
    void createDocks();
 
-   void reset(char *teaser="Drop.pvm", char *path="/usr/share/qtv3/");
+   void reset(const char *teaser="Drop.pvm", const char *path="/usr/share/qtv3/");
 
    std::string getPrefix(const std::vector<std::string> list);
 
