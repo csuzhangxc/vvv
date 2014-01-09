@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=qtv3 %U
+Icon=/usr/share/qtv3/qtv3.png
+Terminal=false
+Name=QTV3
+GenericName=Versatile Volume Viewer
+Comment=Drop volume files to show a 3D volume rendering
+Categories=Application;Graphics;
