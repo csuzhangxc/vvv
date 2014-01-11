@@ -16,9 +16,9 @@
 
 #include "volren.h"
 
-#define VOLREN_DEFAULT_RED 0.5f
-#define VOLREN_DEFAULT_GREEN 1.0f
-#define VOLREN_DEFAULT_BLUE 0.5f
+#define VOLREN_DEFAULT_HUE 120.0f
+#define VOLREN_DEFAULT_SAT 0.75f
+#define VOLREN_DEFAULT_VAL 1.0f
 
 #define VOLREN_DEFAULT_BRICKSIZE 128
 
@@ -83,9 +83,6 @@ public:
       opacity_ = 0.75f;
       opacity2_ = 0.1f;
       oversampling_ = 1.0;
-      red_ = VOLREN_DEFAULT_RED;
-      green_ = VOLREN_DEFAULT_GREEN;
-      blue_ = VOLREN_DEFAULT_BLUE;
       emi_ = 0.25;
       att_ = 0.25;
       emi_gm_ = 0.25;
@@ -99,6 +96,8 @@ public:
       tf_size_ = 1.0f;
       tf_inverse_ = false;
       geo_show_ = true;
+
+      setColorHue(VOLREN_DEFAULT_HUE,VOLREN_DEFAULT_SAT,VOLREN_DEFAULT_VAL);
 
       rendercount_ = 0;
 
@@ -341,6 +340,18 @@ public:
       red_=r;
       green_=g;
       blue_=b;
+
+      if (vr_)
+         vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+   }
+
+   //! set default color hue
+   void setColorHue(float hue=120.0f,float sat=0.75f,float val=1.0f)
+   {
+      float rgb[3];
+
+      tfunc::hsv2rgb(hue,sat,val,rgb);
+      setColor(rgb[0],rgb[1],rgb[2]);
    }
 
    //! set emission

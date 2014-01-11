@@ -46,6 +46,8 @@ public:
    float slice_opacity_;
    float slice_opacity2_;
 
+   float vol_hue_;
+
 protected:
 
    QGLVolRenWidget *vrw_;
@@ -65,6 +67,9 @@ protected:
    QLineEdit *lineEdit_slice_opacity2_;
    QSlider *slice_opacity_slider2_;
 
+   QLineEdit *lineEdit_hue_;
+   QSlider *hue_slider_;
+
    void createWidgets();
 
    QGroupBox *createEdit(QString name, QString value,
@@ -82,6 +87,9 @@ protected slots:
 
    void sliceOpacityChange2(QString);
    void sliceOpacityChange2(int);
+
+   void hueChange(QString);
+   void hueChange(int);
 };
 
 #endif

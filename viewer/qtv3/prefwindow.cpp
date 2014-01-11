@@ -22,6 +22,8 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
    slice_opacity_ = 0.75f;
    slice_opacity2_ = 0.1f;
 
+   vol_hue_ = 120.0f;
+
    QSettings settings("www.open-terrain.org", "qtv3");
 
    if (settings.contains("vol_maxsize"))
@@ -33,6 +35,9 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
       slice_opacity_ = settings.value("slice_opacity").toFloat();
    if (settings.contains("slice_opacity2"))
       slice_opacity2_ = settings.value("slice_opacity2").toFloat();
+
+   if (settings.contains("vol_hue"))
+      vol_hue_ = settings.value("vol_hue").toFloat();
 
    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -52,6 +57,8 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
    vrw_->setSliceOpacity(slice_opacity_);
    vrw_->setOuterOpacity(slice_opacity2_);
 
+   vrw_->setColorHue(vol_hue_);
+
    createWidgets();
 }
 
@@ -64,6 +71,8 @@ QTV3PrefWindow::~QTV3PrefWindow()
 
    settings.setValue("slice_opacity", slice_opacity_);
    settings.setValue("slice_opacity2", slice_opacity2_);
+
+   settings.setValue("vol_hue", vol_hue_);
 }
 
 void QTV3PrefWindow::setLabelFileName(QString fname)
@@ -166,6 +175,19 @@ void QTV3PrefWindow::createWidgets()
    connect(slice_opacity_slider2_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange2(int)));
    layout->addWidget(slice_opacity_group2);
 
+   QFrame* line4 = new QFrame();
+   line4->setFrameShape(QFrame::HLine);
+   line4->setFrameShadow(QFrame::Raised);
+   layout->addWidget(line4);
+
+   lineEdit_hue_ = new QLineEdit;
+   QGroupBox *hue_group = createEdit("Volume Hue", QString::number(vol_hue_), &lineEdit_hue_);
+   connect(lineEdit_hue_,SIGNAL(textChanged(QString)),this,SLOT(hueChange(QString)));
+   hue_slider_=createSlider(0,360,vol_hue_);
+   hue_group->layout()->addWidget(hue_slider_);
+   connect(hue_slider_,SIGNAL(valueChanged(int)), this, SLOT(hueChange(int)));
+   layout->addWidget(hue_group);
+
    layout->addStretch(1000);
 
    group->setLayout(layout);
@@ -233,4 +255,18 @@ void QTV3PrefWindow::sliceOpacityChange2(int opacity)
    slice_opacity2_ = opacity / 100.0f / 16.0f;
    vrw_->setOuterOpacity(slice_opacity2_);
    lineEdit_slice_opacity2_->setText(QString::number(slice_opacity2_));
+}
+
+void QTV3PrefWindow::hueChange(QString hue)
+{
+   vol_hue_ = hue.toFloat();
+   vrw_->setColorHue(vol_hue_);
+   hue_slider_->setValue(vol_hue_ * 16);
+}
+
+void QTV3PrefWindow::hueChange(int hue)
+{
+   vol_hue_ = hue / 16.0f;
+   vrw_->setColorHue(vol_hue_);
+   lineEdit_hue_->setText(QString::number(vol_hue_));
 }
