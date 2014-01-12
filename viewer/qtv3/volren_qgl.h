@@ -1118,6 +1118,10 @@ protected:
                   eye_x_ -= dx*(y-mouseLastY);
                   eye_y_ -= dy*(y-mouseLastY);
                   eye_z_ -= dz*(y-mouseLastY);
+
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
                }
             }
             else if (mode_ == InteractionMode_Clip)
@@ -1178,6 +1182,10 @@ protected:
                   eye_x_ -= dx*(y-mouseLastY);
                   eye_y_ -= dy*(y-mouseLastY);
                   eye_z_ -= dz*(y-mouseLastY);
+
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
                }
             }
          }
@@ -1230,9 +1238,18 @@ protected:
       {
          getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-         eye_x_ -= dx*(numDegrees/360.0);
-         eye_y_ -= dy*(numDegrees/360.0);
-         eye_z_ -= dz*(numDegrees/360.0);
+         if (event->orientation() == Qt::Vertical)
+         {
+            eye_x_ += dx*numDegrees/360.0;
+            eye_y_ += dy*numDegrees/360.0;
+            eye_z_ += dz*numDegrees/360.0;
+         }
+         else
+         {
+            eye_x_ -= rx*numDegrees/360.0;
+            eye_y_ -= ry*numDegrees/360.0;
+            eye_z_ -= rz*numDegrees/360.0;
+         }
       }
 
       event->accept();
