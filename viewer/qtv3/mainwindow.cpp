@@ -105,17 +105,17 @@ void QTV3MainWindow::clearSurface()
 void QTV3MainWindow::createMenus()
 {
    QAction *quitAction = new QAction(tr("Q&uit"), this);
-   quitAction->setShortcuts(QKeySequence::Quit);
+   quitAction->setShortcut(tr("Ctrl+Q"));
    quitAction->setStatusTip(tr("Quit the application"));
    connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
 
    QAction *openAction = new QAction(tr("O&pen"), this);
-   openAction->setShortcuts(QKeySequence::Open);
+   openAction->setShortcut(tr("Ctrl+O"));
    openAction->setStatusTip(tr("Open Volume File"));
    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
    QAction *prefAction = new QAction(tr("P&references"), this);
-   prefAction->setShortcuts(QKeySequence::Preferences);
+   prefAction->setShortcut(tr("Ctrl+P"));
    prefAction->setStatusTip(tr("Set Volume Rendering Preferences"));
    connect(prefAction, SIGNAL(triggered()), this, SLOT(prefs()));
 
