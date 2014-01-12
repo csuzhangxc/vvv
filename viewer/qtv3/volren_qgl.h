@@ -1219,22 +1219,19 @@ protected:
       }
       else if (mode_ == InteractionMode_Opacity)
       {
-         if (bMouseMove)
-         {
-            emi_ += numDegrees/360.0;
-            att_ += numDegrees/360.0;
+         emi_ += numDegrees/360.0;
+         att_ += numDegrees/360.0;
 
-            emi_gm_ += numDegrees/360.0;
-            att_gm_ += numDegrees/360.0;
+         emi_gm_ += numDegrees/360.0;
+         att_gm_ += numDegrees/360.0;
 
-            if (emi_<0.0) emi_=0.0;
-            if (att_<0.0) att_=0.0;
+         if (emi_<0.0) emi_=0.0;
+         if (att_<0.0) att_=0.0;
 
-            if (emi_gm_<0.0) emi_gm_=0.0;
-            if (att_gm_<0.0) att_gm_=0.0;
+         if (emi_gm_<0.0) emi_gm_=0.0;
+         if (att_gm_<0.0) att_gm_=0.0;
 
-            updated_opacity();
-         }
+         updated_opacity();
       }
       else
       {
