@@ -1209,6 +1209,8 @@ protected:
       double ux,uy,uz;
       double rx,ry,rz;
 
+      bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
+
       if (mode_ == InteractionMode_Clip)
       {
          clipdist_ -= numDegrees/360.0;
@@ -1240,15 +1242,24 @@ protected:
 
          if (event->orientation() == Qt::Vertical)
          {
-            eye_x_ += dx*numDegrees/360.0;
-            eye_y_ += dy*numDegrees/360.0;
-            eye_z_ += dz*numDegrees/360.0;
+            if (!shift)
+            {
+               eye_x_ -= dx*numDegrees/360.0;
+               eye_y_ -= dy*numDegrees/360.0;
+               eye_z_ -= dz*numDegrees/360.0;
+            }
+            else
+            {
+               eye_x_ -= ux*numDegrees/360.0;
+               eye_y_ -= uy*numDegrees/360.0;
+               eye_z_ -= uz*numDegrees/360.0;
+            }
          }
          else
          {
-            eye_x_ -= rx*numDegrees/360.0;
-            eye_y_ -= ry*numDegrees/360.0;
-            eye_z_ -= rz*numDegrees/360.0;
+            eye_x_ += rx*numDegrees/360.0;
+            eye_y_ += ry*numDegrees/360.0;
+            eye_z_ += rz*numDegrees/360.0;
          }
       }
 
