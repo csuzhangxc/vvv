@@ -1109,56 +1109,6 @@ void tfunc::load(FILE *file)
    CHANGED=TRUE;
    }
 
-// hsv to rgb
-void tfunc::hsv2rgb(float hue,float sat,float val,float *rgb)
-   {
-   float hue6,r,s,t;
-
-   if (hue<0.0f || sat<0.0f || sat>1.0f || val<0.0f || val>1.0f) ERRORMSG();
-
-   hue/=60.0f;
-   hue=hue-6.0f*ftrc(hue/6.0f);
-   hue6=hue-ftrc(hue);
-
-   r=val*(1.0f-sat);
-   s=val*(1.0f-sat*hue6);
-   t=val*(1.0f-sat*(1.0f-hue6));
-
-   switch (ftrc(hue))
-        {
-        case 0: // red -> yellow
-           rgb[0] = val;
-           rgb[1] = t;
-           rgb[2] = r;
-           break;
-        case 1: // yellow -> green
-           rgb[0] = s;
-           rgb[1] = val;
-           rgb[2] = r;
-           break;
-        case 2: // green -> cyan
-           rgb[0] = r;
-           rgb[1] = val;
-           rgb[2] = t;
-           break;
-        case 3: // cyan -> blue
-           rgb[0] = r;
-           rgb[1] = s;
-           rgb[2] = val;
-           break;
-        case 4: // blue -> magenta
-           rgb[0] = t;
-           rgb[1] = r;
-           rgb[2] = val;
-           break;
-        case 5: // magenta -> red
-           rgb[0] = val;
-           rgb[1] = r;
-           rgb[2] = s;
-           break;
-        }
-   }
-
 // a 2D transfer function:
 
 tfunc2D::tfunc2D(int res)
