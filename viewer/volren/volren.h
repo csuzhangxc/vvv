@@ -554,6 +554,44 @@ class volren: public volscene
       eye_uz=arx*eye_dy-ary*eye_dx;
       }
 
+   // project screen coordinates onto anchor plane
+   void project(float ax,float ay,float az,
+                float sx,float sy,
+                float fovy,float aspect,
+                float eye_x,float eye_y,float eye_z,
+                float eye_dx,float eye_dy,float eye_dz,
+                float &eye_ux,float &eye_uy,float &eye_uz)
+      {
+      float eye_rx,eye_ry,eye_rz;
+
+      float d,t;
+
+      sx=2.0f*(sx-0.5f);
+      sy=2.0f*(0.5f-sy);
+
+      eye_rx=eye_dy*eye_uz-eye_dz*eye_uy;
+      eye_ry=eye_dz*eye_ux-eye_dx*eye_uz;
+      eye_rz=eye_dx*eye_uy-eye_dy*eye_ux;
+
+      d=(ax-eye_x)*eye_dx+
+        (ay-eye_y)*eye_dy+
+        (az-eye_z)*eye_dz;
+
+      t=d*ftan(fovy/2.0f*PI/180.0f);
+
+      eye_x+=d*eye_dx+
+             eye_rx*sx*t+
+             eye_ux*sy*t*aspect;
+
+      eye_y+=d*eye_dy+
+             eye_ry*sx*t+
+             eye_uy*sy*t*aspect;
+
+      eye_z+=d*eye_dz+
+             eye_rz*sx*t+
+             eye_uz*sy*t*aspect;
+      }
+
    private:
 
    void transform(float &eye_x,float &eye_y,float &eye_z, // eye point
