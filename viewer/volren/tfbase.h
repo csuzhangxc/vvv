@@ -441,8 +441,6 @@ class histo
    // load
    void load(FILE *file);
 
-   static void hsv2rgb(float hue,float sat,float val,float *rgb);
-
    protected:
 
    BOOLINT MULTI;
