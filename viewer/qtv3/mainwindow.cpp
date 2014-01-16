@@ -379,12 +379,14 @@ void QTV3MainWindow::createWidgets()
    modeButton4_ = new QRadioButton(tr("Zoom"));
    modeButton5_ = new QRadioButton(tr("Clip"));
    modeButton6_ = new QRadioButton(tr("Opacity"));
+   modeButton7_ = new QRadioButton(tr("Measure"));
    connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
    connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
    connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
    connect(modeButton5_, SIGNAL(toggled(bool)), this, SLOT(modeChanged5(bool)));
    connect(modeButton6_, SIGNAL(toggled(bool)), this, SLOT(modeChanged6(bool)));
+   connect(modeButton7_, SIGNAL(toggled(bool)), this, SLOT(modeChanged7(bool)));
    l8->addWidget(modeButton1_);
    l8->addStretch(1);
    l8->addWidget(modeButton2_);
@@ -396,6 +398,8 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(modeButton5_);
    l8->addStretch(1);
    l8->addWidget(modeButton6_);
+   l8->addStretch(1);
+   l8->addWidget(modeButton7_);
    l8->addStretch(1);
    QLabel *ll8=new QLabel("Interactions");
    ll8->setAlignment(Qt::AlignLeft);
@@ -943,6 +947,15 @@ void QTV3MainWindow::modeChanged6(bool on)
 {
    if (on)
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Opacity);
+}
+
+void QTV3MainWindow::modeChanged7(bool on)
+{
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Measure);
+   }
 }
 
 void QTV3MainWindow::resetInteractions()

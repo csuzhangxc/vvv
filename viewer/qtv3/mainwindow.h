@@ -216,6 +216,7 @@ private:
    QRadioButton *modeButton4_;
    QRadioButton *modeButton5_;
    QRadioButton *modeButton6_;
+   QRadioButton *modeButton7_;
 
    QPushButton *resetButton_;
 
@@ -284,6 +285,7 @@ protected slots:
    void modeChanged4(bool on);
    void modeChanged5(bool on);
    void modeChanged6(bool on);
+   void modeChanged7(bool on);
    void resetInteractions();
    void extractIso();
    void clearIso();

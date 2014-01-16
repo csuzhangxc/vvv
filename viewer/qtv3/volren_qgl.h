@@ -35,7 +35,8 @@ public:
       InteractionMode_Rotate,
       InteractionMode_Zoom,
       InteractionMode_Clip,
-      InteractionMode_Opacity
+      InteractionMode_Opacity,
+      InteractionMode_Measure
    };
 
    //! default ctor
@@ -1099,13 +1100,6 @@ protected:
                   eye_x_ += ux*(y-mouseLastY);
                   eye_y_ += uy*(y-mouseLastY);
                   eye_z_ += uz*(y-mouseLastY);
-
-                  //!!
-                  double fovy=60.0;
-                  double aspect=(double)width()/height();
-                  double px,py,pz;
-                  vr_->project(x,y, fovy,aspect, px,py,pz);
-                  std::cout << px << "," << py << "," << pz << std::endl;
                }
             }
             else if (mode_ == InteractionMode_Rotate)
@@ -1158,6 +1152,15 @@ protected:
 
                   updated_opacity();
                }
+            }
+            else if (mode_ == InteractionMode_Measure)
+            {
+               //!!
+               double fovy=60.0;
+               double aspect=(double)width()/height();
+               double px,py,pz;
+               vr_->project(x,y, fovy,aspect, px,py,pz);
+               std::cout << px << "," << py << "," << pz << std::endl;
             }
          }
          else if (bMiddleButtonDown)
