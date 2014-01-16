@@ -1223,7 +1223,8 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (mode_ == InteractionMode_Clip)
+      if (mode_ == InteractionMode_Clip ||
+          mode_ == InteractionMode_Measure)
       {
          clipdist_ -= numDegrees/360.0;
 
