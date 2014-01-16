@@ -1159,8 +1159,9 @@ protected:
                double fovy=60.0;
                double aspect=(double)width()/height();
                double px,py,pz;
+
                vr_->project(x,y, fovy,aspect, px,py,pz);
-               std::cout << px << "," << py << "," << pz << std::endl;
+               updated_measuring(px,py,pz);
             }
          }
          else if (bMiddleButtonDown)
@@ -1320,6 +1321,11 @@ protected:
    virtual void updated_opacity()
    {
       printf("updated opacity\n");
+   }
+
+   virtual void updated_measuring(double px,double py,double pz)
+   {
+      printf("updated measuring: (%g,%g,%g)\n",px,py,pz);
    }
 
    bool loadFile(volren *vr, const char *filename)
