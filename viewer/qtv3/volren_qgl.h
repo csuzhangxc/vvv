@@ -1099,6 +1099,17 @@ protected:
                   eye_x_ += ux*(y-mouseLastY);
                   eye_y_ += uy*(y-mouseLastY);
                   eye_z_ += uz*(y-mouseLastY);
+
+                  //!!
+                  double fovy=60.0;
+                  double aspect=(double)width()/height();
+                  double ex,ey,ez;
+                  vr_->project(x,y, fovy,aspect, ex,ey,ez);
+                  float scale=vr_->getscale();
+                  ex*=scale;
+                  ey*=scale;
+                  ez*=scale;
+                  std::cout << ex << "," << ey << "," << ez << std::endl;
                }
             }
             else if (mode_ == InteractionMode_Rotate)

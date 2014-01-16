@@ -555,29 +555,35 @@ class volren: public volscene
       }
 
    // project screen coordinates onto anchor plane
-   void project(float ax,float ay,float az,
-                float sx,float sy,
-                float fovy,float aspect,
-                float eye_x,float eye_y,float eye_z,
-                float eye_dx,float eye_dy,float eye_dz,
-                float &eye_ux,float &eye_uy,float &eye_uz)
+   void project(double sx,double sy,
+                double fovy,double aspect,
+                double &eye_x,double &eye_y,double &eye_z)
       {
-      float eye_rx,eye_ry,eye_rz;
+      double eye_dx,eye_dy,eye_dz;
+      double eye_ux,eye_uy,eye_uz;
+      double eye_rx,eye_ry,eye_rz;
 
-      float d,t;
+      double ax,ay,az;
+      double dx,dy,dz;
 
-      sx=2.0f*(sx-0.5f);
-      sy=2.0f*(0.5f-sy);
+      double d,t;
 
-      eye_rx=eye_dy*eye_uz-eye_dz*eye_uy;
-      eye_ry=eye_dz*eye_ux-eye_dx*eye_uz;
-      eye_rz=eye_dx*eye_uy-eye_dy*eye_ux;
+      get_eye(eye_x,eye_y,eye_z,
+              eye_dx,eye_dy,eye_dz,
+              eye_ux,eye_uy,eye_uz,
+              eye_rx,eye_ry,eye_rz);
+
+      get_near(ax,ay,az,
+               dx,dy,dz);
+
+      sx=2.0f*(sx-0.5);
+      sy=2.0f*(0.5-sy);
 
       d=(ax-eye_x)*eye_dx+
         (ay-eye_y)*eye_dy+
         (az-eye_z)*eye_dz;
 
-      t=d*ftan(fovy/2.0f*PI/180.0f);
+      t=d*tan(fovy/2.0*PI/180.0);
 
       eye_x+=d*eye_dx+
              eye_rx*sx*t+
