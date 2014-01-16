@@ -557,8 +557,9 @@ class volren: public volscene
    // project screen coordinates onto anchor plane
    void project(double sx,double sy,
                 double fovy,double aspect,
-                double &eye_x,double &eye_y,double &eye_z)
+                double &px,double &py,double &pz)
       {
+      double eye_x,eye_y,eye_z;
       double eye_dx,eye_dy,eye_dz;
       double eye_ux,eye_uy,eye_uz;
       double eye_rx,eye_ry,eye_rz;
@@ -566,7 +567,7 @@ class volren: public volscene
       double ax,ay,az;
       double dx,dy,dz;
 
-      double d,t;
+      double d,t,s;
 
       get_eye(eye_x,eye_y,eye_z,
               eye_dx,eye_dy,eye_dz,
@@ -596,6 +597,12 @@ class volren: public volscene
       eye_z+=d*eye_dz+
              eye_rz*sx*t+
              eye_uz*sy*t*aspect;
+
+      s=getscale();
+
+      px=eye_x*s;
+      py=eye_y*s;
+      pz=eye_z*s;
       }
 
    private:
