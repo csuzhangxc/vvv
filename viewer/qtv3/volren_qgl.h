@@ -72,6 +72,7 @@ public:
       eye_uz_ = 0;
 
       fps_ = 30.0;
+      fovy_ = 60.0;
       angle_ = 0.0;
       omega_ = 0.0;
       tiltXY_ = tiltYZ_ = 0.0;
@@ -553,6 +554,7 @@ protected:
    float eye_ux_,eye_uy_,eye_uz_;
 
    double fps_; // animated frames per second
+   double fovy_; // vertical field of view
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
    double tiltXY_,tiltYZ_; // rotation angle in degrees
@@ -605,7 +607,7 @@ protected:
       double eye_dx=eye_dx_,eye_dy=eye_dy_,eye_dz=eye_dz_;
       double eye_ux=eye_ux_,eye_uy=eye_uy_,eye_uz=eye_uz_;
 
-      double gfx_fovy=60.0;
+      double gfx_fovy=fovy_;
       double gfx_aspect=(double)width()/height();
       double gfx_near=0.01;
       double gfx_far=10.0;
@@ -1155,8 +1157,7 @@ protected:
             }
             else if (mode_ == InteractionMode_Measure)
             {
-               //!!
-               double fovy=60.0;
+               double fovy=fovy_;
                double aspect=(double)width()/height();
                double px,py,pz;
 
