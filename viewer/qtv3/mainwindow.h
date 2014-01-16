@@ -68,6 +68,11 @@ protected:
       emit interaction_signal();
    }
 
+   virtual void updated_measuring(double px,double py,double pz)
+   {
+      emit measuring_signal(px,py,pz);
+   }
+
    QTime timer_;
 
 signals:
@@ -77,6 +82,7 @@ signals:
    void updated_signal();
 
    void interaction_signal();
+   void measuring_signal(double px,double py,double pz);
 };
 
 class QTV3Slider: public QSlider
@@ -297,6 +303,7 @@ protected slots:
    void updated_slot();
 
    void interaction_slot();
+   void measuring_slot(double px,double py,double pz);
 
 private:
 

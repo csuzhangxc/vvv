@@ -178,6 +178,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    connect(vrw_, SIGNAL(interaction_signal()), this, SLOT(interaction_slot()));
+   connect(vrw_, SIGNAL(measuring_signal(double,double,double)), this, SLOT(measuring_slot(double,double,double)));
    mainLayout_->addWidget(update_);
 
    // create sliders
@@ -1023,4 +1024,12 @@ void QTV3MainWindow::interaction_slot()
       emiSlider_->setValue(vrw_->getEmission() * 100*16);
       attSlider_->setValue(vrw_->getAbsorption() * 100*16);
    }
+}
+
+void QTV3MainWindow::measuring_slot(double px,double py,double pz)
+{
+   update_->setText(QString("measuring point(")+
+		    QString::number(px)+","+
+		    QString::number(py)+","+
+		    QString::number(pz)+")");
 }
