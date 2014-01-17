@@ -1052,7 +1052,7 @@ void QTV3MainWindow::interaction_slot()
 void QTV3MainWindow::measuring_slot(double px,double py,double pz)
 {
    update_->setText(QString("measuring point(")+
-		    QString::number(px)+","+
-		    QString::number(py)+","+
-		    QString::number(pz)+")");
+                    QString::number(px)+","+
+                    QString::number(py)+","+
+                    QString::number(pz)+")");
 }
