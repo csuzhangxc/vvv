@@ -62,11 +62,20 @@ protected:
    {
       if (line_.size()>0)
       {
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glScalef(0.99f,0.99f,0.99f);
+         glMatrixMode(GL_MODELVIEW);
+
          glColor3f(1.0f,0.0f,0.0f);
          glBegin(GL_LINE_STRIP);
          for (unsigned int i=0; i<line_.size(); i++)
             glVertex3d(line_[i].x,line_[i].y,line_[i].z);
          glEnd();
+
+         glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
       }
    }
 

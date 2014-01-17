@@ -1057,7 +1057,7 @@ void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length)
    update_->setText(QString("measured length is ")+
                     QString::number(length*1E3)+"mm "+
                     "at measuring point ("+
-                    QString::number(px)+","+
-                    QString::number(py)+","+
-                    QString::number(pz)+")");
+                    QString::number(px*1E3)+","+
+                    QString::number(py*1E3)+","+
+                    QString::number(pz*1E3)+")");
 }
