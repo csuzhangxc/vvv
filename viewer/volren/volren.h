@@ -337,7 +337,11 @@ class volren: public volscene
       begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
             vol_white,vol_inv);
 
-      drawline();
+      render(eye_x,eye_y,eye_z,
+             eye_dx,eye_dy,eye_dz,
+             eye_ux,eye_uy,eye_uz,
+             vol_rot,vol_tltXY,vol_tltYZ,
+             vol_dx,vol_dy,vol_dz);
 
       showsurface(geo_show);
 
@@ -684,20 +688,51 @@ class volren: public volscene
       eye_uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
       }
 
-   void drawline()
+   void render(float eye_x,float eye_y,float eye_z, // eye point
+               float eye_dx,float eye_dy,float eye_dz, // viewing direction
+               float eye_ux,float eye_uy,float eye_uz, // up vector
+               float vol_rot, // volume rotation in degrees
+               float vol_tltXY, // volume tilt in degrees
+               float vol_tltYZ, // volume tilt in degrees
+               float vol_dx,float vol_dy,float vol_dz) // volume translation
+      {
+      transform(eye_x,eye_y,eye_z,
+                eye_dx,eye_dy,eye_dz,
+                eye_ux,eye_uy,eye_uz,
+                vol_rot,vol_tltXY,vol_tltYZ,
+                vol_dx,vol_dy,vol_dz);
+
+      // model view:
+
+      glPushMatrix();
+      glLoadIdentity();
+      gluLookAt(eye_x,eye_y,eye_z,eye_x+eye_dx,eye_y+eye_dy,eye_z+eye_dz,eye_ux,eye_uy,eye_uz);
+
+      // apply scaling:
+
+      float scale=1.0f/getscale();
+
+      glPushMatrix();
+      glScalef(scale,scale,scale);
+
+      // render metric geometry:
+
+      rendermetric();
+
+      // restore scaling:
+
+      glPopMatrix();
+      }
+
+   virtual void rendermetric()
       {
       if (line_.size()>0)
          {
-         float scale=1.0f/getscale();
-
-         glPushMatrix();
-         glScalef(scale,scale,scale);
          glColor3f(1.0f,0.0f,0.0f);
          glBegin(GL_LINE_STRIP);
          for (unsigned int i=0; i<line_.size(); i++)
             glVertex3d(line_[i].x,line_[i].y,line_[i].z);
          glEnd();
-         glPopMatrix();
          }
       }
 
