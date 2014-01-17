@@ -219,6 +219,13 @@ public:
       geotoload_ = NULL;
    }
 
+   //! clear the measuring
+   void clearMeasuring()
+   {
+      if (vr_)
+         vr_->clearline();
+   }
+
    //! set limit for maximum displayable volume size
    void set_vol_maxsize(long long maxsize,
                         float ratio=0.25f)
@@ -1159,10 +1166,11 @@ protected:
             {
                double fovy=fovy_;
                double aspect=(double)width()/height();
-               double px,py,pz;
 
-               vr_->project(x,y, fovy,aspect, px,py,pz);
-               updated_measuring(px,py,pz);
+               v3d p=vr_->project(x,y, fovy,aspect);
+               vr_->appendline(p);
+
+               updated_measuring(p.x,p.y,p.z);
             }
          }
          else if (bMiddleButtonDown)

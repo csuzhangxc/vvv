@@ -7,6 +7,9 @@
 #include "oglbase.h" // OpenGL base and window handling
 #include "volume.h" // volume mipmap pyramid
 
+#include "v3d.h"
+#include <vector>
+
 //! the volume renderer
 class volren: public volscene
    {
@@ -113,6 +116,14 @@ class volren: public volscene
    //! show the surface data
    void showsurface(BOOLINT yes)
       {volscene::showsurface(yes);}
+
+   //! append line segment
+   void appendline(const v3d &p)
+      {line_.push_back(p);}
+
+   //! clear line segments
+   void clearline()
+      {line_.clear();}
 
    //! begin rendering
    void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
@@ -325,6 +336,8 @@ class volren: public volscene
 
       begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
             vol_white,vol_inv);
+
+      drawline();
 
       showsurface(geo_show);
 
@@ -555,9 +568,8 @@ class volren: public volscene
       }
 
    // project screen coordinates onto anchor plane
-   void project(double sx,double sy,
-                double fovy,double aspect,
-                double &px,double &py,double &pz)
+   v3d project(double sx,double sy,
+               double fovy,double aspect)
       {
       double eye_x,eye_y,eye_z;
       double eye_dx,eye_dy,eye_dz;
@@ -567,7 +579,7 @@ class volren: public volscene
       double ax,ay,az;
       double dx,dy,dz;
 
-      double d,t,s;
+      double d,t;
 
       get_eye(eye_x,eye_y,eye_z,
               eye_dx,eye_dy,eye_dz,
@@ -598,11 +610,7 @@ class volren: public volscene
              eye_rz*sx*t+
              eye_uz*sy*t*aspect;
 
-      s=getscale();
-
-      px=eye_x*s;
-      py=eye_y*s;
-      pz=eye_z*s;
+      return(v3d(eye_x,eye_y,eye_z)*getscale());
       }
 
    private:
@@ -676,6 +684,26 @@ class volren: public volscene
       eye_uz=fsin(vol_tltYZ)*uy0+fcos(vol_tltYZ)*uz0;
       }
 
+   void drawline()
+      {
+      if (line_.size()>0)
+         {
+         float scale=1.0f/getscale();
+
+         glPushMatrix();
+         glScalef(scale,scale,scale);
+         glColor3f(1.0f,0.0f,0.0f);
+         glBegin(GL_LINE_STRIP);
+         for (unsigned int i=0; i<line_.size(); i++)
+            glVertex3d(line_[i].x,line_[i].y,line_[i].z);
+         glEnd();
+         glPopMatrix();
+         }
+      }
+
+   protected:
+
+   std::vector<v3d> line_;
    };
 
 #endif

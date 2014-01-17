@@ -7,6 +7,7 @@ SET(VOLREN_HDRS
    volren/tfbase.h volren/tilebase.h volren/progs.h
    volren/volume.h volren/volren.h
    volren/geobase.h
+   volren/v3d.h
    )
 
 SET(VOLREN_SRCS
