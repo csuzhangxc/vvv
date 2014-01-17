@@ -374,13 +374,27 @@ void QTV3MainWindow::createWidgets()
 
    // add interaction tool box
    QVBoxLayout *l8 = new QVBoxLayout;
-   modeButton1_ = new QRadioButton(tr("Window"));
-   modeButton2_ = new QRadioButton(tr("Move"));
-   modeButton3_ = new QRadioButton(tr("Rotate"));
-   modeButton4_ = new QRadioButton(tr("Zoom"));
-   modeButton5_ = new QRadioButton(tr("Clip"));
-   modeButton6_ = new QRadioButton(tr("Opacity"));
-   modeButton7_ = new QRadioButton(tr("Measure"));
+   modeButton1_ = new QPushButton(tr("Window"));
+   modeButton2_ = new QPushButton(tr("Move"));
+   modeButton3_ = new QPushButton(tr("Rotate"));
+   modeButton4_ = new QPushButton(tr("Zoom"));
+   modeButton5_ = new QPushButton(tr("Clip"));
+   modeButton6_ = new QPushButton(tr("Opacity"));
+   modeButton7_ = new QPushButton(tr("Measure"));
+   modeButton1_->setCheckable(true);
+   modeButton2_->setCheckable(true);
+   modeButton3_->setCheckable(true);
+   modeButton4_->setCheckable(true);
+   modeButton5_->setCheckable(true);
+   modeButton6_->setCheckable(true);
+   modeButton7_->setCheckable(true);
+   modeButton1_->setAutoExclusive(true);
+   modeButton2_->setAutoExclusive(true);
+   modeButton3_->setAutoExclusive(true);
+   modeButton4_->setAutoExclusive(true);
+   modeButton5_->setAutoExclusive(true);
+   modeButton6_->setAutoExclusive(true);
+   modeButton7_->setAutoExclusive(true);
    connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
    connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));

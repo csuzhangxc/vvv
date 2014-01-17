@@ -216,13 +216,13 @@ private:
    QRadioButton *sampleButton2_;
    QRadioButton *sampleButton3_;
 
-   QRadioButton *modeButton1_;
-   QRadioButton *modeButton2_;
-   QRadioButton *modeButton3_;
-   QRadioButton *modeButton4_;
-   QRadioButton *modeButton5_;
-   QRadioButton *modeButton6_;
-   QRadioButton *modeButton7_;
+   QPushButton *modeButton1_;
+   QPushButton *modeButton2_;
+   QPushButton *modeButton3_;
+   QPushButton *modeButton4_;
+   QPushButton *modeButton5_;
+   QPushButton *modeButton6_;
+   QPushButton *modeButton7_;
 
    QPushButton *resetButton_;
 
