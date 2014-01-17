@@ -744,6 +744,8 @@ void QTV3MainWindow::clear()
    clipNum_=0;
 
    vrw_->setClipDist(1.0);
+
+   vrw_->clearLine();
 }
 
 void QTV3MainWindow::emission(int v)

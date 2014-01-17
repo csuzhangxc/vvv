@@ -595,16 +595,16 @@ class volren: public volscene
       t=d*tan(fovy/2.0*PI/180.0);
 
       eye_x+=d*eye_dx+
-             eye_rx*sx*t+
-             eye_ux*sy*t*aspect;
+             eye_rx*sx*t*aspect+
+             eye_ux*sy*t;
 
       eye_y+=d*eye_dy+
-             eye_ry*sx*t+
-             eye_uy*sy*t*aspect;
+             eye_ry*sx*t*aspect+
+             eye_uy*sy*t;
 
       eye_z+=d*eye_dz+
-             eye_rz*sx*t+
-             eye_uz*sy*t*aspect;
+             eye_rz*sx*t*aspect+
+             eye_uz*sy*t;
 
       return(v3d(eye_x,eye_y,eye_z)*getscale());
       }
