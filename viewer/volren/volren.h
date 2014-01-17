@@ -7,8 +7,7 @@
 #include "oglbase.h" // OpenGL base and window handling
 #include "volume.h" // volume mipmap pyramid
 
-#include "v3d.h"
-#include <vector>
+#include "v3d.h" // vector class
 
 //! the volume renderer
 class volren: public volscene
@@ -116,14 +115,6 @@ class volren: public volscene
    //! show the surface data
    void showsurface(BOOLINT yes)
       {volscene::showsurface(yes);}
-
-   //! append line segment
-   void appendline(const v3d &p)
-      {line_.push_back(p);}
-
-   //! clear line segments
-   void clearline()
-      {line_.clear();}
 
    //! begin rendering
    void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
@@ -304,7 +295,7 @@ class volren: public volscene
       glPopMatrix();
       }
 
-   // render volume scene (volume, iso surface, reconstruction plane, clip planes)
+   //! render volume scene (volume, iso surface, reconstruction plane, clip planes, metric geometry)
    BOOLINT renderscene(float eye_x,float eye_y,float eye_z, // eye point
                        float eye_dx,float eye_dy,float eye_dz, // viewing direction
                        float eye_ux,float eye_uy,float eye_uz, // up vector
@@ -372,7 +363,7 @@ class volren: public volscene
       return(aborted);
       }
 
-   // rotate about anchor point
+   //! rotate about anchor point
    void rotate(float ax,float ay,float az,
                float angle1,float angle2,
                float &eye_x,float &eye_y,float &eye_z,
@@ -571,7 +562,8 @@ class volren: public volscene
       eye_uz=arx*eye_dy-ary*eye_dx;
       }
 
-   // project screen coordinates onto anchor plane
+   //! project screen coordinates onto anchor plane
+   //!  returns absolute position in meters
    v3d project(double sx,double sy,
                double fovy,double aspect)
       {
@@ -724,21 +716,10 @@ class volren: public volscene
       glPopMatrix();
       }
 
-   virtual void rendermetric()
-      {
-      if (line_.size()>0)
-         {
-         glColor3f(1.0f,0.0f,0.0f);
-         glBegin(GL_LINE_STRIP);
-         for (unsigned int i=0; i<line_.size(); i++)
-            glVertex3d(line_[i].x,line_[i].y,line_[i].z);
-         glEnd();
-         }
-      }
-
    protected:
 
-   std::vector<v3d> line_;
+   //! virtual function that can be overloaded to render metric geometry
+   virtual void rendermetric() {}
    };
 
 #endif

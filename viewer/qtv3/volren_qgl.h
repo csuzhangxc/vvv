@@ -14,6 +14,8 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
 
+#include <vector>
+
 #include "volren.h"
 
 #define VOLREN_DEFAULT_HUE 120.0f
@@ -24,6 +26,41 @@
 
 #define VOLREN_DEFAULT_WIDTH 1536
 #define VOLREN_DEFAULT_HEIGHT 768
+
+class volren_qgl: public volren
+{
+public:
+
+   volren_qgl() : volren() {}
+   virtual ~volren_qgl() {}
+
+   void appendLine(const v3d &p)
+   {
+      line_.push_back(p);
+   }
+
+   void clearLine()
+   {
+      line_.clear();
+   }
+
+protected:
+
+   std::vector<v3d> line_;
+
+   virtual void rendermetric()
+   {
+      if (line_.size()>0)
+      {
+         glColor3f(1.0f,0.0f,0.0f);
+         glBegin(GL_LINE_STRIP);
+         for (unsigned int i=0; i<line_.size(); i++)
+            glVertex3d(line_[i].x,line_[i].y,line_[i].z);
+         glEnd();
+      }
+   }
+
+};
 
 class QGLVolRenWidget: public QGLWidget
 {
@@ -205,7 +242,7 @@ public:
       if (vr_)
          delete vr_;
 
-      vr_ = new volren();
+      vr_ = new volren_qgl();
 
       if (toload_) free(toload_);
       toload_ = NULL;
@@ -219,11 +256,18 @@ public:
       geotoload_ = NULL;
    }
 
-   //! clear the measuring
-   void clearMeasuring()
+   //! append line segment
+   void appendLine(const v3d &p)
    {
       if (vr_)
-         vr_->clearline();
+         vr_->appendLine(p);
+   }
+
+   //! clear line segments
+   void clearLine()
+   {
+   if (vr_)
+      vr_->clearLine();
    }
 
    //! set limit for maximum displayable volume size
@@ -494,7 +538,7 @@ public:
    }
 
    //! return volume renderer
-   volren *getVR()
+   volren_qgl *getVR()
    {
       return(vr_);
    }
@@ -544,7 +588,7 @@ public:
 
 protected:
 
-   volren *vr_;
+   volren_qgl *vr_;
 
    char *toload_,*altpath_;
    std::vector<std::string> series_;
@@ -608,7 +652,7 @@ protected:
    void paintGL()
    {
       if (!vr_)
-         vr_ = new volren();
+         vr_ = new volren_qgl();
 
       double eye_x=eye_x_,eye_y=eye_y_,eye_z=eye_z_;
       double eye_dx=eye_dx_,eye_dy=eye_dy_,eye_dz=eye_dz_;
@@ -875,9 +919,9 @@ protected:
             loading_ = true;
 
             delete vr_;
-            vr_ = new volren();
+            vr_ = new volren_qgl();
 
-            volren *vr = new volren();
+            volren_qgl *vr = new volren_qgl();
 
             // set maximum volume size
             vr->set_vol_maxsize(vol_maxsize_,vol_ratio_);
@@ -915,9 +959,9 @@ protected:
             loading_ = true;
 
             delete vr_;
-            vr_ = new volren();
+            vr_ = new volren_qgl();
 
-            volren *vr = new volren();
+            volren_qgl *vr = new volren_qgl();
 
             vr->loadseries(series_,
                            0.0f,0.0f,0.0f,
@@ -1168,7 +1212,7 @@ protected:
                double aspect=(double)width()/height();
 
                v3d p=vr_->project(x,y, fovy,aspect);
-               vr_->appendline(p);
+               vr_->appendLine(p);
 
                updated_measuring(p.x,p.y,p.z);
             }
@@ -1338,7 +1382,7 @@ protected:
       printf("updated measuring: (%g,%g,%g)\n",px,py,pz);
    }
 
-   bool loadFile(volren *vr, const char *filename)
+   bool loadFile(volren_qgl *vr, const char *filename)
    {
       int histmin = 5;
       float histfreq = 7.0f;
