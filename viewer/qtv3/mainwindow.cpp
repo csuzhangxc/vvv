@@ -399,13 +399,13 @@ void QTV3MainWindow::createWidgets()
    modeButton5_->setAutoExclusive(true);
    modeButton6_->setAutoExclusive(true);
    modeButton7_->setAutoExclusive(true);
-   connect(modeButton1_, SIGNAL(toggled(bool)), this, SLOT(modeChanged1(bool)));
-   connect(modeButton2_, SIGNAL(toggled(bool)), this, SLOT(modeChanged2(bool)));
-   connect(modeButton3_, SIGNAL(toggled(bool)), this, SLOT(modeChanged3(bool)));
-   connect(modeButton4_, SIGNAL(toggled(bool)), this, SLOT(modeChanged4(bool)));
-   connect(modeButton5_, SIGNAL(toggled(bool)), this, SLOT(modeChanged5(bool)));
-   connect(modeButton6_, SIGNAL(toggled(bool)), this, SLOT(modeChanged6(bool)));
-   connect(modeButton7_, SIGNAL(toggled(bool)), this, SLOT(modeChanged7(bool)));
+   connect(modeButton1_, SIGNAL(clicked(bool)), this, SLOT(modeChanged1(bool)));
+   connect(modeButton2_, SIGNAL(clicked(bool)), this, SLOT(modeChanged2(bool)));
+   connect(modeButton3_, SIGNAL(clicked(bool)), this, SLOT(modeChanged3(bool)));
+   connect(modeButton4_, SIGNAL(clicked(bool)), this, SLOT(modeChanged4(bool)));
+   connect(modeButton5_, SIGNAL(clicked(bool)), this, SLOT(modeChanged5(bool)));
+   connect(modeButton6_, SIGNAL(clicked(bool)), this, SLOT(modeChanged6(bool)));
+   connect(modeButton7_, SIGNAL(clicked(bool)), this, SLOT(modeChanged7(bool)));
    l8->addWidget(modeButton1_);
    l8->addStretch(1);
    l8->addWidget(modeButton2_);
@@ -978,6 +978,7 @@ void QTV3MainWindow::modeChanged7(bool on)
       setRotation(0.0);
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Measure);
+      vrw_->clearLine();
 
       planeCheck_->setChecked(true);
    }
