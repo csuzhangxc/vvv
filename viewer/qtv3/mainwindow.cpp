@@ -205,14 +205,14 @@ void QTV3MainWindow::createWidgets()
 
    // create clipping section
    QVBoxLayout *l1 = new QVBoxLayout;
-   l1->addWidget(s1);
    QLabel *ll1=new QLabel("Clipping");
    ll1->setAlignment(Qt::AlignLeft);
+   l1->addWidget(ll1);
+   l1->addWidget(s1);
    QPushButton *tackButton = new QPushButton(tr("Tack"));
    connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
    QPushButton *clearButton = new QPushButton(tr("Clear"));
    connect(clearButton, SIGNAL(pressed()), this, SLOT(clear()));
-   l1->addWidget(ll1);
    l1->addWidget(tackButton);
    l1->addWidget(clearButton);
    planeCheck_ = new QCheckBox(tr("Plane View"));
@@ -374,6 +374,10 @@ void QTV3MainWindow::createWidgets()
 
    // add interaction tool box
    QVBoxLayout *l8 = new QVBoxLayout;
+   QLabel *ll8=new QLabel("Interaction");
+   ll8->setAlignment(Qt::AlignLeft);
+   l8->addWidget(ll8);
+   l8->addStretch(2);
    modeButton1_ = new QPushButton(tr("Window"));
    modeButton2_ = new QPushButton(tr("Move"));
    modeButton3_ = new QPushButton(tr("Rotate"));
@@ -415,10 +419,7 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(modeButton6_);
    l8->addStretch(1);
    l8->addWidget(modeButton7_);
-   l8->addStretch(1);
-   QLabel *ll8=new QLabel("Interactions");
-   ll8->setAlignment(Qt::AlignLeft);
-   l8->addWidget(ll8);
+   l8->addStretch(5);
    modeButton1_->setChecked(true);
    resetButton_ = new QPushButton(tr("Reset"));
    connect(resetButton_, SIGNAL(pressed()), this, SLOT(resetInteractions()));
