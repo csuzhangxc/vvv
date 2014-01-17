@@ -294,7 +294,7 @@ bool DicomVolume::dicomProcess()
    long long totalSize=m_Cols*m_Rows*m_Images.size();
 
    unsigned short *voxels=m_Voxels=new unsigned short[totalSize];
-   if (voxels==0) return(false);
+   if (voxels==NULL) return(false);
 
    // calculate the scaling factor from the pixel value range
    if (m_LargestPixVal==m_SmallestPixVal) m_LargestPixVal++;
