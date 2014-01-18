@@ -939,8 +939,6 @@ void QTV3MainWindow::modeChanged3(bool on)
       setRotation(0.0);
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Rotate);
-
-      planeCheck_->setChecked(true);
    }
 }
 
@@ -960,8 +958,6 @@ void QTV3MainWindow::modeChanged5(bool on)
       setRotation(0.0);
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
-
-      planeCheck_->setChecked(true);
    }
 }
 
