@@ -3492,6 +3492,8 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    if (HASFBO && usefbo)
       if (get_tfunc()->checkRGBA())
          {
+         // render from fbo texture:
+
          glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
          glBindTexture(GL_TEXTURE_2D, textureId);
@@ -3540,6 +3542,16 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          glDisable(GL_ALPHA_TEST);
 
          glDisable(GL_BLEND);
+
+         // render from fbo depth:
+
+         glBindFramebufferEXT(GL_READ_FRAMEBUFFER, fboId);
+         glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
+
+         glBlitFramebuffer(0, 0, fboWidth, fboHeight,
+                           0, 0, fboWidth, fboHeight,
+                           GL_DEPTH_BUFFER_BIT,
+                           GL_NEAREST);
          }
 
    // invert frame buffer

@@ -7,8 +7,10 @@
 #include <mini/rekbase.h>
 #endif
 
+#ifdef HAVE_MINI
 static float ratio=0.5f;
 static unsigned long long maxsize=512;
+#endif
 
 int main(int argc,char *argv[])
    {

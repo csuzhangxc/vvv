@@ -62,7 +62,7 @@ protected:
    {
       if (line_.size()>0)
       {
-         static const float scale=0.98f;
+         static const float scale=0.99f;
 
          glMatrixMode(GL_PROJECTION);
          glPushMatrix();

@@ -40,11 +40,13 @@ static void initwglprocs()
    glRenderbufferStorageEXT                 = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress("glRenderbufferStorage");
    glGetRenderbufferParameterivEXT          = (PFNGLGETRENDERBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetRenderbufferParameteriv");
    glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFERPROC)wglGetProcAddress("glIsRenderbuffer");
+   glBlitFramebuffer                        = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress("glBlitFramebuffer");
 
    if (!(glGenFramebuffersEXT && glDeleteFramebuffersEXT && glBindFramebufferEXT && glCheckFramebufferStatusEXT &&
          glGetFramebufferAttachmentParameterivEXT && glGenerateMipmapEXT && glFramebufferTexture2DEXT && glFramebufferRenderbufferEXT &&
          glGenRenderbuffersEXT && glDeleteRenderbuffersEXT && glBindRenderbufferEXT && glRenderbufferStorageEXT &&
-         glGetRenderbufferParameterivEXT && glIsRenderbufferEXT)) ERRORMSG();
+         glGetRenderbufferParameterivEXT && glIsRenderbufferEXT &&
+         glBlitFramebuffer)) ERRORMSG();
 #endif
    }
 
@@ -154,6 +156,7 @@ PFNGLBINDRENDERBUFFERPROC                    glBindRenderbufferEXT = 0;         
 PFNGLRENDERBUFFERSTORAGEPROC                 glRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
 PFNGLGETRENDERBUFFERPARAMETERIVPROC          glGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
 PFNGLISRENDERBUFFERPROC                      glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
+PFNGLBLITFRAMEBUFFERPROC                     glBLitFramebuffer = 0;                         // FBO blit procedure
 #endif
 
 #endif
