@@ -1124,6 +1124,8 @@ protected:
          event->ignore();
 
       bMouseMove = false;
+
+      mouseMoveEvent(event);
    }
 
    void mouseReleaseEvent(QMouseEvent *event)
