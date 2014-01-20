@@ -54,6 +54,16 @@ public:
       return(l);
    }
 
+   double getEndLength()
+   {
+      double l=0.0;
+
+      if (line_.size()>1)
+         l=(line_[line_.size()-1]-line_[0]).getlength();
+
+      return(l);
+   }
+
 protected:
 
    std::vector<v3d> line_;
@@ -1235,7 +1245,7 @@ protected:
                v3d p=vr_->project(x,y, fovy,aspect);
                vr_->appendLine(p);
 
-               updated_measuring(p.x,p.y,p.z,vr_->getLength());
+               updated_measuring(p.x,p.y,p.z,vr_->getLength(),vr_->getEndLength());
             }
          }
          else if (bMiddleButtonDown)
@@ -1398,9 +1408,9 @@ protected:
       printf("updated opacity\n");
    }
 
-   virtual void updated_measuring(double px,double py,double pz,double length)
+   virtual void updated_measuring(double px,double py,double pz,double length,double endlength)
    {
-      printf("updated measuring: point(%g,%g,%g) length=%g\n",px,py,pz,length);
+      printf("updated measuring: point(%g,%g,%g) length=%g end2end=%g\n",px,py,pz,length,endlength);
    }
 
    bool loadFile(volren_qgl *vr, const char *filename)

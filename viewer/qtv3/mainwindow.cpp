@@ -178,7 +178,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    connect(vrw_, SIGNAL(interaction_signal()), this, SLOT(interaction_slot()));
-   connect(vrw_, SIGNAL(measuring_signal(double,double,double,double)), this, SLOT(measuring_slot(double,double,double,double)));
+   connect(vrw_, SIGNAL(measuring_signal(double,double,double,double,double)), this, SLOT(measuring_slot(double,double,double,double,double)));
    mainLayout_->addWidget(update_);
 
    // create sliders
@@ -1048,12 +1048,14 @@ void QTV3MainWindow::interaction_slot()
    }
 }
 
-void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length)
+void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length,double endlength)
 {
    update_->setText(QString("measured length is ")+
-                    QString::number(length*1E3)+"mm "+
-                    "at measuring point ("+
-                    QString::number(px*1E3)+","+
-                    QString::number(py*1E3)+","+
+                    QString::number(length*1E3)+"mm, "+
+                    QString("end to end length is ")+
+                    QString::number(endlength*1E3)+"mm "+
+                    "at end point ("+
+                    QString::number(px*1E3)+"/"+
+                    QString::number(py*1E3)+"/"+
                     QString::number(pz*1E3)+")");
 }

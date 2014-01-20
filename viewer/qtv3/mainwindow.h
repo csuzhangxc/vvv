@@ -68,9 +68,9 @@ protected:
       emit interaction_signal();
    }
 
-   virtual void updated_measuring(double px,double py,double pz,double length)
+   virtual void updated_measuring(double px,double py,double pz,double length,double endlength)
    {
-      emit measuring_signal(px,py,pz,length);
+      emit measuring_signal(px,py,pz,length,endlength);
    }
 
    QTime timer_;
@@ -82,7 +82,7 @@ signals:
    void updated_signal();
 
    void interaction_signal();
-   void measuring_signal(double px,double py,double pz,double length);
+   void measuring_signal(double px,double py,double pz,double length,double endlength);
 };
 
 class QTV3Slider: public QSlider
@@ -303,7 +303,7 @@ protected slots:
    void updated_slot();
 
    void interaction_slot();
-   void measuring_slot(double px,double py,double pz,double length);
+   void measuring_slot(double px,double py,double pz,double length,double endlength);
 
 private:
 
