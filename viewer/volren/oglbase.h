@@ -54,6 +54,14 @@
 #endif
 #endif
 
+// OpenGL 3.3 workaround:
+
+#ifndef __APPLE__
+#define glBlitFramebufferEXT glBlitFramebuffer
+#endif
+
+// OpenGL initialization:
+
 void initogl();
 void setbackground(float R,float G,float B,float A=1.0f);
 void clearbuffer();

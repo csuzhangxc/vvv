@@ -3545,13 +3545,17 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
 
          // render from fbo depth:
 
-         glBindFramebufferEXT(GL_READ_FRAMEBUFFER, fboId);
-         glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
+#ifdef GL_EXT_framebuffer_blit
 
-         glBlitFramebuffer(0, 0, fboWidth, fboHeight,
-                           0, 0, fboWidth, fboHeight,
-                           GL_DEPTH_BUFFER_BIT,
-                           GL_NEAREST);
+         glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, fboId);
+         glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+
+         glBlitFramebufferEXT(0, 0, fboWidth, fboHeight,
+                              0, 0, fboWidth, fboHeight,
+                              GL_DEPTH_BUFFER_BIT,
+                              GL_NEAREST);
+
+#endif
          }
 
    // invert frame buffer
