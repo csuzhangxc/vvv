@@ -69,7 +69,7 @@ protected:
          glScalef(scale,scale,scale);
          glMatrixMode(GL_MODELVIEW);
 
-         glColor3f(1.0f,0.0f,0.0f);
+         glColor3f(1.0f,0.0f,1.0f);
          glBegin(GL_LINE_STRIP);
          for (unsigned int i=0; i<line_.size(); i++)
             glVertex3d(line_[i].x,line_[i].y,line_[i].z);
