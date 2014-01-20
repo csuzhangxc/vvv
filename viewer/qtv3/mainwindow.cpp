@@ -1050,12 +1050,8 @@ void QTV3MainWindow::interaction_slot()
 
 void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length,double endlength)
 {
-   update_->setText(QString("measured length is ")+
+   update_->setText(QString("measured line length: ")+
                     QString::number(length*1E3)+"mm, "+
-                    QString("end to end length is ")+
-                    QString::number(endlength*1E3)+"mm "+
-                    "at end point ("+
-                    QString::number(px*1E3)+"/"+
-                    QString::number(py*1E3)+"/"+
-                    QString::number(pz*1E3)+")");
+                    QString("end to end length: ")+
+                    QString::number(endlength*1E3)+"mm");
 }
