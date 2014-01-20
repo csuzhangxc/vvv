@@ -7,27 +7,25 @@
 #include <mini/rekbase.h>
 #endif
 
-#ifdef HAVE_MINI
-static float ratio=0.5f;
-static unsigned long long maxsize=512;
-#endif
-
 int main(int argc,char *argv[])
    {
-   unsigned long long cell_limit;
-
    if (argc!=2 && argc!=3)
       {
       printf("usage: %s <input.raw> [<volume size limit>]\n",argv[0]);
       exit(1);
       }
 
+#ifdef HAVE_MINI
+
+   static float ratio=0.5f;
+   static unsigned long long maxsize=512;
+
+   unsigned long long cell_limit;
+
    if (argc==3)
       if (sscanf(argv[2],"%llu",&maxsize)!=1) exit(1);
 
    cell_limit=maxsize*maxsize*maxsize;
-
-#ifdef HAVE_MINI
 
    char *output;
 
