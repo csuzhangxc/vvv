@@ -1000,7 +1000,10 @@ void QTV3MainWindow::clearIso()
 
 void QTV3MainWindow::prefs()
 {
-   prefs_->show();
+   if (prefs_->isVisible())
+      prefs_->hide();
+   else
+      prefs_->show();
 }
 
 void QTV3MainWindow::about()
