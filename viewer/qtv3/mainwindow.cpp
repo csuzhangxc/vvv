@@ -381,9 +381,9 @@ void QTV3MainWindow::createWidgets()
    modeButton1_ = new QPushButton(tr("Window"));
    modeButton2_ = new QPushButton(tr("Move"));
    modeButton3_ = new QPushButton(tr("Rotate"));
-   modeButton4_ = new QPushButton(tr("Roll"));
    modeButton5_ = new QPushButton(tr("Zoom"));
    modeButton6_ = new QPushButton(tr("Clip"));
+   modeButton4_ = new QPushButton(tr("Clip&Roll"));
    modeButton7_ = new QPushButton(tr("Opacity"));
    modeButton8_ = new QPushButton(tr("Measure"));
    modeButton1_->setCheckable(true);
@@ -952,8 +952,7 @@ void QTV3MainWindow::modeChanged4(bool on)
    if (on)
    {
       setRotation(0.0);
-      if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateClip);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
    }
 }
 
@@ -962,7 +961,8 @@ void QTV3MainWindow::modeChanged5(bool on)
    if (on)
    {
       setRotation(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+      if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
    }
 }
 
@@ -972,7 +972,7 @@ void QTV3MainWindow::modeChanged6(bool on)
    {
       setRotation(0.0);
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateClip);
    }
 }
 
