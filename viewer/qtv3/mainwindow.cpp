@@ -381,9 +381,9 @@ void QTV3MainWindow::createWidgets()
    modeButton1_ = new QPushButton(tr("Window"));
    modeButton2_ = new QPushButton(tr("Move"));
    modeButton3_ = new QPushButton(tr("Rotate"));
-   modeButton5_ = new QPushButton(tr("Zoom"));
-   modeButton6_ = new QPushButton(tr("Clip"));
-   modeButton4_ = new QPushButton(tr("Clip&Roll"));
+   modeButton4_ = new QPushButton(tr("Zoom"));
+   modeButton5_ = new QPushButton(tr("Clip"));
+   modeButton6_ = new QPushButton(tr("ClipNRoll"));
    modeButton7_ = new QPushButton(tr("Opacity"));
    modeButton8_ = new QPushButton(tr("Measure"));
    modeButton1_->setCheckable(true);
