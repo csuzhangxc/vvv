@@ -381,10 +381,11 @@ void QTV3MainWindow::createWidgets()
    modeButton1_ = new QPushButton(tr("Window"));
    modeButton2_ = new QPushButton(tr("Move"));
    modeButton3_ = new QPushButton(tr("Rotate"));
-   modeButton4_ = new QPushButton(tr("Zoom"));
-   modeButton5_ = new QPushButton(tr("Clip"));
-   modeButton6_ = new QPushButton(tr("Opacity"));
-   modeButton7_ = new QPushButton(tr("Measure"));
+   modeButton4_ = new QPushButton(tr("Roll"));
+   modeButton5_ = new QPushButton(tr("Zoom"));
+   modeButton6_ = new QPushButton(tr("Clip"));
+   modeButton7_ = new QPushButton(tr("Opacity"));
+   modeButton8_ = new QPushButton(tr("Measure"));
    modeButton1_->setCheckable(true);
    modeButton2_->setCheckable(true);
    modeButton3_->setCheckable(true);
@@ -392,6 +393,7 @@ void QTV3MainWindow::createWidgets()
    modeButton5_->setCheckable(true);
    modeButton6_->setCheckable(true);
    modeButton7_->setCheckable(true);
+   modeButton8_->setCheckable(true);
    modeButton1_->setAutoExclusive(true);
    modeButton2_->setAutoExclusive(true);
    modeButton3_->setAutoExclusive(true);
@@ -399,6 +401,7 @@ void QTV3MainWindow::createWidgets()
    modeButton5_->setAutoExclusive(true);
    modeButton6_->setAutoExclusive(true);
    modeButton7_->setAutoExclusive(true);
+   modeButton8_->setAutoExclusive(true);
    connect(modeButton1_, SIGNAL(clicked(bool)), this, SLOT(modeChanged1(bool)));
    connect(modeButton2_, SIGNAL(clicked(bool)), this, SLOT(modeChanged2(bool)));
    connect(modeButton3_, SIGNAL(clicked(bool)), this, SLOT(modeChanged3(bool)));
@@ -406,6 +409,7 @@ void QTV3MainWindow::createWidgets()
    connect(modeButton5_, SIGNAL(clicked(bool)), this, SLOT(modeChanged5(bool)));
    connect(modeButton6_, SIGNAL(clicked(bool)), this, SLOT(modeChanged6(bool)));
    connect(modeButton7_, SIGNAL(clicked(bool)), this, SLOT(modeChanged7(bool)));
+   connect(modeButton8_, SIGNAL(clicked(bool)), this, SLOT(modeChanged8(bool)));
    l8->addWidget(modeButton1_);
    l8->addStretch(1);
    l8->addWidget(modeButton2_);
@@ -419,6 +423,8 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(modeButton6_);
    l8->addStretch(1);
    l8->addWidget(modeButton7_);
+   l8->addStretch(1);
+   l8->addWidget(modeButton8_);
    l8->addStretch(5);
    modeButton1_->setChecked(true);
    resetButton_ = new QPushButton(tr("Reset"));
@@ -937,8 +943,7 @@ void QTV3MainWindow::modeChanged3(bool on)
    if (on)
    {
       setRotation(0.0);
-      if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Rotate);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateAxis);
    }
 }
 
@@ -947,11 +952,21 @@ void QTV3MainWindow::modeChanged4(bool on)
    if (on)
    {
       setRotation(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+      if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateClip);
    }
 }
 
 void QTV3MainWindow::modeChanged5(bool on)
+{
+   if (on)
+   {
+      setRotation(0.0);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
+   }
+}
+
+void QTV3MainWindow::modeChanged6(bool on)
 {
    if (on)
    {
@@ -961,13 +976,13 @@ void QTV3MainWindow::modeChanged5(bool on)
    }
 }
 
-void QTV3MainWindow::modeChanged6(bool on)
+void QTV3MainWindow::modeChanged7(bool on)
 {
    if (on)
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Opacity);
 }
 
-void QTV3MainWindow::modeChanged7(bool on)
+void QTV3MainWindow::modeChanged8(bool on)
 {
    if (on)
    {

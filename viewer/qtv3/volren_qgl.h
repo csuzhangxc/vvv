@@ -100,7 +100,8 @@ public:
    enum InteractionMode {
       InteractionMode_Window,
       InteractionMode_Move,
-      InteractionMode_Rotate,
+      InteractionMode_RotateAxis,
+      InteractionMode_RotateClip,
       InteractionMode_Zoom,
       InteractionMode_Clip,
       InteractionMode_Opacity,
@@ -1188,7 +1189,16 @@ protected:
                   eye_z_ += uz*(y-mouseLastY);
                }
             }
-            else if (mode_ == InteractionMode_Rotate)
+            else if (mode_ == InteractionMode_RotateAxis)
+            {
+               if (bMouseMove)
+               {
+                  angle_ += 180*(x-mouseLastX);
+
+                  updated_rotation();
+               }
+            }
+            else if (mode_ == InteractionMode_RotateClip)
             {
                if (bMouseMove)
                {

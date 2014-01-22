@@ -223,6 +223,7 @@ private:
    QPushButton *modeButton5_;
    QPushButton *modeButton6_;
    QPushButton *modeButton7_;
+   QPushButton *modeButton8_;
 
    QPushButton *resetButton_;
 
@@ -292,6 +293,7 @@ protected slots:
    void modeChanged5(bool on);
    void modeChanged6(bool on);
    void modeChanged7(bool on);
+   void modeChanged8(bool on);
    void resetInteractions();
    void extractIso();
    void clearIso();
