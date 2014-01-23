@@ -383,7 +383,7 @@ void QTV3MainWindow::createWidgets()
    modeButton3_ = new QPushButton(tr("Rotate"));
    modeButton4_ = new QPushButton(tr("Zoom"));
    modeButton5_ = new QPushButton(tr("Clip"));
-   modeButton6_ = new QPushButton(tr("ClipNRoll"));
+   modeButton6_ = new QPushButton(tr("Clip+Roll"));
    modeButton7_ = new QPushButton(tr("Opacity"));
    modeButton8_ = new QPushButton(tr("Measure"));
    modeButton1_->setCheckable(true);
@@ -972,7 +972,7 @@ void QTV3MainWindow::modeChanged6(bool on)
    {
       setRotation(0.0);
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateClip);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateAnchor);
    }
 }
 
@@ -1057,6 +1057,7 @@ void QTV3MainWindow::interaction_slot()
    if (vrw_)
    {
       rotSlider_->setValue(vrw_->getAngle() * 16);
+      tiltSlider_->setValue(vrw_->getTilt() * 16);
 
       double dist = 0.5*(1-vrw_->getClipDist());
       clipSlider_->setValue(dist * 100*16);

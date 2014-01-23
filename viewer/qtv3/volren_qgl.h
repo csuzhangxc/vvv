@@ -101,7 +101,7 @@ public:
       InteractionMode_Window,
       InteractionMode_Move,
       InteractionMode_RotateAxis,
-      InteractionMode_RotateClip,
+      InteractionMode_RotateAnchor,
       InteractionMode_Zoom,
       InteractionMode_Clip,
       InteractionMode_Opacity,
@@ -1193,12 +1193,13 @@ protected:
             {
                if (bMouseMove)
                {
-                  angle_ += 180*(x-mouseLastX);
+                  angle_ -= 180*(x-mouseLastX);
+                  tilt_ -= 180*(mouseLastY-y);
 
                   updated_rotation();
                }
             }
-            else if (mode_ == InteractionMode_RotateClip)
+            else if (mode_ == InteractionMode_RotateAnchor)
             {
                if (bMouseMove)
                {
@@ -1309,7 +1310,7 @@ protected:
 
    void wheelEvent(QWheelEvent *event)
    {
-      double numDegrees = event->delta()/8.0;
+      double numDegrees = event->delta()/16.0;
 
       double ex,ey,ez;
       double dx,dy,dz;
@@ -1319,6 +1320,7 @@ protected:
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
       if (mode_ == InteractionMode_Clip ||
+          mode_ == InteractionMode_RotateAnchor ||
           mode_ == InteractionMode_Measure)
       {
          clipdist_ -= numDegrees/360.0;
