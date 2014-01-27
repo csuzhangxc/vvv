@@ -97,47 +97,38 @@ void QTV3PrefWindow::setLabelVoxel(float dx,float dy,float dz)
    label_voxel_->setText(QString("Resolution in micro meters: %1/%2/%3").arg(dxi).arg(dyi).arg(dzi));
 }
 
-QSize QTV3PrefWindow::minimumSizeHint() const
-{
-   return(QSize(256, 100));
-}
-
-QSize QTV3PrefWindow::sizeHint() const
-{
-   return(QSize(256, 768));
-}
-
 void QTV3PrefWindow::createWidgets()
 {
-   QGroupBox *group = new QGroupBox;
-   QVBoxLayout *layout = new QVBoxLayout;
+   group_ = new QScrollArea;
+   container_ = new QWidget;
+   layout_ = new QVBoxLayout;
 
    label_filename_ = new QLabel;
-   layout->addWidget(label_filename_);
+   layout_->addWidget(label_filename_);
    label_dim_ = new QLabel;
-   layout->addWidget(label_dim_);
+   layout_->addWidget(label_dim_);
    label_voxel_ = new QLabel;
-   layout->addWidget(label_voxel_);
+   layout_->addWidget(label_voxel_);
 
    QFrame* line1 = new QFrame();
    line1->setFrameShape(QFrame::HLine);
    line1->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line1);
+   layout_->addWidget(line1);
 
    QLineEdit *lineEdit_vol_maxsize = new QLineEdit;
    QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
    connect(lineEdit_vol_maxsize,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
-   layout->addWidget(vol_maxsize_group);
+   layout_->addWidget(vol_maxsize_group);
 
    QLineEdit *lineEdit_iso_maxsize = new QLineEdit;
    QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
    connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
-   layout->addWidget(iso_maxsize_group);
+   layout_->addWidget(iso_maxsize_group);
 
    QFrame* line2 = new QFrame();
    line2->setFrameShape(QFrame::HLine);
    line2->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line2);
+   layout_->addWidget(line2);
 
    QVBoxLayout *vl = new QVBoxLayout;
    QButtonGroup *gb = new QButtonGroup(this);
@@ -155,12 +146,12 @@ void QTV3PrefWindow::createWidgets()
    gb->addButton(sfxOnCheck_);
    if (vrw_stereo_) sfxOnCheck_->setChecked(true);
    else sfxOffCheck_->setChecked(true);
-   layout->addLayout(vl);
+   layout_->addLayout(vl);
 
    QFrame* line3 = new QFrame();
    line3->setFrameShape(QFrame::HLine);
    line3->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line3);
+   layout_->addWidget(line3);
 
    lineEdit_slice_opacity_ = new QLineEdit;
    QGroupBox *slice_opacity_group = createEdit("Opacity of Clip Plane", QString::number(slice_opacity_), &lineEdit_slice_opacity_);
@@ -168,7 +159,7 @@ void QTV3PrefWindow::createWidgets()
    slice_opacity_slider_=createSlider(0,100,100*slice_opacity_);
    slice_opacity_group->layout()->addWidget(slice_opacity_slider_);
    connect(slice_opacity_slider_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange(int)));
-   layout->addWidget(slice_opacity_group);
+   layout_->addWidget(slice_opacity_group);
 
    lineEdit_slice_opacity2_ = new QLineEdit;
    QGroupBox *slice_opacity_group2 = createEdit("Opacity of Outer Clip Plane", QString::number(slice_opacity2_), &lineEdit_slice_opacity2_);
@@ -176,12 +167,12 @@ void QTV3PrefWindow::createWidgets()
    slice_opacity_slider2_=createSlider(0,100,100*slice_opacity2_);
    slice_opacity_group2->layout()->addWidget(slice_opacity_slider2_);
    connect(slice_opacity_slider2_,SIGNAL(valueChanged(int)), this, SLOT(sliceOpacityChange2(int)));
-   layout->addWidget(slice_opacity_group2);
+   layout_->addWidget(slice_opacity_group2);
 
    QFrame* line4 = new QFrame();
    line4->setFrameShape(QFrame::HLine);
    line4->setFrameShadow(QFrame::Raised);
-   layout->addWidget(line4);
+   layout_->addWidget(line4);
 
    lineEdit_hue_ = new QLineEdit;
    QGroupBox *hue_group = createEdit("Volume Hue", QString::number(vol_hue_), &lineEdit_hue_);
@@ -189,16 +180,20 @@ void QTV3PrefWindow::createWidgets()
    hue_slider_=createSlider(0,360,vol_hue_);
    hue_group->layout()->addWidget(hue_slider_);
    connect(hue_slider_,SIGNAL(valueChanged(int)), this, SLOT(hueChange(int)));
-   layout->addWidget(hue_group);
+   layout_->addWidget(hue_group);
 
-   layout->addStretch(1000);
+   layout_->addStretch(1000);
 
    QPushButton *shotButton = new QPushButton(tr("Grab"));
    connect(shotButton, SIGNAL(pressed()), this, SLOT(grab()));
-   layout->addWidget(shotButton);
+   layout_->addWidget(shotButton);
 
-   group->setLayout(layout);
-   setWidget(group);
+   container_->setLayout(layout_);
+   group_->setWidget(container_);
+   group_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+   group_->setMinimumSize(container_->size().width(),100);
+
+   setWidget(group_);
 }
 
 QGroupBox *QTV3PrefWindow::createEdit(QString name, QString value,

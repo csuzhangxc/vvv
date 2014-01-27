@@ -32,12 +32,6 @@ public:
    //! set label about actual voxel size
    void setLabelVoxel(float dx,float dy,float dz);
 
-   //! return preferred minimum window size
-   QSize minimumSizeHint() const;
-
-   //! return preferred window size
-   QSize sizeHint() const;
-
    long long vol_maxsize_;
    long long iso_maxsize_;
 
@@ -54,6 +48,10 @@ protected:
 
    QGLVolRenWidget *vrw_;
    bool vrw_stereo_;
+
+   QScrollArea *group_;
+   QWidget *container_;
+   QVBoxLayout *layout_;
 
    QLabel *label_filename_;
    QLabel *label_dim_;
