@@ -450,7 +450,11 @@ void QTV3MainWindow::createWidgets()
 
 void QTV3MainWindow::createDocks()
 {
-   if (prefs_) delete prefs_;
+   if (prefs_)
+   {
+      removeDockWidget(prefs_);
+      delete prefs_;
+   }
 
    prefs_ = new QTV3PrefWindow(this, vrw_, vrw_stereo_);
    prefs_->setAllowedAreas(Qt::RightDockWidgetArea);
