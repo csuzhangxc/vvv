@@ -19,8 +19,6 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent)
    setWindowTitle(APP_NAME" "APP_VERSION);
 
    reset();
-
-   shotcount_=0;
 }
 
 QTV3MainWindow::~QTV3MainWindow()
@@ -36,7 +34,6 @@ void QTV3MainWindow::loadVolume(const char *filename)
    removeLabel();
 
    prefs_->setLabelFileName(filename);
-   shotname_=filename;
 
    vrw_->loadVolume(filename);
 
@@ -58,7 +55,6 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
    series += ")";
 
    prefs_->setLabelFileName(series.c_str());
-   shotname_=prefix.c_str();
 
    vrw_->loadSeries(list);
 
@@ -74,9 +70,6 @@ void QTV3MainWindow::loadSurface(const char *filename)
       vrw_->clearVolume();
       hasTeaserVolume_=false;
    }
-
-   if (!vrw_->hasVolume())
-      shotname_=filename;
 
    vrw_->loadSurface(filename);
 }
@@ -514,8 +507,6 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
 
    if (hasTeaserVolume_)
       prefs_->setLabelFileName("teaser volume");
-
-   shotname_ = "shot";
 }
 
 std::string QTV3MainWindow::getPrefix(const std::vector<std::string> list)
@@ -1086,16 +1077,4 @@ void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length,
                     QString::number(length*1E3)+"mm, "+
                     QString("end to end length: ")+
                     QString::number(endlength*1E3)+"mm");
-}
-
-void QTV3MainWindow::grab()
-{
-   QPixmap window;
-
-   window=QPixmap::grabWidget(vrw_);
-
-   QString format = "png";
-   QString name = shotname_ + "_" + QString::number(shotcount_++) + "." + format;
-
-   window.save(name, format.toAscii());
 }

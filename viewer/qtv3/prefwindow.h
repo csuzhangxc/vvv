@@ -48,6 +48,9 @@ public:
 
    float vol_hue_;
 
+   QString shotname_;
+   static unsigned int shotcount_;
+
 protected:
 
    QGLVolRenWidget *vrw_;
@@ -90,6 +93,8 @@ protected slots:
 
    void hueChange(QString);
    void hueChange(int);
+
+   void shoot();
 };
 
 #endif

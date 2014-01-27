@@ -6,6 +6,8 @@
 
 #include "prefwindow.h"
 
+unsigned int QTV3PrefWindow::shotcount_=0;
+
 QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_stereo)
    : QDockWidget(parent)
 {
@@ -60,6 +62,8 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
    vrw_->setColorHue(vol_hue_);
 
    createWidgets();
+
+   shotname_="shot";
 }
 
 QTV3PrefWindow::~QTV3PrefWindow()
@@ -78,6 +82,7 @@ QTV3PrefWindow::~QTV3PrefWindow()
 void QTV3PrefWindow::setLabelFileName(QString fname)
 {
    label_filename_->setText(QString("Volume: %1").arg(fname));
+   shotname_=fname;
 }
 
 void QTV3PrefWindow::setLabelDim(long long sx,long long sy,long long sz)
@@ -190,6 +195,9 @@ void QTV3PrefWindow::createWidgets()
 
    layout->addStretch(1000);
 
+   QPushButton *shotButton = new QPushButton(tr("Shoot"));
+   connect(shotButton, SIGNAL(pressed()), this, SLOT(shoot()));
+
    group->setLayout(layout);
    setWidget(group);
 }
@@ -269,4 +277,16 @@ void QTV3PrefWindow::hueChange(int hue)
    vol_hue_ = hue / 16.0f;
    vrw_->setColorHue(vol_hue_);
    lineEdit_hue_->setText(QString::number(vol_hue_));
+}
+
+void QTV3PrefWindow::shoot()
+{
+   QPixmap window;
+
+   window=QPixmap::grabWidget(vrw_);
+
+   QString format = "png";
+   QString name = shotname_ + "_" + QString::number(shotcount_++) + "." + format;
+
+   window.save(name, format.toAscii());
 }
