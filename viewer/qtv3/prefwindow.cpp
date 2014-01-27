@@ -195,8 +195,8 @@ void QTV3PrefWindow::createWidgets()
 
    layout->addStretch(1000);
 
-   QPushButton *shotButton = new QPushButton(tr("Shoot"));
-   connect(shotButton, SIGNAL(pressed()), this, SLOT(shoot()));
+   QPushButton *shotButton = new QPushButton(tr("Grab"));
+   connect(shotButton, SIGNAL(pressed()), this, SLOT(grab()));
    layout->addWidget(shotButton);
 
    group->setLayout(layout);
@@ -280,11 +280,11 @@ void QTV3PrefWindow::hueChange(int hue)
    lineEdit_hue_->setText(QString::number(vol_hue_));
 }
 
-void QTV3PrefWindow::shoot()
+void QTV3PrefWindow::grab()
 {
    QPixmap window;
 
-   window=QPixmap::grabWidget(vrw_, vrw_->rect());
+   window=QPixmap::grabWidget(vrw_);
 
    QString format = "png";
    QString name = shotname_ + "_" + QString::number(++shotcount_) + "." + format;
