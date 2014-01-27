@@ -227,6 +227,10 @@ public:
       series_ = list;
    }
 
+   //! check for volume
+   BOOLINT hasVolume()
+      {return(vr_->hasvolume());}
+
    //! extract a surface
    void extractSurface()
    {
@@ -250,6 +254,10 @@ public:
       if (geotoload_) free(geotoload_);
       geotoload_ = strdup(filename);
    }
+
+   //! check for surface
+   BOOLINT hasSurface()
+      {return(vr_->hassurface());}
 
    //! show the surface
    void showSurface(int on)

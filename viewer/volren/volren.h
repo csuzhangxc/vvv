@@ -70,6 +70,10 @@ class volren: public volscene
                                   feedback,obj));
       }
 
+   //! check for volume
+   BOOLINT hasvolume()
+      {return(has_data());}
+
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   float r=1.0f,float g=1.0f,float b=1.0f,
@@ -115,6 +119,10 @@ class volren: public volscene
    //! show the surface data
    void showsurface(BOOLINT yes)
       {volscene::showsurface(yes);}
+
+   //! check for surface
+   BOOLINT hassurface()
+      {return(has_geo());}
 
    //! begin rendering
    void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective

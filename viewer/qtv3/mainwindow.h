@@ -146,6 +146,9 @@ public:
    //! clear surface
    void clearSurface();
 
+   //! grab volren window
+   void grab();
+
 private:
 
    QMenu *fileMenu_;
@@ -183,6 +186,9 @@ private:
 
    int flipXY1_,flipXY2_;
    int flipYZ1_,flipYZ2_;
+
+   QString shotname_;
+   unsigned int shotcount_;
 
    void setTilt();
 
