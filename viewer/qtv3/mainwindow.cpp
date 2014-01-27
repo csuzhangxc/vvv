@@ -506,7 +506,7 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
    createDocks();
 
    if (hasTeaserVolume_)
-      prefs_->setLabelFileName("teaser volume");
+      prefs_->setLabelFileName("teaser");
 }
 
 std::string QTV3MainWindow::getPrefix(const std::vector<std::string> list)
