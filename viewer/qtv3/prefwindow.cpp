@@ -191,7 +191,7 @@ void QTV3PrefWindow::createWidgets()
    container_->setLayout(layout_);
    group_->setWidget(container_);
    group_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-   group_->setMinimumSize(container_->size().width(),100);
+   group_->setMinimumSize(container_->size().width()+group_->verticalScrollBar()->sizeHint().width()+5,100);
 
    setWidget(group_);
 }
