@@ -49,7 +49,6 @@ public:
    float vol_hue_;
 
    QString shotname_;
-   static unsigned int shotcount_;
 
 protected:
 

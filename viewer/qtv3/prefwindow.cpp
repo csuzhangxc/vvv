@@ -6,8 +6,6 @@
 
 #include "prefwindow.h"
 
-unsigned int QTV3PrefWindow::shotcount_=0;
-
 QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_stereo)
    : QDockWidget(parent)
 {
@@ -287,7 +285,8 @@ void QTV3PrefWindow::grab()
    window=QPixmap::grabWidget(vrw_);
 
    QString format = "png";
-   QString name = shotname_ + "_" + QString::number(++shotcount_) + "." + format;
+   QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
+   QString name = shotname_ + "_" + date + "." + format;
 
-   window.save(name, format.toAscii());
+   window.save(name, format.toUpper().toAscii());
 }
