@@ -280,9 +280,8 @@ void QTV3PrefWindow::hueChange(int hue)
 
 void QTV3PrefWindow::grab()
 {
-   QPixmap window;
-
-   window=QPixmap::grabWidget(vrw_);
+   QImage image = vrw_->grabFrameBuffer();
+   QPixmap window = QPixmap::fromImage(image);
 
    QString format = "png";
    QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
