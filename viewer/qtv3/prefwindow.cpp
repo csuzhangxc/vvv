@@ -110,6 +110,10 @@ void QTV3PrefWindow::createWidgets()
    label_voxel_ = new QLabel;
    layout_->addWidget(label_voxel_);
 
+   QPushButton *shotButton = new QPushButton(tr("Grab"));
+   connect(shotButton, SIGNAL(pressed()), this, SLOT(grab()));
+   layout_->addWidget(shotButton);
+
    QFrame* line1 = new QFrame();
    line1->setFrameShape(QFrame::HLine);
    line1->setFrameShadow(QFrame::Raised);
@@ -183,10 +187,6 @@ void QTV3PrefWindow::createWidgets()
    layout_->addWidget(hue_group);
 
    layout_->addStretch(1000);
-
-   QPushButton *shotButton = new QPushButton(tr("Grab"));
-   connect(shotButton, SIGNAL(pressed()), this, SLOT(grab()));
-   layout_->addWidget(shotButton);
 
    container_->setLayout(layout_);
    group_->setWidget(container_);
