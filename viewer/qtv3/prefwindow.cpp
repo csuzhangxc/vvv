@@ -197,6 +197,7 @@ void QTV3PrefWindow::createWidgets()
 
    QPushButton *shotButton = new QPushButton(tr("Shoot"));
    connect(shotButton, SIGNAL(pressed()), this, SLOT(shoot()));
+   layout->addWidget(shotButton);
 
    group->setLayout(layout);
    setWidget(group);
@@ -283,10 +284,10 @@ void QTV3PrefWindow::shoot()
 {
    QPixmap window;
 
-   window=QPixmap::grabWidget(vrw_);
+   window=QPixmap::grabWidget(vrw_, vrw_->rect());
 
    QString format = "png";
-   QString name = shotname_ + "_" + QString::number(shotcount_++) + "." + format;
+   QString name = shotname_ + "_" + QString::number(++shotcount_) + "." + format;
 
    window.save(name, format.toAscii());
 }
