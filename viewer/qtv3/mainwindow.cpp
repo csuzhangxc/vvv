@@ -582,7 +582,7 @@ QStringList QTV3MainWindow::browse(QString path,
 
    delete fd;
 
-   this->setFocus();
+   setFocus();
 
    return(files);
 }
