@@ -119,12 +119,6 @@ public:
    //! dtor
    ~QTV3MainWindow();
 
-   //! return preferred minimum window size
-   QSize minimumSizeHint() const;
-
-   //! return preferred window size
-   QSize sizeHint() const;
-
    //! load a volume
    void loadVolume(const char *filename);
 

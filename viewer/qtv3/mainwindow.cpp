@@ -445,6 +445,7 @@ void QTV3MainWindow::createWidgets()
    mainSplitter_->setSizes(mainSizes);
    mainSplitter_->refresh();
 
+   setMinimumSize(QSize(MAIN_WIDTH,MAIN_HEIGHT));
    setCentralWidget(mainGroup);
 }
 
@@ -598,16 +599,6 @@ QTV3Slider *QTV3MainWindow::createSlider(int minimum, int maximum, int value,
    slider->setTickPosition(QSlider::TicksBelow);
    slider->setValue(value * 16);
    return(slider);
-}
-
-QSize QTV3MainWindow::minimumSizeHint() const
-{
-   return(QSize(100, 100));
-}
-
-QSize QTV3MainWindow::sizeHint() const
-{
-   return(QSize(MAIN_WIDTH, MAIN_HEIGHT));
 }
 
 void QTV3MainWindow::dragEnterEvent(QDragEnterEvent *event)

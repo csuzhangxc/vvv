@@ -24,8 +24,8 @@
 
 #define VOLREN_DEFAULT_BRICKSIZE 128
 
-#define VOLREN_DEFAULT_WIDTH 1536
-#define VOLREN_DEFAULT_HEIGHT 768
+#define VOLREN_DEFAULT_WIDTH 800
+#define VOLREN_DEFAULT_HEIGHT 600
 
 class volren_qgl: public volren
 {
