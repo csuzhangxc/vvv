@@ -156,7 +156,7 @@ PFNGLBINDRENDERBUFFERPROC                    glBindRenderbufferEXT = 0;         
 PFNGLRENDERBUFFERSTORAGEPROC                 glRenderbufferStorageEXT = 0;                  // renderbuffer memory allocation procedure
 PFNGLGETRENDERBUFFERPARAMETERIVPROC          glGetRenderbufferParameterivEXT = 0;           // return various renderbuffer parameters
 PFNGLISRENDERBUFFERPROC                      glIsRenderbufferEXT = 0;                       // determine renderbuffer object type
-PFNGLBLITFRAMEBUFFERPROC                     glBLitFramebuffer = 0;                         // FBO blit procedure
+PFNGLBLITFRAMEBUFFERPROC                     glBlitFramebuffer = 0;                         // FBO blit procedure
 #endif
 
 #endif
