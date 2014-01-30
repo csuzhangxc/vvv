@@ -1188,13 +1188,26 @@ protected:
                {
                   getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-                  eye_x_ += rx*(mouseLastX-x);
-                  eye_y_ += ry*(mouseLastX-x);
-                  eye_z_ += rz*(mouseLastX-x);
+                  if (!shift)
+                  {
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
 
-                  eye_x_ += ux*(y-mouseLastY);
-                  eye_y_ += uy*(y-mouseLastY);
-                  eye_z_ += uz*(y-mouseLastY);
+                     eye_x_ += ux*(y-mouseLastY);
+                     eye_y_ += uy*(y-mouseLastY);
+                     eye_z_ += uz*(y-mouseLastY);
+                  }
+                  else
+                  {
+                     eye_x_ += dx*(y-mouseLastY);
+                     eye_y_ += dy*(y-mouseLastY);
+                     eye_z_ += dz*(y-mouseLastY);
+
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
+                  }
                }
             }
             else if (mode_ == InteractionMode_RotateAxis)
@@ -1221,13 +1234,26 @@ protected:
                {
                   getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
 
-                  eye_x_ += dx*(y-mouseLastY);
-                  eye_y_ += dy*(y-mouseLastY);
-                  eye_z_ += dz*(y-mouseLastY);
+                  if (!shift)
+                  {
+                     eye_x_ += dx*(y-mouseLastY);
+                     eye_y_ += dy*(y-mouseLastY);
+                     eye_z_ += dz*(y-mouseLastY);
 
-                  eye_x_ += rx*(mouseLastX-x);
-                  eye_y_ += ry*(mouseLastX-x);
-                  eye_z_ += rz*(mouseLastX-x);
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
+                  }
+                  else
+                  {
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
+
+                     eye_x_ += ux*(y-mouseLastY);
+                     eye_y_ += uy*(y-mouseLastY);
+                     eye_z_ += uz*(y-mouseLastY);
+                  }
                }
             }
             else if (mode_ == InteractionMode_Clip)
