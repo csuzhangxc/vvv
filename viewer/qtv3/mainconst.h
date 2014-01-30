@@ -10,7 +10,7 @@
 #define APP_COPYRIGHT "(c) by Stefan Roettger 2013-2014"
 #define APP_DISCLAIMER "no warranty, no responsibility, no nothing\nis granted for anything!"
 
-#define MAIN_WIDTH 1000
-#define MAIN_HEIGHT 750
+#define MAIN_WIDTH 900
+#define MAIN_HEIGHT 600
 
 #endif
