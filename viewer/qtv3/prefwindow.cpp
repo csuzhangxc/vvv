@@ -282,5 +282,5 @@ void QTV3PrefWindow::grab()
    QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
    QString name = shotname_ + "_" + date + "." + format;
 
-   window.save(name, format.toUpper().toAscii());
+   window.save(name, format.toUpper().toStdString().c_str());
 }
