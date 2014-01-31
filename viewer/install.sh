@@ -2,11 +2,11 @@
 # unix install script
 
 echo compiling libmini...
-(cd mini; cmake . && make)
+(cd mini; cmake . && make -j 4)
 echo compiling libvolren...
-cmake . && make
+cmake . && make -j 4
 echo compiling qtv3...
-(cd qtv3; cmake . && make)
+(cd qtv3; cmake . && make -j 4)
 echo installing qtv3...
 echo enter root password when prompted
 (cd qtv3; sudo make install)
