@@ -38,7 +38,7 @@ process on Unix from source!
 !! Qt Installation
 
 Type on the unix console in your Qt source directory:
- ./configure -opengl -nomake examples -nomake demos -nomake tests -opensource -confirm-license && make && sudo make install
+ ./configure -opengl -release -nomake examples -nomake demos -nomake tests -opensource -confirm-license && make && sudo make install
 
 After the build process has finished (go get yourself a cup of coffee),
 you will be asked to enter your root password for installation of Qt.
