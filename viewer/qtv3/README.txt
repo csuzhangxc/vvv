@@ -30,7 +30,8 @@ On Linux, it is mostly sufficient to install a recent Qt binary package.
 
 If you install Qt from source, grab the source tar ball from:
  Qt4.7: ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.tar.gz
- Qt5.2: http://download.qt-project.org/official_releases/qt/5.2/5.2.0/single/qt-everywhere-opensource-src-5.2.0.tar.gz
+ Qt4.8: http://download.qt-project.org/official_releases/qt/4.8/4.8.5/qt-everywhere-opensource-src-4.8.5.tar.gz
+ Qt5.2: http://download.qt-project.org/official_releases/qt/5.2/5.2.1/single/qt-everywhere-opensource-src-5.2.1.tar.gz
 
 In the following we restrict ourselves to describe the installation
 process on Unix from source!
