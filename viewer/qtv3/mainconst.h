@@ -4,7 +4,7 @@
 #define MAINCONST_H
 
 #define APP_NAME "QTV3"
-#define APP_VERSION "2.1.1 as of 26.March.2014"
+#define APP_VERSION "2.1.1 as of 27.March.2014"
 
 #define APP_LICENSE "licensed under GPL 3.0"
 #define APP_COPYRIGHT "(c) by Stefan Roettger 2013-2014"

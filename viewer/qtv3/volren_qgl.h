@@ -1377,7 +1377,13 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (mode_ == InteractionMode_Opacity)
+      if (mode_ == InteractionMode_RotateAnchor)
+      {
+	 clipdist_ -= numDegrees/360.0;
+
+         updated_clipping();
+      }
+      else if (mode_ == InteractionMode_Opacity)
       {
          emi_ += numDegrees/360.0;
          att_ += numDegrees/360.0;

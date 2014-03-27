@@ -384,7 +384,7 @@ void QTV3MainWindow::createWidgets()
    l8->addStretch(2);
    modeButton1_ = new QPushButton(tr("Window"));
    modeButton2_ = new QPushButton(tr("Move"));
-   modeButton3_ = new QPushButton(tr("Rotate"));
+   modeButton3_ = new QPushButton(tr("Roll"));
    modeButton4_ = new QPushButton(tr("Zoom"));
    modeButton5_ = new QPushButton(tr("Clip"));
    modeButton6_ = new QPushButton(tr("Clip+Roll"));
@@ -944,7 +944,7 @@ void QTV3MainWindow::modeChanged3(bool on)
    if (on)
    {
       setRotation(0.0);
-      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateAxis);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateCenter);
    }
 }
 
