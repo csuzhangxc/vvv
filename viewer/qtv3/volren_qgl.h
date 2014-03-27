@@ -1319,6 +1319,15 @@ protected:
             {
                if (bMouseMove)
                {
+                  opacity_ += x-mouseLastX;
+                  opacity2_ += x-mouseLastX;
+
+                  if (opacity_<0.0) opacity_=0.0;
+                  else if (opacity_>1.0) opacity_=1.0;
+
+                  if (opacity2_<0.0) opacity2_=0.0;
+                  else if (opacity2_>1.0) opacity2_=1.0;
+
                   emi_ -= y-mouseLastY;
                   att_ -= y-mouseLastY;
 
