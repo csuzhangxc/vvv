@@ -88,6 +88,13 @@ void QTV3MainWindow::setRotation(double omega)
    rotateCheck_->setChecked(omega!=0.0);
 }
 
+void QTV3MainWindow::setTilt(double tilt)
+{
+   vrw_->setTilt(tilt);
+
+   rotateCheck_->setChecked(false);
+}
+
 void QTV3MainWindow::clearVolume()
 {
    removeLabel();
@@ -720,7 +727,7 @@ void QTV3MainWindow::rotate(int v)
 void QTV3MainWindow::tilt(int v)
 {
    double tilt = v / 16.0;
-   vrw_->setTilt(tilt);
+   setTilt(tilt);
 }
 
 void QTV3MainWindow::clip(int v)
@@ -1059,6 +1066,8 @@ void QTV3MainWindow::interaction_slot()
    {
       rotSlider_->setValue(vrw_->getAngle() * 16);
       tiltSlider_->setValue(vrw_->getTilt() * 16);
+
+      zoomSlider_->setValue(vrw_->getZoom() * 100 * 16);
 
       double dist = 0.5*(1-vrw_->getClipDist());
       clipSlider_->setValue(dist * 100*16);

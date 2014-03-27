@@ -370,7 +370,11 @@ public:
    void setTilt(double tilt=0.0)
    {
       if (tilt>=-90 && tilt<=90)
+      {
          tilt_=tilt;
+
+         updated_rotation();
+      }
    }
 
    //! get volume tilt angle
@@ -383,7 +387,17 @@ public:
    void setZoom(double zoom=0.0)
    {
       if (zoom>=0.0 && zoom<=1.0)
+      {
          zoom_=zoom;
+
+         updated_zoom();
+      }
+   }
+
+   //! get zoom factor
+   double getZoom()
+   {
+      return(zoom_);
    }
 
    //! set clipping distance
@@ -608,7 +622,13 @@ public:
       angle_ = 0.0;
       omega_ = 0.0;
 
+      tilt_ = 0.0;
+
       updated_rotation();
+
+      zoom_ = 0.0;
+
+      updated_zoom();
 
       clipdist_ = 1.0;
 
@@ -1466,6 +1486,11 @@ protected:
    virtual void updated_rotation()
    {
       printf("updated rotation\n");
+   }
+
+   virtual void updated_zoom()
+   {
+      printf("updated zoom\n");
    }
 
    virtual void updated_clipping()

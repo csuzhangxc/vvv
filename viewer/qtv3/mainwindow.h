@@ -58,6 +58,11 @@ protected:
       emit interaction_signal();
    }
 
+   virtual void updated_zoom()
+   {
+      emit interaction_signal();
+   }
+
    virtual void updated_clipping()
    {
       emit interaction_signal();
@@ -133,6 +138,9 @@ public:
 
    //! set volume rotation speed
    void setRotation(double omega);
+
+   //! set volume tilt
+   void setTilt(double tilt);
 
    //! clear volume
    void clearVolume();
