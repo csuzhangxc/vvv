@@ -101,6 +101,7 @@ public:
       InteractionMode_Window,
       InteractionMode_Move,
       InteractionMode_RotateAxis,
+      InteractionMode_RotateCenter,
       InteractionMode_RotateAnchor,
       InteractionMode_Zoom,
       InteractionMode_Clip,
@@ -1042,11 +1043,26 @@ protected:
 
 public:
 
+   void rotateCenter(float angle1,float angle2)
+   {
+      float ax,ay,az;
+      float dx,dy,dz;
+
+      if (vr_)
+      {
+         vr_->rotate(0.0,0.0,0.0,
+                     angle1,angle2,
+                     eye_x_,eye_y_,eye_z_,
+                     eye_dx_,eye_dy_,eye_dz_,
+                     eye_ux_,eye_uy_,eye_uz_);
+      }
+   }
+
    void getViewPlane(double &ex,double &ey,double &ez,
                      double &dx,double &dy,double &dz,
                      double &ux,double &uy,double &uz,
                      double &rx,double &ry,double &rz)
-      {
+   {
       ex=eye_x_;
       ey=eye_y_;
       ez=eye_z_;
@@ -1062,7 +1078,7 @@ public:
       rx=dy*uz-dz*uy;
       ry=dz*ux-dx*uz;
       rz=dx*uy-dy*ux;
-      }
+   }
 
    void getAnchorPlane(float &ax,float &ay,float &az,
                        float &dx,float &dy,float &dz)
@@ -1220,6 +1236,14 @@ protected:
                   updated_rotation();
                }
             }
+            else if (mode_ == InteractionMode_RotateCenter)
+            {
+               if (bMouseMove)
+               {
+                  rotateCenter(180*(x-mouseLastX),
+			       180*(y-mouseLastY));
+               }
+            }
             else if (mode_ == InteractionMode_RotateAnchor)
             {
                if (bMouseMove)
@@ -1353,15 +1377,7 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (mode_ == InteractionMode_Clip ||
-          mode_ == InteractionMode_RotateAnchor ||
-          mode_ == InteractionMode_Measure)
-      {
-         clipdist_ -= numDegrees/360.0;
-
-         updated_clipping();
-      }
-      else if (mode_ == InteractionMode_Opacity)
+      if (mode_ == InteractionMode_Opacity)
       {
          emi_ += numDegrees/360.0;
          att_ += numDegrees/360.0;
