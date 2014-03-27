@@ -237,18 +237,22 @@ public:
       {return(vr_->hasvolume());}
 
    //! extract a surface
-   void extractSurface()
+   char *extractSurface()
    {
-      if (loading_) return;
+      char *surface;
+
+      if (loading_) return(NULL);
 
       vr_->set_iso_maxsize(iso_maxsize_,iso_ratio_);
-      vr_->extractTFsurface(feedback,this);
+      surface=vr_->extractTFsurface(feedback,this);
 
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
       tf_inverse_ = false;
 
       vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
+
+      return(surface);
    }
 
    //! load a surface

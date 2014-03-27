@@ -1026,7 +1026,12 @@ void QTV3MainWindow::resetInteractions()
 void QTV3MainWindow::extractIso()
 {
    if (!hasTeaserVolume_)
-      vrw_->extractSurface();
+   {
+      char *surface = vrw_->extractSurface();
+
+      if (surface!=NULL)
+         free(surface);
+   }
 }
 
 void QTV3MainWindow::clearIso()
