@@ -91,6 +91,8 @@ protected slots:
    void hueChange(QString);
    void hueChange(int);
 
+public slots:
+
    void grab();
 };
 

@@ -148,6 +148,9 @@ public:
    //! clear surface
    void clearSurface();
 
+   //! grab window
+   void grab();
+
 private:
 
    QMenu *fileMenu_;
@@ -227,6 +230,7 @@ private:
    QPushButton *modeButton7_;
    QPushButton *modeButton8_;
 
+   QPushButton *grabButton_;
    QPushButton *resetButton_;
 
    QTV3PrefWindow *prefs_;
@@ -296,6 +300,7 @@ protected slots:
    void modeChanged6(bool on);
    void modeChanged7(bool on);
    void modeChanged8(bool on);
+   void grabWindow();
    void resetInteractions();
    void extractIso();
    void clearIso();

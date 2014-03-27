@@ -18,6 +18,10 @@
 
 #include "volren.h"
 
+#ifdef MACOSX
+#include <AvailabilityMacros.h>
+#endif
+
 #define VOLREN_DEFAULT_HUE 120.0f
 #define VOLREN_DEFAULT_SAT 0.75f
 #define VOLREN_DEFAULT_VAL 1.0f
@@ -741,8 +745,10 @@ protected:
 #endif
 
 #ifdef MACOSX
-      // fbo bugfix for macos x 10.5
-      if (rendercount_<5) gfx_fbo=false;
+#ifndef AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER
+       // fbo bugfix for macos x 10.5 and prior
+       gfx_fbo=false;
+#endif
 #endif
 
       float vol_dx=vol_dx_;

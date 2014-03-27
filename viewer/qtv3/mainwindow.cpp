@@ -113,6 +113,11 @@ void QTV3MainWindow::clearSurface()
    removeLabel();
 }
 
+void QTV3MainWindow::grab()
+{
+   prefs_->grab();
+}
+
 void QTV3MainWindow::createMenus()
 {
    QAction *quitAction = new QAction(tr("Q&uit"), this);
@@ -438,6 +443,9 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(modeButton8_);
    l8->addStretch(5);
    modeButton1_->setChecked(true);
+   grabButton_ = new QPushButton(tr("Grab"));
+   connect(grabButton_, SIGNAL(pressed()), this, SLOT(grabWindow()));
+   l8->addWidget(grabButton_);
    resetButton_ = new QPushButton(tr("Reset"));
    connect(resetButton_, SIGNAL(pressed()), this, SLOT(resetInteractions()));
    l8->addWidget(resetButton_);
@@ -1001,6 +1009,11 @@ void QTV3MainWindow::modeChanged8(bool on)
 
       planeCheck_->setChecked(true);
    }
+}
+
+void QTV3MainWindow::grabWindow()
+{
+   grab();
 }
 
 void QTV3MainWindow::resetInteractions()
