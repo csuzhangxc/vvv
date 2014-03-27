@@ -1241,7 +1241,7 @@ protected:
                if (bMouseMove)
                {
                   rotateCenter(180*(x-mouseLastX),
-			       180*(y-mouseLastY));
+                               180*(y-mouseLastY));
                }
             }
             else if (mode_ == InteractionMode_RotateAnchor)
@@ -1379,7 +1379,7 @@ protected:
 
       if (mode_ == InteractionMode_RotateAnchor)
       {
-	 clipdist_ -= numDegrees/360.0;
+         clipdist_ -= numDegrees/360.0;
 
          updated_clipping();
       }
