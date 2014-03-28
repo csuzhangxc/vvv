@@ -365,6 +365,44 @@ class volren: public volscene
       return(aborted);
       }
 
+   //! transform point into rendering coordinate system
+   void transform(float &x,float &y,float &z, // point
+                  float vol_rot, // volume rotation in degrees
+                  float vol_tltXY, // volume tilt in degrees
+                  float vol_tltYZ, // volume tilt in degrees
+                  float vol_dx,float vol_dy,float vol_dz) // volume translation
+      {
+      float x0,y0,z0;
+
+      vol_rot*=PI/180.0f;
+      vol_tltXY*=PI/180.0f;
+      vol_tltYZ*=PI/180.0f;
+
+      // move:
+
+      x0=x+vol_dx;
+      y0=y+vol_dy;
+      z0=z+vol_dz;
+
+      // rotate:
+
+      x=fcos(vol_rot)*x0+fsin(vol_rot)*z0;
+      y=y0;
+      z=-fsin(vol_rot)*x0+fcos(vol_rot)*z0;
+
+      // tiltXY:
+
+      x0=fcos(vol_tltXY)*x-fsin(vol_tltXY)*y;
+      y0=fsin(vol_tltXY)*x+fcos(vol_tltXY)*y;
+      z0=z;
+
+      // tiltYZ:
+
+      x=x0;
+      y=fcos(vol_tltYZ)*y0-fsin(vol_tltYZ)*z0;
+      z=fsin(vol_tltYZ)*y0+fcos(vol_tltYZ)*z0;
+      }
+
    //! rotate about anchor point
    void rotate(float ax,float ay,float az,
                float angle1,float angle2,
