@@ -43,9 +43,9 @@ public:
    {
       cross_=on;
 
-      cx_=cx;
-      cy_=cy;
-      cz_=cz;
+      cx_=cx*getscale();
+      cy_=cy*getscale();
+      cz_=cz*getscale();
    }
 
    void appendLine(const v3d &p)
@@ -1153,13 +1153,13 @@ public:
    {
       float dx,dy,dz;
 
-      if (mode_ == InteractionMode_RotateAnchor)
-         getAnchorPlane(x,y,z, dx,dy,dz);
+      if (mode_==InteractionMode_RotateAnchor)
+         getAnchorPlane(x,y,z,dx,dy,dz);
       else
       {
-         x = vol_dx_;
-         y = vol_dy_;
-         z = vol_dz_;
+         x=vol_dx_;
+         y=vol_dy_;
+         z=vol_dz_;
       }
    }
 
