@@ -851,8 +851,11 @@ protected:
          {
             float cx,cy,cz;
             getRotationCenter(cx,cy,cz);
-            vr_->transform(cx,cy,cz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
-            vr_->showCross(TRUE,cx,cy,cz);
+            float tx=cx;
+            float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
+            float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
+            vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
+            vr_->showCross(TRUE,tx,ty,tz);
          }
       else vr_->showCross(FALSE);
 
