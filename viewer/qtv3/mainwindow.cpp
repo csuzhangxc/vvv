@@ -1020,7 +1020,9 @@ void QTV3MainWindow::resetInteractions()
 {
    setRotation(0.0);
    vrw_->resetInteractions();
+
    modeButton1_->setChecked(true);
+   vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
 }
 
 void QTV3MainWindow::extractIso()
