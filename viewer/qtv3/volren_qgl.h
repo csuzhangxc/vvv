@@ -38,6 +38,16 @@ public:
    volren_qgl() : volren() {}
    virtual ~volren_qgl() {}
 
+   void showCross(BOOLINT on,
+                  float cx=0.0f,float cy=0.0f,float cz=0.0f)
+   {
+      cross_=on;
+
+      cx_=cx;
+      cy_=cy;
+      cz_=cz;
+   }
+
    void appendLine(const v3d &p)
    {
       line_.push_back(p);
@@ -70,38 +80,42 @@ public:
 
 protected:
 
+   BOOLINT cross_;
+   float cx_,cy_,cz_;
+
    std::vector<v3d> line_;
 
    virtual void rendermetric()
    {
+      float vx,vy,vz;
+
+      vx=getvoxelx();
+      vy=getvoxely();
+      vz=getvoxelz();
+
       // show rotation cross
-      if (1) //!!
-         {
-         static const float s=3.0f;
-
-         float x,y,z;
-
-         //!! getRotationCenter(x,y,z);
-         x=y=z=0.0;
+      if (cross_==TRUE)
+      {
+         static const float s=3.0f; // size of cross in voxels
 
          glBegin(GL_LINES);
          glColor3f(1.0f,0.0f,0.0f);
-         glVertex3f(x-s,y,z);
-         glVertex3f(x+s,y,z);
+         glVertex3f(cx_-s*vx,cy_,cz_);
+         glVertex3f(cx_+s*vx,cy_,cz_);
          glColor3f(0.0f,1.0f,0.0f);
-         glVertex3f(x,y-s,z);
-         glVertex3f(x,y+s,z);
+         glVertex3f(cx_,cy_-s*vy,cz_);
+         glVertex3f(cx_,cy_+s*vy,cz_);
          glColor3f(0.0f,0.0f,1.0f);
-         glVertex3f(x,y,z-s);
-         glVertex3f(x,y,z+s);
+         glVertex3f(cx_,cy_,cz_-s*vz);
+         glVertex3f(cx_,cy_,cz_+s*vz);
          glEnd();
          }
 
       // render measurement line (with starting cross)
       if (line_.size()>0)
       {
-         static const float scale=0.99f;
-         static const float s=1.0f;
+         static const float s=1.0f; // size of cross in voxels
+         static const float scale=0.99f; // projection scale factor
 
          glMatrixMode(GL_PROJECTION);
          glPushMatrix();
@@ -110,14 +124,14 @@ protected:
 
          glBegin(GL_LINES);
          glColor3f(1.0f,0.0f,0.0f);
-         glVertex3f(line_[0].x-s,line_[0].y,line_[0].z);
-         glVertex3f(line_[0].x+s,line_[0].y,line_[0].z);
+         glVertex3f(line_[0].x-s*vx,line_[0].y,line_[0].z);
+         glVertex3f(line_[0].x+s*vx,line_[0].y,line_[0].z);
          glColor3f(0.0f,1.0f,0.0f);
-         glVertex3f(line_[0].x,line_[0].y-s,line_[0].z);
-         glVertex3f(line_[0].x,line_[0].y+s,line_[0].z);
+         glVertex3f(line_[0].x,line_[0].y-s*vy,line_[0].z);
+         glVertex3f(line_[0].x,line_[0].y+s*vy,line_[0].z);
          glColor3f(0.0f,0.0f,1.0f);
-         glVertex3f(line_[0].x,line_[0].y,line_[0].z-s);
-         glVertex3f(line_[0].x,line_[0].y,line_[0].z+s);
+         glVertex3f(line_[0].x,line_[0].y,line_[0].z-s*vz);
+         glVertex3f(line_[0].x,line_[0].y,line_[0].z+s*vz);
          glEnd();
 
          glColor3f(1.0f,0.0f,1.0f);
@@ -831,6 +845,16 @@ protected:
       double eye_tuy=cos(tilt_*PI/180)*eye_uy+sin(tilt_*PI/180)*eye_uz;
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
 
+      // show rotation center as cross
+      if (mode_==InteractionMode_RotateCenter ||
+          mode_==InteractionMode_RotateAnchor)
+         {
+            float cx,cy,cz;
+            getRotationCenter(cx,cy,cz);
+            vr_->showCross(TRUE,cx,cy,cz);
+         }
+      else vr_->showCross(FALSE);
+
       // call volume renderer
       if (sfx_base==0.0)
          vr_->renderscene(eye_tx,eye_ty,eye_tz, // view point
@@ -1117,7 +1141,7 @@ public:
 
       if (vr_)
       {
-         vr_->rotate(0.0,0.0,0.0,
+         vr_->rotate(vol_dx_,vol_dy_,vol_dz_,
                      angle1,angle2,
                      eye_x_,eye_y_,eye_z_,
                      eye_dx_,eye_dy_,eye_dz_,
@@ -1129,10 +1153,14 @@ public:
    {
       float dx,dy,dz;
 
-      x=y=z=0.0f;
-
       if (mode_ == InteractionMode_RotateAnchor)
          getAnchorPlane(x,y,z, dx,dy,dz);
+      else
+      {
+         x = vol_dx_;
+         y = vol_dy_;
+         z = vol_dz_;
+      }
    }
 
    void getViewPlane(double &ex,double &ey,double &ez,
