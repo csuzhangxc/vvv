@@ -1495,7 +1495,8 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (mode_ == InteractionMode_RotateAnchor)
+      if (mode_ == InteractionMode_Clip ||
+          mode_ == InteractionMode_RotateAnchor)
       {
          clipdist_ -= numDegrees/360.0;
 
@@ -1503,17 +1504,31 @@ protected:
       }
       else if (mode_ == InteractionMode_Opacity)
       {
-         emi_ += numDegrees/360.0;
-         att_ += numDegrees/360.0;
+         if (event->orientation() == Qt::Vertical)
+         {
+            emi_ += numDegrees/360.0;
+            att_ += numDegrees/360.0;
 
-         emi_gm_ += numDegrees/360.0;
-         att_gm_ += numDegrees/360.0;
+            emi_gm_ += numDegrees/360.0;
+            att_gm_ += numDegrees/360.0;
 
-         if (emi_<0.0) emi_=0.0;
-         if (att_<0.0) att_=0.0;
+            if (emi_<0.0) emi_=0.0;
+            if (att_<0.0) att_=0.0;
 
-         if (emi_gm_<0.0) emi_gm_=0.0;
-         if (att_gm_<0.0) att_gm_=0.0;
+            if (emi_gm_<0.0) emi_gm_=0.0;
+            if (att_gm_<0.0) att_gm_=0.0;
+         }
+         else
+         {
+            opacity_ += numDegrees/360.0;
+            opacity2_ += numDegrees/360.0;
+
+            if (opacity_<0.0) opacity_=0.0;
+            else if (opacity_>1.0) opacity_=1.0;
+
+            if (opacity2_<0.0) opacity2_=0.0;
+            else if (opacity2_>1.0) opacity2_=1.0;
+         }
 
          updated_opacity();
       }
