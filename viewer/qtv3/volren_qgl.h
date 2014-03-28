@@ -1520,8 +1520,8 @@ protected:
          }
          else
          {
-            opacity_ += numDegrees/360.0;
-            opacity2_ += numDegrees/360.0;
+            opacity_ -= numDegrees/360.0;
+            opacity2_ -= numDegrees/360.0;
 
             if (opacity_<0.0) opacity_=0.0;
             else if (opacity_>1.0) opacity_=1.0;
