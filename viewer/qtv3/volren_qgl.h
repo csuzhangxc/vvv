@@ -1088,6 +1088,16 @@ public:
       }
    }
 
+   void getRotationCenter(float &x,float &y,float &z)
+   {
+      float dx,dy,dz;
+
+      x=y=z=0.0f;
+
+      if (mode_ == InteractionMode_RotateAnchor)
+         getAnchorPlane(x,y,z, dx,dy,dz);
+   }
+
    void getViewPlane(double &ex,double &ey,double &ez,
                      double &dx,double &dy,double &dz,
                      double &ux,double &uy,double &uz,
