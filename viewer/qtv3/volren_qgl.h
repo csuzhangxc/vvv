@@ -74,6 +74,30 @@ protected:
 
    virtual void rendermetric()
    {
+      // show rotation cross
+      if (1) //!!
+         {
+         static const float s=1.0f; //!!
+
+         float x,y,z;
+
+         //!! getRotationCenter(x,y,z);
+         x=y=z=0.0;
+
+         glBegin(GL_LINES);
+         glColor3f(1.0f,0.0f,0.0f);
+         glVertex3f(x-s,y,z);
+         glVertex3f(x+s,y,z);
+         glColor3f(0.0f,1.0f,0.0f);
+         glVertex3f(x,y-s,z);
+         glVertex3f(x,y+s,z);
+         glColor3f(0.0f,0.0f,1.0f);
+         glVertex3f(x,y,z-s);
+         glVertex3f(x,y,z+s);
+         glEnd();
+         }
+
+      // render measurement line
       if (line_.size()>0)
       {
          static const float scale=0.99f;
