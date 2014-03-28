@@ -77,7 +77,7 @@ protected:
       // show rotation cross
       if (1) //!!
          {
-         static const float s=1.0f; //!!
+         static const float s=3.0f;
 
          float x,y,z;
 
@@ -97,15 +97,28 @@ protected:
          glEnd();
          }
 
-      // render measurement line
+      // render measurement line (with starting cross)
       if (line_.size()>0)
       {
          static const float scale=0.99f;
+         static const float s=1.0f;
 
          glMatrixMode(GL_PROJECTION);
          glPushMatrix();
          glScalef(scale,scale,scale);
          glMatrixMode(GL_MODELVIEW);
+
+         glBegin(GL_LINES);
+         glColor3f(1.0f,0.0f,0.0f);
+         glVertex3f(line_[0].x-s,line_[0].y,line_[0].z);
+         glVertex3f(line_[0].x+s,line_[0].y,line_[0].z);
+         glColor3f(0.0f,1.0f,0.0f);
+         glVertex3f(line_[0].x,line_[0].y-s,line_[0].z);
+         glVertex3f(line_[0].x,line_[0].y+s,line_[0].z);
+         glColor3f(0.0f,0.0f,1.0f);
+         glVertex3f(line_[0].x,line_[0].y,line_[0].z-s);
+         glVertex3f(line_[0].x,line_[0].y,line_[0].z+s);
+         glEnd();
 
          glColor3f(1.0f,0.0f,1.0f);
          glBegin(GL_LINE_STRIP);
