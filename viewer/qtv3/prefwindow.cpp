@@ -119,14 +119,19 @@ void QTV3PrefWindow::createWidgets()
    line1->setFrameShadow(QFrame::Raised);
    layout_->addWidget(line1);
 
-   QLineEdit *lineEdit_vol_maxsize = new QLineEdit;
-   QGroupBox *vol_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Processing", QString::number(vol_maxsize_), &lineEdit_vol_maxsize);
-   connect(lineEdit_vol_maxsize,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
+   lineEdit_gfx_maxsize_ = new QLineEdit;
+   QGroupBox *gfx_maxsize_group = createEdit("Maximum Graphics Memory Size (MB)", QString::number((int)(2.0*vol_maxsize_*vol_maxsize_*vol_maxsize_/1024/1024+0.5)), &lineEdit_gfx_maxsize_);
+   connect(lineEdit_gfx_maxsize_,SIGNAL(textChanged(QString)),this,SLOT(volGfxSizeChange(QString)));
+   layout_->addWidget(gfx_maxsize_group);
+
+   lineEdit_vol_maxsize_ = new QLineEdit;
+   QGroupBox *vol_maxsize_group = createEdit("Maximum Dimension for RAW/REK Processing (Voxels)", QString::number(vol_maxsize_), &lineEdit_vol_maxsize_);
+   connect(lineEdit_vol_maxsize_,SIGNAL(textChanged(QString)),this,SLOT(volMaxSizeChange(QString)));
    layout_->addWidget(vol_maxsize_group);
 
-   QLineEdit *lineEdit_iso_maxsize = new QLineEdit;
-   QGroupBox *iso_maxsize_group = createEdit("Maximum Volume Size for RAW/REK Iso Surface Extraction", QString::number(iso_maxsize_), &lineEdit_iso_maxsize);
-   connect(lineEdit_iso_maxsize,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
+   lineEdit_iso_maxsize_ = new QLineEdit;
+   QGroupBox *iso_maxsize_group = createEdit("Maximum Dimension for RAW/REK Iso Surface Extraction (Voxels)", QString::number(iso_maxsize_), &lineEdit_iso_maxsize_);
+   connect(lineEdit_iso_maxsize_,SIGNAL(textChanged(QString)),this,SLOT(isoMaxSizeChange(QString)));
    layout_->addWidget(iso_maxsize_group);
 
    QFrame* line2 = new QFrame();
@@ -222,6 +227,14 @@ QSlider *QTV3PrefWindow::createSlider(int minimum, int maximum, int value)
 void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
 {
    vol_maxsize_ = maxsize.toUInt();
+   lineEdit_gfx_maxsize_->setText(QString::number((int)(2.0*vol_maxsize_*vol_maxsize_*vol_maxsize_/1024/1024+0.5)));
+   vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
+}
+
+void QTV3PrefWindow::volGfxSizeChange(QString maxsize)
+{
+   vol_maxsize_ = (int)(pow(0.5*maxsize.toUInt()*1024*1024,1.0/3)+0.5);
+   lineEdit_vol_maxsize_->setText(QString::number(vol_maxsize_));
    vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
 }
 

@@ -57,6 +57,10 @@ protected:
    QLabel *label_dim_;
    QLabel *label_voxel_;
 
+   QLineEdit *lineEdit_vol_maxsize_;
+   QLineEdit *lineEdit_gfx_maxsize_;
+   QLineEdit *lineEdit_iso_maxsize_;
+
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;
    QRadioButton *sfxOnCheck_;
@@ -80,6 +84,7 @@ protected:
 protected slots:
 
    void volMaxSizeChange(QString);
+   void volGfxSizeChange(QString);
    void isoMaxSizeChange(QString);
 
    void sliceOpacityChange(QString);
