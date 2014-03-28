@@ -846,7 +846,8 @@ protected:
       double eye_tuz=-sin(tilt_*PI/180)*eye_uy+cos(tilt_*PI/180)*eye_uz;
 
       // show rotation center as cross
-      if (mode_==InteractionMode_RotateCenter ||
+      if (mode_==InteractionMode_Move ||
+          mode_==InteractionMode_RotateCenter ||
           mode_==InteractionMode_RotateAnchor)
          {
             float cx,cy,cz;
