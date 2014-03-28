@@ -849,15 +849,15 @@ protected:
       if (mode_==InteractionMode_Move ||
           mode_==InteractionMode_RotateCenter ||
           mode_==InteractionMode_RotateAnchor)
-         {
-            float cx,cy,cz;
-            getRotationCenter(cx,cy,cz);
-            float tx=cx;
-            float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
-            float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
-            vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
-            vr_->showCross(TRUE,tx,ty,tz);
-         }
+      {
+         float cx,cy,cz;
+         getRotationCenter(cx,cy,cz);
+         float tx=cx;
+         float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
+         float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
+         vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
+         vr_->showCross(TRUE,tx,ty,tz);
+      }
       else vr_->showCross(FALSE);
 
       // call volume renderer
