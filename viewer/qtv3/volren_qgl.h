@@ -109,7 +109,7 @@ protected:
          glVertex3f(cx_,cy_,cz_-s*vz);
          glVertex3f(cx_,cy_,cz_+s*vz);
          glEnd();
-         }
+      }
 
       // render measurement line (with starting cross)
       if (line_.size()>0)
