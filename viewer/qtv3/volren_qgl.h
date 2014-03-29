@@ -38,7 +38,7 @@ public:
    volren_qgl() : volren() {}
    virtual ~volren_qgl() {}
 
-   void showCross(BOOLINT on,
+   void showCross(bool on,
                   float cx=0.0f,float cy=0.0f,float cz=0.0f)
    {
       cross_=on;
@@ -80,7 +80,7 @@ public:
 
 protected:
 
-   BOOLINT cross_;
+   bool cross_;
    float cx_,cy_,cz_;
 
    std::vector<v3d> line_;
@@ -284,7 +284,7 @@ public:
    }
 
    //! check for volume
-   BOOLINT hasVolume()
+   bool hasVolume()
       {return(vr_->hasvolume());}
 
    //! extract a surface
@@ -316,7 +316,7 @@ public:
    }
 
    //! check for surface
-   BOOLINT hasSurface()
+   bool hasSurface()
       {return(vr_->hassurface());}
 
    //! show the surface
@@ -1141,9 +1141,6 @@ public:
 
    void rotateCenter(float angle1,float angle2)
    {
-      float ax,ay,az;
-      float dx,dy,dz;
-
       if (vr_)
       {
          vr_->rotate(vol_dx_,vol_dy_,vol_dz_,
