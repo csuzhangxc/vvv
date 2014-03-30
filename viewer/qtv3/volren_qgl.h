@@ -1496,9 +1496,12 @@ protected:
       if (mode_ == InteractionMode_Clip ||
           mode_ == InteractionMode_RotateAnchor)
       {
-         clipdist_ -= numDegrees/360.0;
+         if (event->orientation() == Qt::Vertical)
+         {
+            clipdist_ -= numDegrees/360.0;
 
-         updated_clipping();
+            updated_clipping();
+         }
       }
       else if (mode_ == InteractionMode_Opacity)
       {
