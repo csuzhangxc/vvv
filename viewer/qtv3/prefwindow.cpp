@@ -286,14 +286,23 @@ void QTV3PrefWindow::hueChange(int hue)
    lineEdit_hue_->setText(QString::number(vol_hue_));
 }
 
-void QTV3PrefWindow::grab()
+bool QTV3PrefWindow::grab(QString format)
 {
    QImage image = vrw_->grabFrameBuffer();
    QPixmap window = QPixmap::fromImage(image);
 
-   QString format = "png";
-   QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
-   QString name = shotname_ + "_" + date + "." + format;
+   QList<QByteArray> formats = QImageWriter::supportedImageFormats();
 
-   window.save(name, format.toUpper().toStdString().c_str());
+   for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
+   {
+      if (strcasecmp(*i, format.toStdString().c_str())==0)
+      {
+         QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
+         QString name = shotname_ + "_" + date + "." + format;
+
+         return(window.save(name, format.toUpper().toStdString().c_str()));
+      }
+   }
+
+   return(false);
 }

@@ -98,7 +98,7 @@ protected slots:
 
 public slots:
 
-   void grab();
+   bool grab(QString format="png");
 };
 
 #endif

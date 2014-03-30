@@ -115,7 +115,11 @@ void QTV3MainWindow::clearSurface()
 
 void QTV3MainWindow::grab()
 {
-   prefs_->grab();
+   if (!prefs_->grab("png"))
+      if (!prefs_->grab("jpg"))
+         QMessageBox::information(this, tr("Error"),
+                                  "Could not save image",
+                                  QMessageBox::Ok);
 }
 
 void QTV3MainWindow::createMenus()
