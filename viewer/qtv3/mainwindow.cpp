@@ -117,9 +117,10 @@ void QTV3MainWindow::grab()
 {
    if (!prefs_->grab("png"))
       if (!prefs_->grab("jpg"))
-         QMessageBox::information(this, tr("Error"),
-                                  "Could not save image",
-                                  QMessageBox::Ok);
+         if (!prefs_->grab("bmp"))
+            QMessageBox::information(this, tr("Error"),
+                                     "Could not save image",
+                                     QMessageBox::Ok);
 }
 
 void QTV3MainWindow::createMenus()
