@@ -300,6 +300,8 @@ bool QTV3PrefWindow::grab(QString format)
          QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
          QString name = shotname_ + "_" + date + "." + format;
 
+         if (name.contains(QRegExp("^/[A-Z]:"))) name.remove(0,1);
+
          return(window.save(name, format.toUpper().toStdString().c_str()));
       }
    }
