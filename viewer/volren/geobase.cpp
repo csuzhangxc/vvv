@@ -75,6 +75,7 @@ void Surface::render()
 #ifdef HAVE_MINI
    ministrip::setglobal_invariant(TRUE);
    ministrip::setglobal_shade(TRUE);
+   strip_->autodisableculling();
    if (is_shown_) strip_->render();
 #endif
    }

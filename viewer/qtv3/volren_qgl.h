@@ -43,9 +43,9 @@ public:
    {
       cross_=on;
 
-      cx_=cx*getscale();
-      cy_=cy*getscale();
-      cz_=cz*getscale();
+      cx_=cx;
+      cy_=cy;
+      cz_=cz;
    }
 
    void appendLine(const v3d &p)

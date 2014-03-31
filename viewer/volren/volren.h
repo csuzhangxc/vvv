@@ -401,6 +401,10 @@ class volren: public volscene
       x=x0;
       y=fcos(vol_tltYZ)*y0-fsin(vol_tltYZ)*z0;
       z=fsin(vol_tltYZ)*y0+fcos(vol_tltYZ)*z0;
+
+      x*=getscale();
+      y*=getscale();
+      z*=getscale();
       }
 
    //! rotate about anchor point
