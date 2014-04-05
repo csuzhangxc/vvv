@@ -1400,26 +1400,37 @@ protected:
             {
                if (bMouseMove)
                {
-                  opacity_ += x-mouseLastX;
-                  opacity2_ += x-mouseLastX;
+                  if (!shift)
+                  {
+                     emi_ -= (y-mouseLastY) - (x-mouseLastX);
+                     att_ -= (y-mouseLastY);
 
-                  if (opacity_<0.0) opacity_=0.0;
-                  else if (opacity_>1.0) opacity_=1.0;
+                     if (emi_<0.0) emi_=0.0;
+                     else if (emi_>1.0) emi_=1.0;
 
-                  if (opacity2_<0.0) opacity2_=0.0;
-                  else if (opacity2_>1.0) opacity2_=1.0;
+                     if (att_<0.0) att_=0.0;
+                     else if (att_>1.0) att_=1.0;
 
-                  emi_ -= y-mouseLastY;
-                  att_ -= y-mouseLastY;
+                     emi_gm_ -= y-mouseLastY;
+                     att_gm_ -= y-mouseLastY;
 
-                  emi_gm_ -= y-mouseLastY;
-                  att_gm_ -= y-mouseLastY;
+                     if (emi_gm_<0.0) emi_gm_=0.0;
+                     else if (emi_gm_>1.0) emi_gm_=1.0;
 
-                  if (emi_<0.0) emi_=0.0;
-                  if (att_<0.0) att_=0.0;
+                     if (att_gm_<0.0) att_gm_=0.0;
+                     else if (att_gm_>1.0) att_gm_=1.0;
+                  }
+                  else
+                  {
+                     opacity_ -= (y-mouseLastY);
+                     opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
 
-                  if (emi_gm_<0.0) emi_gm_=0.0;
-                  if (att_gm_<0.0) att_gm_=0.0;
+                     if (opacity_<0.0) opacity_=0.0;
+                     else if (opacity_>1.0) opacity_=1.0;
+
+                     if (opacity2_<0.0) opacity2_=0.0;
+                     else if (opacity2_>1.0) opacity2_=1.0;
+                  }
 
                   updated_opacity();
                }
@@ -1510,14 +1521,20 @@ protected:
             emi_ += numDegrees/360.0;
             att_ += numDegrees/360.0;
 
+            if (emi_<0.0) emi_=0.0;
+            else if (emi_>1.0) emi_=1.0;
+
+            if (att_<0.0) att_=0.0;
+            else if (att_>1.0) att_=1.0;
+
             emi_gm_ += numDegrees/360.0;
             att_gm_ += numDegrees/360.0;
 
-            if (emi_<0.0) emi_=0.0;
-            if (att_<0.0) att_=0.0;
-
             if (emi_gm_<0.0) emi_gm_=0.0;
+            else if (emi_gm_>1.0) emi_gm_=1.0;
+
             if (att_gm_<0.0) att_gm_=0.0;
+            else if (att_gm_>1.0) att_gm_=1.0;
          }
          else
          {
