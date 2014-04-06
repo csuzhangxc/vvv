@@ -1456,31 +1456,71 @@ protected:
          }
          else if (bRightButtonDown)
          {
-            if (bMouseMove)
+            if (mode_ == InteractionMode_Opacity)
             {
-               getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
-
-               if (!shift)
+               if (bMouseMove)
                {
-                  eye_x_ += rx*(mouseLastX-x);
-                  eye_y_ += ry*(mouseLastX-x);
-                  eye_z_ += rz*(mouseLastX-x);
+                  if (shift)
+                  {
+                     emi_ -= (y-mouseLastY) - (x-mouseLastX);
+                     att_ -= (y-mouseLastY);
 
-                  eye_x_ += ux*(y-mouseLastY);
-                  eye_y_ += uy*(y-mouseLastY);
-                  eye_z_ += uz*(y-mouseLastY);
-               }
-               else
-               {
-                  eye_x_ += dx*(y-mouseLastY);
-                  eye_y_ += dy*(y-mouseLastY);
-                  eye_z_ += dz*(y-mouseLastY);
+                     if (emi_<0.0) emi_=0.0;
+                     else if (emi_>1.0) emi_=1.0;
 
-                  eye_x_ += rx*(mouseLastX-x);
-                  eye_y_ += ry*(mouseLastX-x);
-                  eye_z_ += rz*(mouseLastX-x);
+                     if (att_<0.0) att_=0.0;
+                     else if (att_>1.0) att_=1.0;
+
+                     emi_gm_ -= y-mouseLastY;
+                     att_gm_ -= y-mouseLastY;
+
+                     if (emi_gm_<0.0) emi_gm_=0.0;
+                     else if (emi_gm_>1.0) emi_gm_=1.0;
+
+                     if (att_gm_<0.0) att_gm_=0.0;
+                     else if (att_gm_>1.0) att_gm_=1.0;
+                  }
+                  else
+                  {
+                     opacity_ -= (y-mouseLastY);
+                     opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
+
+                     if (opacity_<0.0) opacity_=0.0;
+                     else if (opacity_>1.0) opacity_=1.0;
+
+                     if (opacity2_<0.0) opacity2_=0.0;
+                     else if (opacity2_>1.0) opacity2_=1.0;
+                  }
+
+                  updated_opacity();
                }
             }
+            else
+               if (bMouseMove)
+               {
+                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+                  if (!shift)
+                  {
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
+
+                     eye_x_ += ux*(y-mouseLastY);
+                     eye_y_ += uy*(y-mouseLastY);
+                     eye_z_ += uz*(y-mouseLastY);
+                  }
+                  else
+                  {
+                     eye_x_ += dx*(y-mouseLastY);
+                     eye_y_ += dy*(y-mouseLastY);
+                     eye_z_ += dz*(y-mouseLastY);
+
+                     eye_x_ += rx*(mouseLastX-x);
+                     eye_y_ += ry*(mouseLastX-x);
+                     eye_z_ += rz*(mouseLastX-x);
+                  }
+               }
          }
          else
             event->ignore();
