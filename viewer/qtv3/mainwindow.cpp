@@ -31,8 +31,6 @@ void QTV3MainWindow::loadVolume(const char *filename)
 {
    reset();
 
-   removeLabel();
-
    prefs_->setLabelFileName(filename);
 
    vrw_->loadVolume(filename);
@@ -45,8 +43,6 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
    std::string prefix;
 
    reset();
-
-   removeLabel();
 
    prefix=getPrefix(list);
 
@@ -63,8 +59,6 @@ void QTV3MainWindow::loadSeries(const std::vector<std::string> list)
 
 void QTV3MainWindow::loadSurface(const char *filename)
 {
-   removeLabel();
-
    if (hasTeaserVolume_)
    {
       vrw_->clearVolume();
@@ -97,8 +91,6 @@ void QTV3MainWindow::setTilt(double tilt)
 
 void QTV3MainWindow::clearVolume()
 {
-   removeLabel();
-
    prefs_->setLabelFileName("");
 
    vrw_->clearVolume();
@@ -109,8 +101,6 @@ void QTV3MainWindow::clearVolume()
 void QTV3MainWindow::clearSurface()
 {
    vrw_->clearSurface();
-
-   removeLabel();
 }
 
 void QTV3MainWindow::grab()
@@ -181,14 +171,6 @@ void QTV3MainWindow::createWidgets()
    // create qtv3 volren widget
    vrw_stereo_ = false;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
-
-   // create usage hint label
-   label_ = new QLabel("Drag and drop a volume file (.pvm .rek .raw)\n"
-                       "or drop a dicom series (*.ima *.dcm) into the window\n"
-                       "to display it with the volume renderer!");
-
-   label_->setAlignment(Qt::AlignHCenter);
-   mainLayout_->insertWidget(0,label_);
 
    // create update info label
    update_ = new QLabel("");
@@ -558,16 +540,6 @@ std::string QTV3MainWindow::getPrefix(const std::vector<std::string> list)
    if (i==0) return("");
 
    return(list[0].substr(0,i-1));
-}
-
-void QTV3MainWindow::removeLabel()
-{
-   if (label_)
-   {
-      mainLayout_->removeItem(mainLayout_->itemAt(0));
-      delete label_;
-      label_=NULL;
-   }
 }
 
 QStringList QTV3MainWindow::browse(QString path,

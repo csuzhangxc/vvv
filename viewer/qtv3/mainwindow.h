@@ -166,7 +166,7 @@ private:
    QTV3VolRenWidget *vrw_;
    bool vrw_stereo_;
 
-   QLabel *label_,*update_;
+   QLabel *update_;
 
    void createMenus();
    void createWidgets();
@@ -175,8 +175,6 @@ private:
    void reset(const char *teaser="Drop.pvm", const char *path="/usr/share/qtv3/");
 
    std::string getPrefix(const std::vector<std::string> list);
-
-   void removeLabel();
 
    QStringList browse(QString path="",
                       bool newfile=false);
