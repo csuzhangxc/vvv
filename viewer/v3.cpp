@@ -1,6 +1,6 @@
 // (c) by Stefan Roettger, licensed under GPL 2+
 
-#define VERSION "4.2.1 as of 6.April.2014"
+#define VERSION "4.3 as of 25.May.2014"
 
 #include "codebase.h" // universal code base
 #include "oglbase.h" // OpenGL base rendering
