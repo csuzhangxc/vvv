@@ -42,11 +42,13 @@ static void initwglprocs()
    glIsRenderbufferEXT                      = (PFNGLISRENDERBUFFERPROC)wglGetProcAddress("glIsRenderbuffer");
    glBlitFramebuffer                        = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress("glBlitFramebuffer");
 
+#ifndef HAVE_NO_FBO
    if (!(glGenFramebuffersEXT && glDeleteFramebuffersEXT && glBindFramebufferEXT && glCheckFramebufferStatusEXT &&
          glGetFramebufferAttachmentParameterivEXT && glGenerateMipmapEXT && glFramebufferTexture2DEXT && glFramebufferRenderbufferEXT &&
          glGenRenderbuffersEXT && glDeleteRenderbuffersEXT && glBindRenderbufferEXT && glRenderbufferStorageEXT &&
          glGetRenderbufferParameterivEXT && glIsRenderbufferEXT &&
          glBlitFramebuffer)) ERRORMSG();
+#endif
 #endif
    }
 
