@@ -25,6 +25,7 @@ ENDIF (CMAKE_BUILD_TYPE)
 # non-standard path to zlib
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH};
     ../zlib;../../zlib;../../../zlib;
+    ../WIN32/zlib;../../WIN32/zlib;../../../WIN32/zlib;
    )
 
 # non-standard path to dcmtk
