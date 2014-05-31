@@ -30,10 +30,12 @@ int main(int argc, char *argv[])
       else arg.push_back(args[i]);
 
    bool demo=false;
+   bool fullscreen=false;
 
    // scan option list
    for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
+      else if (opt[i]=="fullscreen") fullscreen=true;
 
    QTV3MainWindow main(NULL, demo);
 
@@ -57,7 +59,8 @@ int main(int argc, char *argv[])
       main.loadSeries(list);
    }
 
-   main.show();
+   if (fullscreen) main.showFullScreen();
+   else main.show();
 
    return(app.exec());
 }
