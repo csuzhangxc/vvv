@@ -19,13 +19,24 @@ int main(int argc, char *argv[])
 
    setlocale(LC_NUMERIC, "C");
 
-   QTV3MainWindow main;
-
    QStringList args = QCoreApplication::arguments();
 
-   if (args.size()==2)
+   QStringList arg,opt;
+   for (unsigned int i=1; i<args.size(); i++)
+      if (args[i].startsWith("--")) opt.push_back(args[i].mid(2));
+      else if (args[i].startsWith("-")) opt.push_back(args[i].mid(1));
+      else arg.push_back(args[i]);
+
+   bool demo=false;
+
+   for (unsigned int i=0; i<opt.size(); i++)
+      if (opt[i]=="demo") demo=true;
+
+   QTV3MainWindow main(NULL, demo);
+
+   if (arg.size()==1)
    {
-      QString file=args[1];
+      QString file=arg[0];
 
       if (file.endsWith(".geo"))
       {
@@ -36,10 +47,10 @@ int main(int argc, char *argv[])
          main.loadVolume(file.toStdString().c_str());
       }
    }
-   else if (args.size()>2)
+   else if (arg.size()>1)
    {
       std::vector<std::string> list;
-      for (unsigned int i=1; i<list.size(); i++) list.push_back(args[i].toStdString());
+      for (unsigned int i=0; i<arg.size(); i++) list.push_back(arg[i].toStdString());
       main.loadSeries(list);
    }
 

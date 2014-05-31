@@ -5,9 +5,12 @@
 #include "mainwindow.h"
 #include "mainconst.h"
 
-QTV3MainWindow::QTV3MainWindow(QWidget *parent)
+QTV3MainWindow::QTV3MainWindow(QWidget *parent,
+                               bool demo)
    : QMainWindow(parent)
 {
+   demo_=demo;
+
    createMenus();
    createWidgets();
 
@@ -158,7 +161,7 @@ void QTV3MainWindow::createWidgets()
    // create main splitter group
    mainSplitter_->setOrientation(Qt::Vertical);
    mainSplitter_->addWidget(viewerGroup);
-   mainSplitter_->addWidget(sliderGroup);
+   if (!demo_) mainSplitter_->addWidget(sliderGroup);
    viewerGroup->setLayout(viewerLayout_);
    sliderGroup->setLayout(sliderLayout_);
 
@@ -227,7 +230,7 @@ void QTV3MainWindow::createWidgets()
 
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
-   viewerSplitter_->addWidget(g1);
+   if (!demo_) viewerSplitter_->addWidget(g1);
 
    // create zoom section
    QVBoxLayout *l2 = new QVBoxLayout;
@@ -436,7 +439,7 @@ void QTV3MainWindow::createWidgets()
    l8->addWidget(resetButton_);
    QGroupBox *g2 = new QGroupBox;
    g2->setLayout(l8);
-   viewerSplitter_->addWidget(g2);
+   if (!demo_) viewerSplitter_->addWidget(g2);
 
    // collapse slider widgets
    QList<int> mainSizes = mainSplitter_->sizes();

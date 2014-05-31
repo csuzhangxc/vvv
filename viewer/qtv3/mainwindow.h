@@ -119,7 +119,8 @@ class QTV3MainWindow: public QMainWindow
 public:
 
    //! default ctor
-   QTV3MainWindow(QWidget *parent = 0);
+   QTV3MainWindow(QWidget *parent = 0,
+                  bool demo = false);
 
    //! dtor
    ~QTV3MainWindow();
@@ -165,6 +166,8 @@ private:
 
    QTV3VolRenWidget *vrw_;
    bool vrw_stereo_;
+
+   bool demo_;
 
    QLabel *update_;
 
