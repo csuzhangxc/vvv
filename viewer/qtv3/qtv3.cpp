@@ -19,17 +19,20 @@ int main(int argc, char *argv[])
 
    setlocale(LC_NUMERIC, "C");
 
+   // get argument list
    QStringList args = QCoreApplication::arguments();
 
+   // scan for arguments and options
    QStringList arg,opt;
-   for (unsigned int i=1; i<args.size(); i++)
+   for (int i=1; i<args.size(); i++)
       if (args[i].startsWith("--")) opt.push_back(args[i].mid(2));
       else if (args[i].startsWith("-")) opt.push_back(args[i].mid(1));
       else arg.push_back(args[i]);
 
    bool demo=false;
 
-   for (unsigned int i=0; i<opt.size(); i++)
+   // scan option list
+   for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
 
    QTV3MainWindow main(NULL, demo);
@@ -50,7 +53,7 @@ int main(int argc, char *argv[])
    else if (arg.size()>1)
    {
       std::vector<std::string> list;
-      for (unsigned int i=0; i<arg.size(); i++) list.push_back(arg[i].toStdString());
+      for (int i=0; i<arg.size(); i++) list.push_back(arg[i].toStdString());
       main.loadSeries(list);
    }
 
