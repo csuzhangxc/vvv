@@ -198,7 +198,7 @@ void QTV3MainWindow::createWidgets()
    if (!demo_) mainLayout_->addWidget(update_);
 
    // create sliders
-   QTV3Slider *s1=createSlider((demo_)?20:0,(demo_)?50:100,0,true);
+   QTV3Slider *s1=createSlider((demo_)?25:0,(demo_)?50:100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
    QTV3Slider *s3=createSlider(-180,180,0,false);
    QTV3Slider *s4=createSlider(-90,90,0,true);
