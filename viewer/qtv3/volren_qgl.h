@@ -1343,6 +1343,8 @@ protected:
             {
                if (bMouseMove)
                {
+                  omega_ = 0.0;
+
                   angle_ -= 180*(x-mouseLastX);
                   tilt_ -= 180*(mouseLastY-y);
 
@@ -1353,6 +1355,8 @@ protected:
             {
                if (bMouseMove)
                {
+                  omega_ = 0.0;
+
                   rotateCenter(180*(x-mouseLastX),
                                180*(y-mouseLastY));
                }
@@ -1361,6 +1365,8 @@ protected:
             {
                if (bMouseMove)
                {
+                  omega_ = 0.0;
+
                   rotateAnchorPlane(180*(x-mouseLastX),
                                     180*(y-mouseLastY));
                }

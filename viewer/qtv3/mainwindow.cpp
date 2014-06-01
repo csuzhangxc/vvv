@@ -1038,12 +1038,12 @@ void QTV3MainWindow::resetInteractions()
    modeButton1_->setChecked(true);
    if (demo_)
    {
-      modeButton1_->setChecked(true);
+      modeButton3_->setChecked(true);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateCenter);
    }
    else
    {
-      modeButton3_->setChecked(true);
+      modeButton1_->setChecked(true);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
    }
 
