@@ -120,6 +120,7 @@ public:
 
    //! default ctor
    QTV3MainWindow(QWidget *parent = 0,
+                  bool stereo = false,
                   bool demo = false);
 
    //! dtor
@@ -148,6 +149,12 @@ public:
 
    //! clear surface
    void clearSurface();
+
+   //! set anaglyph stereo mode
+   void setAnaglyph();
+
+   //! set gradmag mode
+   void setGradMag();
 
    //! grab window
    void grab();

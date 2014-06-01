@@ -574,6 +574,12 @@ public:
       }
    }
 
+   //! get gradient magnitude mode
+   bool getGradMag()
+   {
+      return(gm_);
+   }
+
    //! set stereo mode
    void setSFX(bool on=false)
    {

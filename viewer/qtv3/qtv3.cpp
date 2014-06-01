@@ -31,13 +31,19 @@ int main(int argc, char *argv[])
 
    bool demo=false;
    bool fullscreen=false;
+   bool gradmag=false;
+   bool anaglyph=false;
+   bool stereo=false;
 
    // scan option list
    for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
       else if (opt[i]=="fullscreen") fullscreen=true;
+      else if (opt[i]=="gradmag") gradmag=true;
+      else if (opt[i]=="anaglyph") anaglyph=true;
+      else if (opt[i]=="stereo") stereo=true;
 
-   QTV3MainWindow main(NULL, demo);
+   QTV3MainWindow main(NULL, stereo, demo);
 
    if (arg.size()==1)
    {
@@ -61,6 +67,9 @@ int main(int argc, char *argv[])
 
    if (fullscreen) main.showFullScreen();
    else main.show();
+
+   if (anaglyph) main.setAnaglyph();
+   if (gradmag) main.setGradMag();
 
    return(app.exec());
 }

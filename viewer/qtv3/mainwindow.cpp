@@ -6,10 +6,12 @@
 #include "mainconst.h"
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent,
+                               bool stereo,
                                bool demo)
    : QMainWindow(parent)
 {
-   demo_=demo;
+   vrw_stereo_ = stereo;
+   demo_ = demo;
 
    createMenus();
    createWidgets();
@@ -106,6 +108,17 @@ void QTV3MainWindow::clearSurface()
    vrw_->clearSurface();
 }
 
+void QTV3MainWindow::setAnaglyph()
+{
+   if (!vrw_stereo_)
+      checkAnaMode(true);
+}
+
+void QTV3MainWindow::setGradMag()
+{
+   checkGradMag(true);
+}
+
 void QTV3MainWindow::grab()
 {
    if (!prefs_->grab("png"))
@@ -172,7 +185,6 @@ void QTV3MainWindow::createWidgets()
    viewerSplitter_->setOrientation(Qt::Horizontal);
 
    // create qtv3 volren widget
-   vrw_stereo_ = false;
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
 
    // create update info label
@@ -275,7 +287,8 @@ void QTV3MainWindow::createWidgets()
    connect(sfxOnCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
    h2->addWidget(sfxOnCheck_);
    gb1->addButton(sfxOnCheck_);
-   sfxOffCheck_->setChecked(true);
+   if (vrw_stereo_) sfxOnCheck_->setChecked(true);
+   else sfxOffCheck_->setChecked(true);
    sfxOffCheck_->hide();
    anaModeCheck_->hide();
    sfxOnCheck_->hide();
@@ -762,9 +775,12 @@ void QTV3MainWindow::absorption(int v)
 
 void QTV3MainWindow::checkGradMag(int on)
 {
-   vrw_->setGradMag(on);
-   emiSlider_->setValue(16*100*vrw_->getEmission());
-   attSlider_->setValue(16*100*vrw_->getAbsorption());
+   if (vrw_)
+   {
+      vrw_->setGradMag(on);
+      emiSlider_->setValue(16*100*vrw_->getEmission());
+      attSlider_->setValue(16*100*vrw_->getAbsorption());
+   }
 }
 
 void QTV3MainWindow::checkInvMode(int on)
@@ -824,31 +840,40 @@ void QTV3MainWindow::checkSFX(bool stereo)
 
 void QTV3MainWindow::checkSFXoff(bool on)
 {
-   checkSFX(false);
+   if (vrw_)
+   {
+      checkSFX(false);
 
-   if (on)
-      vrw_->setSFX(false);
+      if (on)
+         vrw_->setSFX(false);
+   }
 }
 
 void QTV3MainWindow::checkAnaMode(bool on)
 {
-   checkSFX(false);
-
-   if (on)
+   if (vrw_)
    {
-      vrw_->setSFX(true);
-      vrw_->setAnaglyph(on);
+      checkSFX(false);
+
+      if (on)
+      {
+         vrw_->setSFX(true);
+         vrw_->setAnaglyph(on);
+      }
    }
 }
 
 void QTV3MainWindow::checkSFXon(bool on)
 {
-   checkSFX(true);
-
-   if (on)
+   if (vrw_)
    {
-      vrw_->setSFX(true);
-      vrw_->setAnaglyph(false);
+      checkSFX(true);
+
+      if (on)
+      {
+         vrw_->setSFX(true);
+         vrw_->setAnaglyph(false);
+      }
    }
 }
 
