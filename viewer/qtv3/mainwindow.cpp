@@ -198,7 +198,7 @@ void QTV3MainWindow::createWidgets()
    if (!demo_) mainLayout_->addWidget(update_);
 
    // create sliders
-   QTV3Slider *s1=createSlider(0,100,0,true);
+   QTV3Slider *s1=createSlider((demo_)?20:0,(demo_)?50:100,0,true);
    QTV3Slider *s2=createSlider(0,100,0,true);
    QTV3Slider *s3=createSlider(-180,180,0,false);
    QTV3Slider *s4=createSlider(-90,90,0,true);
@@ -229,20 +229,20 @@ void QTV3MainWindow::createWidgets()
    connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
    QPushButton *clearButton = new QPushButton(tr("Clear"));
    connect(clearButton, SIGNAL(pressed()), this, SLOT(clear()));
-   l1->addWidget(tackButton);
-   l1->addWidget(clearButton);
+   if (!demo_) l1->addWidget(tackButton);
+   if (!demo_) l1->addWidget(clearButton);
    planeCheck_ = new QCheckBox(tr("Plane View"));
    planeCheck_->setChecked(false);
    connect(planeCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkPlane(int)));
-   l1->addWidget(planeCheck_);
+   if (!demo_) l1->addWidget(planeCheck_);
    gradMagCheck_ = new QCheckBox(tr("GradMag"));
    gradMagCheck_->setChecked(false);
    connect(gradMagCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
-   l1->addWidget(gradMagCheck_);
+   if (!demo_) l1->addWidget(gradMagCheck_);
 
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
-   if (!demo_) viewerSplitter_->addWidget(g1);
+   viewerSplitter_->addWidget(g1);
 
    // create zoom section
    QVBoxLayout *l2 = new QVBoxLayout;
