@@ -195,7 +195,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
    connect(vrw_, SIGNAL(interaction_signal()), this, SLOT(interaction_slot()));
    connect(vrw_, SIGNAL(measuring_signal(double,double,double,double,double)), this, SLOT(measuring_slot(double,double,double,double,double)));
-   mainLayout_->addWidget(update_);
+   if (!demo_) mainLayout_->addWidget(update_);
 
    // create sliders
    QTV3Slider *s1=createSlider(0,100,0,true);
@@ -1027,7 +1027,16 @@ void QTV3MainWindow::resetInteractions()
    vrw_->resetInteractions();
 
    modeButton1_->setChecked(true);
-   vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
+   if (demo_)
+   {
+      modeButton1_->setChecked(true);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateCenter);
+   }
+   else
+   {
+      modeButton3_->setChecked(true);
+      vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Window);
+   }
 
    planeCheck_->setChecked(false);
 }
