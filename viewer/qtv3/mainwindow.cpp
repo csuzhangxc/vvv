@@ -160,7 +160,7 @@ void QTV3MainWindow::createMenus()
 
 void QTV3MainWindow::createWidgets()
 {
-   QGroupBox *mainGroup = new QGroupBox(this);
+   QGroupBox *mainGroup = new QGroupBox;
    mainLayout_ = new QVBoxLayout(mainGroup);
 
    // create main group
@@ -461,8 +461,17 @@ void QTV3MainWindow::createWidgets()
    mainSplitter_->setSizes(mainSizes);
    mainSplitter_->refresh();
 
+   // create demo widgets
+   if (demo_)
+   {
+      QTV3Slider *demo_s=createSlider(0,100,0,true);
+      connect(demo_s, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
+      viewerSplitter_->addWidget(demo_s);
+   }
+
    setMinimumSize(QSize(MAIN_WIDTH,MAIN_HEIGHT));
-   setCentralWidget(mainGroup);
+   if (!demo_) setCentralWidget(mainGroup);
+   else setCentralWidget(mainSplitter_);
 }
 
 void QTV3MainWindow::createDocks()
