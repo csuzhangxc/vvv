@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
       else arg.push_back(args[i]);
 
    bool demo=false;
-   double omega=0.0;
+   double omega=30.0;
    bool fullscreen=false;
    double tfcenter=0.5;
    double tfsize=1.0;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
    if (fullscreen) main.showFullScreen();
    else main.show();
 
-   if (omega>0) main.setRotation(omega);
+   main.setRotation(omega);
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
