@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
       else if (opt[i].startsWith("maxidle="))
       {
          QString o=opt[i];
-         o=o.mid(o.indexOf("="));
+         o=o.mid(o.indexOf("=")+1);
          maxidle=o.toDouble();
       }
       else if (opt[i]=="help")
