@@ -44,12 +44,12 @@ int main(int argc, char *argv[])
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
       else if (opt[i].startsWith("maxidle="))
-         {
+      {
          QString o=opt[i].mid(8);
          maxidle=o.toDouble();
-         }
+      }
       else if (opt[i]=="help")
-         {
+      {
          std::cout << "usage:" << std::endl;
          std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
          std::cout << "where options are:" << std::endl;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
          std::cout << "where series is:" << std::endl;
          std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
          exit(0);
-         }
+      }
 
    QTV3MainWindow main(NULL, stereo, demo);
 
