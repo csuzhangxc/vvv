@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
       if (opt[i]=="demo") demo=true;
       else if (opt[i]=="fullscreen") fullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
-      else if (opt[i].startsWith("tfwidth=")) tfsize=get_opt(opt[i]);
+      else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;

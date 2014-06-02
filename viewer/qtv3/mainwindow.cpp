@@ -103,6 +103,8 @@ void QTV3MainWindow::setRotation(double omega)
    vrw_->setRotation(omega);
 
    rotateCheck_->setChecked(omega!=0.0);
+
+   default_omega_=omega;
 }
 
 void QTV3MainWindow::setTilt(double tilt)
