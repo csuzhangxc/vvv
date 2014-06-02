@@ -11,6 +11,12 @@
 #include "volren_qgl.h"
 #include "mainwindow.h"
 
+double get_opt(QString o)
+{
+   o=o.mid(o.indexOf("=")+1);
+   return(o.toDouble());
+}
+
 int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
@@ -31,6 +37,8 @@ int main(int argc, char *argv[])
 
    bool demo=false;
    bool fullscreen=false;
+   double tfcenter=0.5;
+   double tfsize=1.0;
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
@@ -40,15 +48,12 @@ int main(int argc, char *argv[])
    for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
       else if (opt[i]=="fullscreen") fullscreen=true;
+      else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
+      else if (opt[i].startsWith("tfwidth=")) tfsize=get_opt(opt[i]);
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
-      else if (opt[i].startsWith("maxidle="))
-      {
-         QString o=opt[i];
-         o=o.mid(o.indexOf("=")+1);
-         maxidle=o.toDouble();
-      }
+      else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
       else if (opt[i]=="help")
       {
          std::cout << "usage:" << std::endl;
@@ -56,6 +61,8 @@ int main(int argc, char *argv[])
          std::cout << "where options are:" << std::endl;
          std::cout << " --demo: demo gui" << std::endl;
          std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
+         std::cout << " --tfcenter=x: center of the linear transfer function window" << std::endl;
+         std::cout << " --tfsize=x: size of the linear transfer function window" << std::endl;
          std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
          std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
          std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
@@ -93,8 +100,9 @@ int main(int argc, char *argv[])
    if (fullscreen) main.showFullScreen();
    else main.show();
 
-   if (anaglyph) main.setAnaglyph();
+   if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();
+   if (anaglyph) main.setAnaglyph();
    if (maxidle>0) main.setMaxIdle(maxidle);
 
    return(app.exec());

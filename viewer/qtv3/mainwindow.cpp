@@ -33,6 +33,14 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    // set window title to app name and version
    setWindowTitle(APP_NAME" "APP_VERSION);
 
+   // set defaults
+   default_omega_=30.0;
+   default_tfcenter_=0.5;
+   default_tfsize_=1.0;
+   default_tfinverse_=false;
+   default_gradmag_=false;
+   default_anaglyph_=false;
+
    reset();
 }
 
@@ -118,15 +126,29 @@ void QTV3MainWindow::clearSurface()
    vrw_->clearSurface();
 }
 
-void QTV3MainWindow::setAnaglyph()
+void QTV3MainWindow::setTF(float center,float size,
+                           bool inverse)
 {
-   if (!vrw_stereo_)
-      checkAnaMode(true);
+   vrw_->set_tfunc(center,size,inverse);
+
+   default_tfcenter_=center;
+   default_tfsize_=size;
+   default_tfinverse_=inverse;
 }
 
 void QTV3MainWindow::setGradMag()
 {
    checkGradMag(true);
+
+   default_gradmag_=true;
+}
+
+void QTV3MainWindow::setAnaglyph()
+{
+   if (!vrw_stereo_)
+      checkAnaMode(true);
+
+   default_anaglyph_=true;
 }
 
 void QTV3MainWindow::setMaxIdle(double t)
@@ -538,7 +560,13 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
 
    vrw_->clearSurface();
 
-   setRotation(30.0);
+   setRotation(default_omega_);
+
+   if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)
+      setTF(default_tfcenter_,default_tfsize_,default_tfinverse_);
+
+   if (default_gradmag_) setGradMag();
+   if (default_anaglyph_) setAnaglyph();
 
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;
@@ -1171,7 +1199,7 @@ void QTV3MainWindow::idle_check()
    if (idle()>max_idle_time_)
    {
       resetInteractions();
-      setRotation(30.0);
+      setRotation(default_omega_);
 
       last_event_.start();
    }

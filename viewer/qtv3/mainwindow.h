@@ -150,11 +150,15 @@ public:
    //! clear surface
    void clearSurface();
 
-   //! set anaglyph stereo mode
-   void setAnaglyph();
+   //! use linear transfer function
+   void setTF(float center=0.5f,float size=1.0f,
+              bool inverse=FALSE);
 
    //! set gradmag mode
    void setGradMag();
+
+   //! set anaglyph stereo mode
+   void setAnaglyph();
 
    //! set maximum idle time before reset
    void setMaxIdle(double t);
@@ -344,6 +348,13 @@ protected slots:
    void idle_check();
 
 private:
+
+   double default_omega_;
+   double default_tfcenter_;
+   double default_tfsize_;
+   bool default_tfinverse_;
+   bool default_gradmag_;
+   bool default_anaglyph_;
 
    void checkSFX(bool stereo);
 };

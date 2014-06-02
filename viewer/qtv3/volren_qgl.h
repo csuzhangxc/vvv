@@ -1300,242 +1300,239 @@ protected:
 
       bool shift = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-      if (!tf_)
-         if (bLeftButtonDown)
+      if (bLeftButtonDown)
+      {
+         if (mode_ == InteractionMode_Window && !tf_)
          {
-            if (mode_ == InteractionMode_Window)
-            {
-               tf_center_ = x;
-               tf_size_ = 1.0f-y;
-               tf_inverse_ = !shift;
+            tf_center_ = x;
+            tf_size_ = 1.0f-y;
+            tf_inverse_ = !shift;
 
-               vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
-            }
-            else if (mode_ == InteractionMode_Move)
-            {
-               if (bMouseMove)
-               {
-                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
-
-                  if (!shift)
-                  {
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
-
-                     eye_x_ += ux*(y-mouseLastY);
-                     eye_y_ += uy*(y-mouseLastY);
-                     eye_z_ += uz*(y-mouseLastY);
-                  }
-                  else
-                  {
-                     eye_x_ += dx*(y-mouseLastY);
-                     eye_y_ += dy*(y-mouseLastY);
-                     eye_z_ += dz*(y-mouseLastY);
-
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
-                  }
-               }
-            }
-            else if (mode_ == InteractionMode_RotateAxis)
-            {
-               if (bMouseMove)
-               {
-                  omega_ = 0.0;
-
-                  angle_ -= 180*(x-mouseLastX);
-                  tilt_ -= 180*(mouseLastY-y);
-
-                  updated_rotation();
-               }
-            }
-            else if (mode_ == InteractionMode_RotateCenter)
-            {
-               if (bMouseMove)
-               {
-                  omega_ = 0.0;
-
-                  rotateCenter(180*(x-mouseLastX),
-                               180*(y-mouseLastY));
-               }
-            }
-            else if (mode_ == InteractionMode_RotateAnchor)
-            {
-               if (bMouseMove)
-               {
-                  omega_ = 0.0;
-
-                  rotateAnchorPlane(180*(x-mouseLastX),
-                                    180*(y-mouseLastY));
-               }
-            }
-            else if (mode_ == InteractionMode_Zoom)
-            {
-               if (bMouseMove)
-               {
-                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
-
-                  if (!shift)
-                  {
-                     eye_x_ += dx*(y-mouseLastY);
-                     eye_y_ += dy*(y-mouseLastY);
-                     eye_z_ += dz*(y-mouseLastY);
-
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
-                  }
-                  else
-                  {
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
-
-                     eye_x_ += ux*(y-mouseLastY);
-                     eye_y_ += uy*(y-mouseLastY);
-                     eye_z_ += uz*(y-mouseLastY);
-                  }
-               }
-            }
-            else if (mode_ == InteractionMode_Clip)
-            {
-               if (bMouseMove)
-               {
-                  clipdist_ += y-mouseLastY;
-
-                  updated_clipping();
-               }
-            }
-            else if (mode_ == InteractionMode_Opacity)
-            {
-               if (bMouseMove)
-               {
-                  if (!shift)
-                  {
-                     emi_ -= (y-mouseLastY) - (x-mouseLastX);
-                     att_ -= (y-mouseLastY);
-
-                     if (emi_<0.0) emi_=0.0;
-                     else if (emi_>1.0) emi_=1.0;
-
-                     if (att_<0.0) att_=0.0;
-                     else if (att_>1.0) att_=1.0;
-
-                     emi_gm_ -= y-mouseLastY;
-                     att_gm_ -= y-mouseLastY;
-
-                     if (emi_gm_<0.0) emi_gm_=0.0;
-                     else if (emi_gm_>1.0) emi_gm_=1.0;
-
-                     if (att_gm_<0.0) att_gm_=0.0;
-                     else if (att_gm_>1.0) att_gm_=1.0;
-                  }
-                  else
-                  {
-                     opacity_ -= (y-mouseLastY);
-                     opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
-
-                     if (opacity_<0.0) opacity_=0.0;
-                     else if (opacity_>1.0) opacity_=1.0;
-
-                     if (opacity2_<0.0) opacity2_=0.0;
-                     else if (opacity2_>1.0) opacity2_=1.0;
-                  }
-
-                  updated_opacity();
-               }
-            }
-            else if (mode_ == InteractionMode_Measure)
-            {
-               double fovy=fovy_;
-               double aspect=(double)width()/height();
-
-               v3d p=vr_->project(x,y, fovy,aspect);
-               vr_->appendLine(p);
-
-               updated_measuring(p.x,p.y,p.z,vr_->getLength(),vr_->getEndLength());
-            }
+            vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
          }
-         else if (bMiddleButtonDown)
+         else if (mode_ == InteractionMode_Move)
          {
             if (bMouseMove)
             {
+               getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+               if (!shift)
+               {
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
+
+                  eye_x_ += ux*(y-mouseLastY);
+                  eye_y_ += uy*(y-mouseLastY);
+                  eye_z_ += uz*(y-mouseLastY);
+               }
+               else
+               {
+                  eye_x_ += dx*(y-mouseLastY);
+                  eye_y_ += dy*(y-mouseLastY);
+                  eye_z_ += dz*(y-mouseLastY);
+
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
+               }
+            }
+         }
+         else if (mode_ == InteractionMode_RotateAxis)
+         {
+            if (bMouseMove)
+            {
+               omega_ = 0.0;
+
+               angle_ -= 180*(x-mouseLastX);
+               tilt_ -= 180*(mouseLastY-y);
+
+               updated_rotation();
+            }
+         }
+         else if (mode_ == InteractionMode_RotateCenter)
+         {
+            if (bMouseMove)
+            {
+               omega_ = 0.0;
+
                rotateCenter(180*(x-mouseLastX),
                             180*(y-mouseLastY));
             }
          }
-         else if (bRightButtonDown)
+         else if (mode_ == InteractionMode_RotateAnchor)
          {
-            if (mode_ == InteractionMode_Opacity)
+            if (bMouseMove)
             {
-               if (bMouseMove)
+               omega_ = 0.0;
+
+               rotateAnchorPlane(180*(x-mouseLastX),
+                                 180*(y-mouseLastY));
+            }
+         }
+         else if (mode_ == InteractionMode_Zoom)
+         {
+            if (bMouseMove)
+            {
+               getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+               if (!shift)
                {
-                  if (shift)
-                  {
-                     emi_ -= (y-mouseLastY) - (x-mouseLastX);
-                     att_ -= (y-mouseLastY);
+                  eye_x_ += dx*(y-mouseLastY);
+                  eye_y_ += dy*(y-mouseLastY);
+                  eye_z_ += dz*(y-mouseLastY);
 
-                     if (emi_<0.0) emi_=0.0;
-                     else if (emi_>1.0) emi_=1.0;
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
+               }
+               else
+               {
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
 
-                     if (att_<0.0) att_=0.0;
-                     else if (att_>1.0) att_=1.0;
-
-                     emi_gm_ -= y-mouseLastY;
-                     att_gm_ -= y-mouseLastY;
-
-                     if (emi_gm_<0.0) emi_gm_=0.0;
-                     else if (emi_gm_>1.0) emi_gm_=1.0;
-
-                     if (att_gm_<0.0) att_gm_=0.0;
-                     else if (att_gm_>1.0) att_gm_=1.0;
-                  }
-                  else
-                  {
-                     opacity_ -= (y-mouseLastY);
-                     opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
-
-                     if (opacity_<0.0) opacity_=0.0;
-                     else if (opacity_>1.0) opacity_=1.0;
-
-                     if (opacity2_<0.0) opacity2_=0.0;
-                     else if (opacity2_>1.0) opacity2_=1.0;
-                  }
-
-                  updated_opacity();
+                  eye_x_ += ux*(y-mouseLastY);
+                  eye_y_ += uy*(y-mouseLastY);
+                  eye_z_ += uz*(y-mouseLastY);
                }
             }
-            else
-               if (bMouseMove)
+         }
+         else if (mode_ == InteractionMode_Clip)
+         {
+            if (bMouseMove)
+            {
+               clipdist_ += y-mouseLastY;
+
+               updated_clipping();
+            }
+         }
+         else if (mode_ == InteractionMode_Opacity)
+         {
+            if (bMouseMove)
+            {
+               if (!shift)
                {
-                  getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+                  emi_ -= (y-mouseLastY) - (x-mouseLastX);
+                  att_ -= (y-mouseLastY);
 
-                  if (!shift)
-                  {
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
+                  if (emi_<0.0) emi_=0.0;
+                  else if (emi_>1.0) emi_=1.0;
 
-                     eye_x_ += ux*(y-mouseLastY);
-                     eye_y_ += uy*(y-mouseLastY);
-                     eye_z_ += uz*(y-mouseLastY);
-                  }
-                  else
-                  {
-                     eye_x_ += dx*(y-mouseLastY);
-                     eye_y_ += dy*(y-mouseLastY);
-                     eye_z_ += dz*(y-mouseLastY);
+                  if (att_<0.0) att_=0.0;
+                  else if (att_>1.0) att_=1.0;
 
-                     eye_x_ += rx*(mouseLastX-x);
-                     eye_y_ += ry*(mouseLastX-x);
-                     eye_z_ += rz*(mouseLastX-x);
-                  }
+                  emi_gm_ -= y-mouseLastY;
+                  att_gm_ -= y-mouseLastY;
+
+                  if (emi_gm_<0.0) emi_gm_=0.0;
+                  else if (emi_gm_>1.0) emi_gm_=1.0;
+
+                  if (att_gm_<0.0) att_gm_=0.0;
+                  else if (att_gm_>1.0) att_gm_=1.0;
                }
+               else
+               {
+                  opacity_ -= (y-mouseLastY);
+                  opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
+
+                  if (opacity_<0.0) opacity_=0.0;
+                  else if (opacity_>1.0) opacity_=1.0;
+
+                  if (opacity2_<0.0) opacity2_=0.0;
+                  else if (opacity2_>1.0) opacity2_=1.0;
+               }
+
+               updated_opacity();
+            }
+         }
+         else if (mode_ == InteractionMode_Measure)
+         {
+            double fovy=fovy_;
+            double aspect=(double)width()/height();
+
+            v3d p=vr_->project(x,y, fovy,aspect);
+            vr_->appendLine(p);
+
+            updated_measuring(p.x,p.y,p.z,vr_->getLength(),vr_->getEndLength());
+         }
+      }
+      else if (bMiddleButtonDown)
+      {
+         if (bMouseMove)
+         {
+            rotateCenter(180*(x-mouseLastX),
+                         180*(y-mouseLastY));
+         }
+      }
+      else if (bRightButtonDown)
+      {
+         if (mode_ == InteractionMode_Opacity)
+         {
+            if (bMouseMove)
+            {
+               if (shift)
+               {
+                  emi_ -= (y-mouseLastY) - (x-mouseLastX);
+                  att_ -= (y-mouseLastY);
+
+                  if (emi_<0.0) emi_=0.0;
+                  else if (emi_>1.0) emi_=1.0;
+
+                  if (att_<0.0) att_=0.0;
+                  else if (att_>1.0) att_=1.0;
+
+                  emi_gm_ -= y-mouseLastY;
+                  att_gm_ -= y-mouseLastY;
+
+                  if (emi_gm_<0.0) emi_gm_=0.0;
+                  else if (emi_gm_>1.0) emi_gm_=1.0;
+
+                  if (att_gm_<0.0) att_gm_=0.0;
+                  else if (att_gm_>1.0) att_gm_=1.0;
+               }
+               else
+               {
+                  opacity_ -= (y-mouseLastY);
+                  opacity2_ -= (y-mouseLastY) - (x-mouseLastX);
+
+                  if (opacity_<0.0) opacity_=0.0;
+                  else if (opacity_>1.0) opacity_=1.0;
+
+                  if (opacity2_<0.0) opacity2_=0.0;
+                  else if (opacity2_>1.0) opacity2_=1.0;
+               }
+
+               updated_opacity();
+            }
          }
          else
-            event->ignore();
+            if (bMouseMove)
+            {
+               getViewPlane(ex,ey,ez, dx,dy,dz, ux,uy,uz, rx,ry,rz);
+
+               if (!shift)
+               {
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
+
+                  eye_x_ += ux*(y-mouseLastY);
+                  eye_y_ += uy*(y-mouseLastY);
+                  eye_z_ += uz*(y-mouseLastY);
+               }
+               else
+               {
+                  eye_x_ += dx*(y-mouseLastY);
+                  eye_y_ += dy*(y-mouseLastY);
+                  eye_z_ += dz*(y-mouseLastY);
+
+                  eye_x_ += rx*(mouseLastX-x);
+                  eye_y_ += ry*(mouseLastX-x);
+                  eye_z_ += rz*(mouseLastX-x);
+               }
+            }
+      }
       else
          event->ignore();
 
