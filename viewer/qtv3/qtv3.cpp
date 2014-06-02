@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
+   double maxidle=0;
 
    // scan option list
    for (int i=0; i<opt.size(); i++)
@@ -42,6 +43,11 @@ int main(int argc, char *argv[])
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
+      else if (opt[i].startsWith("maxidle="))
+         {
+         QString o=opt[i].mid(8);
+         maxidle=o.toDouble();
+         }
 
    QTV3MainWindow main(NULL, stereo, demo);
 
@@ -70,6 +76,7 @@ int main(int argc, char *argv[])
 
    if (anaglyph) main.setAnaglyph();
    if (gradmag) main.setGradMag();
+   if (maxidle>0) main.setMaxIdle(maxidle);
 
    return(app.exec());
 }

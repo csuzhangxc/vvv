@@ -487,17 +487,13 @@ void QTV3MainWindow::createWidgets()
    // create demo widgets
    if (demo_)
    {
-      // create zoom slider
-      QTV3Slider *demo_s=createSlider(0,100,0,true);
-      connect(demo_s, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
-
       // create zoom section
       QGroupBox *g = new QGroupBox;
       QVBoxLayout *l = new QVBoxLayout;
       QLabel *ll=new QLabel("Zoom");
       ll->setAlignment(Qt::AlignLeft);
       l->addWidget(ll);
-      l->addWidget(demo_s);
+      l->addWidget(s2);
       g->setLayout(l);
 
       // assemble zoom section
@@ -1174,7 +1170,9 @@ void QTV3MainWindow::idle_check()
 {
    if (idle()>max_idle_time_)
    {
-      reset();
+      resetInteractions();
+      setRotation(30.0);
+
       last_event_.start();
    }
 }
