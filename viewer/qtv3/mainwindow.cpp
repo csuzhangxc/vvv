@@ -160,10 +160,11 @@ void QTV3MainWindow::createMenus()
 
 void QTV3MainWindow::createWidgets()
 {
+   // create main group
    QGroupBox *mainGroup = new QGroupBox;
    mainLayout_ = new QVBoxLayout(mainGroup);
 
-   // create main group
+   // create main parts
    mainSplitter_ = new QSplitter;
    QGroupBox *viewerGroup = new QGroupBox;
    viewerLayout_ = new QVBoxLayout;
@@ -171,16 +172,18 @@ void QTV3MainWindow::createWidgets()
    QGroupBox *sliderGroup = new QGroupBox;
    sliderLayout_ = new QHBoxLayout;
 
-   // create main splitter group
+   // assemble main splitter group
    mainSplitter_->setOrientation(Qt::Vertical);
    mainSplitter_->addWidget(viewerGroup);
    if (!demo_) mainSplitter_->addWidget(sliderGroup);
    viewerGroup->setLayout(viewerLayout_);
    sliderGroup->setLayout(sliderLayout_);
 
+   // assemble main group
    mainLayout_->addWidget(mainSplitter_);
    mainGroup->setLayout(mainLayout_);
 
+   // assemble viewer group
    viewerLayout_->addWidget(viewerSplitter_);
    viewerSplitter_->setOrientation(Qt::Horizontal);
 
@@ -205,6 +208,7 @@ void QTV3MainWindow::createWidgets()
    QTV3Slider *s5=createSlider(0,100,25,true);
    QTV3Slider *s6=createSlider(0,100,25,true);
 
+   // remember sliders
    clipSlider_=s1;
    zoomSlider_=s2;
    rotSlider_=s3;
@@ -212,6 +216,7 @@ void QTV3MainWindow::createWidgets()
    emiSlider_=s5;
    attSlider_=s6;
 
+   // connect sliders
    connect(s1, SIGNAL(sliderMoved(int)), this, SLOT(clip(int)));
    connect(s2, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
    connect(s3, SIGNAL(sliderMoved(int)), this, SLOT(rotate(int)));
@@ -240,6 +245,7 @@ void QTV3MainWindow::createWidgets()
    connect(gradMagCheck_, SIGNAL(stateChanged(int)), this, SLOT(checkGradMag(int)));
    if (!demo_) l1->addWidget(gradMagCheck_);
 
+   // assemble clipping section
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
    viewerSplitter_->addWidget(g1);
@@ -338,6 +344,7 @@ void QTV3MainWindow::createWidgets()
    l4->addWidget(ll4);
    sliderLayout_->addLayout(l4);
 
+   // create separator line
    QFrame* line1 = new QFrame();
    line1->setFrameShape(QFrame::VLine);
    line1->setFrameShadow(QFrame::Raised);
@@ -359,6 +366,7 @@ void QTV3MainWindow::createWidgets()
    l6->addWidget(ll6);
    sliderLayout_->addLayout(l6);
 
+   // create separator line
    QFrame* line2 = new QFrame();
    line2->setFrameShape(QFrame::VLine);
    line2->setFrameShadow(QFrame::Raised);
@@ -464,11 +472,24 @@ void QTV3MainWindow::createWidgets()
    // create demo widgets
    if (demo_)
    {
+      // create zoom slider
       QTV3Slider *demo_s=createSlider(0,100,0,true);
       connect(demo_s, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
-      viewerSplitter_->addWidget(demo_s);
+
+      // create zoom section
+      QGroupBox *g = new QGroupBox;
+      QVBoxLayout *l = new QVBoxLayout;
+      QLabel *ll=new QLabel("Zoom");
+      ll->setAlignment(Qt::AlignLeft);
+      l->addWidget(ll);
+      l->addWidget(demo_s);
+      g->setLayout(l);
+
+      // assemble zoom section
+      viewerSplitter_->addWidget(g);
    }
 
+   // assemble central widget
    setMinimumSize(QSize(MAIN_WIDTH,MAIN_HEIGHT));
    if (!demo_) setCentralWidget(mainGroup);
    else setCentralWidget(mainSplitter_);
