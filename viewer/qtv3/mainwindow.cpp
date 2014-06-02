@@ -38,6 +38,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
    default_tfinverse_=false;
+   default_tfemi_=1.0;
+   default_tfatt_=1.0;
    default_gradmag_=false;
    default_anaglyph_=false;
 
@@ -136,6 +138,20 @@ void QTV3MainWindow::setTF(float center,float size,
    default_tfcenter_=center;
    default_tfsize_=size;
    default_tfinverse_=inverse;
+}
+
+void QTV3MainWindow::setEmission(float emi)
+{
+   vrw_->setEmission(emi*vrw_->getEmission());
+
+   default_tfemi_=emi;
+}
+
+void QTV3MainWindow::setAbsorption(float att)
+{
+   vrw_->setAbsorption(att*vrw_->getAbsorption());
+
+   default_tfatt_=att;
 }
 
 void QTV3MainWindow::setGradMag()
@@ -569,6 +585,9 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
 
    if (default_gradmag_) setGradMag();
    if (default_anaglyph_) setAnaglyph();
+
+   if (default_tfemi_!=1.0) setEmission(default_tfemi_);
+   if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);
 
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;

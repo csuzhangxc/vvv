@@ -36,14 +36,16 @@ int main(int argc, char *argv[])
       else arg.push_back(args[i]);
 
    bool demo=false;
-   double omega=0;
+   double omega=0.0;
    bool fullscreen=false;
    double tfcenter=0.5;
    double tfsize=1.0;
+   double tfemi=1.0;
+   double tfatt=1.0;
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
-   double maxidle=0;
+   double maxidle=0.0;
 
    // scan option list
    for (int i=0; i<opt.size(); i++)
@@ -52,6 +54,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="fullscreen") fullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
       else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
+      else if (opt[i].startsWith("tfemi=")) tfemi=get_opt(opt[i]);
+      else if (opt[i].startsWith("tfatt=")) tfatt=get_opt(opt[i]);
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
@@ -66,6 +70,8 @@ int main(int argc, char *argv[])
          std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
          std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
          std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
+         std::cout << " --tfemi=x: global emission (default=1)" << std::endl;
+         std::cout << " --tfatt=x: global attenuation (default=1)" << std::endl;
          std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
          std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
          std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
@@ -107,7 +113,9 @@ int main(int argc, char *argv[])
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
-   if (maxidle>0) main.setMaxIdle(maxidle);
+   if (tfemi!=1.0) main.setEmission(tfemi);
+   if (tfatt!=1.0) main.setAbsorption(tfatt);
+   if (maxidle>0.0) main.setMaxIdle(maxidle);
 
    return(app.exec());
 }

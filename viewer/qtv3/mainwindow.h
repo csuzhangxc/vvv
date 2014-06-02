@@ -154,6 +154,12 @@ public:
    void setTF(float center=0.5f,float size=1.0f,
               bool inverse=FALSE);
 
+   //! set global emission
+   void setEmission(float emi);
+
+   //! set global absorption
+   void setAbsorption(float att);
+
    //! set gradmag mode
    void setGradMag();
 
@@ -353,6 +359,8 @@ private:
    double default_tfcenter_;
    double default_tfsize_;
    bool default_tfinverse_;
+   double default_tfemi_;
+   double default_tfatt_;
    bool default_gradmag_;
    bool default_anaglyph_;
 
