@@ -48,6 +48,24 @@ int main(int argc, char *argv[])
          QString o=opt[i].mid(8);
          maxidle=o.toDouble();
          }
+      else if (opt[i]=="help")
+         {
+         std::cout << "usage:" << std::endl;
+         std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
+         std::cout << "where options are:" << std::endl;
+         std::cout << " --demo: demo gui" << std::endl;
+         std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
+         std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
+         std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
+         std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
+         std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
+         std::cout << " --help: this help text" << std::endl;
+         std::cout << "where volume is:" << std::endl;
+         std::cout << " a single .pvm or .rek volume file" << std::endl;
+         std::cout << "where series is:" << std::endl;
+         std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
+         exit(0);
+         }
 
    QTV3MainWindow main(NULL, stereo, demo);
 
