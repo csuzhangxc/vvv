@@ -156,6 +156,9 @@ public:
    //! set gradmag mode
    void setGradMag();
 
+   //! set maximum idle time before reset
+   void setMaxIdle(double t);
+
    //! grab window
    void grab();
 
@@ -245,6 +248,22 @@ private:
 
 protected:
 
+   QTime last_event_;
+   QTimer idle_check_;
+   double max_idle_time_;
+
+   // monitor time of last event
+   bool eventFilter(QObject *target, QEvent *event)
+   {
+      last_event_.start();
+
+      return QMainWindow::eventFilter(target, event);
+   }
+
+   // get idle time in seconds since last event
+   double idle()
+      {return(last_event_.elapsed()/1000.0);}
+
    void keyPressEvent(QKeyEvent *event)
    {
       if (event->key() == Qt::Key_Q)
@@ -321,6 +340,8 @@ protected slots:
 
    void interaction_slot();
    void measuring_slot(double px,double py,double pz,double length,double endlength);
+
+   void idle_check();
 
 private:
 

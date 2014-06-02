@@ -16,11 +16,21 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    createMenus();
    createWidgets();
 
-   prefs_=NULL;
+   prefs_ = NULL;
+
+   max_idle_time_ = 3600;
 
    // accept drag and drop
    setAcceptDrops(true);
 
+   // install event filter
+   installEventFilter(this);
+
+   // install periodic timer
+   connect(&idle_check_, SIGNAL(timeout()), this, SLOT(idle_check()));
+   idle_check_.start(1000); // every second
+
+   // set window title to app name and version
    setWindowTitle(APP_NAME" "APP_VERSION);
 
    reset();
@@ -117,6 +127,11 @@ void QTV3MainWindow::setAnaglyph()
 void QTV3MainWindow::setGradMag()
 {
    checkGradMag(true);
+}
+
+void QTV3MainWindow::setMaxIdle(double t)
+{
+   max_idle_time_ = t;
 }
 
 void QTV3MainWindow::grab()
@@ -1153,4 +1168,13 @@ void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length,
                     QString::number(length*1E3)+"mm, "+
                     QString("end to end length: ")+
                     QString::number(endlength*1E3)+"mm");
+}
+
+void QTV3MainWindow::idle_check()
+{
+   if (idle()>max_idle_time_)
+   {
+      reset();
+      last_event_.start();
+   }
 }
