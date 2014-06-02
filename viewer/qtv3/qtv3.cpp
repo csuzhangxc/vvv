@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
       else arg.push_back(args[i]);
 
    bool demo=false;
+   double omega=0;
    bool fullscreen=false;
    double tfcenter=0.5;
    double tfsize=1.0;
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
    // scan option list
    for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
+      else if (opt[i].startsWith("omega=")) omega=get_opt(opt[i]);
       else if (opt[i]=="fullscreen") fullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
       else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
@@ -60,9 +62,10 @@ int main(int argc, char *argv[])
          std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
          std::cout << "where options are:" << std::endl;
          std::cout << " --demo: demo gui" << std::endl;
+         std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
          std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
-         std::cout << " --tfcenter=x: center of the linear transfer function window" << std::endl;
-         std::cout << " --tfsize=x: size of the linear transfer function window" << std::endl;
+         std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
+         std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
          std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
          std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
          std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
@@ -100,6 +103,7 @@ int main(int argc, char *argv[])
    if (fullscreen) main.showFullScreen();
    else main.show();
 
+   if (omega>0) main.setRotation(omega);
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
