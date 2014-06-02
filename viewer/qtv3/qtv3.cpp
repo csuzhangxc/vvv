@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="stereo") stereo=true;
       else if (opt[i].startsWith("maxidle="))
       {
-         QString o=opt[i].mid(8);
+         QString o=opt[i];
+         o=o.mid(o.indexOf("="));
          maxidle=o.toDouble();
       }
       else if (opt[i]=="help")
