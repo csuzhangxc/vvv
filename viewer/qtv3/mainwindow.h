@@ -157,8 +157,14 @@ public:
    //! set global emission
    void setEmission(float emi);
 
+   //! get global emission
+   float getEmission();
+
    //! set global absorption
    void setAbsorption(float att);
+
+   //! get global absorption
+   float getAbsorption();
 
    //! set gradmag mode
    void setGradMag();

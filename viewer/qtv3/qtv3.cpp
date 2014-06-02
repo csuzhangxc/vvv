@@ -113,8 +113,8 @@ int main(int argc, char *argv[])
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
-   if (tfemi!=1.0) main.setEmission(tfemi);
-   if (tfatt!=1.0) main.setAbsorption(tfatt);
+   if (tfemi!=1.0) main.setEmission(tfemi*main.getEmission());
+   if (tfatt!=1.0) main.setAbsorption(tfatt*main.getAbsorption());
    if (maxidle>0.0) main.setMaxIdle(maxidle);
 
    return(app.exec());

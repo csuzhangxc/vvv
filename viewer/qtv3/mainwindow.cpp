@@ -142,16 +142,26 @@ void QTV3MainWindow::setTF(float center,float size,
 
 void QTV3MainWindow::setEmission(float emi)
 {
-   vrw_->setEmission(emi*vrw_->getEmission());
+   vrw_->setEmission(emi);
 
    default_tfemi_=emi;
 }
 
+float QTV3MainWindow::getEmission()
+{
+   return(vrw_->getEmission());
+}
+
 void QTV3MainWindow::setAbsorption(float att)
 {
-   vrw_->setAbsorption(att*vrw_->getAbsorption());
+   vrw_->setAbsorption(att);
 
    default_tfatt_=att;
+}
+
+float QTV3MainWindow::getAbsorption()
+{
+   return(vrw_->getAbsorption());
 }
 
 void QTV3MainWindow::setGradMag()
