@@ -17,10 +17,11 @@ double get_opt(QString o)
    return(o.toDouble());
 }
 
-void usage()
+void usage(const char *prog)
 {
+   QString name(prog);
    std::cout << "usage:" << std::endl;
-   std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
+   std::cout << " " << name.mid(name.lastIndexOf("/")+1).toStdString() << " {options} [volume | series]" << std::endl;
    std::cout << "where options are:" << std::endl;
    std::cout << " --demo: demo gui" << std::endl;
    std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
@@ -104,8 +105,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="stereo") stereo=true;
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
       else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
-      else if (opt[i]=="help") usage();
-      else usage();
+      else if (opt[i]=="help") usage(argv[0]);
+      else usage(argv[0]);
 
    QTV3MainWindow main(NULL, stereo, demo);
 
