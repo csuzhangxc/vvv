@@ -410,7 +410,7 @@ void QTV3MainWindow::createWidgets()
    connect(flipCheckYZ2_, SIGNAL(stateChanged(int)), this, SLOT(checkFlipYZ2(int)));
    h3->addWidget(flipCheckYZ2_);
    QHBoxLayout *h4 = new QHBoxLayout;
-   QButtonGroup *gb2 = new QButtonGroup(this);
+   QButtonGroup *gb2 = new QButtonGroup;
    sampleButton1_ = new QRadioButton(tr("Undersampling"));
    sampleButton2_ = new QRadioButton(tr("Regular Sampling"));
    sampleButton3_ = new QRadioButton(tr("Oversampling"));
