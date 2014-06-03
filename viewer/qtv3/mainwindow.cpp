@@ -37,6 +37,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_omega_=30.0;
    default_angle_=0.0;
    default_tilt_=0.0;
+   default_tiltXY_=0.0;
+   default_tiltYZ_=0.0;
    default_zoom_=0.0;
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
@@ -120,6 +122,20 @@ void QTV3MainWindow::setTilt(double tilt)
    vrw_->setTilt(tilt);
 
    default_tilt_=tilt;
+}
+
+void QTV3MainWindow::setTiltXY(double tiltXY)
+{
+   vrw_->setTiltXY(tiltXY);
+
+   default_tiltXY_=tiltXY;
+}
+
+void QTV3MainWindow::setTiltYZ(double tiltYZ)
+{
+   vrw_->setTiltYZ(tiltYZ);
+
+   default_tiltYZ_=tiltYZ;
 }
 
 void QTV3MainWindow::setZoom(double zoom)
@@ -830,7 +846,7 @@ void QTV3MainWindow::rotate(int v)
 void QTV3MainWindow::tilt(int v)
 {
    double tilt = v / 16.0;
-   setTilt(tilt);
+   vrw_->setTilt(tilt);
 }
 
 void QTV3MainWindow::clip(int v)
@@ -981,51 +997,54 @@ void QTV3MainWindow::checkSFXon(bool on)
    }
 }
 
-void QTV3MainWindow::setTilt()
+void QTV3MainWindow::checkTilt()
 {
    double tiltXY=0.0;
    double tiltYZ=0.0;
 
-   if (flipXY1_) tiltXY+=90.0;
-   if (flipXY2_) tiltXY-=90.0;
-
-   if (flipYZ1_) tiltYZ+=90.0;
-   if (flipYZ2_) tiltYZ-=90.0;
-
-   if (fabs(tiltXY)>0.0 && fabs(tiltYZ)>0.0)
+   if (default_tiltXY_==0.0 && default_tiltYZ_==0.0)
    {
-      vrw_->setTiltXY(180.0);
-      vrw_->setTiltYZ(0.0);
-   }
-   else
-   {
-      vrw_->setTiltXY(tiltXY);
-      vrw_->setTiltYZ(tiltYZ);
+      if (flipXY1_) tiltXY+=90.0;
+      if (flipXY2_) tiltXY-=90.0;
+
+      if (flipYZ1_) tiltYZ+=90.0;
+      if (flipYZ2_) tiltYZ-=90.0;
+
+      if (fabs(tiltXY)>0.0 && fabs(tiltYZ)>0.0)
+      {
+         vrw_->setTiltXY(180.0);
+         vrw_->setTiltYZ(0.0);
+      }
+      else
+      {
+         vrw_->setTiltXY(tiltXY);
+         vrw_->setTiltYZ(tiltYZ);
+      }
    }
 }
 
 void QTV3MainWindow::checkFlipXY1(int on)
 {
    flipXY1_=on;
-   setTilt();
+   checkTilt();
 }
 
 void QTV3MainWindow::checkFlipXY2(int on)
 {
    flipXY2_=on;
-   setTilt();
+   checkTilt();
 }
 
 void QTV3MainWindow::checkFlipYZ1(int on)
 {
    flipYZ1_=on;
-   setTilt();
+   checkTilt();
 }
 
 void QTV3MainWindow::checkFlipYZ2(int on)
 {
    flipYZ2_=on;
-   setTilt();
+   checkTilt();
 }
 
 void QTV3MainWindow::samplingChanged1(bool on)
@@ -1157,6 +1176,8 @@ void QTV3MainWindow::resetDefaults()
    setRotation(default_omega_);
    if (default_omega_==0.0) setAngle(default_angle_);
    setTilt(default_tilt_);
+   setTiltXY(default_tiltXY_);
+   setTiltYZ(default_tiltYZ_);
    setZoom(default_zoom_);
 
    if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)

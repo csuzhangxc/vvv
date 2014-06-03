@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
    double omega=30;
    double angle=0;
    double tilt=0;
+   double tiltXY=0;
+   double tiltYZ=0;
    double zoom=0;
    bool fullscreen=false;
    double tfcenter=0.5;
@@ -56,6 +58,8 @@ int main(int argc, char *argv[])
       else if (opt[i].startsWith("omega=")) omega=get_opt(opt[i]);
       else if (opt[i].startsWith("angle=")) angle=get_opt(opt[i]);
       else if (opt[i].startsWith("tilt=")) tilt=get_opt(opt[i]);
+      else if (opt[i].startsWith("tiltXY=")) tiltXY=get_opt(opt[i]);
+      else if (opt[i].startsWith("tiltYZ=")) tiltYZ=get_opt(opt[i]);
       else if (opt[i].startsWith("zoom=")) zoom=get_opt(opt[i]);
       else if (opt[i]=="fullscreen") fullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
@@ -75,6 +79,8 @@ int main(int argc, char *argv[])
          std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
          std::cout << " --angle=x: rotation angle (degrees)" << std::endl;
          std::cout << " --tilt=x: tilt angle (degrees)" << std::endl;
+         std::cout << " --tiltXY=x: XY rotation angle (degrees)" << std::endl;
+         std::cout << " --tiltYZ=x: YZ rotation angle (degrees)" << std::endl;
          std::cout << " --zoom=x: zoom (percent)" << std::endl;
          std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
          std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
@@ -122,6 +128,9 @@ int main(int argc, char *argv[])
 
    main.setRotation(omega);
    if (omega==0.0) main.setAngle(angle);
+   if (tilt!=0.0) main.setTilt(tilt);
+   if (tiltXY!=0.0) main.setTiltXY(tiltXY);
+   if (tiltYZ!=0.0) main.setTiltYZ(tiltYZ);
    if (zoom!=0.0) main.setZoom(zoom/100.0);
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
    if (gradmag) main.setGradMag();

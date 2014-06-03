@@ -142,7 +142,13 @@ public:
    void setRotation(double omega);
 
    //! set volume tilt
-   void setTilt(double tilt);
+   void setTilt(double tilt=0.0);
+
+   //! set volume rotation angle
+   void setTiltXY(double tiltXY=0.0);
+
+   //! set volume rotation angle
+   void setTiltYZ(double tiltYZ=0.0);
 
    //! set volume tilt
    void setZoom(double zoom);
@@ -219,7 +225,7 @@ private:
    int flipXY1_,flipXY2_;
    int flipYZ1_,flipYZ2_;
 
-   void setTilt();
+   void checkTilt();
 
    QTV3Slider *clipSlider_;
    int clipNum_;
@@ -369,6 +375,8 @@ private:
    double default_omega_;
    double default_angle_;
    double default_tilt_;
+   double default_tiltXY_;
+   double default_tiltYZ_;
    double default_zoom_;
    double default_tfcenter_;
    double default_tfsize_;
