@@ -371,8 +371,8 @@ unsigned char *readDICOMvolume(const char *filename,
 
    if (!data.loadImages(filename,feedback,obj)) return(NULL);
 
-   if ((chunk=(unsigned char *)malloc(data.getByteCount()))==NULL) ERRORMSG();
-   memcpy(chunk,data.getVoxelData(),data.getByteCount());
+   if ((chunk=(unsigned char *)malloc((size_t)data.getByteCount()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),(size_t)data.getByteCount());
 
    *width=data.getCols();
    *height=data.getRows();
@@ -398,8 +398,8 @@ unsigned char *readDICOMvolume(const std::vector<std::string> list,
 
    if (!data.loadImages(list,feedback,obj)) return(NULL);
 
-   if ((chunk=(unsigned char *)malloc(data.getByteCount()))==NULL) ERRORMSG();
-   memcpy(chunk,data.getVoxelData(),data.getByteCount());
+   if ((chunk=(unsigned char *)malloc((size_t)data.getByteCount()))==NULL) ERRORMSG();
+   memcpy(chunk,data.getVoxelData(),(size_t)data.getByteCount());
 
    *width=data.getCols();
    *height=data.getRows();
