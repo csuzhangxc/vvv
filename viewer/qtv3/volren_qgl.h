@@ -178,6 +178,9 @@ public:
       geotoload_ = NULL;
       loading_ = false;
 
+      isotoload_ = false;
+      isovalue_ = 0.0f;
+
       set_vol_maxsize(512);
       set_iso_maxsize(256);
 
@@ -287,6 +290,10 @@ public:
    bool hasVolume()
       {return(vr_->hasvolume());}
 
+   //! check for volume loading
+   bool isLoading()
+      {return(toload_ || series_.size()>0 || loading_);}
+
    //! extract a surface from iso value
    char *extractSurface(float isovalue)
    {
@@ -317,6 +324,13 @@ public:
       vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
 
       return(surface);
+   }
+
+   //! extract a surface from iso value after loading is finished
+   void extractSurfaceAfter(float isovalue)
+   {
+      isotoload_ = true;
+      isovalue_ = isovalue;
    }
 
    //! load a surface
@@ -734,6 +748,9 @@ protected:
    char *geotoload_;
    bool loading_;
 
+   bool isotoload_;
+   float isovalue_;
+
    long long vol_maxsize_;
    float vol_ratio_;
    long long iso_maxsize_;
@@ -1095,7 +1112,7 @@ protected:
                }
 
             free(toload_);
-            toload_=NULL;
+            toload_ = NULL;
 
             delete vr_;
             vr_ = vr;
@@ -1149,7 +1166,24 @@ protected:
             vr_->loadsurface(geotoload_);
 
             free(geotoload_);
-            geotoload_=NULL;
+            geotoload_ = NULL;
+
+            loading_ = false;
+         }
+
+         if (isotoload_ && !loading_)
+         {
+            loading_ = true;
+
+            char *surface;
+
+            vr_->set_iso_maxsize(iso_maxsize_,iso_ratio_);
+            surface=vr_->extractsurface(isovalue_,feedback,this);
+
+            if (surface)
+               free(surface);
+
+            isotoload_ = false;
 
             loading_ = false;
          }

@@ -1194,10 +1194,7 @@ void QTV3MainWindow::extractIsoSurface(float isovalue)
 {
    if (!hasTeaserVolume_)
    {
-      char *surface = vrw_->extractSurface(isovalue);
-
-      if (surface!=NULL)
-         free(surface);
+      vrw_->extractSurfaceAfter(isovalue);
    }
 }
 

@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
+   double isovalue=0;
    double maxidle=0;
 
    // scan option list
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
+      else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
       else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
       else if (opt[i]=="help")
       {
@@ -90,6 +92,7 @@ int main(int argc, char *argv[])
          std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
          std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
          std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
+         std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
          std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
          std::cout << " --help: this help text" << std::endl;
          std::cout << "where volume is:" << std::endl;
@@ -137,6 +140,7 @@ int main(int argc, char *argv[])
    if (anaglyph) main.setAnaglyph();
    if (tfemi!=100.0) main.setEmission(tfemi/100.0*main.getEmission());
    if (tfatt!=100.0) main.setAbsorption(tfatt/100.0*main.getAbsorption());
+   if (isovalue!=0.0) main.extractIsoSurface(isovalue);
    if (maxidle>0.0) main.setMaxIdle(maxidle);
 
    return(app.exec());
