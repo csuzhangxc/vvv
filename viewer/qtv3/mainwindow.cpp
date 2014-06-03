@@ -469,10 +469,10 @@ void QTV3MainWindow::createWidgets()
    // create iso surface section
    QVBoxLayout *l7 = new QVBoxLayout;
    QPushButton *isoButton = new QPushButton(tr("Extract"));
-   connect(isoButton, SIGNAL(pressed()), this, SLOT(extractIso()));
+   connect(isoButton, SIGNAL(pressed()), this, SLOT(extractIsoSurface()));
    l7->addWidget(isoButton);
    QPushButton *isoClearButton = new QPushButton(tr("Clear"));
-   connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearIso()));
+   connect(isoClearButton, SIGNAL(pressed()), this, SLOT(clearIsoSurface()));
    l7->addWidget(isoClearButton);
    showIsoCheck_ = new QCheckBox(tr("Show"));
    showIsoCheck_->setChecked(true);
@@ -1190,7 +1190,18 @@ void QTV3MainWindow::resetDefaults()
    if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);
 }
 
-void QTV3MainWindow::extractIso()
+void QTV3MainWindow::extractIsoSurface(float isovalue)
+{
+   if (!hasTeaserVolume_)
+   {
+      char *surface = vrw_->extractSurface(isovalue);
+
+      if (surface!=NULL)
+         free(surface);
+   }
+}
+
+void QTV3MainWindow::extractIsoSurface()
 {
    if (!hasTeaserVolume_)
    {
@@ -1201,7 +1212,7 @@ void QTV3MainWindow::extractIso()
    }
 }
 
-void QTV3MainWindow::clearIso()
+void QTV3MainWindow::clearIsoSurface()
 {
    vrw_->clearSurface();
 }

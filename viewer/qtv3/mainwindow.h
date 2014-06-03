@@ -135,6 +135,9 @@ public:
    //! load a surface
    void loadSurface(const char *filename);
 
+   //! extract an iso surface
+   void extractIsoSurface(float isovalue);
+
    //! set volume rotation
    void setAngle(double angle);
 
@@ -294,7 +297,7 @@ protected:
       if (event->key() == Qt::Key_Q)
          emit close();
       else if (event->key() == Qt::Key_I)
-         extractIso();
+         extractIsoSurface();
 
       QMainWindow::keyPressEvent(event);
    }
@@ -356,8 +359,8 @@ protected slots:
    void disableRotation();
    void resetInteractions();
    void resetDefaults();
-   void extractIso();
-   void clearIso();
+   void extractIsoSurface();
+   void clearIsoSurface();
    void prefs();
    void about();
 

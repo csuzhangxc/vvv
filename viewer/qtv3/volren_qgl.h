@@ -287,7 +287,20 @@ public:
    bool hasVolume()
       {return(vr_->hasvolume());}
 
-   //! extract a surface
+   //! extract a surface from iso value
+   char *extractSurface(float isovalue)
+   {
+      char *surface;
+
+      if (loading_) return(NULL);
+
+      vr_->set_iso_maxsize(iso_maxsize_,iso_ratio_);
+      surface=vr_->extractsurface(isovalue,feedback,this);
+
+      return(surface);
+   }
+
+   //! extract a surface from current tf
    char *extractSurface()
    {
       char *surface;

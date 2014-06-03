@@ -108,9 +108,14 @@ class volren: public volscene
          }
       }
 
-   //! extract the surface data
-   char *extractsurface()
-      {return(volscene::extractTFsurface());}
+   //! extract iso surface
+   char *extractsurface(double isovalue,
+                        void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
+      {return(volscene::extractsurface(isovalue,feedback,obj));}
+
+   //! extract iso surface for the smallest non-zero tfunc entry
+   char *extractTFsurface(void (*feedback)(const char *info,float percent,void *obj)=NULL,void *obj=NULL)
+      {return(volscene::extractTFsurface(feedback,obj));}
 
    //! load the surface data
    BOOLINT loadsurface(const char *filename)
