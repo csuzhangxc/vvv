@@ -144,6 +144,9 @@ public:
    //! set volume tilt
    void setTilt(double tilt);
 
+   //! set volume tilt
+   void setZoom(double zoom);
+
    //! clear volume
    void clearVolume();
 
@@ -344,7 +347,9 @@ protected slots:
    void modeChanged7(bool on);
    void modeChanged8(bool on);
    void grabWindow();
+   void disableRotation();
    void resetInteractions();
+   void resetDefaults();
    void extractIso();
    void clearIso();
    void prefs();
@@ -362,6 +367,7 @@ protected slots:
 private:
 
    double default_omega_;
+   double default_zoom_;
    double default_tfcenter_;
    double default_tfsize_;
    bool default_tfinverse_;

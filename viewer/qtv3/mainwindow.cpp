@@ -35,6 +35,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
 
    // set defaults
    default_omega_=30.0;
+   default_zoom_=0.0;
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
    default_tfinverse_=false;
@@ -114,6 +115,13 @@ void QTV3MainWindow::setTilt(double tilt)
    vrw_->setTilt(tilt);
 
    rotateCheck_->setChecked(false);
+}
+
+void QTV3MainWindow::setZoom(double zoom)
+{
+   vrw_->setZoom(zoom);
+
+   default_zoom_=zoom;
 }
 
 void QTV3MainWindow::clearVolume()
@@ -588,16 +596,7 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
 
    vrw_->clearSurface();
 
-   setRotation(default_omega_);
-
-   if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)
-      setTF(default_tfcenter_,default_tfsize_,default_tfinverse_);
-
-   if (default_gradmag_) setGradMag();
-   if (default_anaglyph_) setAnaglyph();
-
-   if (default_tfemi_!=1.0) setEmission(default_tfemi_);
-   if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);
+   resetDefaults();
 
    flipXY1_=flipXY2_=0;
    flipYZ1_=flipYZ2_=0;
@@ -892,9 +891,9 @@ void QTV3MainWindow::checkRotate(int on)
 {
    if (on)
       if (!reverseCheck_->isChecked())
-         vrw_->setRotation(30);
+         vrw_->setRotation(default_omega_);
       else
-         vrw_->setRotation(-30);
+         vrw_->setRotation(-default_omega_);
    else
       vrw_->setRotation(0);
 }
@@ -903,9 +902,9 @@ void QTV3MainWindow::checkReverse(int on)
 {
    if (rotateCheck_->isChecked())
       if (!on)
-         vrw_->setRotation(30);
+         vrw_->setRotation(default_omega_);
       else
-         vrw_->setRotation(-30);
+         vrw_->setRotation(-default_omega_);
 }
 
 void QTV3MainWindow::checkPlane(int on)
@@ -1052,7 +1051,7 @@ void QTV3MainWindow::modeChanged2(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Move);
    }
 }
@@ -1061,7 +1060,7 @@ void QTV3MainWindow::modeChanged3(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateCenter);
    }
 }
@@ -1070,7 +1069,7 @@ void QTV3MainWindow::modeChanged4(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Zoom);
    }
 }
@@ -1079,7 +1078,7 @@ void QTV3MainWindow::modeChanged5(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Clip);
    }
@@ -1089,7 +1088,7 @@ void QTV3MainWindow::modeChanged6(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_RotateAnchor);
 
@@ -1107,7 +1106,7 @@ void QTV3MainWindow::modeChanged8(bool on)
 {
    if (on)
    {
-      setRotation(0.0);
+      disableRotation();
       if (vrw_->getClipDist()>=1.0) vrw_->setClipDist(0.0);
       vrw_->setInteractionMode(QGLVolRenWidget::InteractionMode_Measure);
       vrw_->clearLine();
@@ -1121,9 +1120,16 @@ void QTV3MainWindow::grabWindow()
    grab();
 }
 
+void QTV3MainWindow::disableRotation()
+{
+   vrw_->setRotation(0.0);
+
+   rotateCheck_->setChecked(false);
+}
+
 void QTV3MainWindow::resetInteractions()
 {
-   setRotation(0.0);
+   disableRotation();
    vrw_->resetInteractions();
 
    modeButton1_->setChecked(true);
@@ -1139,6 +1145,21 @@ void QTV3MainWindow::resetInteractions()
    }
 
    planeCheck_->setChecked(false);
+}
+
+void QTV3MainWindow::resetDefaults()
+{
+   setRotation(default_omega_);
+   setZoom(default_zoom_);
+
+   if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)
+      setTF(default_tfcenter_,default_tfsize_,default_tfinverse_);
+
+   if (default_gradmag_) setGradMag();
+   if (default_anaglyph_) setAnaglyph();
+
+   if (default_tfemi_!=1.0) setEmission(default_tfemi_);
+   if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);
 }
 
 void QTV3MainWindow::extractIso()
@@ -1230,7 +1251,7 @@ void QTV3MainWindow::idle_check()
    if (idle()>max_idle_time_)
    {
       resetInteractions();
-      setRotation(default_omega_);
+      resetDefaults();
 
       last_event_.start();
    }
