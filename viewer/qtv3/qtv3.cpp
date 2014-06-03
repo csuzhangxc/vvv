@@ -17,6 +17,38 @@ double get_opt(QString o)
    return(o.toDouble());
 }
 
+void usage()
+{
+   std::cout << "usage:" << std::endl;
+   std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
+   std::cout << "where options are:" << std::endl;
+   std::cout << " --demo: demo gui" << std::endl;
+   std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
+   std::cout << " --angle=x: rotation angle (degrees)" << std::endl;
+   std::cout << " --tilt=x: tilt angle (degrees)" << std::endl;
+   std::cout << " --tiltXY=x: XY rotation angle (degrees)" << std::endl;
+   std::cout << " --tiltYZ=x: YZ rotation angle (degrees)" << std::endl;
+   std::cout << " --zoom=x: zoom (percent)" << std::endl;
+   std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
+   std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
+   std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
+   std::cout << " --tfemi=x: global emission (percent)" << std::endl;
+   std::cout << " --tfatt=x: global attenuation (percent)" << std::endl;
+   std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
+   std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
+   std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
+   std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
+   std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
+   std::cout << " --help: this help text" << std::endl;
+   std::cout << "where volume is:" << std::endl;
+   std::cout << " a single .pvm or .rek volume file" << std::endl;
+   std::cout << "where series is:" << std::endl;
+   std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
+   std::cout << "example:" << std::endl;
+   std::cout << " ./qtv3 --demo --fullscreen --zoom=50 --maxidle=60 Bucky.pvm" << std::endl;
+   exit(0);
+}
+
 int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
@@ -72,37 +104,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="stereo") stereo=true;
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
       else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
-      else if (opt[i]=="help")
-      {
-         std::cout << "usage:" << std::endl;
-         std::cout << " " << argv[0] << " {options} [volume | series]" << std::endl;
-         std::cout << "where options are:" << std::endl;
-         std::cout << " --demo: demo gui" << std::endl;
-         std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
-         std::cout << " --angle=x: rotation angle (degrees)" << std::endl;
-         std::cout << " --tilt=x: tilt angle (degrees)" << std::endl;
-         std::cout << " --tiltXY=x: XY rotation angle (degrees)" << std::endl;
-         std::cout << " --tiltYZ=x: YZ rotation angle (degrees)" << std::endl;
-         std::cout << " --zoom=x: zoom (percent)" << std::endl;
-         std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
-         std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
-         std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
-         std::cout << " --tfemi=x: global emission (percent)" << std::endl;
-         std::cout << " --tfatt=x: global attenuation (percent)" << std::endl;
-         std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
-         std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
-         std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
-         std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
-         std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
-         std::cout << " --help: this help text" << std::endl;
-         std::cout << "where volume is:" << std::endl;
-         std::cout << " a single .pvm or .rek volume file" << std::endl;
-         std::cout << "where series is:" << std::endl;
-         std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
-         std::cout << "example:" << std::endl;
-         std::cout << " ./qtv3 --demo --fullscreen --zoom=50 --maxidle=60 Bucky.pvm" << std::endl;
-         exit(0);
-      }
+      else if (opt[i]=="help") usage();
+      else usage();
 
    QTV3MainWindow main(NULL, stereo, demo);
 
