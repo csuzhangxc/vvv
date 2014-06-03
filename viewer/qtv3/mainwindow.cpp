@@ -35,6 +35,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
 
    // set defaults
    default_omega_=30.0;
+   default_angle_=0.0;
+   default_tilt_=0.0;
    default_zoom_=0.0;
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
@@ -99,6 +101,9 @@ void QTV3MainWindow::setAngle(double angle)
    vrw_->setAngle(angle);
 
    rotateCheck_->setChecked(false);
+
+   default_angle_=angle;
+   default_omega_=0.0;
 }
 
 void QTV3MainWindow::setRotation(double omega)
@@ -114,7 +119,7 @@ void QTV3MainWindow::setTilt(double tilt)
 {
    vrw_->setTilt(tilt);
 
-   rotateCheck_->setChecked(false);
+   default_tilt_=tilt;
 }
 
 void QTV3MainWindow::setZoom(double zoom)
@@ -1150,6 +1155,8 @@ void QTV3MainWindow::resetInteractions()
 void QTV3MainWindow::resetDefaults()
 {
    setRotation(default_omega_);
+   if (default_omega_==0.0) setAngle(default_angle_);
+   setTilt(default_tilt_);
    setZoom(default_zoom_);
 
    if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)

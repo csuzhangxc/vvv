@@ -367,6 +367,8 @@ protected slots:
 private:
 
    double default_omega_;
+   double default_angle_;
+   double default_tilt_;
    double default_zoom_;
    double default_tfcenter_;
    double default_tfsize_;
