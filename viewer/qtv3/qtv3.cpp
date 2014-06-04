@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
    if (tiltXY!=0.0) main.setTiltXY(tiltXY);
    if (tiltYZ!=0.0) main.setTiltYZ(tiltYZ);
    if (zoom!=0.0) main.setZoom(zoom/100.0);
-   if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
+   if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize,TRUE);
    if (hue!=360.0) main.setColorHue(hue);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
