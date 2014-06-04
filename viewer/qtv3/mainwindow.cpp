@@ -213,6 +213,18 @@ void QTV3MainWindow::setMaxIdle(double t)
    max_idle_time_ = t;
 }
 
+void QTV3MainWindow::volMaxSizeChange(unsigned int vol_maxsize)
+{
+   if (prefs_)
+      prefs_->volMaxSizeChange(vol_maxsize);
+}
+
+void QTV3MainWindow::isoMaxSizeChange(unsigned int iso_maxsize)
+{
+   if (prefs_)
+      prefs_->isoMaxSizeChange(iso_maxsize);
+}
+
 void QTV3MainWindow::grab()
 {
    if (!prefs_->grab("png"))

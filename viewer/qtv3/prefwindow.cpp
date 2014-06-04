@@ -224,11 +224,16 @@ QSlider *QTV3PrefWindow::createSlider(int minimum, int maximum, int value)
    return(slider);
 }
 
-void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
+void QTV3PrefWindow::volMaxSizeChange(unsigned int vol_maxsize)
 {
-   vol_maxsize_ = maxsize.toUInt();
+   vol_maxsize_ = vol_maxsize;
    lineEdit_gfx_maxsize_->setText(QString::number((int)(2.0*vol_maxsize_*vol_maxsize_*vol_maxsize_/1024/1024+0.5)));
    vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
+}
+
+void QTV3PrefWindow::volMaxSizeChange(QString maxsize)
+{
+   volMaxSizeChange(maxsize.toUInt());
 }
 
 void QTV3PrefWindow::volGfxSizeChange(QString maxsize)
@@ -238,10 +243,15 @@ void QTV3PrefWindow::volGfxSizeChange(QString maxsize)
    vrw_->set_vol_maxsize(vol_maxsize_, border_ratio_);
 }
 
+void QTV3PrefWindow::isoMaxSizeChange(unsigned int iso_maxsize)
+{
+   iso_maxsize_ = iso_maxsize;
+   vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
+}
+
 void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 {
-   iso_maxsize_ = maxsize.toUInt();
-   vrw_->set_iso_maxsize(iso_maxsize_, border_ratio_);
+   isoMaxSizeChange(maxsize.toUInt());
 }
 
 void QTV3PrefWindow::sliceOpacityChange(QString opacity)

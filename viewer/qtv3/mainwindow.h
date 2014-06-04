@@ -187,6 +187,12 @@ public:
    //! set maximum idle time before reset
    void setMaxIdle(double t);
 
+   //! set maximum volume size
+   void volMaxSizeChange(unsigned int vol_maxsize);
+
+   //! set maximum iso size
+   void isoMaxSizeChange(unsigned int iso_maxsize);
+
    //! grab window
    void grab();
 

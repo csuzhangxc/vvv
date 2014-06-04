@@ -32,6 +32,9 @@ public:
    //! set label about actual voxel size
    void setLabelVoxel(float dx,float dy,float dz);
 
+   void volMaxSizeChange(unsigned int vol_maxsize);
+   void isoMaxSizeChange(unsigned int iso_maxsize);
+
    long long vol_maxsize_;
    long long iso_maxsize_;
 

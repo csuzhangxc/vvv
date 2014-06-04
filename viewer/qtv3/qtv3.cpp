@@ -40,6 +40,8 @@ void usage(const char *prog)
    std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
    std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
    std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
+   std::cout << " --maxvol=x: maximum edge size of volume to be loaded (default=512)" << std::endl;
+   std::cout << " --maxiso=x: maximum edge size of volume to be extracted (default=256)" << std::endl;
    std::cout << " --help: this help text" << std::endl;
    std::cout << "where volume is:" << std::endl;
    std::cout << " a single .pvm or .rek volume file" << std::endl;
@@ -85,6 +87,8 @@ int main(int argc, char *argv[])
    bool stereo=false;
    double isovalue=0;
    double maxidle=0;
+   unsigned int maxvol=0;
+   unsigned int maxiso=0;
 
    // scan option list
    for (int i=0; i<opt.size(); i++)
@@ -105,6 +109,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="stereo") stereo=true;
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
       else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
+      else if (opt[i].startsWith("maxvol=")) maxvol=get_opt(opt[i]);
+      else if (opt[i].startsWith("maxiso=")) maxiso=get_opt(opt[i]);
       else if (opt[i]=="help") usage(argv[0]);
       else usage(argv[0]);
 
@@ -146,6 +152,8 @@ int main(int argc, char *argv[])
    if (tfatt!=100.0) main.setAbsorption(tfatt/100.0*main.getAbsorption());
    if (isovalue!=0.0) main.extractIsoSurface(isovalue);
    if (maxidle>0.0) main.setMaxIdle(maxidle);
+   if (maxvol>0) main.volMaxSizeChange(maxvol);
+   if (maxiso>0) main.isoMaxSizeChange(maxiso);
 
    return(app.exec());
 }
