@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
    bool fullscreen=false;
    double tfcenter=0.5;
    double tfsize=1.0;
+   bool tfinv=true;
    double tfemi=100;
    double tfatt=100;
    double hue=360.0;
@@ -104,6 +105,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="fullscreen") fullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
       else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
+      else if (opt[i]=="tflin") tfinv=false;
+      else if (opt[i]=="tfinv") tfinv=true;
       else if (opt[i].startsWith("tfemi=")) tfemi=get_opt(opt[i]);
       else if (opt[i].startsWith("tfatt=")) tfatt=get_opt(opt[i]);
       else if (opt[i].startsWith("hue=")) hue=get_opt(opt[i]);
@@ -148,7 +151,7 @@ int main(int argc, char *argv[])
    if (tiltXY!=0.0) main.setTiltXY(tiltXY);
    if (tiltYZ!=0.0) main.setTiltYZ(tiltYZ);
    if (zoom!=0.0) main.setZoom(zoom/100.0);
-   if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize,TRUE);
+   if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize,tfinv);
    if (hue!=360.0) main.setColorHue(hue);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
