@@ -34,6 +34,7 @@ public:
 
    void volMaxSizeChange(unsigned int vol_maxsize);
    void isoMaxSizeChange(unsigned int iso_maxsize);
+   void colorHueChange(float hue);
 
    long long vol_maxsize_;
    long long iso_maxsize_;

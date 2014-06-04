@@ -35,6 +35,7 @@ void usage(const char *prog)
    std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
    std::cout << " --tfemi=x: global emission (percent)" << std::endl;
    std::cout << " --tfatt=x: global attenuation (percent)" << std::endl;
+   std::cout << " --hue: color hue in degrees (0-360)" << std::endl;
    std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
    std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
    std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
    double tfsize=1.0;
    double tfemi=100;
    double tfatt=100;
+   double hue=360.0;
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
@@ -104,6 +106,7 @@ int main(int argc, char *argv[])
       else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
       else if (opt[i].startsWith("tfemi=")) tfemi=get_opt(opt[i]);
       else if (opt[i].startsWith("tfatt=")) tfatt=get_opt(opt[i]);
+      else if (opt[i].startsWith("hue=")) hue=get_opt(opt[i]);
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
@@ -146,6 +149,7 @@ int main(int argc, char *argv[])
    if (tiltYZ!=0.0) main.setTiltYZ(tiltYZ);
    if (zoom!=0.0) main.setZoom(zoom/100.0);
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize);
+   if (hue!=360.0) main.setColorHue(hue);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
    if (tfemi!=100.0) main.setEmission(tfemi/100.0*main.getEmission());

@@ -282,6 +282,13 @@ void QTV3PrefWindow::sliceOpacityChange2(int opacity)
    lineEdit_slice_opacity2_->setText(QString::number(slice_opacity2_));
 }
 
+void QTV3PrefWindow::colorHueChange(float hue)
+{
+   vol_hue_ = hue;
+   vrw_->setColorHue(vol_hue_);
+   hue_slider_->setValue(vol_hue_ * 16);
+}
+
 void QTV3PrefWindow::hueChange(QString hue)
 {
    vol_hue_ = hue.toFloat();

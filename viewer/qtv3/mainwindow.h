@@ -178,6 +178,9 @@ public:
    //! get global absorption
    float getAbsorption();
 
+   //! set color hue
+   void setColorHue(float hue);
+
    //! set gradmag mode
    void setGradMag();
 
@@ -392,6 +395,7 @@ private:
    bool default_tfinverse_;
    double default_tfemi_;
    double default_tfatt_;
+   double default_hue_;
    bool default_gradmag_;
    bool default_anaglyph_;
 

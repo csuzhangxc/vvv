@@ -45,6 +45,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_tfinverse_=false;
    default_tfemi_=1.0;
    default_tfatt_=1.0;
+   default_hue_=120.0;
    default_gradmag_=false;
    default_anaglyph_=false;
 
@@ -191,6 +192,14 @@ void QTV3MainWindow::setAbsorption(float att)
 float QTV3MainWindow::getAbsorption()
 {
    return(vrw_->getAbsorption());
+}
+
+void QTV3MainWindow::setColorHue(float hue)
+{
+   if (prefs_)
+      prefs_->colorHueChange(hue);
+
+   default_hue_=hue;
 }
 
 void QTV3MainWindow::setGradMag()
@@ -1194,6 +1203,8 @@ void QTV3MainWindow::resetDefaults()
 
    if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)
       setTF(default_tfcenter_,default_tfsize_,default_tfinverse_);
+
+   setColorHue(default_hue_);
 
    if (default_gradmag_) setGradMag();
    if (default_anaglyph_) setAnaglyph();
