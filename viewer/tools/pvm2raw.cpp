@@ -48,7 +48,7 @@ int main(int argc,char *argv[])
 #else
       writeRAWfile(argv[2],volume,
                    width*height*depth*components,
-                   FALSE);
+                   TRUE);
 #endif
       }
 
