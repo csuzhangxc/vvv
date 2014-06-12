@@ -35,10 +35,9 @@ int main(int argc,char *argv[])
 
    printf("and data checksum=%08X\n",checksum(volume,width*height*depth*components));
 
-#ifdef HAVE_MINI
-
    if (argc>2)
       {
+#ifdef HAVE_MINI
       printf("writing RAW file with size=%d\n",width*height*depth*components);
 
       if (!writeRAWvolume(argv[2],volume,
@@ -46,13 +45,12 @@ int main(int argc,char *argv[])
                           components,8,FALSE,TRUE,
                           scalex,scaley,scalez))
          printf("write error\n");
-      }
-
 #else
-
-   ERRORMSG();
-
+      writeRAWfile(argv[2],volume,
+                   width*height*depth*components,
+                   FALSE);
 #endif
+      }
 
    free(volume);
 
