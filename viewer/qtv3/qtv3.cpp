@@ -50,7 +50,7 @@ void usage(const char *prog)
    std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
    std::cout << "example:" << std::endl;
    std::cout << " ./qtv3 --demo --fullscreen --zoom=50 --maxidle=60 Bucky.pvm" << std::endl;
-   exit(0);
+   exit(1);
 }
 
 int main(int argc, char *argv[])
