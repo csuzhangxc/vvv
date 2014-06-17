@@ -206,7 +206,7 @@ inline int strcasecmp(const char *str1,const char *str2)
    {
    const char *ptr1,*ptr2;
    for (ptr1=str1,ptr2=str2; tolower(*ptr1)==tolower(*ptr2) && *ptr1!='\0' && *ptr2!='\0'; ptr1++,ptr2++);
-   return(*ptr2-*ptr1);
+   return(*ptr1-*ptr2);
    }
 #endif
 
