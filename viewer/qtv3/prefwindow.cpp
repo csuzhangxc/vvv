@@ -311,7 +311,7 @@ bool QTV3PrefWindow::grab(QString format)
    QPixmap window = QPixmap::fromImage(image);
 
    QList<QByteArray> formats = QImageWriter::supportedImageFormats();
-   QString chosen_format = "bmp";
+   QString chosen_format = "png";
 
    for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
    {
