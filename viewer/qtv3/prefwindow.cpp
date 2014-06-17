@@ -303,37 +303,47 @@ void QTV3PrefWindow::hueChange(int hue)
    lineEdit_hue_->setText(QString::number(vol_hue_));
 }
 
+bool QTV3PrefWindow::checkFormat(QString format)
+{
+   QList<QByteArray> formats = QImageWriter::supportedImageFormats();
+
+   for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
+      if (QString(*i).toLower() == format.toLower())
+         return(true);
+
+   return(false);
+}
+
 bool QTV3PrefWindow::grab(QString format)
 {
-#ifdef Q_OS_LINUX
-   static QString default_format = "png";
-#else
-   static QString default_format = "bmp";
-#endif
+   if (!checkFormat(format))
+   {
+      format = "png";
+      if (!checkFormat(format))
+      {
+         format = "tif";
+         if (!checkFormat(format))
+         {
+            format = "bmp";
+            if (!checkFormat(format))
+            {
+               QMessageBox::information(this, tr("Error"),
+                                        "Unsupported image format",
+                                        QMessageBox::Ok);
 
-   bool saved = false;
+               return(false);
+            }
+         }
+      }
+   }
 
    QImage image = vrw_->grabFrameBuffer();
    QPixmap window = QPixmap::fromImage(image);
 
-   QList<QByteArray> formats = QImageWriter::supportedImageFormats();
-   QString chosen_format = default_format;
-
-   for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
-   {
-      if (QString(*i).toLower() == format.toLower())
-      {
-         chosen_format = format.toLower();
-         break;
-      }
-   }
-
    QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
-   QString name = shotname_ + "_" + date + "." + chosen_format;
+   QString name = shotname_ + "_" + date + "." + format;
 
-   if (name.contains(QRegExp("^/[A-Z]:"))) name.remove(0,1);
-
-   saved = window.save(name, chosen_format.toUpper().toStdString().c_str());
+   bool saved = window.save(name, format.toUpper().toStdString().c_str());
 
    if (!saved)
       QMessageBox::information(this, tr("Error"),

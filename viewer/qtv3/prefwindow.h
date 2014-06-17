@@ -85,6 +85,8 @@ protected:
 
    QSlider *createSlider(int minimum, int maximum, int value);
 
+   bool checkFormat(QString format);
+
 protected slots:
 
    void volMaxSizeChange(QString);
