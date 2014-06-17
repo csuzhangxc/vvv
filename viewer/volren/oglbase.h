@@ -56,7 +56,7 @@
 
 // OpenGL 3.3 workaround:
 
-#ifndef __APPLE__
+#ifndef MACOSX
 #define glBlitFramebufferEXT glBlitFramebuffer
 #endif
 

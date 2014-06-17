@@ -305,13 +305,19 @@ void QTV3PrefWindow::hueChange(int hue)
 
 bool QTV3PrefWindow::grab(QString format)
 {
+#ifdef Q_OS_LINUX
+   static QString default_format = "png";
+#else
+   static QString default_format = "bmp";
+#endif
+
    bool saved = false;
 
    QImage image = vrw_->grabFrameBuffer();
    QPixmap window = QPixmap::fromImage(image);
 
    QList<QByteArray> formats = QImageWriter::supportedImageFormats();
-   QString chosen_format = "png";
+   QString chosen_format = default_format;
 
    for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
    {
