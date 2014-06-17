@@ -236,10 +236,7 @@ void QTV3MainWindow::isoMaxSizeChange(unsigned int iso_maxsize)
 
 void QTV3MainWindow::grab()
 {
-   if (!prefs_->grab("png"))
-      QMessageBox::information(this, tr("Error"),
-                               "Could not save image",
-                               QMessageBox::Ok);
+   prefs_->grab();
 }
 
 void QTV3MainWindow::createMenus()

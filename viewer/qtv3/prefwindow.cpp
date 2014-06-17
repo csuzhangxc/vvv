@@ -305,23 +305,34 @@ void QTV3PrefWindow::hueChange(int hue)
 
 bool QTV3PrefWindow::grab(QString format)
 {
+   bool saved = false;
+
    QImage image = vrw_->grabFrameBuffer();
    QPixmap window = QPixmap::fromImage(image);
 
    QList<QByteArray> formats = QImageWriter::supportedImageFormats();
+   QString chosen_format = "bmp";
 
    for (QList<QByteArray>::iterator i=formats.begin(); i!=formats.end(); i++)
    {
-      if (strcasecmp(*i, format.toStdString().c_str())==0)
+      if (QString(*i).toLower() == format.toLower())
       {
-         QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
-         QString name = shotname_ + "_" + date + "." + format;
-
-         if (name.contains(QRegExp("^/[A-Z]:"))) name.remove(0,1);
-
-         return(window.save(name, format.toUpper().toStdString().c_str()));
+         chosen_format = format.toLower();
+         break;
       }
    }
 
-   return(false);
+   QString date = QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz");
+   QString name = shotname_ + "_" + date + "." + chosen_format;
+
+   if (name.contains(QRegExp("^/[A-Z]:"))) name.remove(0,1);
+
+   saved = window.save(name, chosen_format.toUpper().toStdString().c_str());
+
+   if (!saved)
+      QMessageBox::information(this, tr("Error"),
+                               "Could not save image",
+                               QMessageBox::Ok);
+
+   return(saved);
 }
