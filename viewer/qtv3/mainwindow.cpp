@@ -274,15 +274,24 @@ void QTV3MainWindow::createWidgets()
 {
    // create main group
    QGroupBox *mainGroup = new QGroupBox;
+   mainGroup->setObjectName("mainGroupBox");
    mainLayout_ = new QVBoxLayout(mainGroup);
 
    // create main parts
    mainSplitter_ = new QSplitter;
    QGroupBox *viewerGroup = new QGroupBox;
+   viewerGroup->setObjectName("viewerGroupBox");
    viewerLayout_ = new QVBoxLayout;
    viewerSplitter_ = new QSplitter;
    QGroupBox *sliderGroup = new QGroupBox;
    sliderLayout_ = new QHBoxLayout;
+
+   // set main inherited style sheet
+   QString css("QGroupBox { background-color: #eeeeee; border: 2px solid #999999; border-radius: 5px; }"
+               "QGroupBox#mainGroupBox { border: 0; border-radius: 0; }"
+               "QGroupBox#viewerGroupBox { background-color: #d9d9d9; }");
+   if (demo_) css+="QGroupBox#viewerGroupBox { border: 0; border-radius: 0; }";
+   mainSplitter_->setStyleSheet(css);
 
    // assemble main splitter group
    mainSplitter_->setOrientation(Qt::Vertical);
