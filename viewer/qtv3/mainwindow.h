@@ -233,6 +233,9 @@ private:
    QTV3Slider *createSlider(int minimum, int maximum, int value,
                             bool vertical=false);
 
+   SwipeSlider *createSwipeSlider(int minimum, int maximum, int value,
+                                  bool vertical=false);
+
    bool hasTeaserVolume_;
 
    int flipXY1_,flipXY2_;

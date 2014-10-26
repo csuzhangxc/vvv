@@ -322,12 +322,12 @@ void QTV3MainWindow::createWidgets()
    if (!demo_) mainLayout_->addWidget(update_);
 
    // create sliders
-   QTV3Slider *s1=createSlider((demo_)?25:0,(demo_)?50:100,0,true);
-   QTV3Slider *s2=createSlider(0,100,0,true);
-   QTV3Slider *s3=createSlider(-180,180,0,false);
-   QTV3Slider *s4=createSlider(-90,90,0,true);
-   QTV3Slider *s5=createSlider(0,100,25,true);
-   QTV3Slider *s6=createSlider(0,100,25,true);
+   QTV3Slider *s1=createSlider((demo_)?25:0,(demo_)?50:100,0,true); // clip
+   QTV3Slider *s2=createSlider(0,100,0,true); // zoom
+   QTV3Slider *s3=createSlider(-180,180,0,false); // rotation
+   QTV3Slider *s4=createSlider(-90,90,0,true); // tilt
+   QTV3Slider *s5=createSlider(0,100,25,true); // emission
+   QTV3Slider *s6=createSlider(0,100,25,true); // absorption
 
    // remember sliders
    clipSlider_=s1;
@@ -751,6 +751,15 @@ QTV3Slider *QTV3MainWindow::createSlider(int minimum, int maximum, int value,
    slider->setTickInterval((maximum - minimum) / 10 * 16);
    slider->setTickPosition(QSlider::TicksBelow);
    slider->setValue(value * 16);
+   return(slider);
+}
+
+SwipeSlider *QTV3MainWindow::createSwipeSlider(int minimum, int maximum, int value,
+                                               bool vertical)
+{
+   SwipeSlider *slider = new SwipeSlider(vertical?Qt::Vertical:Qt::Horizontal);
+   slider->setRange(minimum, maximum);
+   slider->setValue(value);
    return(slider);
 }
 
