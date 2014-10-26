@@ -22,6 +22,8 @@ SwipeSlider::SwipeSlider(Qt::Orientation orientation, QWidget *parent)
 
    filter->set_delta(5);
    filter->set_damping(0.001);
+
+   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 }
 
 SwipeSlider::~SwipeSlider()
