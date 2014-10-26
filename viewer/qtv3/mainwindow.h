@@ -244,9 +244,11 @@ private:
    void checkTilt();
 
    QTV3Slider *clipSlider_;
+   SwipeSlider *clipDemoSlider_;
    int clipNum_;
 
    QTV3Slider *zoomSlider_;
+   SwipeSlider *zoomDemoSlider_;
    QTV3Slider *rotSlider_;
    QTV3Slider *tiltSlider_;
    QTV3Slider *emiSlider_;
@@ -336,9 +338,11 @@ protected slots:
 
    void open();
    void zoom(int v);
+   void zoomDemo(double v);
    void rotate(int v);
    void tilt(int v);
    void clip(int v);
+   void clipDemo(double v);
    void tack();
    void clear();
    void emission(int v);

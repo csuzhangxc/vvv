@@ -75,8 +75,6 @@ void SwipeSlider::setNormalizedValue(double value)
    if (value_ < 0.0) value_ = 0.0;
    else if (value_ > 1.0) value_ = 1.0;
 
-   emit valueChanged(getValue());
-
    repaint();
 }
 
@@ -84,6 +82,8 @@ void SwipeSlider::scrollSlider(double offset)
 {
    double size = (orientation_ == Qt::Horizontal)? width() : height();
    setNormalizedValue(getNormalizedValue() + offset/size);
+
+   emit valueChanged(getValue());
 }
 
 void SwipeSlider::move(SwipeDirection direction, int offset)
@@ -142,10 +142,11 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
 {
    QPainter painter(this);
 
-   QLinearGradient linGrad(QPointF(0, 0),
-                           QPointF((orientation_ == Qt::Horizontal)? width()-1 : 0,
-                                   (orientation_ == Qt::Vertical)? height()-1 : 0));
+   QPointF a(0, height()-1);
+   QPointF b((orientation_ == Qt::Horizontal)? width()-1 : 0,
+             (orientation_ == Qt::Vertical)? 0 : height()-1);
 
+   QLinearGradient linGrad(a, b);
    linGrad.setColorAt(0, Qt::gray);
    linGrad.setColorAt(1, Qt::white);
 
@@ -157,10 +158,12 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
 
    if (orientation_ == Qt::Vertical)
    {
-      painter.drawLine(0, value_*(height()-1), width()-1, value_*(height()-1));
+      painter.drawLine(0, (1.0-value_)*(height()-1),
+                       width()-1, (1.0-value_)*(height()-1));
    }
    else
    {
-      painter.drawLine(value_*(width()-1), 0, value_*(width()-1), height()-1);
+      painter.drawLine(value_*(width()-1), 0,
+                       value_*(width()-1), height()-1);
    }
 }

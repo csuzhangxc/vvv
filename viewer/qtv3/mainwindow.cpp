@@ -322,35 +322,46 @@ void QTV3MainWindow::createWidgets()
    if (!demo_) mainLayout_->addWidget(update_);
 
    // create sliders
-   QTV3Slider *s1=createSlider((demo_)?25:0,(demo_)?50:100,0,true); // clip
-   QTV3Slider *s2=createSlider(0,100,0,true); // zoom
-   QTV3Slider *s3=createSlider(-180,180,0,false); // rotation
-   QTV3Slider *s4=createSlider(-90,90,0,true); // tilt
-   QTV3Slider *s5=createSlider(0,100,25,true); // emission
-   QTV3Slider *s6=createSlider(0,100,25,true); // absorption
-
-   // remember sliders
-   clipSlider_=s1;
-   zoomSlider_=s2;
-   rotSlider_=s3;
-   tiltSlider_=s4;
-   emiSlider_=s5;
-   attSlider_=s6;
+   if (!demo_)
+      {
+      clipSlider_=createSlider(0,100,0,true); // clip
+      zoomSlider_=createSlider(0,100,0,true); // zoom
+      }
+   else
+      {
+      clipDemoSlider_=createSwipeSlider(25,50,0,true); // clip
+      zoomDemoSlider_=createSwipeSlider(0,100,0,true); // zoom
+      }
+   rotSlider_=createSlider(-180,180,0,false); // rotate
+   tiltSlider_=createSlider(-90,90,0,true); // tilt
+   emiSlider_=createSlider(0,100,25,true); // emission
+   attSlider_=createSlider(0,100,25,true); // absorption
 
    // connect sliders
-   connect(s1, SIGNAL(sliderMoved(int)), this, SLOT(clip(int)));
-   connect(s2, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
-   connect(s3, SIGNAL(sliderMoved(int)), this, SLOT(rotate(int)));
-   connect(s4, SIGNAL(sliderMoved(int)), this, SLOT(tilt(int)));
-   connect(s5, SIGNAL(sliderMoved(int)), this, SLOT(emission(int)));
-   connect(s6, SIGNAL(sliderMoved(int)), this, SLOT(absorption(int)));
+   if (!demo_)
+      {
+      connect(clipSlider_, SIGNAL(sliderMoved(int)), this, SLOT(clip(int)));
+      connect(zoomSlider_, SIGNAL(sliderMoved(int)), this, SLOT(zoom(int)));
+      }
+   else
+      {
+      connect(clipDemoSlider_, SIGNAL(valueChanged(double)), this, SLOT(clipDemo(double)));
+      connect(zoomDemoSlider_, SIGNAL(valueChanged(double)), this, SLOT(zoomDemo(double)));
+      }
+   connect(rotSlider_, SIGNAL(sliderMoved(int)), this, SLOT(rotate(int)));
+   connect(tiltSlider_, SIGNAL(sliderMoved(int)), this, SLOT(tilt(int)));
+   connect(emiSlider_, SIGNAL(sliderMoved(int)), this, SLOT(emission(int)));
+   connect(attSlider_, SIGNAL(sliderMoved(int)), this, SLOT(absorption(int)));
 
    // create clipping section
    QVBoxLayout *l1 = new QVBoxLayout;
    QLabel *ll1=new QLabel("Clipping");
    ll1->setAlignment(Qt::AlignLeft);
    l1->addWidget(ll1);
-   l1->addWidget(s1);
+   if (!demo_)
+      l1->addWidget(clipSlider_);
+   else
+      l1->addWidget(clipDemoSlider_);
    QPushButton *tackButton = new QPushButton(tr("Tack"));
    connect(tackButton, SIGNAL(pressed()), this, SLOT(tack()));
    QPushButton *clearButton = new QPushButton(tr("Clear"));
@@ -373,7 +384,10 @@ void QTV3MainWindow::createWidgets()
 
    // create zoom section
    QVBoxLayout *l2 = new QVBoxLayout;
-   l2->addWidget(s2);
+   if (!demo_)
+      l2->addWidget(zoomSlider_);
+   else
+      l2->addWidget(zoomDemoSlider_);
    QLabel *ll2=new QLabel("Zoom");
    ll2->setAlignment(Qt::AlignHCenter);
    l2->addWidget(ll2);
@@ -385,7 +399,7 @@ void QTV3MainWindow::createWidgets()
    ll3->setAlignment(Qt::AlignHCenter);
    l3->addWidget(ll3);
    l3->addStretch(1000);
-   l3->addWidget(s3);
+   l3->addWidget(rotSlider_);
    l3->addStretch(1000);
    QHBoxLayout *h1 = new QHBoxLayout;
    invModeCheck_ = new QCheckBox(tr("Inverse Mode"));
@@ -459,7 +473,7 @@ void QTV3MainWindow::createWidgets()
 
    // create tilt section
    QVBoxLayout *l4 = new QVBoxLayout;
-   l4->addWidget(s4);
+   l4->addWidget(tiltSlider_);
    QLabel *ll4=new QLabel("Tilt");
    ll4->setAlignment(Qt::AlignHCenter);
    l4->addWidget(ll4);
@@ -473,7 +487,7 @@ void QTV3MainWindow::createWidgets()
 
    // create emission section
    QVBoxLayout *l5 = new QVBoxLayout;
-   l5->addWidget(s5);
+   l5->addWidget(emiSlider_);
    QLabel *ll5=new QLabel("Emission");
    ll5->setAlignment(Qt::AlignHCenter);
    l5->addWidget(ll5);
@@ -481,7 +495,7 @@ void QTV3MainWindow::createWidgets()
 
    // create absorption section
    QVBoxLayout *l6 = new QVBoxLayout;
-   l6->addWidget(s6);
+   l6->addWidget(attSlider_);
    QLabel *ll6=new QLabel("Absorption");
    ll6->setAlignment(Qt::AlignHCenter);
    l6->addWidget(ll6);
@@ -599,7 +613,7 @@ void QTV3MainWindow::createWidgets()
       QLabel *ll=new QLabel("Zoom");
       ll->setAlignment(Qt::AlignLeft);
       l->addWidget(ll);
-      l->addWidget(s2);
+      l->addWidget(zoomDemoSlider_);
       g->setLayout(l);
 
       // assemble zoom section
@@ -651,8 +665,16 @@ void QTV3MainWindow::reset(const char *teaser, const char *path)
 
    clear();
 
-   clipSlider_->setValue(16*0);
-   zoomSlider_->setValue(16*0);
+   if (!demo_)
+      {
+      clipSlider_->setValue(16*0);
+      zoomSlider_->setValue(16*0);
+      }
+   else
+      {
+      clipDemoSlider_->setValue(0);
+      zoomDemoSlider_->setValue(0);
+      }
    rotSlider_->setValue(16*0);
    tiltSlider_->setValue(16*0);
    emiSlider_->setValue(16*25);
@@ -873,6 +895,12 @@ void QTV3MainWindow::zoom(int v)
    vrw_->setZoom(zoom);
 }
 
+void QTV3MainWindow::zoomDemo(double v)
+{
+   double zoom = v / 100.0;
+   vrw_->setZoom(zoom);
+}
+
 void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
@@ -888,6 +916,12 @@ void QTV3MainWindow::tilt(int v)
 void QTV3MainWindow::clip(int v)
 {
    double dist = v / 16.0 / 100.0;
+   vrw_->setClipDist(1.0-2*dist);
+}
+
+void QTV3MainWindow::clipDemo(double v)
+{
+   double dist = v / 100.0;
    vrw_->setClipDist(1.0-2*dist);
 }
 
@@ -1298,13 +1332,19 @@ void QTV3MainWindow::interaction_slot()
       rotSlider_->setValue(vrw_->getAngle() * 16);
       tiltSlider_->setValue(vrw_->getTilt() * 16);
 
-      zoomSlider_->setValue(vrw_->getZoom() * 100 * 16);
+      if (!demo_)
+         zoomSlider_->setValue(vrw_->getZoom() * 100 * 16);
+      else
+         zoomDemoSlider_->setValue(vrw_->getZoom() * 100);
 
       double dist = 0.5*(1-vrw_->getClipDist());
-      clipSlider_->setValue(dist * 100*16);
+      if (!demo_)
+         clipSlider_->setValue(dist * 100*16);
+      else
+         clipDemoSlider_->setValue(dist * 100);
 
-      emiSlider_->setValue(vrw_->getEmission() * 100*16);
-      attSlider_->setValue(vrw_->getAbsorption() * 100*16);
+      emiSlider_->setValue(vrw_->getEmission() * 100 * 16);
+      attSlider_->setValue(vrw_->getAbsorption() * 100 * 16);
    }
 }
 
