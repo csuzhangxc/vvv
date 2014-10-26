@@ -11,6 +11,7 @@
 
 #include "volren_qgl.h"
 #include "prefwindow.h"
+#include "swipeSlider.h"
 
 class QTV3VolRenWidget: public QGLVolRenWidget
 {

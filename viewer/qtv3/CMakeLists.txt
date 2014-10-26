@@ -125,12 +125,16 @@ SET(LIB_HDRS
    volren_qgl.h
    mainwindow.h
    prefwindow.h
+   swipeFilter.h
+   swipeSlider.h
    )
 
 # module list
 SET(LIB_SRCS
    mainwindow.cpp
    prefwindow.cpp
+   swipeFilter.cpp
+   swipeSlider.cpp
    )
 
 # check for fbo
