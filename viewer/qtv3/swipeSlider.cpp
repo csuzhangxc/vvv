@@ -142,30 +142,37 @@ void SwipeSlider::kinetic(SwipeDirection direction, int offset)
 
 void SwipeSlider::paintEvent(QPaintEvent *event)
 {
+   static const int size2 = 4;
+
    QPainter painter(this);
 
    QPointF a(0, height()-1);
+
    QPointF b((orientation_ == Qt::Horizontal)? width()-1 : 0,
              (orientation_ == Qt::Vertical)? 0 : height()-1);
 
    QLinearGradient linGrad(a, b);
-   linGrad.setColorAt(0, Qt::gray);
-   linGrad.setColorAt(1, Qt::white);
+
+   double u = 255*(0.3);
+   double v = 255*(0.9);
+
+   linGrad.setColorAt(0, QColor(u, u, u));
+   linGrad.setColorAt(1, QColor(v, v, v));
 
    painter.setPen(Qt::NoPen);
    painter.setBrush(linGrad);
    painter.drawRect(rect());
 
-   painter.setPen(QPen(Qt::blue, 3));
+   painter.setPen(QPen(Qt::blue, 2*size2+1));
 
    if (orientation_ == Qt::Vertical)
    {
-      painter.drawLine(0, (1.0-value_)*(height()-1),
-                       width()-1, (1.0-value_)*(height()-1));
+      double h = value_*size2 + (1.0-value_)*(height()-1-size2);
+      painter.drawLine(0, h, width()-1, h);
    }
    else
    {
-      painter.drawLine(value_*(width()-1), 0,
-                       value_*(width()-1), height()-1);
+      double w = (1.0-value_)*size2 + value_*(width()-1-size2);
+      painter.drawLine(w, 0, w, height()-1);
    }
 }
