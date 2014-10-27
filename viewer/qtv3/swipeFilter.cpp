@@ -163,6 +163,8 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                            motion_.start(1000/motion_fps); // ms
                         }
                      }
+                     else
+                        emit swipe(direction_, 0.0);
 
                      return(true);
                   }
