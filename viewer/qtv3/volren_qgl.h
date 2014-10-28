@@ -589,16 +589,17 @@ public:
    {
       gm_=on;
 
-      if (gm_ && vr_->has_grad())
-      {
-         vr_->get_tfunc()->set_num(32);
-         vr_->get_tfunc()->set_mode(7);
-      }
-      else
-      {
-         vr_->get_tfunc()->set_num(1);
-         vr_->get_tfunc()->set_mode(0);
-      }
+      if (vr_)
+         if (gm_ && vr_->has_grad())
+         {
+            vr_->get_tfunc()->set_num(32);
+            vr_->get_tfunc()->set_mode(7);
+         }
+         else
+         {
+            vr_->get_tfunc()->set_num(1);
+            vr_->get_tfunc()->set_mode(0);
+         }
    }
 
    //! get gradient magnitude mode

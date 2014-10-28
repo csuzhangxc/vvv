@@ -968,6 +968,7 @@ void QTV3MainWindow::checkGradMag(int on)
    if (vrw_)
    {
       vrw_->setGradMag(on);
+      gradMagCheck_->setChecked(on);
       emiSlider_->setValue(16*100*vrw_->getEmission());
       attSlider_->setValue(16*100*vrw_->getAbsorption());
    }
