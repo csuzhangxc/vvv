@@ -598,11 +598,14 @@ void QTV3MainWindow::createWidgets()
    if (!demo_) viewerSplitter_->addWidget(g2);
 
    // collapse slider widgets
-   QList<int> mainSizes = mainSplitter_->sizes();
-   mainSizes[0]=1;
-   mainSizes[1]=0;
-   mainSplitter_->setSizes(mainSizes);
-   mainSplitter_->refresh();
+   if (!demo_)
+   {
+      QList<int> mainSizes = mainSplitter_->sizes();
+      mainSizes[0]=1;
+      mainSizes[1]=0;
+      mainSplitter_->setSizes(mainSizes);
+      mainSplitter_->refresh();
+   }
 
    // create demo widgets
    if (demo_)
