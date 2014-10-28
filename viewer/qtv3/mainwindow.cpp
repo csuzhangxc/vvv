@@ -330,7 +330,7 @@ void QTV3MainWindow::createWidgets()
    else
       {
       clipDemoSlider_=createSwipeSlider(25,50,0,true); // clip
-      zoomDemoSlider_=createSwipeSlider(0,90,0,true); // zoom
+      zoomDemoSlider_=createSwipeSlider(25,90,0,true); // zoom
       }
    rotSlider_=createSlider(-180,180,0,false); // rotate
    tiltSlider_=createSlider(-90,90,0,true); // tilt
