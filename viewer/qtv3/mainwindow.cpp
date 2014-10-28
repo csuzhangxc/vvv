@@ -39,6 +39,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_tilt_=0.0;
    default_tiltXY_=0.0;
    default_tiltYZ_=0.0;
+   default_clip_=0.0;
    default_zoom_=0.0;
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
@@ -137,6 +138,13 @@ void QTV3MainWindow::setTiltYZ(double tiltYZ)
    vrw_->setTiltYZ(tiltYZ);
 
    default_tiltYZ_=tiltYZ;
+}
+
+void QTV3MainWindow::setClip(double clip)
+{
+   vrw_->setClipDist(1.0-2*clip);
+
+   default_clip_=clip;
 }
 
 void QTV3MainWindow::setZoom(double zoom)
@@ -1252,6 +1260,7 @@ void QTV3MainWindow::resetDefaults()
    setTilt(default_tilt_);
    setTiltXY(default_tiltXY_);
    setTiltYZ(default_tiltYZ_);
+   setClip(default_clip_);
    setZoom(default_zoom_);
 
    if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)

@@ -154,6 +154,9 @@ public:
    //! set volume rotation angle
    void setTiltYZ(double tiltYZ=0.0);
 
+   //! set volume clipping
+   void setClip(double clip);
+
    //! set volume tilt
    void setZoom(double zoom);
 
@@ -397,6 +400,7 @@ private:
    double default_tilt_;
    double default_tiltXY_;
    double default_tiltYZ_;
+   double default_clip_;
    double default_zoom_;
    double default_tfcenter_;
    double default_tfsize_;
