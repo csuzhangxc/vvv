@@ -170,7 +170,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       {
          painter.save();
          painter.setPen(QColor(160,176,224));
-         painter.setFont(QFont("Arial", width()*2/3));
+         painter.setFont(QFont("Arial", width()*2/5));
          painter.translate(width()/4, width()/6);
          painter.rotate(90);
          painter.drawText(0, 0, text_);
@@ -187,7 +187,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       {
          painter.save();
          painter.setPen(QColor(160,176,224));
-         painter.setFont(QFont("Arial", height()*2/3));
+         painter.setFont(QFont("Arial", height()*2/5));
          painter.translate(height()/6, height()/4);
          painter.drawText(rect(), Qt::AlignCenter, text_);
          painter.restore();
