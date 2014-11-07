@@ -18,7 +18,7 @@ class SwipeSlider: public QWidget
 
 public:
 
-   SwipeSlider(Qt::Orientation orientation, QWidget *parent = NULL);
+   SwipeSlider(Qt::Orientation orientation, QString text = "", QWidget *parent = NULL);
    virtual ~SwipeSlider();
 
    void setRange(double minimum, double maximum);
@@ -45,6 +45,8 @@ public:
 
 protected:
 
+   double value_;
+
    double minimum_;
    double maximum_;
 
@@ -52,7 +54,7 @@ protected:
    bool enabled;
 
    Qt::Orientation orientation_;
-   double value_;
+   QString text_;
 
    virtual void paintEvent(QPaintEvent *event);
 

@@ -2,13 +2,14 @@
 
 #include "swipeSlider.h"
 
-SwipeSlider::SwipeSlider(Qt::Orientation orientation, QWidget *parent)
+SwipeSlider::SwipeSlider(Qt::Orientation orientation, QString text, QWidget *parent)
    : QWidget(parent),
+     value_(0.0),
      minimum_(0.0),
      maximum_(1.0),
      enabled(false),
      orientation_(orientation),
-     value_(0.0)
+     text_(text)
 {
    filter = new SwipeFilter(this);
 
@@ -163,16 +164,37 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
    painter.setBrush(linGrad);
    painter.drawRect(rect());
 
-   painter.setPen(QPen(Qt::blue, 2*size2+1));
-
    if (orientation_ == Qt::Vertical)
    {
+      if (text_ != "")
+      {
+         painter.save();
+         painter.setPen(QColor(160,176,224));
+         painter.setFont(QFont("Arial", width()*2/3));
+         painter.translate(width()/4, width()/6);
+         painter.rotate(90);
+         painter.drawText(0, 0, text_);
+         painter.restore();
+      }
+
       double h = value_*size2 + (1.0-value_)*(height()-1-size2);
+      painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
       painter.drawLine(0, h, width()-1, h);
    }
    else
    {
+      if (text_ != "")
+      {
+         painter.save();
+         painter.setPen(QColor(160,176,224));
+         painter.setFont(QFont("Arial", height()*2/3));
+         painter.translate(height()/6, height()/4);
+         painter.drawText(rect(), Qt::AlignCenter, text_);
+         painter.restore();
+      }
+
       double w = (1.0-value_)*size2 + value_*(width()-1-size2);
+      painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
       painter.drawLine(w, 0, w, height()-1);
    }
 }

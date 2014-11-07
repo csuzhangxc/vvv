@@ -337,8 +337,8 @@ void QTV3MainWindow::createWidgets()
       }
    else
       {
-      clipDemoSlider_=createSwipeSlider(25,60,0,true); // clip
-      zoomDemoSlider_=createSwipeSlider(20,90,0,true); // zoom
+      clipDemoSlider_=createSwipeSlider(25,60,0,true,"Touch to Clip"); // clip
+      zoomDemoSlider_=createSwipeSlider(20,90,0,true,"Touch to Zoom"); // zoom
       }
    rotSlider_=createSlider(-180,180,0,false); // rotate
    tiltSlider_=createSlider(-90,90,0,true); // tilt
@@ -363,9 +363,12 @@ void QTV3MainWindow::createWidgets()
 
    // create clipping section
    QVBoxLayout *l1 = new QVBoxLayout;
-   QLabel *ll1=new QLabel("Clipping");
-   ll1->setAlignment(Qt::AlignLeft);
-   l1->addWidget(ll1);
+   if (!demo_)
+      {
+      QLabel *ll1=new QLabel("Clipping");
+      ll1->setAlignment(Qt::AlignLeft);
+      l1->addWidget(ll1);
+      }
    if (!demo_)
       l1->addWidget(clipSlider_);
    else
@@ -621,9 +624,6 @@ void QTV3MainWindow::createWidgets()
       // create zoom section
       QGroupBox *g = new QGroupBox;
       QVBoxLayout *l = new QVBoxLayout;
-      QLabel *ll=new QLabel("Zoom");
-      ll->setAlignment(Qt::AlignLeft);
-      l->addWidget(ll);
       l->addWidget(zoomDemoSlider_);
       g->setLayout(l);
 
@@ -788,9 +788,9 @@ QTV3Slider *QTV3MainWindow::createSlider(int minimum, int maximum, int value,
 }
 
 SwipeSlider *QTV3MainWindow::createSwipeSlider(int minimum, int maximum, int value,
-                                               bool vertical)
+                                               bool vertical, QString text)
 {
-   SwipeSlider *slider = new SwipeSlider(vertical?Qt::Vertical:Qt::Horizontal);
+   SwipeSlider *slider = new SwipeSlider(vertical?Qt::Vertical:Qt::Horizontal, text);
    slider->setRange(minimum, maximum);
    slider->setValue(value);
    return(slider);

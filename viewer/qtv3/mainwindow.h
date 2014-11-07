@@ -237,7 +237,7 @@ private:
                             bool vertical=false);
 
    SwipeSlider *createSwipeSlider(int minimum, int maximum, int value,
-                                  bool vertical=false);
+                                  bool vertical=false, QString text="");
 
    bool hasTeaserVolume_;
 
