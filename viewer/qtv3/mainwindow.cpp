@@ -210,6 +210,16 @@ void QTV3MainWindow::setColorHue(float hue)
    default_hue_=hue;
 }
 
+void QTV3MainWindow::setOversampling()
+{
+   sampleButton3_->setChecked(true);
+}
+
+void QTV3MainWindow::setUndersampling()
+{
+   sampleButton1_->setChecked(true);
+}
+
 void QTV3MainWindow::setGradMag()
 {
    checkGradMag(true);

@@ -40,6 +40,8 @@ void usage(const char *prog)
    std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
    std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
    std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
+   std::cout << " --over: use over-sampling" << std::endl;
+   std::cout << " --under: use under-sampling" << std::endl;
    std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
    std::cout << " --maxidle=x: maximum idle time before gui reset is x seconds" << std::endl;
    std::cout << " --maxvol=x: maximum edge size of volume to be loaded (default=512)" << std::endl;
@@ -90,6 +92,8 @@ int main(int argc, char *argv[])
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
+   bool over=false;
+   bool under=false;
    double isovalue=0;
    double maxidle=0;
    unsigned int maxvol=0;
@@ -116,6 +120,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
+      else if (opt[i]=="over") {over=true; under=false;}
+      else if (opt[i]=="under") {under=true; over=false;}
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
       else if (opt[i].startsWith("maxidle=")) maxidle=get_opt(opt[i]);
       else if (opt[i].startsWith("maxvol=")) maxvol=get_opt(opt[i]);
@@ -161,6 +167,8 @@ int main(int argc, char *argv[])
    if (anaglyph) main.setAnaglyph();
    if (tfemi!=100.0) main.setEmission(tfemi/100.0*main.getEmission());
    if (tfatt!=100.0) main.setAbsorption(tfatt/100.0*main.getAbsorption());
+   if (over) main.setOversampling();
+   if (under) main.setUndersampling();
    if (isovalue!=0.0) main.extractIsoSurface(isovalue);
    if (maxidle>0.0) main.setMaxIdle(maxidle);
    if (maxvol>0) main.volMaxSizeChange(maxvol);

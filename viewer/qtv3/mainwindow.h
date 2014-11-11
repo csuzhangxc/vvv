@@ -188,6 +188,12 @@ public:
    //! set gradmag mode
    void setGradMag();
 
+   //! set oversampling
+   void setOversampling();
+
+   //! set undersampling
+   void setUndersampling();
+
    //! set anaglyph stereo mode
    void setAnaglyph();
 
