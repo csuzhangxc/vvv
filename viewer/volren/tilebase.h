@@ -213,7 +213,7 @@ class tile
    void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfx=FALSE);
    void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOLINT sfx=FALSE);
    void bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,BOOLINT sfx=FALSE);
-   void bindprogparSFX(int sfxmode=2);
+   void bindprogparSFX(int sfxmode=0);
 
    // fragment program loading:
 
@@ -223,6 +223,10 @@ class tile
 
    static void setup(char *base=NULL);
    static void destroy();
+
+   // stereo interlacing mode:
+
+   static int SFXMODE;
    };
 
 typedef tile *tileptr;

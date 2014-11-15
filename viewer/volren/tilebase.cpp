@@ -45,6 +45,8 @@ BOOLINT tile::LOADED=FALSE;
 unsigned int tile::INSTANCES=0;
 GLuint tile::PROGID[PROGNUM];
 
+int tile::SFXMODE=0;
+
 tile::tile(tfunc2D *tf,char *base)
    {
    BRICK=new brick();
@@ -742,7 +744,7 @@ void tile::drawhexa(const float p1x,const float p1y,const float p1z,
    }
 
 // bind 3D texture map
-void tile::bindtexmap(int texid3D,BOOLINT sfx)
+void tile::bindtexmap(int texid3D,BOOLINT sfxmode)
    {
    if (texid3D>0)
       {
@@ -758,13 +760,13 @@ void tile::bindtexmap(int texid3D,BOOLINT sfx)
 
 #ifdef GL_ARB_fragment_program
 
-   if (sfx)
+   if (sfxmode)
       if (texid3D>0)
          {
          // activate fragment program
          glEnable(GL_FRAGMENT_PROGRAM_ARB);
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[10]);
-         bindprogparSFX();
+         bindprogparSFX(sfxmode);
          }
       else glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
@@ -772,7 +774,7 @@ void tile::bindtexmap(int texid3D,BOOLINT sfx)
    }
 
 // bind 3D texture map using dependent 2D lookup
-void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfx)
+void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -780,11 +782,11 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfx)
       {
       // activate fragment program
       glEnable(GL_FRAGMENT_PROGRAM_ARB);
-      if (!sfx) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[0]);
+      if (!sfxmode) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[0]);
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[5]);
-         bindprogparSFX();
+         bindprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -840,7 +842,7 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfx)
    }
 
 // bind 3D texture map using dependent 1D lookup
-void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfx)
+void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -848,11 +850,11 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfx)
       {
       // activate fragment program
       glEnable(GL_FRAGMENT_PROGRAM_ARB);
-      if (!sfx) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[1]);
+      if (!sfxmode) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[1]);
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[6]);
-         bindprogparSFX();
+         bindprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -908,7 +910,7 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfx)
    }
 
 // bind 3D texture map using dependent 2D lookup with gradient magnitude
-void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOLINT sfx)
+void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOLINT sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -916,11 +918,11 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOL
       {
       // activate fragment program
       glEnable(GL_FRAGMENT_PROGRAM_ARB);
-      if (!sfx) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[2]);
+      if (!sfxmode) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[2]);
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[7]);
-         bindprogparSFX();
+         bindprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -1000,7 +1002,7 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOL
    }
 
 // bind 3D texture map using dependent 3D lookup with gradient magnitude and lighting
-void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,BOOLINT sfx)
+void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,BOOLINT sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -1013,11 +1015,11 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          {
          // disable lighting:
 
-         if (!sfx) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[3]);
+         if (!sfxmode) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[3]);
          else
             {
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[8]);
-            bindprogparSFX();
+            bindprogparSFX(sfxmode);
             }
 
          LIGHTING=FALSE;
@@ -1026,11 +1028,11 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          {
          // enable lighting:
 
-         if (!sfx) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[4]);
+         if (!sfxmode) glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[4]);
          else
             {
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[9]);
-            bindprogparSFX();
+            bindprogparSFX(sfxmode);
             }
 
          glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,0,rslab,NOISE,0.0f,0.0f);
@@ -1118,10 +1120,10 @@ void tile::bindprogparSFX(int sfxmode)
    {
    float a=0.0f,b=0.0f,c=0.0f,d=0.0f;
 
-   if (sfxmode==0) a=0.5f;
-   else if (sfxmode==1) a=-0.5f;
-   else if (sfxmode==2) b=0.5f;
-   else if (sfxmode==3) b=-0.5f;
+   if (sfxmode==1) a=0.5f;
+   else if (sfxmode==2) a=-0.5f;
+   else if (sfxmode==3) b=0.5f;
+   else if (sfxmode==4) b=-0.5f;
 
    glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,2,a,b,c,d);
    }
@@ -1158,7 +1160,7 @@ void tile::render(float ex,float ey,float ez,
          // 1D transfer functions:
 
          // standard version with pre-integration
-         bindtexmaps(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
+         bindtexmaps(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),SFXMODE);
 
 #ifdef GL_ARB_multitexture
 
@@ -1235,7 +1237,7 @@ void tile::render(float ex,float ey,float ez,
          // 1D transfer functions:
 
          // fall-back version without pre-integration
-         bindtexmaps1D(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
+         bindtexmaps1D(BRICK->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),SFXMODE);
 
 #ifdef GL_ARB_multitexture
 
@@ -1289,7 +1291,7 @@ void tile::render(float ex,float ey,float ez,
          // 2D transfer functions:
 
          // fall-back version without pre-integration
-         bindtexmaps2D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid());
+         bindtexmaps2D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),SFXMODE);
 
 #ifdef GL_ARB_multitexture
 
@@ -1367,10 +1369,10 @@ void tile::render(float ex,float ey,float ez,
 
          if (!lighting || !TFUNC->get_imode())
             // high-quality version with pre-integration
-            bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),0.0f);
+            bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),0.0f,SFXMODE);
          else
             // high-quality version with pre-integration and lighting
-            bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),1.0f/(slab*rslab));
+            bindtexmaps3D(BRICK->get_id(),EXTRA->get_id(),TFUNC->get_eid(),TFUNC->get_aid(),1.0f/(slab*rslab),SFXMODE);
 
 #ifdef GL_ARB_multitexture
 
@@ -1611,7 +1613,7 @@ void tile::renderslice(float ox,float oy,float oz,
    {
    glDisable(GL_CULL_FACE);
 
-   bindtexmap(BRICK->get_id());
+   bindtexmap(BRICK->get_id(),SFXMODE);
 
    glMatrixMode(GL_TEXTURE);
 
