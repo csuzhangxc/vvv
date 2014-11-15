@@ -26,10 +26,10 @@ char inline_prog1sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D textures\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab\n\
@@ -70,10 +70,10 @@ char inline_prog2sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D texture\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab\n\
@@ -114,10 +114,10 @@ char inline_prog3sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D textures\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab\n\
@@ -159,10 +159,10 @@ char inline_prog4sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D textures\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab\n\
@@ -219,10 +219,10 @@ char inline_prog5sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D textures\n\
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab\n\
@@ -259,10 +259,10 @@ char inline_prog0sfx[]=
 TEMP tmp, col;\n\
 \n\
 # stereo interlacing\n\
-MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
-FRC tmp, tmp;\n\
-SUB tmp, tmp, 0.5;\n\
-KIL tmp;\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
 \n\
 # get data from 3D texture\n\
 TEX col, fragment.texcoord[0], texture[0], 3D;   # get scalar value\n\

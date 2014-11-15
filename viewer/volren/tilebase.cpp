@@ -766,7 +766,7 @@ void tile::bindtexmap(int texid3D,int sfxmode)
          // activate fragment program
          glEnable(GL_FRAGMENT_PROGRAM_ARB);
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[10]);
-         bindprogparSFX(sfxmode);
+         setprogparSFX(sfxmode);
          }
       else glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
@@ -786,7 +786,7 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,int sfxmode)
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[5]);
-         bindprogparSFX(sfxmode);
+         setprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -854,7 +854,7 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,int sfxmode)
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[6]);
-         bindprogparSFX(sfxmode);
+         setprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -922,7 +922,7 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,int 
       else
          {
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[7]);
-         bindprogparSFX(sfxmode);
+         setprogparSFX(sfxmode);
          }
 
       // lighting is not supported
@@ -1019,7 +1019,7 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          else
             {
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[8]);
-            bindprogparSFX(sfxmode);
+            setprogparSFX(sfxmode);
             }
 
          LIGHTING=FALSE;
@@ -1032,7 +1032,7 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
          else
             {
             glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[9]);
-            bindprogparSFX(sfxmode);
+            setprogparSFX(sfxmode);
             }
 
          glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,0,rslab,NOISE,0.0f,0.0f);
@@ -1116,14 +1116,14 @@ void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,floa
 #endif
    }
 
-void tile::bindprogparSFX(int sfxmode)
+void tile::setprogparSFX(int sfxmode)
    {
-   float a=0.0f,b=0.0f,c=0.0f,d=0.0f;
+   float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
 
-   if (sfxmode==1) a=0.5f;
-   else if (sfxmode==2) a=-0.5f;
-   else if (sfxmode==3) b=0.5f;
-   else if (sfxmode==4) b=-0.5f;
+   if (sfxmode==1) {a=0.5f; c=0.0f;}
+   else if (sfxmode==2) {a=-0.5f; c=0.0f;}
+   else if (sfxmode==3) {b=0.5f; d=0.0f;}
+   else if (sfxmode==4) {b=-0.5f; d=0.0f;}
 
    glProgramEnvParameter4fARB(GL_FRAGMENT_PROGRAM_ARB,2,a,b,c,d);
    }

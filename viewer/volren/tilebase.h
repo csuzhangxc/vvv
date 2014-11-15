@@ -213,7 +213,7 @@ class tile
    void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,int sfxmode=0);
    void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,int sfxmode=0);
    void bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,int sfxmode=0);
-   void bindprogparSFX(int sfxmode=0);
+   void setprogparSFX(int sfxmode=0);
 
    // fragment program loading:
 
