@@ -921,6 +921,8 @@ protected:
       }
       else vr_->renderCross(FALSE);
 
+      vr_->setSFXmode(0);
+
       // call volume renderer
       if (sfx_base==0.0)
          vr_->renderscene(eye_tx,eye_ty,eye_tz, // view point
