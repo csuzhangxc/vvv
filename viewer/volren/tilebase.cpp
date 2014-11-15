@@ -117,13 +117,10 @@ void tile::setup(char *base)
          glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_FORMAT_ASCII_ARB,len[i],prog[i]);
 
          glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB,&errorPos);
-         glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
-
-         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 
          if (errorPos==0)
             {
-            WARNMSG("shader programs unavailable");
+            WARNMSG("shader program unavailable");
             WARNMSG((char *)glGetString(GL_PROGRAM_ERROR_STRING_ARB));
             }
          else
@@ -135,6 +132,9 @@ void tile::setup(char *base)
                }
             if (isNative!=1) WARNMSG("shader program non-native");
             }
+
+         glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
+         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 
 #endif
 

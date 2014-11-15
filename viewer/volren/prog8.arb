@@ -3,10 +3,10 @@
 TEMP tmp, col;
 
 # stereo interlacing
-MAD tmp.xy, fragment.position, program.env[2].xy, program.env[2].zw;
-FRC tmp.xy, tmp.xy;
-SUB tmp.xy, 0.5;
-KIL tmp.xy;
+MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;
+FRC tmp, tmp;
+SUB tmp, tmp, 0.5;
+KIL tmp;
 
 # get data from 3D textures
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the mid of the slab
