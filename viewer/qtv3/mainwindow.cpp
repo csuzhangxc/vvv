@@ -329,6 +329,9 @@ void QTV3MainWindow::createWidgets()
    // create qtv3 volren widget
    vrw_ = new QTV3VolRenWidget(viewerSplitter_,vrw_stereo_);
 
+   // do not show cross in demo mode
+   vrw_->showCross(!demo_);
+
    // create update info label
    update_ = new QLabel("");
    update_->setAlignment(Qt::AlignHCenter);

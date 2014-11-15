@@ -38,8 +38,8 @@ public:
    volren_qgl() : volren() {}
    virtual ~volren_qgl() {}
 
-   void showCross(bool on,
-                  float cx=0.0f,float cy=0.0f,float cz=0.0f)
+   void renderCross(bool on,
+                    float cx=0.0f,float cy=0.0f,float cz=0.0f)
    {
       cross_=on;
 
@@ -226,6 +226,7 @@ public:
       tf_size_ = 1.0f;
       tf_inverse_ = false;
       geo_show_ = true;
+      cross_show_ = true;
 
       setColorHue(VOLREN_DEFAULT_HUE,VOLREN_DEFAULT_SAT,VOLREN_DEFAULT_VAL);
 
@@ -381,6 +382,12 @@ public:
 
       if (geotoload_) free(geotoload_);
       geotoload_ = NULL;
+   }
+
+   //! show a cross
+   void showCross(int on)
+   {
+      cross_show_ = on;
    }
 
    //! append line segment
@@ -789,6 +796,7 @@ protected:
    float tf_size_; // tfunc size
    float tf_inverse_; // inverse tfunc
    bool geo_show_; // show geometry?
+   bool cross_show_; // show cross?
 
    unsigned int rendercount_;
 
@@ -893,9 +901,9 @@ protected:
          float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
          float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
          vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
-         vr_->showCross(TRUE,tx,ty,tz);
+         vr_->renderCross(cross_show_ && !(sfx_ && sfx_ana_),tx,ty,tz);
       }
-      else vr_->showCross(FALSE);
+      else vr_->renderCross(FALSE);
 
       // call volume renderer
       if (sfx_base==0.0)
