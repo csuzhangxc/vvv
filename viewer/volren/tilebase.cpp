@@ -45,7 +45,7 @@ BOOLINT tile::LOADED=FALSE;
 unsigned int tile::INSTANCES=0;
 GLuint tile::PROGID[PROGNUM];
 
-int tile::SFXMODE=0;
+int tile::SFXMODE=2;
 
 tile::tile(tfunc2D *tf,char *base)
    {
@@ -744,7 +744,7 @@ void tile::drawhexa(const float p1x,const float p1y,const float p1z,
    }
 
 // bind 3D texture map
-void tile::bindtexmap(int texid3D,BOOLINT sfxmode)
+void tile::bindtexmap(int texid3D,int sfxmode)
    {
    if (texid3D>0)
       {
@@ -774,7 +774,7 @@ void tile::bindtexmap(int texid3D,BOOLINT sfxmode)
    }
 
 // bind 3D texture map using dependent 2D lookup
-void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfxmode)
+void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,int sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -842,7 +842,7 @@ void tile::bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfxmode)
    }
 
 // bind 3D texture map using dependent 1D lookup
-void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfxmode)
+void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,int sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -910,7 +910,7 @@ void tile::bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfxmode)
    }
 
 // bind 3D texture map using dependent 2D lookup with gradient magnitude
-void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOLINT sfxmode)
+void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,int sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
@@ -1002,7 +1002,7 @@ void tile::bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOL
    }
 
 // bind 3D texture map using dependent 3D lookup with gradient magnitude and lighting
-void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,BOOLINT sfxmode)
+void tile::bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,int sfxmode)
    {
 #ifdef GL_ARB_fragment_program
 
