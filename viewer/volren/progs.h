@@ -180,7 +180,7 @@ END\n\
 
 char inline_prog5[]=
 "\
-!!ARBfp1.0\
+!!ARBfp1.0\n\
 \n\
 TEMP tmp, col;\n\
 \n\
@@ -214,7 +214,7 @@ END\n\
 
 char inline_prog5sfx[]=
 "\
-!!ARBfp1.0\
+!!ARBfp1.0\n\
 \n\
 TEMP tmp, col;\n\
 \n\
@@ -252,5 +252,27 @@ MUL result.color, col, fragment.color.primary;   # attenuate with primary color\
 END\n\
 ";
 
-char *inline_prog[10]={inline_prog1,inline_prog2,inline_prog3,inline_prog4,inline_prog5,
-                       inline_prog1sfx,inline_prog2sfx,inline_prog3sfx,inline_prog4sfx,inline_prog5sfx};
+char inline_prog0sfx[]=
+"\
+!!ARBfp1.0\n\
+\n\
+TEMP tmp, col;\n\
+\n\
+# stereo interlacing\n\
+MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;\n\
+FRC tmp, tmp;\n\
+SUB tmp, tmp, 0.5;\n\
+KIL tmp;\n\
+\n\
+# get data from 3D texture\n\
+TEX col, fragment.texcoord[0], texture[0], 3D;   # get scalar value\n\
+\n\
+# write to output register\n\
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color\n\
+\n\
+END\n\
+";
+
+char *inline_prog[11]={inline_prog1,inline_prog2,inline_prog3,inline_prog4,inline_prog5,
+                       inline_prog1sfx,inline_prog2sfx,inline_prog3sfx,inline_prog4sfx,inline_prog5sfx,
+                       inline_prog0sfx};

@@ -1,0 +1,17 @@
+!!ARBfp1.0
+
+TEMP tmp, col;
+
+# stereo interlacing
+MAD tmp, fragment.position.xyxy, program.env[2].xyxy, program.env[2].zwzw;
+FRC tmp, tmp;
+SUB tmp, tmp, 0.5;
+KIL tmp;
+
+# get data from 3D texture
+TEX col, fragment.texcoord[0], texture[0], 3D;   # get scalar value
+
+# write to output register
+MUL result.color, col, fragment.color.primary;   # attenuate with primary color
+
+END
