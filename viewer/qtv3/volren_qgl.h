@@ -1008,7 +1008,8 @@ protected:
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
                           opacity2_, // outer clipping plane opacity
-                          geo_show_); // show surface geometry
+                          geo_show_, // show surface geometry
+                          TRUE); // clear frame buffer
 
          if (sfx_ana)
             if (!inv_)
@@ -1042,7 +1043,8 @@ protected:
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
                           opacity2_, // outer clipping plane opacity
-                          geo_show_); // show surface geometry
+                          geo_show_, // show surface geometry
+                          sfx_mode==0); // clear frame buffer
 
          if (sfx_ana)
             glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);

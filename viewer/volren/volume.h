@@ -337,8 +337,22 @@ class mipmap
       }
 
    //! set stereo interlacing mode
-   void setSFXmode(int sfxmode)
-      {SFXMODE=sfxmode;}
+   void setSFXmode(int sfxmode,BOOLINT inv=FALSE)
+      {
+      if (sfxmode==0) SFXMODE=0;
+      else if (sfxmode==1)
+         if (!inv) SFXMODE=1;
+         else SFXMODE=2;
+      else if (sfxmode==2)
+         if (!inv) SFXMODE=2;
+         else SFXMODE=1;
+      else if (sfxmode==3)
+         if (!inv) SFXMODE=3;
+         else SFXMODE=4;
+      else if (sfxmode==4)
+         if (!inv) SFXMODE=4;
+         else SFXMODE=3;
+      }
 
    protected:
 

@@ -132,7 +132,8 @@ class volren: public volscene
    //! begin rendering
    void begin(float gfx_fovy,float gfx_aspect,float gfx_near,float gfx_far, // opengl perspective
               BOOLINT vol_white=TRUE, // white background
-              BOOLINT vol_inv=FALSE) // inverse mode
+              BOOLINT vol_inv=FALSE, // inverse mode
+              BOOLINT clear=TRUE)
       {
       // volren setup:
 
@@ -141,7 +142,7 @@ class volren: public volscene
          else setbackground(1.0f,1.0f,1.0f);
       else setbackground(0.0f,0.0f,0.0f);
 
-      clearbuffer();
+      if (clear) clearbuffer();
 
       set_light(0.01f,0.3f,0.5f,0.2f,10.0f);
 
@@ -333,13 +334,14 @@ class volren: public volscene
                        float vol_clip_opacity=1.0f, // clipping plane opacity
                        float vol_outer_opacity=0.1f, // outer clipping plane opacity
                        BOOLINT geo_show=TRUE, // show surface geometry
+                       BOOLINT clear=TRUE, // clear frame buffer
                        BOOLINT (*abort)(void *abortdata)=NULL,
                        void *abortdata=NULL)
       {
       BOOLINT aborted;
 
       begin(gfx_fovy,gfx_aspect,gfx_near,gfx_far,
-            vol_white,vol_inv);
+            vol_white,vol_inv,clear);
 
       showsurface(geo_show);
 
