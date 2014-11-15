@@ -208,11 +208,11 @@ class tile
    float NEARP;
 
    // texture shader and fragment program setup
-   void bindtexmap(int texid3D,BOOLINT sfx=FALSE);
-   void bindtexmaps(int texid3D,int texid2DE,int texid2DA,BOOLINT sfx=FALSE);
-   void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,BOOLINT sfx=FALSE);
-   void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,BOOLINT sfx=FALSE);
-   void bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,BOOLINT sfx=FALSE);
+   void bindtexmap(int texid3D,int sfxmode=0);
+   void bindtexmaps(int texid3D,int texid2DE,int texid2DA,int sfxmode=0);
+   void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,int sfxmode=0);
+   void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,int sfxmode=0);
+   void bindtexmaps3D(int texid3D,int texid3DG,int texid3DE,int texid3DA,float rslab,int sfxmode=0);
    void bindprogparSFX(int sfxmode=0);
 
    // fragment program loading:
