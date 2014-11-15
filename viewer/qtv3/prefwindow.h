@@ -67,6 +67,7 @@ protected:
 
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;
+   QRadioButton *sfxModeCheck_;
    QRadioButton *sfxOnCheck_;
 
    QLineEdit *lineEdit_slice_opacity_;

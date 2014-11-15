@@ -221,6 +221,7 @@ public:
       gm_ = false;
       sfx_ = false;
       sfx_ana_ = true;
+      sfx_mode_ = 0;
       tf_ = false;
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
@@ -639,6 +640,18 @@ public:
       return(sfx_ana_);
    }
 
+   //! set stereo interlacing mode
+   void setSFXmode(int sfxmode=0)
+   {
+      sfx_mode_=sfxmode;
+   }
+
+   //! get stereo interlacing mode
+   bool getSFXmode()
+   {
+      return(sfx_mode_);
+   }
+
    //! use linear transfer function
    void set_tfunc(float center=0.5f,float size=1.0f,
                   bool inverse=FALSE)
@@ -791,6 +804,7 @@ protected:
    bool gm_; // gradient magnitude?
    bool sfx_; // stereo mode?
    bool sfx_ana_; // anaglyph mode?
+   bool sfx_mode_; // interlacing mode
    bool tf_; // tfunc given?
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
@@ -831,11 +845,13 @@ protected:
       double sfx_base=0.0;
       double sfx_focus=0.2*gfx_far;
       bool sfx_ana=true;
+      bool sfx_mode=0;
 
       if (sfx_)
       {
          sfx_base=0.005;
          sfx_ana=sfx_ana_;
+         sfx_mode=sfx_mode_;
       }
 
       bool gfx_fbo=true;
@@ -901,7 +917,7 @@ protected:
          float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
          float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
          vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
-         vr_->renderCross(cross_show_ && !(sfx_ && sfx_ana_),tx,ty,tz);
+         vr_->renderCross(cross_show_ && !(sfx_ && (sfx_ana_ || sfx_mode_!=0)),tx,ty,tz);
       }
       else vr_->renderCross(FALSE);
 
@@ -965,6 +981,8 @@ protected:
                glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
             else
                glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
+         else if (sfx_mode!=0)
+            vr_->setSFXmode(sfx_mode,inv_);
          else
             glDrawBuffer(GL_BACK_LEFT);
 
@@ -997,6 +1015,8 @@ protected:
                glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
             else
                glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
+         else if (sfx_mode!=0)
+            vr_->setSFXmode(sfx_mode,!inv_);
          else
             glDrawBuffer(GL_BACK_RIGHT);
 

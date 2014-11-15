@@ -197,6 +197,9 @@ public:
    //! set anaglyph stereo mode
    void setAnaglyph();
 
+   //! set interlaced stereo mode
+   void setSFXmode(int sfxmode=0);
+
    //! set maximum idle time before reset
    void setMaxIdle(double t);
 
@@ -273,6 +276,7 @@ private:
 
    QRadioButton *sfxOffCheck_;
    QRadioButton *anaModeCheck_;
+   QRadioButton *sfxModeCheck_;
    QRadioButton *sfxOnCheck_;
 
    QCheckBox *flipCheckXY1_;
@@ -365,6 +369,7 @@ protected slots:
    void checkClipIso(int on);
    void checkSFXoff(bool on);
    void checkAnaMode(bool on);
+   void checkSFXMode(bool on);
    void checkSFXon(bool on);
    void checkFlipXY1(int on);
    void checkFlipXY2(int on);
@@ -416,6 +421,7 @@ private:
    double default_hue_;
    bool default_gradmag_;
    bool default_anaglyph_;
+   int default_sfxmode_;
 
    void checkSFX(bool stereo);
 };

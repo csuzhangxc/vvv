@@ -49,6 +49,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_hue_=120.0;
    default_gradmag_=false;
    default_anaglyph_=false;
+   default_sfxmode_=0;
 
    reset();
 }
@@ -233,6 +234,14 @@ void QTV3MainWindow::setAnaglyph()
       checkAnaMode(true);
 
    default_anaglyph_=true;
+}
+
+void QTV3MainWindow::setSFXmode(int sfxmode)
+{
+   if (!vrw_stereo_)
+      checkSFXMode(sfxmode);
+
+   default_sfxmode_=sfxmode;
 }
 
 void QTV3MainWindow::setMaxIdle(double t)
@@ -444,11 +453,15 @@ void QTV3MainWindow::createWidgets()
    connect(sfxOffCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXoff(bool)));
    h2->addWidget(sfxOffCheck_);
    gb1->addButton(sfxOffCheck_);
-   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo Mode"));
+   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo"));
    connect(anaModeCheck_, SIGNAL(toggled(bool)), this, SLOT(checkAnaMode(bool)));
    h2->addWidget(anaModeCheck_);
    gb1->addButton(anaModeCheck_);
-   sfxOnCheck_ = new QRadioButton(tr("Dual Buffer Stereo Mode"));
+   sfxModeCheck_ = new QRadioButton(tr("Interlaced Stereo"));
+   connect(sfxModeCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXMode(bool)));
+   h2->addWidget(sfxModeCheck_);
+   gb1->addButton(sfxModeCheck_);
+   sfxOnCheck_ = new QRadioButton(tr("Quad Buffered Stereo"));
    connect(sfxOnCheck_, SIGNAL(toggled(bool)), this, SLOT(checkSFXon(bool)));
    h2->addWidget(sfxOnCheck_);
    gb1->addButton(sfxOnCheck_);
@@ -456,6 +469,7 @@ void QTV3MainWindow::createWidgets()
    else sfxOffCheck_->setChecked(true);
    sfxOffCheck_->hide();
    anaModeCheck_->hide();
+   sfxModeCheck_->hide();
    sfxOnCheck_->hide();
    QHBoxLayout *h3 = new QHBoxLayout;
    flipCheckXY1_ = new QCheckBox(tr("Flip +XY"));
@@ -1042,10 +1056,13 @@ void QTV3MainWindow::checkSFX(bool stereo)
 {
    if (stereo!=vrw_stereo_)
    {
-      delete vrw_;
+      vrw_->setParent(NULL);
+      vrw_->deleteLater();
+      QApplication::processEvents();
+
       vrw_ = new QTV3VolRenWidget(viewerSplitter_, stereo);
       connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
-      viewerSplitter_->addWidget(vrw_);
+      viewerSplitter_->insertWidget(1,vrw_);
 
       vrw_stereo_ = stereo;
 
@@ -1073,7 +1090,23 @@ void QTV3MainWindow::checkAnaMode(bool on)
       if (on)
       {
          vrw_->setSFX(true);
-         vrw_->setAnaglyph(on);
+         vrw_->setAnaglyph(true);
+         vrw_->setSFXmode(0);
+      }
+   }
+}
+
+void QTV3MainWindow::checkSFXMode(bool on)
+{
+   if (vrw_)
+   {
+      checkSFX(false);
+
+      if (on)
+      {
+         vrw_->setSFX(true);
+         vrw_->setAnaglyph(false);
+         vrw_->setSFXmode(3);
       }
    }
 }
@@ -1088,6 +1121,7 @@ void QTV3MainWindow::checkSFXon(bool on)
       {
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
+         vrw_->setSFXmode(0);
       }
    }
 }
@@ -1283,6 +1317,7 @@ void QTV3MainWindow::resetDefaults()
 
    if (default_gradmag_) setGradMag();
    if (default_anaglyph_) setAnaglyph();
+   if (default_sfxmode_!=0) setSFXmode(default_sfxmode_);
 
    if (default_tfemi_!=1.0) setEmission(default_tfemi_);
    if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);

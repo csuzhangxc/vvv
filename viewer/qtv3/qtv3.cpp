@@ -39,7 +39,10 @@ void usage(const char *prog)
    std::cout << " --hue: color hue in degrees (0-360)" << std::endl;
    std::cout << " --gradmag: use gradient magnitude rendering mode" << std::endl;
    std::cout << " --anaglyph: use anaglyph stereo rendering mode" << std::endl;
-   std::cout << " --stereo: use left/right stereo buffer rendering mode" << std::endl;
+   std::cout << " --stereo: use quad buffered stereo rendering mode" << std::endl;
+   std::cout << " --interlace-horizontal: use left-right interlaced stereo rendering mode" << std::endl;
+   std::cout << " --interlace-vertical: use bottom-top interlaced stereo rendering mode" << std::endl;
+   std::cout << " --interlace-vertical-inverse: use top-bottom interlaced stereo rendering mode" << std::endl;
    std::cout << " --over: use over-sampling" << std::endl;
    std::cout << " --under: use under-sampling" << std::endl;
    std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
@@ -92,6 +95,7 @@ int main(int argc, char *argv[])
    bool gradmag=false;
    bool anaglyph=false;
    bool stereo=false;
+   int sfxmode=0;
    bool over=false;
    bool under=false;
    double isovalue=0;
@@ -120,6 +124,9 @@ int main(int argc, char *argv[])
       else if (opt[i]=="gradmag") gradmag=true;
       else if (opt[i]=="anaglyph") anaglyph=true;
       else if (opt[i]=="stereo") stereo=true;
+      else if (opt[i]=="interlace-horizontal") sfxmode=1;
+      else if (opt[i]=="interlace-vertical") sfxmode=3;
+      else if (opt[i]=="interlace-vertical-inverse") sfxmode=4;
       else if (opt[i]=="over") {over=true; under=false;}
       else if (opt[i]=="under") {under=true; over=false;}
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
@@ -165,6 +172,7 @@ int main(int argc, char *argv[])
    if (hue!=360.0) main.setColorHue(hue);
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
+   if (sfxmode!=0) main.setSFXmode(sfxmode);
    if (tfemi!=100.0) main.setEmission(tfemi/100.0*main.getEmission());
    if (tfatt!=100.0) main.setAbsorption(tfatt/100.0*main.getAbsorption());
    if (over) main.setOversampling();

@@ -145,11 +145,15 @@ void QTV3PrefWindow::createWidgets()
    connect(sfxOffCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkSFXoff(bool)));
    vl->addWidget(sfxOffCheck_);
    gb->addButton(sfxOffCheck_);
-   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo Mode"));
+   anaModeCheck_ = new QRadioButton(tr("Anaglyph Stereo"));
    connect(anaModeCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkAnaMode(bool)));
    vl->addWidget(anaModeCheck_);
    gb->addButton(anaModeCheck_);
-   sfxOnCheck_ = new QRadioButton(tr("Dual Buffer Stereo Mode"));
+   sfxModeCheck_ = new QRadioButton(tr("Interlaced Stereo"));
+   connect(sfxModeCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkSFXMode(bool)));
+   vl->addWidget(sfxModeCheck_);
+   gb->addButton(sfxModeCheck_);
+   sfxOnCheck_ = new QRadioButton(tr("Quad Buffered Stereo"));
    connect(sfxOnCheck_, SIGNAL(toggled(bool)), parent(), SLOT(checkSFXon(bool)));
    vl->addWidget(sfxOnCheck_);
    gb->addButton(sfxOnCheck_);
