@@ -31,6 +31,10 @@ volume::~volume()
    delete TILE;
    }
 
+// set stereo interlacing mode
+void volume::setSFXmode(int sfxmode)
+   {tile::setSFXmode(sfxmode);}
+
 // check brick size
 BOOLINT volume::check(int bricksize,float overmax)
    {
@@ -380,6 +384,8 @@ mipmap::mipmap(char *base,int res)
    disable_clip();
 
    SHADERID=0;
+
+   SFXMODE=0;
 
    HASFBO=FALSE;
    fboWidth=fboHeight=0;
@@ -3470,6 +3476,9 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
    // render semi-transparent volume
    if (VOLCNT>0)
       {
+      // set stereo interlacing mode
+      volume::setSFXmode(SFXMODE);
+
       // choose volume
       if (TFUNC->get_imode())
          while (map<VOLCNT-1 && slab/VOL[map]->get_slab()>1.5f) map++;

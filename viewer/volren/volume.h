@@ -32,6 +32,9 @@ class volume
    // destructor
    ~volume();
 
+   // set stereo interlacing mode
+   static void setSFXmode(int sfxmode);
+
    // check brick size
    static BOOLINT check(int bricksize,float overmax);
 
@@ -76,9 +79,6 @@ class volume
    float getsizex() {return(BX);}
    float getsizey() {return(BY);}
    float getsizez() {return(BZ);}
-
-   // use 16-bit fbo
-   void usefbo(BOOLINT yes=FALSE);
 
    protected:
 
@@ -336,6 +336,10 @@ class mipmap
          clip_on[i]=0;
       }
 
+   //! set stereo interlacing mode
+   void setSFXmode(int sfxmode)
+      {SFXMODE=sfxmode;}
+
    protected:
 
    volumeptr *VOL;
@@ -413,6 +417,10 @@ class mipmap
    // slicing shader:
 
    int SHADERID;
+
+   // stereo interlacing mode:
+
+   int SFXMODE;
 
    // frame buffer object:
 

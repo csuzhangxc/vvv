@@ -71,6 +71,10 @@ tile::~tile()
    destroy();
    }
 
+// set stereo interlacing mode
+void tile::setSFXmode(int sfxmode)
+   {SFXMODE=sfxmode;}
+
 // load fragment programs
 void tile::setup(char *base)
    {

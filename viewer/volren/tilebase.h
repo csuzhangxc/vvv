@@ -52,6 +52,9 @@ class tile
    // destructor
    ~tile();
 
+   // set stereo interlacing mode
+   static void setSFXmode(int sfxmode);
+
    // set the tile data
    void set_data(unsigned char *data,
                  unsigned int width,unsigned int height,unsigned int depth,
