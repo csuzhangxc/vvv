@@ -45,7 +45,7 @@ BOOLINT tile::LOADED=FALSE;
 unsigned int tile::INSTANCES=0;
 GLuint tile::PROGID[PROGNUM];
 
-int tile::SFXMODE=2;
+int tile::SFXMODE=0;
 
 tile::tile(tfunc2D *tf,char *base)
    {
