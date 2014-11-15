@@ -11,9 +11,10 @@ KIL tmp.xy;
 # get data from 3D textures
 TEX tmp.x, fragment.texcoord[0], texture[0], 3D;   # get the scalar value at the back of the slab
 TEX tmp.y, fragment.texcoord[1], texture[0], 3D;   # get the scalar value at the front of the slab
+TEX tmp.z, fragment.texcoord[2], texture[1], 3D;   # get the gradient magnitude at the mid of the slab
 
-# dependent 2D texture lookup
-TEX col, tmp, texture[3], 2D;   # perform 2D dependent texture lookup in pre-integration table
+# dependent 3D texture lookup
+TEX col, tmp, texture[3], 3D;   # perform 3D dependent texture lookup in pre-integration table
 
 # write to output register
 MUL result.color, col, fragment.color.primary;   # attenuate with primary color
