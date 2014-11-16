@@ -11,7 +11,7 @@
 
 #define MAXSTR 256
 
-#define PROGNUM 10
+#define PROGNUM 11
 
 // a texture brick
 class brick
