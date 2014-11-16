@@ -764,8 +764,8 @@ void tile::bindtexmap(int texid3D,int sfxmode)
 
 #ifdef GL_ARB_fragment_program
 
-   if (sfxmode)
-      if (texid3D>0)
+   if (texid3D>0)
+      if (sfxmode!=0)
          {
          // activate fragment program
          glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -773,6 +773,7 @@ void tile::bindtexmap(int texid3D,int sfxmode)
          setprogparSFX(sfxmode);
          }
       else glDisable(GL_FRAGMENT_PROGRAM_ARB);
+   else glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
 #endif
    }
