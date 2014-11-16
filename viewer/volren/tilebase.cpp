@@ -748,7 +748,7 @@ void tile::drawhexa(const float p1x,const float p1y,const float p1z,
    }
 
 // bind 3D texture map
-void tile::bindtexmap(int texid3D,int sfxmode)
+void tile::bindtexmap(int texid3D)
    {
    if (texid3D>0)
       {
@@ -761,21 +761,6 @@ void tile::bindtexmap(int texid3D,int sfxmode)
       glEnable(GL_TEXTURE_3D);
       }
    else glDisable(GL_TEXTURE_3D);
-
-#ifdef GL_ARB_fragment_program
-
-   if (texid3D>0)
-      if (sfxmode!=0)
-         {
-         // activate fragment program
-         glEnable(GL_FRAGMENT_PROGRAM_ARB);
-         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,PROGID[10]);
-         setprogparSFX(sfxmode);
-         }
-      else glDisable(GL_FRAGMENT_PROGRAM_ARB);
-   else glDisable(GL_FRAGMENT_PROGRAM_ARB);
-
-#endif
    }
 
 // bind 3D texture map using dependent 2D lookup
@@ -1618,7 +1603,7 @@ void tile::renderslice(float ox,float oy,float oz,
    {
    glDisable(GL_CULL_FACE);
 
-   bindtexmap(BRICK->get_id(),SFXMODE);
+   bindtexmap(BRICK->get_id());
 
    glMatrixMode(GL_TEXTURE);
 

@@ -11,7 +11,7 @@
 
 #define MAXSTR 256
 
-#define PROGNUM 11
+#define PROGNUM 10
 
 // a texture brick
 class brick
@@ -211,7 +211,7 @@ class tile
    float NEARP;
 
    // texture shader and fragment program setup
-   void bindtexmap(int texid3D,int sfxmode=0);
+   void bindtexmap(int texid3D);
    void bindtexmaps(int texid3D,int texid2DE,int texid2DA,int sfxmode=0);
    void bindtexmaps1D(int texid3D,int texid1DE,int texid1DA,int sfxmode=0);
    void bindtexmaps2D(int texid3D,int texid3DG,int texid2DE,int texid2DA,int sfxmode=0);

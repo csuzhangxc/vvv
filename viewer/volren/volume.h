@@ -431,6 +431,7 @@ class mipmap
    // slicing shader:
 
    int SHADERID;
+   int SHADERID2;
 
    // stereo interlacing mode:
 

@@ -10,6 +10,7 @@
 #define QUEUEINC 1000
 
 #include "volume.h"
+#include "slicer_progs.h"
 
 volume::volume(tfunc2D *tf,char *base)
    {
@@ -384,6 +385,7 @@ mipmap::mipmap(char *base,int res)
    disable_clip();
 
    SHADERID=0;
+   SHADERID2=0;
 
    SFXMODE=0;
 
@@ -412,6 +414,7 @@ mipmap::~mipmap()
    delete QUEUEZ;
 
    if (SHADERID!=0) deletefrgprog(SHADERID);
+   if (SHADERID2!=0) deletefrgprog(SHADERID2);
 
    destroy();
    }
@@ -3615,20 +3618,6 @@ void mipmap::renderslice(float ox,float oy,float oz,
                          float nx,float ny,float nz,
                          float alpha,float alpha2)
    {
-   static const char slicer_frgprg[]=
-      "!!ARBfp1.0\n"
-      "PARAM range=program.env[0]; \n"
-      "TEMP col,tmp; \n"
-      "MOV col,fragment.color; \n"
-      "TEX tmp.x, fragment.texcoord[0], texture[0], 3D; \n"
-      "MUL col.xyz,col,tmp.x; \n"
-      "SUB tmp.w,tmp.x,range.x; \n"
-      "CMP col.w,tmp.w,range.w,col.w; \n"
-      "SUB tmp.w,range.y,tmp.x; \n"
-      "CMP col.w,tmp.w,range.w,col.w; \n"
-      "MOV result.color,col; \n"
-      "END\n";
-
    int i;
 
    int plane;
@@ -3643,13 +3632,30 @@ void mipmap::renderslice(float ox,float oy,float oz,
    if (SHADERID==0)
       SHADERID=buildfrgprog(slicer_frgprg);
 
+   // create stereo interlacing slicing shader
+   if (SHADERID2==0)
+      SHADERID2=buildfrgprog(slicer_frgprg_sfx);
+
    // get non-zero tf range
    tfmin=TFUNC->get_nonzero_min();
    tfmax=TFUNC->get_nonzero_max();
    setfrgprogpar(0,tfmin,tfmax,0.0f,alpha2);
 
    // enable slicing shader
-   bindfrgprog(SHADERID);
+   if (SFXMODE==0) bindfrgprog(SHADERID);
+   else
+      {
+      float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
+
+      if (SFXMODE==1) {a=0.5f; c=0.0f;}
+      else if (SFXMODE==2) {a=0.5f; c=0.5f;}
+      else if (SFXMODE==3) {b=0.5f; d=0.0f;}
+      else if (SFXMODE==4) {b=0.5f; d=0.5f;}
+
+      setfrgprogpar(2,a,b,c,d);
+
+      bindfrgprog(SHADERID2);
+      }
 
    // enable clipping planes
    for (i=0; i<MAX_CLIP_PLANES; i++)
