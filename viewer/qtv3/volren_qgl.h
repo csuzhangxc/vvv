@@ -804,7 +804,7 @@ protected:
    bool gm_; // gradient magnitude?
    bool sfx_; // stereo mode?
    bool sfx_ana_; // anaglyph mode?
-   bool sfx_mode_; // interlacing mode
+   int sfx_mode_; // interlacing mode
    bool tf_; // tfunc given?
    float tf_center_; // tfunc center
    float tf_size_; // tfunc size
@@ -845,7 +845,7 @@ protected:
       double sfx_base=0.0;
       double sfx_focus=0.2*gfx_far;
       bool sfx_ana=true;
-      bool sfx_mode=0;
+      int sfx_mode=0;
 
       if (sfx_)
       {
@@ -947,7 +947,8 @@ protected:
                           opaque_, // opaque clipping plane
                           opacity_, // clipping plane opacity
                           opacity2_, // outer clipping plane opacity
-                          geo_show_); // show surface geometry
+                          geo_show_, // show surface geometry
+                          TRUE); // clear frame buffer
       else
       {
          double eye_rx,eye_ry,eye_rz;

@@ -223,25 +223,25 @@ void QTV3MainWindow::setUndersampling()
 
 void QTV3MainWindow::setGradMag()
 {
-   checkGradMag(true);
-
    default_gradmag_=true;
+
+   checkGradMag(true);
 }
 
 void QTV3MainWindow::setAnaglyph()
 {
+   default_anaglyph_=true;
+
    if (!vrw_stereo_)
       checkAnaMode(true);
-
-   default_anaglyph_=true;
 }
 
 void QTV3MainWindow::setSFXmode(int sfxmode)
 {
-   if (!vrw_stereo_)
-      checkSFXMode(sfxmode);
-
    default_sfxmode_=sfxmode;
+
+   if (!vrw_stereo_)
+      checkSFXMode(true);
 }
 
 void QTV3MainWindow::setMaxIdle(double t)
@@ -1106,7 +1106,7 @@ void QTV3MainWindow::checkSFXMode(bool on)
       {
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
-         vrw_->setSFXmode(3);
+         vrw_->setSFXmode((default_sfxmode_!=0)?default_sfxmode_:3);
       }
    }
 }
