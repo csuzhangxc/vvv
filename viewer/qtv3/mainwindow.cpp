@@ -1056,11 +1056,8 @@ void QTV3MainWindow::checkSFX(bool stereo)
 {
    if (stereo!=vrw_stereo_)
    {
-      vrw_->setParent(NULL);
       vrw_->deleteLater();
-      QApplication::processEvents();
-
-      vrw_ = new QTV3VolRenWidget(viewerSplitter_, stereo);
+      vrw_ = new QTV3VolRenWidget(NULL, stereo);
       connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
       viewerSplitter_->insertWidget(1,vrw_);
 
