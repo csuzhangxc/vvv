@@ -53,3 +53,21 @@ MOV result.color, col;\n\
 \n\
 END\n\
 ";
+
+char plain_frgprg_sfx[]=
+"\
+!!ARBfp1.0\n\
+\n\
+TEMP col, tmp;\n\
+\n\
+# stereo interlacing\n\
+MAD tmp.xy, fragment.position, program.env[2], program.env[2].zwxy;\n\
+FRC tmp.xy, tmp;\n\
+SUB tmp.xy, tmp, 0.5;\n\
+KIL tmp.xyxy;\n\
+\n\
+# write primary color to output register\n\
+MOV result.color, fragment.color.primary;\n\
+\n\
+END\n\
+";

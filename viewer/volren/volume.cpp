@@ -10,7 +10,7 @@
 #define QUEUEINC 1000
 
 #include "volume.h"
-#include "slicer_progs.h"
+#include "plain_progs.h"
 
 volume::volume(tfunc2D *tf,char *base)
    {
@@ -291,6 +291,8 @@ void volume::drawwireframe(float mx,float my,float mz,
    glPushMatrix();
    glTranslatef(mx,my,mz);
 
+   glLineWidth(2);
+
    glColor3f(0.5f,0.5f,0.5f);
    glBegin(GL_LINES);
    glVertex3f(-sx2,sy2,-sz2);
@@ -321,6 +323,8 @@ void volume::drawwireframe(float mx,float my,float mz,
    glVertex3f(-sx2,-sy2,-sz2);
    glEnd();
    glEnable(GL_CULL_FACE);
+
+   glLineWidth(1);
 
    glPopMatrix();
    }
@@ -384,8 +388,9 @@ mipmap::mipmap(char *base,int res)
 
    disable_clip();
 
-   SHADERID=0;
+   SHADERID1=0;
    SHADERID2=0;
+   SHADERID3=0;
 
    SFXMODE=0;
 
@@ -413,8 +418,9 @@ mipmap::~mipmap()
    delete QUEUEY;
    delete QUEUEZ;
 
-   if (SHADERID!=0) deletefrgprog(SHADERID);
+   if (SHADERID1!=0) deletefrgprog(SHADERID1);
    if (SHADERID2!=0) deletefrgprog(SHADERID2);
+   if (SHADERID3!=0) deletefrgprog(SHADERID3);
 
    destroy();
    }
@@ -3413,7 +3419,9 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
          }
 
    // render opaque geometry
+   beginplain();
    rendergeometry();
+   endplain();
 
    plane=0;
 
@@ -3613,6 +3621,29 @@ void mipmap::renderslice(float ex,float ey,float ez,
                alpha,alpha2);
    }
 
+// enable shader
+void mipmap::enableshader(int id,int id_sfx)
+   {
+   if (SFXMODE==0) bindfrgprog(id);
+   else
+      {
+      float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
+
+      if (SFXMODE==1) {a=0.5f; c=0.0f;}
+      else if (SFXMODE==2) {a=0.5f; c=0.5f;}
+      else if (SFXMODE==3) {b=0.5f; d=0.0f;}
+      else if (SFXMODE==4) {b=0.5f; d=0.5f;}
+
+      setfrgprogpar(2,a,b,c,d);
+
+      bindfrgprog(id_sfx);
+      }
+   }
+
+// disable shader
+void mipmap::disableshader()
+   {bindfrgprog(0);}
+
 // render a volume slice
 void mipmap::renderslice(float ox,float oy,float oz,
                          float nx,float ny,float nz,
@@ -3629,8 +3660,8 @@ void mipmap::renderslice(float ox,float oy,float oz,
    plane=0;
 
    // create slicing shader
-   if (SHADERID==0)
-      SHADERID=buildfrgprog(slicer_frgprg);
+   if (SHADERID1==0)
+      SHADERID1=buildfrgprog(slicer_frgprg);
 
    // create stereo interlacing slicing shader
    if (SHADERID2==0)
@@ -3642,20 +3673,7 @@ void mipmap::renderslice(float ox,float oy,float oz,
    setfrgprogpar(0,tfmin,tfmax,0.0f,alpha2);
 
    // enable slicing shader
-   if (SFXMODE==0) bindfrgprog(SHADERID);
-   else
-      {
-      float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
-
-      if (SFXMODE==1) {a=0.5f; c=0.0f;}
-      else if (SFXMODE==2) {a=0.5f; c=0.5f;}
-      else if (SFXMODE==3) {b=0.5f; d=0.0f;}
-      else if (SFXMODE==4) {b=0.5f; d=0.5f;}
-
-      setfrgprogpar(2,a,b,c,d);
-
-      bindfrgprog(SHADERID2);
-      }
+   enableshader(SHADERID1,SHADERID2);
 
    // enable clipping planes
    for (i=0; i<MAX_CLIP_PLANES; i++)
@@ -3697,14 +3715,33 @@ void mipmap::renderslice(float ox,float oy,float oz,
       glDisable(GL_CLIP_PLANE0+i);
 
    // disable slicing shader
-   bindfrgprog(0);
+   disableshader();
    }
+
+// begin plain rendering
+void mipmap::beginplain()
+   {
+   // create plain stereo interlacing shader
+   if (SHADERID3==0)
+      SHADERID3=buildfrgprog(plain_frgprg_sfx);
+
+   // enable plain shader
+   enableshader(0,SHADERID3);
+   }
+
+// end plain rendering
+void mipmap::endplain()
+   {disableshader();}
 
 // draw the surrounding wire frame box
 void mipmap::drawwireframe()
    {
+   beginplain();
+
    if (VOLCNT==0) volume::drawwireframe();
    else
       volume::drawwireframe(VOL[0]->getcenterx(),VOL[0]->getcentery(),VOL[0]->getcenterz(),
                             VOL[0]->getsizex(),VOL[0]->getsizey(),VOL[0]->getsizez());
+
+   endplain();
    }

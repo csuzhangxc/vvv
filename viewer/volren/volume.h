@@ -428,14 +428,24 @@ class mipmap
    double clip_c[MAX_CLIP_PLANES];
    double clip_d[MAX_CLIP_PLANES];
 
-   // slicing shader:
-
-   int SHADERID;
-   int SHADERID2;
-
    // stereo interlacing mode:
 
    int SFXMODE;
+
+   // slicing shader:
+
+   int SHADERID1;
+   int SHADERID2;
+
+   void enableshader(int id,int id_sfx);
+   void disableshader();
+
+   // plain shader:
+
+   int SHADERID3;
+
+   void beginplain();
+   void endplain();
 
    // frame buffer object:
 

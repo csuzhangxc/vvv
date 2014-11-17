@@ -93,6 +93,8 @@ protected:
       vy=getvoxely();
       vz=getvoxelz();
 
+      glLineWidth(2);
+
       // show rotation cross
       if (cross_==TRUE)
       {
@@ -144,6 +146,8 @@ protected:
          glPopMatrix();
          glMatrixMode(GL_MODELVIEW);
       }
+
+      glLineWidth(1);
    }
 
 };
@@ -917,7 +921,7 @@ protected:
          float ty=cos(tilt_*PI/180)*cy+sin(tilt_*PI/180)*cz;
          float tz=-sin(tilt_*PI/180)*cy+cos(tilt_*PI/180)*cz;
          vr_->transform(tx,ty,tz,angle_,tiltXY_,tiltYZ_,vol_dx_,vol_dy_,vol_dz_);
-         vr_->renderCross(cross_show_ && !(sfx_ && (sfx_ana_ || sfx_mode_!=0)),tx,ty,tz);
+         vr_->renderCross(cross_show_,tx,ty,tz);
       }
       else vr_->renderCross(FALSE);
 
