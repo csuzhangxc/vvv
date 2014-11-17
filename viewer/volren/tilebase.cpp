@@ -1110,8 +1110,8 @@ void tile::setprogparSFX(int sfxmode)
    {
    float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
 
-   if (sfxmode==1) {a=0.5f; c=0.0f;}
-   else if (sfxmode==2) {a=0.5f; c=0.5f;}
+   if (sfxmode==1) {a=0.5f; c=0.5f;}
+   else if (sfxmode==2) {a=0.5f; c=0.0f;}
    else if (sfxmode==3) {b=0.5f; d=0.0f;}
    else if (sfxmode==4) {b=0.5f; d=0.5f;}
 

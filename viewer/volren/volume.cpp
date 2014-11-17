@@ -292,6 +292,9 @@ void volume::drawwireframe(float mx,float my,float mz,
    glTranslatef(mx,my,mz);
 
    glLineWidth(2);
+   glEnable(GL_LINE_SMOOTH);
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    glColor3f(0.5f,0.5f,0.5f);
    glBegin(GL_LINES);
@@ -324,6 +327,8 @@ void volume::drawwireframe(float mx,float my,float mz,
    glEnd();
    glEnable(GL_CULL_FACE);
 
+   glDisable(GL_BLEND);
+   glDisable(GL_LINE_SMOOTH);
    glLineWidth(1);
 
    glPopMatrix();
@@ -3629,8 +3634,8 @@ void mipmap::enableshader(int id,int id_sfx)
       {
       float a=0.0f,b=0.0f,c=0.5f,d=0.5f;
 
-      if (SFXMODE==1) {a=0.5f; c=0.0f;}
-      else if (SFXMODE==2) {a=0.5f; c=0.5f;}
+      if (SFXMODE==1) {a=0.5f; c=0.5f;}
+      else if (SFXMODE==2) {a=0.5f; c=0.0f;}
       else if (SFXMODE==3) {b=0.5f; d=0.0f;}
       else if (SFXMODE==4) {b=0.5f; d=0.5f;}
 

@@ -94,6 +94,9 @@ protected:
       vz=getvoxelz();
 
       glLineWidth(2);
+      glEnable(GL_LINE_SMOOTH);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
       // show rotation cross
       if (cross_==TRUE)
@@ -147,6 +150,8 @@ protected:
          glMatrixMode(GL_MODELVIEW);
       }
 
+      glDisable(GL_BLEND);
+      glDisable(GL_LINE_SMOOTH);
       glLineWidth(1);
    }
 
