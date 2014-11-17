@@ -942,7 +942,10 @@ void QTV3MainWindow::zoomDemo(double v)
 void QTV3MainWindow::rotate(int v)
 {
    double angle = v / 16.0;
-   setAngle(angle);
+
+   vrw_->setAngle(angle);
+
+   rotateCheck_->setChecked(false);
 }
 
 void QTV3MainWindow::tilt(int v)
