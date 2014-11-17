@@ -994,7 +994,7 @@ protected:
             else
                glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
          else if (sfx_mode!=0)
-            vr_->setSFXmode(sfx_mode,inv_);
+            vr_->setSFXmode(sfx_mode,false);
          else
             glDrawBuffer(GL_BACK_LEFT);
 
@@ -1029,7 +1029,7 @@ protected:
             else
                glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
          else if (sfx_mode!=0)
-            vr_->setSFXmode(sfx_mode,!inv_);
+            vr_->setSFXmode(sfx_mode,true);
          else
             glDrawBuffer(GL_BACK_RIGHT);
 
