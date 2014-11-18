@@ -85,6 +85,8 @@ void tile::setup(char *base)
    unsigned char *prog[PROGNUM];
    unsigned int len[PROGNUM];
 
+   char message[MAXSTR];
+
    char *GL_EXTs;
 
    if ((GL_EXTs=(char *)glGetString(GL_EXTENSIONS))==NULL) ERRORMSG();
@@ -126,19 +128,27 @@ void tile::setup(char *base)
 
          if (errorPos==0)
             {
-            WARNMSG("shader program unavailable");
+            snprintf(message,MAXSTR,"shader program #%d unavailable",i+1);
+            WARNMSG(message);
             WARNMSG((char *)glGetString(GL_PROGRAM_ERROR_STRING_ARB));
             }
          else
             {
             if (errorPos!=-1)
                {
+               snprintf(message,MAXSTR,"error in shader program #%d",i+1);
+               WARNMSG(message);
                WARNMSG((char *)glGetString(GL_PROGRAM_ERROR_STRING_ARB));
                ERRORMSG();
                }
 
             glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
-            if (isNative!=1) WARNMSG("shader program non-native");
+
+            if (isNative!=1)
+               {
+               snprintf(message,MAXSTR,"shader program #%d non-native",i+1);
+               WARNMSG(message);
+               }
             }
 
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
