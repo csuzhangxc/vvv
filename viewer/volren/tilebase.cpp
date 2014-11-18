@@ -137,7 +137,7 @@ void tile::setup(char *base)
                ERRORMSG();
                }
 
-	    glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
+            glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&isNative);
             if (isNative!=1) WARNMSG("shader program non-native");
             }
 
