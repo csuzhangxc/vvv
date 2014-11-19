@@ -18,6 +18,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
 
    prefs_ = NULL;
 
+   idling_ = true;
    max_idle_time_ = 3600;
 
    // accept drag and drop
@@ -1423,11 +1424,12 @@ void QTV3MainWindow::measuring_slot(double px,double py,double pz,double length,
 
 void QTV3MainWindow::idle_check()
 {
-   if (idle()>max_idle_time_)
+   if (idle()>max_idle_time_ && !idling_)
    {
       resetInteractions();
       resetDefaults();
 
       last_event_.start();
+      idling_ = true;
    }
 }

@@ -304,6 +304,7 @@ private:
 
 protected:
 
+   bool idling_;
    QTime last_event_;
    QTimer idle_check_;
    double max_idle_time_;
@@ -312,6 +313,7 @@ protected:
    bool eventFilter(QObject *target, QEvent *event)
    {
       last_event_.start();
+      idling_ = false;
 
       return QMainWindow::eventFilter(target, event);
    }
