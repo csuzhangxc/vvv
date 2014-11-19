@@ -22,6 +22,7 @@ class Surface
 
    void show(int yes);
    void setmatrix(double mtx[16]);
+   void setSFXmode(int sfxmode);
    void render();
 
    double getscale();
@@ -30,6 +31,7 @@ class Surface
 
    ministrip *strip_;
    int is_shown_;
+   int sfxmode_;
    };
 
 #endif

@@ -12,6 +12,7 @@ Surface::Surface()
 #ifdef HAVE_MINI
    strip_=new ministrip();
    is_shown_=TRUE;
+   sfxmode_=0;
 #endif
    }
 
@@ -75,10 +76,15 @@ void Surface::render()
 #ifdef HAVE_MINI
    ministrip::setglobal_invariant(TRUE);
    ministrip::setglobal_shade(TRUE);
+   ministrip::setglobal_sfx(sfxmode_!=0);
+   ministrip::setglobalsfxparams(sfxmode_);
    strip_->autodisableculling();
    if (is_shown_) strip_->render();
 #endif
    }
+
+void Surface::setSFXmode(int sfxmode)
+   {sfxmode_=sfxmode;}
 
 double Surface::getscale()
    {

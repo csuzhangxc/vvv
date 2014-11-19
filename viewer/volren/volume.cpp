@@ -3486,6 +3486,9 @@ BOOLINT mipmap::render(float ex,float ey,float ez,
       plane++;
       }
 
+   // set stereo interlacing mode
+   SURFACE.setSFXmode(SFXMODE);
+
    // render opaque surface
    SURFACE.render();
 
