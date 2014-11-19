@@ -318,8 +318,12 @@ protected:
    // monitor time of last event
    bool eventFilter(QObject *target, QEvent *event)
    {
-      last_event_.start();
-      idling_ = false;
+      if (dynamic_cast<QMouseEvent*>(event) ||
+          dynamic_cast<QKeyEvent*>(event))
+      {
+         last_event_.start();
+         idling_ = false;
+      }
 
       return QMainWindow::eventFilter(target, event);
    }
