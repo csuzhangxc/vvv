@@ -229,6 +229,8 @@ public:
       inv_ = false;
       gm_ = false;
       sfx_ = false;
+      sfx_base_ = 0.005f;
+      sfx_focus_ = 0.2f;
       sfx_ana_ = true;
       sfx_mode_ = 0;
       tf_ = false;
@@ -637,6 +639,13 @@ public:
       return(sfx_);
    }
 
+   //! set stereo parameters
+   void setSFXparams(float sfx_base,float sfx_focus)
+   {
+      sfx_base_=sfx_base;
+      sfx_focus_=sfx_focus;
+   }
+
    //! set anaglyph mode
    void setAnaglyph(bool on=false)
    {
@@ -812,6 +821,8 @@ protected:
    bool inv_; // inverse mode?
    bool gm_; // gradient magnitude?
    bool sfx_; // stereo mode?
+   float sfx_base_; // stereo base
+   float sfx_focus_; // stereo focus
    bool sfx_ana_; // anaglyph mode?
    int sfx_mode_; // interlacing mode
    bool tf_; // tfunc given?
@@ -852,13 +863,13 @@ protected:
       double gfx_far=10.0;
 
       double sfx_base=0.0;
-      double sfx_focus=0.2*gfx_far;
+      double sfx_focus=sfx_focus_*gfx_far;
       bool sfx_ana=true;
       int sfx_mode=0;
 
       if (sfx_)
       {
-         sfx_base=0.005;
+         sfx_base=sfx_base_;
          sfx_ana=sfx_ana_;
          sfx_mode=sfx_mode_;
       }
