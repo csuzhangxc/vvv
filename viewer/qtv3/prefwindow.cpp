@@ -168,7 +168,7 @@ void QTV3PrefWindow::createWidgets()
    QVBoxLayout *sfx_layout = new QVBoxLayout();
    sfx_group->setLayout(sfx_layout);
    sfx_layout->addWidget(new QLabel("Stereo Base"));
-   sfxBase_slider_ = createSlider(0,500,100);
+   sfxBase_slider_ = createSlider(0,300,100);
    sfx_layout->addWidget(sfxBase_slider_);
    connect(sfxBase_slider_,SIGNAL(valueChanged(int)), this, SLOT(sfxBaseChange(int)));
    sfx_layout->addWidget(new QLabel("Stereo Focus"));
