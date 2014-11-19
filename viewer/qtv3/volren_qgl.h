@@ -642,8 +642,8 @@ public:
    //! set stereo parameters
    void setSFXparams(float sfx_base,float sfx_focus)
    {
-      sfx_base_=sfx_base;
-      sfx_focus_=sfx_focus;
+      sfx_base_=sfx_base * 0.005f;
+      sfx_focus_=sfx_focus * 0.2f;
    }
 
    //! set anaglyph mode

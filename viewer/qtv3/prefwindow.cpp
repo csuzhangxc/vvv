@@ -19,6 +19,9 @@ QTV3PrefWindow::QTV3PrefWindow(QWidget *parent, QGLVolRenWidget *vrw, bool vrw_s
 
    border_ratio_ = 0.25f;
 
+   sfx_base_ = 1.0f;
+   sfx_focus_ = 1.0f;
+
    slice_opacity_ = 0.75f;
    slice_opacity2_ = 0.1f;
 
@@ -161,6 +164,19 @@ void QTV3PrefWindow::createWidgets()
    else sfxOffCheck_->setChecked(true);
    layout_->addLayout(vl);
 
+   QGroupBox *sfx_group = new QGroupBox();
+   QVBoxLayout *sfx_layout = new QVBoxLayout();
+   sfx_group->setLayout(sfx_layout);
+   sfx_layout->addWidget(new QLabel("Stereo Base"));
+   sfxBase_slider_ = createSlider(0,500,100);
+   sfx_layout->addWidget(sfxBase_slider_);
+   connect(sfxBase_slider_,SIGNAL(valueChanged(int)), this, SLOT(sfxBaseChange(int)));
+   sfx_layout->addWidget(new QLabel("Stereo Focus"));
+   sfxFocus_slider_ = createSlider(50,200,100);
+   sfx_layout->addWidget(sfxFocus_slider_);
+   connect(sfxFocus_slider_,SIGNAL(valueChanged(int)), this, SLOT(sfxFocusChange(int)));
+   layout_->addWidget(sfx_group);
+
    QFrame* line3 = new QFrame();
    line3->setFrameShape(QFrame::HLine);
    line3->setFrameShadow(QFrame::Raised);
@@ -256,6 +272,18 @@ void QTV3PrefWindow::isoMaxSizeChange(unsigned int iso_maxsize)
 void QTV3PrefWindow::isoMaxSizeChange(QString maxsize)
 {
    isoMaxSizeChange(maxsize.toUInt());
+}
+
+void QTV3PrefWindow::sfxBaseChange(int value)
+{
+   sfx_base_ = value/100.0f/16;
+   vrw_->setSFXparams(sfx_base_, sfx_focus_);
+}
+
+void QTV3PrefWindow::sfxFocusChange(int value)
+{
+   sfx_focus_ = value/100.0f/16;
+   vrw_->setSFXparams(sfx_base_, sfx_focus_);
 }
 
 void QTV3PrefWindow::sliceOpacityChange(QString opacity)

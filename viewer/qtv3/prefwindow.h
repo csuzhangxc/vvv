@@ -41,6 +41,9 @@ public:
 
    float border_ratio_;
 
+   float sfx_base_;
+   float sfx_focus_;
+
    float slice_opacity_;
    float slice_opacity2_;
 
@@ -70,6 +73,9 @@ protected:
    QRadioButton *sfxModeCheck_;
    QRadioButton *sfxOnCheck_;
 
+   QSlider *sfxBase_slider_;
+   QSlider *sfxFocus_slider_;
+
    QLineEdit *lineEdit_slice_opacity_;
    QSlider *slice_opacity_slider_;
 
@@ -93,6 +99,9 @@ protected slots:
    void volMaxSizeChange(QString);
    void volGfxSizeChange(QString);
    void isoMaxSizeChange(QString);
+
+   void sfxBaseChange(int value);
+   void sfxFocusChange(int value);
 
    void sliceOpacityChange(QString);
    void sliceOpacityChange(int);
