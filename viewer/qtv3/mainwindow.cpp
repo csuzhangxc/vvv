@@ -348,6 +348,7 @@ void QTV3MainWindow::createWidgets()
    connect(vrw_, SIGNAL(updating_signal()), this, SLOT(updating_slot()));
    connect(vrw_, SIGNAL(update_signal(QString)), this, SLOT(update_slot(QString)));
    connect(vrw_, SIGNAL(updated_signal()), this, SLOT(updated_slot()));
+   connect(vrw_, SIGNAL(orientation_signal()), this, SLOT(orientation_slot()));
    connect(vrw_, SIGNAL(interaction_signal()), this, SLOT(interaction_slot()));
    connect(vrw_, SIGNAL(measuring_signal(double,double,double,double,double)), this, SLOT(measuring_slot(double,double,double,double,double)));
    if (!demo_) mainLayout_->addWidget(update_);
@@ -1385,6 +1386,13 @@ void QTV3MainWindow::updated_slot()
       prefs_->setLabelDim(vrw_->getVR()->getdimx(),vrw_->getVR()->getdimy(),vrw_->getVR()->getdimz());
       prefs_->setLabelVoxel(vrw_->getVR()->getvoxelx(),vrw_->getVR()->getvoxely(),vrw_->getVR()->getvoxelz());
    }
+}
+
+void QTV3MainWindow::orientation_slot()
+{
+   rotateCheck_->setChecked(false);
+
+   interaction_slot();
 }
 
 void QTV3MainWindow::interaction_slot()

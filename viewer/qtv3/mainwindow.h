@@ -59,6 +59,11 @@ protected:
       emit interaction_signal();
    }
 
+   virtual void updated_orientation()
+   {
+      emit orientation_signal();
+   }
+
    virtual void updated_zoom()
    {
       emit interaction_signal();
@@ -87,6 +92,7 @@ signals:
    void update_signal(QString text);
    void updated_signal();
 
+   void orientation_signal();
    void interaction_signal();
    void measuring_signal(double px,double py,double pz,double length,double endlength);
 };
@@ -401,6 +407,7 @@ protected slots:
    void update_slot(QString text);
    void updated_slot();
 
+   void orientation_slot();
    void interaction_slot();
    void measuring_slot(double px,double py,double pz,double length,double endlength);
 

@@ -1459,6 +1459,8 @@ protected:
 
                rotateCenter(180*(x-mouseLastX),
                             180*(y-mouseLastY));
+
+               updated_orientation();
             }
          }
          else if (mode_ == InteractionMode_RotateAnchor)
@@ -1469,6 +1471,8 @@ protected:
 
                rotateAnchorPlane(180*(x-mouseLastX),
                                  180*(y-mouseLastY));
+
+               updated_orientation();
             }
          }
          else if (mode_ == InteractionMode_Zoom)
@@ -1564,6 +1568,8 @@ protected:
          {
             rotateCenter(180*(x-mouseLastX),
                          180*(y-mouseLastY));
+
+            updated_orientation();
          }
       }
       else if (bRightButtonDown)
@@ -1767,6 +1773,11 @@ protected:
    virtual void updated_rotation()
    {
       printf("updated rotation\n");
+   }
+
+   virtual void updated_orientation()
+   {
+      printf("updated orientation\n");
    }
 
    virtual void updated_zoom()
