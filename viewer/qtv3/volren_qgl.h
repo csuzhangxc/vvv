@@ -209,12 +209,17 @@ public:
       eye_uz_ = 0;
 
       fps_ = 30.0;
+      time_ = 0.0;
       fovy_ = 60.0;
       angle_ = 0.0;
       omega_ = 0.0;
       tiltXY_ = tiltYZ_ = 0.0;
       tilt_ = 0.0;
+      tiltDelta_ = 0.0;
+      tiltOmega_ = 0.0;
       zoom_ = 0.0;
+      zoomFactor_ = 1.0;
+      zoomFreq_ = 0.0;
       vol_dx_ = vol_dy_ = vol_dz_ = 0.0;
       clipdist_ = 1.0;
       clipgeo_ = TRUE;
@@ -488,6 +493,16 @@ public:
       return(tilt_);
    }
 
+   //! set volume tilt animation
+   void setAnimatedTilt(double tilt=0.0,double omega=60)
+   {
+      if (tilt>=0 && tilt<=90)
+      {
+         tiltDelta_=tilt;
+         tiltOmega_=omega;
+      }
+   }
+
    //! set zoom factor
    void setZoom(double zoom=0.0)
    {
@@ -503,6 +518,16 @@ public:
    double getZoom()
    {
       return(zoom_);
+   }
+
+   //! set zoom animation
+   void setAnimatedZoom(double zoom=1.0,double freq=1.0/60)
+   {
+      if (zoom>0.0 && zoom<1.0)
+      {
+         zoomFactor_=zoom;
+         zoomFreq_=freq;
+      }
    }
 
    //! set clipping distance
@@ -738,6 +763,8 @@ public:
    //! reset interactions
    void resetInteractions()
    {
+      time_ = 0.0;
+
       eye_x_ = 0;
       eye_y_ = 0;
       eye_z_ = 2;
@@ -755,9 +782,15 @@ public:
 
       tilt_ = 0.0;
 
+      tiltDelta_ = 0.0;
+      tiltOmega_ = 0.0;
+
       updated_rotation();
 
       zoom_ = 0.0;
+
+      zoomFactor_ = 0.0;
+      zoomFreq_ = 0.0;
 
       updated_zoom();
 
@@ -801,10 +834,15 @@ protected:
 
    double fps_; // animated frames per second
    double fovy_; // vertical field of view
+   double time_; // actual animation time
    double omega_; // rotation speed in degrees/s
    double angle_; // rotation angle in degrees
    double tiltXY_,tiltYZ_; // rotation angle in degrees
    double tilt_; // tilt angle in degrees
+   double tiltDelta_; // animated tilt delta in degrees
+   double tiltOmega_; // animated tilt speed in degrees/s
+   double zoomFactor_; // animated zoom factor
+   double zoomFreq_; // animated zoom frequency
    double vol_dx_,vol_dy_,vol_dz_; // volume translation
    double zoom_; // zoom into volume
    double clipdist_; // clipping distance
@@ -1119,12 +1157,29 @@ protected:
          glMatrixMode(GL_MODELVIEW);
       }
 
-      angle_+=omega_/fps_;
+      time_+=1/fps_;
 
-      if (angle_>180.0) angle_-=360.0;
-      else if (angle_<-180.0) angle_+=360.0;
+      if (omega_!=0.0)
+      {
+         angle_+=omega_/fps_;
 
-      if (omega_!=0.0) updated_rotation();
+         if (angle_>180.0) angle_-=360.0;
+         else if (angle_<-180.0) angle_+=360.0;
+
+         updated_rotation();
+      }
+
+      if (tiltDelta_!=0.0)
+      {
+         tilt_ += tiltOmega_*RAD*cos(time_*tiltOmega_*RAD)*tiltDelta_/fps_;
+         updated_rotation();
+      }
+
+      if (zoomFactor_!=1.0)
+      {
+         zoom_ += 360*zoomFreq_*RAD*cos(time_*360*zoomFreq_*RAD)*(1.0f-zoomFactor_)/fps_;
+         updated_zoom();
+      }
 
       if (vr_->has_data()) rendercount_++;
    }
