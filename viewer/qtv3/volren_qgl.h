@@ -218,7 +218,7 @@ public:
       tiltDelta_ = 0.0;
       tiltOmega_ = 0.0;
       zoom_ = 0.0;
-      zoomFactor_ = 1.0;
+      zoomFactor_ = 0.0;
       zoomFreq_ = 0.0;
       vol_dx_ = vol_dy_ = vol_dz_ = 0.0;
       clipdist_ = 1.0;
@@ -521,7 +521,7 @@ public:
    }
 
    //! set zoom animation
-   void setAnimatedZoom(double zoom=1.0,double freq=1.0/60)
+   void setAnimatedZoom(double zoom=0.0,double freq=1.0/60)
    {
       if (zoom>0.0 && zoom<1.0)
       {
@@ -1175,9 +1175,9 @@ protected:
          updated_rotation();
       }
 
-      if (zoomFactor_!=1.0)
+      if (zoomFactor_!=0.0)
       {
-         zoom_ += 360*zoomFreq_*RAD*cos(time_*360*zoomFreq_*RAD)*(1.0f-zoomFactor_)/fps_;
+         zoom_ += 360*zoomFreq_*RAD*cos(time_*360*zoomFreq_*RAD)*zoomFactor_/fps_;
          updated_zoom();
       }
 

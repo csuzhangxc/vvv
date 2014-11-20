@@ -161,11 +161,17 @@ public:
    //! set volume rotation angle
    void setTiltYZ(double tiltYZ=0.0);
 
+   //! set volume tilt animation
+   void setAnimatedTilt(double tilt=0.0,double omega=60);
+
    //! set volume clipping
    void setClip(double clip);
 
    //! set volume tilt
    void setZoom(double zoom);
+
+   //! set zoom animation
+   void setAnimatedZoom(double zoom=0.0,double freq=1.0/60);
 
    //! clear volume
    void clearVolume();

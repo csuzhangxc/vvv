@@ -146,6 +146,11 @@ void QTV3MainWindow::setTiltYZ(double tiltYZ)
    default_tiltYZ_=tiltYZ;
 }
 
+void QTV3MainWindow::setAnimatedTilt(double tilt,double omega)
+{
+   vrw_->setAnimatedTilt(tilt,omega);
+}
+
 void QTV3MainWindow::setClip(double clip)
 {
    vrw_->setClipDist(1.0-2*clip);
@@ -158,6 +163,11 @@ void QTV3MainWindow::setZoom(double zoom)
    vrw_->setZoom(zoom);
 
    default_zoom_=zoom;
+}
+
+void QTV3MainWindow::setAnimatedZoom(double zoom,double freq)
+{
+   vrw_->setAnimatedZoom(zoom,freq);
 }
 
 void QTV3MainWindow::clearVolume()
