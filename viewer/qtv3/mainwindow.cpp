@@ -266,8 +266,7 @@ void QTV3MainWindow::setSFXparams(float sfxbase,float sfxfocus)
    default_sfxbase_=sfxbase;
    default_sfxfocus_=sfxfocus;
 
-   if (!vrw_stereo_)
-      checkSFXMode(default_sfxmode_!=0);
+   vrw_->setSFXparams(sfxbase,sfxfocus);
 
    if (prefs_)
       prefs_->sfxParamsChange(sfxbase,sfxfocus);
@@ -1122,7 +1121,6 @@ void QTV3MainWindow::checkAnaMode(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(true);
          vrw_->setSFXmode(0);
-         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
@@ -1138,7 +1136,6 @@ void QTV3MainWindow::checkSFXMode(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
          vrw_->setSFXmode((default_sfxmode_!=0)?default_sfxmode_:3);
-         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
@@ -1154,7 +1151,6 @@ void QTV3MainWindow::checkSFXon(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
          vrw_->setSFXmode(0);
-         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
