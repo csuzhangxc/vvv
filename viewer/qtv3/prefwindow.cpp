@@ -335,6 +335,13 @@ void QTV3PrefWindow::hueChange(int hue)
    lineEdit_hue_->setText(QString::number(vol_hue_));
 }
 
+void QTV3PrefWindow::sfxParamsChange(float sfxbase,float sfxfocus)
+{
+   vrw_->setSFXparams(sfxbase,sfxfocus);
+   sfxBase_slider_->setValue(sfxbase*100*16);
+   sfxFocus_slider_->setValue(sfxfocus*100*16);
+}
+
 bool QTV3PrefWindow::checkFormat(QString format)
 {
    QList<QByteArray> formats = QImageWriter::supportedImageFormats();

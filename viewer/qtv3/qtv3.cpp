@@ -24,6 +24,7 @@ void usage(const char *prog)
    std::cout << " " << name.mid(name.lastIndexOf("/")+1).toStdString() << " {options} [volume | series]" << std::endl;
    std::cout << "where options are:" << std::endl;
    std::cout << " --demo: demo gui" << std::endl;
+   std::cout << " --touch: demo gui with touch sliders" << std::endl;
    std::cout << " --omega=x: auto-rotation speed (degrees/s)" << std::endl;
    std::cout << " --angle=x: rotation angle (degrees)" << std::endl;
    std::cout << " --tilt=x: tilt angle (degrees)" << std::endl;
@@ -43,6 +44,8 @@ void usage(const char *prog)
    std::cout << " --interlace-horizontal: use left-right interlaced stereo rendering mode" << std::endl;
    std::cout << " --interlace-vertical: use bottom-top interlaced stereo rendering mode" << std::endl;
    std::cout << " --interlace-vertical-inverse: use top-bottom interlaced stereo rendering mode" << std::endl;
+   std::cout << " --stereo-base=x: stereoscopic base (percent of default setting)" << std::endl;
+   std::cout << " --stereo-focus=x: stereoscopic focus (percent of default setting)" << std::endl;
    std::cout << " --over: use over-sampling" << std::endl;
    std::cout << " --under: use under-sampling" << std::endl;
    std::cout << " --isovalue=x: extracted iso surface value (0-1)" << std::endl;
@@ -78,6 +81,7 @@ int main(int argc, char *argv[])
       else arg.push_back(args[i]);
 
    bool demo=false;
+   bool touch=false;
    double omega=30;
    double angle=0;
    double tilt=0;
@@ -96,6 +100,8 @@ int main(int argc, char *argv[])
    bool anaglyph=false;
    bool stereo=false;
    int sfxmode=0;
+   float sfxbase=1.0f;
+   float sfxfocus=1.0f;
    bool over=false;
    bool under=false;
    double isovalue=0;
@@ -106,6 +112,7 @@ int main(int argc, char *argv[])
    // scan option list
    for (int i=0; i<opt.size(); i++)
       if (opt[i]=="demo") demo=true;
+      else if (opt[i]=="touch") touch=true;
       else if (opt[i].startsWith("omega=")) omega=get_opt(opt[i]);
       else if (opt[i].startsWith("angle=")) angle=get_opt(opt[i]);
       else if (opt[i].startsWith("tilt=")) tilt=get_opt(opt[i]);
@@ -127,6 +134,8 @@ int main(int argc, char *argv[])
       else if (opt[i]=="interlace-horizontal") sfxmode=1;
       else if (opt[i]=="interlace-vertical") sfxmode=3;
       else if (opt[i]=="interlace-vertical-inverse") sfxmode=4;
+      else if (opt[i].startsWith("stereo-base=")) sfxbase=get_opt(opt[i])/100;
+      else if (opt[i].startsWith("stereo-focus=")) sfxfocus=get_opt(opt[i])/100;
       else if (opt[i]=="over") {over=true; under=false;}
       else if (opt[i]=="under") {under=true; over=false;}
       else if (opt[i].startsWith("isovalue=")) isovalue=get_opt(opt[i]);
@@ -136,7 +145,7 @@ int main(int argc, char *argv[])
       else if (opt[i]=="help") usage(argv[0]);
       else usage(argv[0]);
 
-   QTV3MainWindow main(NULL, stereo, demo);
+   QTV3MainWindow main(NULL, stereo, demo, touch);
 
    if (arg.size()==1)
    {
@@ -173,6 +182,7 @@ int main(int argc, char *argv[])
    if (gradmag) main.setGradMag();
    if (anaglyph) main.setAnaglyph();
    if (sfxmode!=0) main.setSFXmode(sfxmode);
+   if (sfxbase!=1.0f || sfxfocus!=1.0f) main.setSFXparams(sfxbase,sfxfocus);
    if (tfemi!=100.0) main.setEmission(tfemi/100.0*main.getEmission());
    if (tfatt!=100.0) main.setAbsorption(tfatt/100.0*main.getAbsorption());
    if (over) main.setOversampling();

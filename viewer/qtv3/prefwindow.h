@@ -35,6 +35,7 @@ public:
    void volMaxSizeChange(unsigned int vol_maxsize);
    void isoMaxSizeChange(unsigned int iso_maxsize);
    void colorHueChange(float hue);
+   void sfxParamsChange(float sfxbase,float sfxfocus);
 
    long long vol_maxsize_;
    long long iso_maxsize_;

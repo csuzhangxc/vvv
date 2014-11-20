@@ -128,7 +128,8 @@ public:
    //! default ctor
    QTV3MainWindow(QWidget *parent = 0,
                   bool stereo = false,
-                  bool demo = false);
+                  bool demo = false,
+                  bool touch = false);
 
    //! dtor
    ~QTV3MainWindow();
@@ -206,6 +207,9 @@ public:
    //! set interlaced stereo mode
    void setSFXmode(int sfxmode=0);
 
+   //! set stereo parameters
+   void setSFXparams(float sfxbase=1.0f,float sfxfocus=1.0f);
+
    //! set maximum idle time before reset
    void setMaxIdle(double t);
 
@@ -234,6 +238,7 @@ private:
    bool vrw_stereo_;
 
    bool demo_;
+   bool touch_;
 
    QLabel *update_;
 
@@ -435,6 +440,8 @@ private:
    bool default_gradmag_;
    bool default_anaglyph_;
    int default_sfxmode_;
+   float default_sfxbase_;
+   float default_sfxfocus_;
 
    void checkSFX(bool stereo);
 };

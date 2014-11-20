@@ -7,11 +7,13 @@
 
 QTV3MainWindow::QTV3MainWindow(QWidget *parent,
                                bool stereo,
-                               bool demo)
+                               bool demo,
+                               bool touch)
    : QMainWindow(parent)
 {
    vrw_stereo_ = stereo;
    demo_ = demo;
+   touch_ = touch;
 
    createMenus();
    createWidgets();
@@ -51,6 +53,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_gradmag_=false;
    default_anaglyph_=false;
    default_sfxmode_=0;
+   default_sfxbase_=1.0f;
+   default_sfxfocus_=1.0f;
 
    reset();
 }
@@ -245,6 +249,18 @@ void QTV3MainWindow::setSFXmode(int sfxmode)
       checkSFXMode(true);
 }
 
+void QTV3MainWindow::setSFXparams(float sfxbase,float sfxfocus)
+{
+   default_sfxbase_=sfxbase;
+   default_sfxfocus_=sfxfocus;
+
+   if (!vrw_stereo_)
+      checkSFXMode(true);
+
+   if (prefs_)
+      prefs_->sfxParamsChange(sfxbase,sfxfocus);
+}
+
 void QTV3MainWindow::setMaxIdle(double t)
 {
    max_idle_time_ = t;
@@ -415,7 +431,7 @@ void QTV3MainWindow::createWidgets()
    // assemble clipping section
    QGroupBox *g1 = new QGroupBox;
    g1->setLayout(l1);
-   viewerSplitter_->addWidget(g1);
+   if (!(demo_ && !touch_)) viewerSplitter_->addWidget(g1);
 
    // create zoom section
    QVBoxLayout *l2 = new QVBoxLayout;
@@ -647,8 +663,8 @@ void QTV3MainWindow::createWidgets()
       mainSplitter_->refresh();
    }
 
-   // create demo widgets
-   if (demo_)
+   // create demo touch widgets
+   if (demo_ && touch_)
    {
       // create zoom section
       QGroupBox *g = new QGroupBox;
@@ -1094,6 +1110,7 @@ void QTV3MainWindow::checkAnaMode(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(true);
          vrw_->setSFXmode(0);
+         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
@@ -1109,6 +1126,7 @@ void QTV3MainWindow::checkSFXMode(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
          vrw_->setSFXmode((default_sfxmode_!=0)?default_sfxmode_:3);
+         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
@@ -1124,6 +1142,7 @@ void QTV3MainWindow::checkSFXon(bool on)
          vrw_->setSFX(true);
          vrw_->setAnaglyph(false);
          vrw_->setSFXmode(0);
+         vrw_->setSFXparams(default_sfxbase_,default_sfxfocus_);
       }
    }
 }
@@ -1320,6 +1339,7 @@ void QTV3MainWindow::resetDefaults()
    if (default_gradmag_) setGradMag();
    if (default_anaglyph_) setAnaglyph();
    if (default_sfxmode_!=0) setSFXmode(default_sfxmode_);
+   setSFXparams(default_sfxbase_,default_sfxfocus_);
 
    if (default_tfemi_!=1.0) setEmission(default_tfemi_);
    if (default_tfatt_!=1.0) setAbsorption(default_tfatt_);
