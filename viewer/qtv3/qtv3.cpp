@@ -60,7 +60,8 @@ void usage(const char *prog)
    std::cout << "where volume is:" << std::endl;
    std::cout << " a single .pvm or .rek volume file" << std::endl;
    std::cout << "where series is:" << std::endl;
-   std::cout << " a series of DICOM .dcm or .imd image files" << std::endl;
+   std::cout << " a series of DICOM .dcm or .ima image files" << std::endl;
+   std::cout << " a file name pattern like path/*.dcm that identifies a DICOM series" << std::endl;
    std::cout << "example:" << std::endl;
    std::cout << " ./qtv3 --demo --fullscreen --zoom=50 --maxidle=60 Bucky.pvm" << std::endl;
    exit(1);

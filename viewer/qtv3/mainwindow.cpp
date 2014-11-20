@@ -27,7 +27,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    setAcceptDrops(true);
 
    // install event filter
-   installEventFilter(this);
+   qApp->installEventFilter(this);
 
    // install periodic timer
    connect(&idle_check_, SIGNAL(timeout()), this, SLOT(idle_check()));
@@ -61,6 +61,8 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
 
 QTV3MainWindow::~QTV3MainWindow()
 {
+   qApp->removeEventFilter(this);
+
    delete vrw_;
    delete prefs_;
 }
@@ -265,7 +267,7 @@ void QTV3MainWindow::setSFXparams(float sfxbase,float sfxfocus)
    default_sfxfocus_=sfxfocus;
 
    if (!vrw_stereo_)
-      checkSFXMode(true);
+      checkSFXMode(default_sfxmode_!=0);
 
    if (prefs_)
       prefs_->sfxParamsChange(sfxbase,sfxfocus);
