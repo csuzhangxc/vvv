@@ -443,8 +443,12 @@ private:
    double default_tilt_;
    double default_tiltXY_;
    double default_tiltYZ_;
+   double default_animtilt_;
+   double default_animomega_;
    double default_clip_;
    double default_zoom_;
+   double default_animzoom_;
+   double default_animfreq_;
    double default_tfcenter_;
    double default_tfsize_;
    bool default_tfinverse_;

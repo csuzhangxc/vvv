@@ -42,8 +42,12 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    default_tilt_=0.0;
    default_tiltXY_=0.0;
    default_tiltYZ_=0.0;
+   default_animtilt_=0.0;
+   default_animomega_=0.0;
    default_clip_=0.0;
    default_zoom_=0.0;
+   default_animzoom_;
+   default_animfreq_;
    default_tfcenter_=0.5;
    default_tfsize_=1.0;
    default_tfinverse_=false;
@@ -151,6 +155,9 @@ void QTV3MainWindow::setTiltYZ(double tiltYZ)
 void QTV3MainWindow::setAnimatedTilt(double tilt,double omega)
 {
    vrw_->setAnimatedTilt(tilt,omega);
+
+   default_animtilt_=tilt;
+   default_animomega_=omega;
 }
 
 void QTV3MainWindow::setClip(double clip)
@@ -170,6 +177,9 @@ void QTV3MainWindow::setZoom(double zoom)
 void QTV3MainWindow::setAnimatedZoom(double zoom,double freq)
 {
    vrw_->setAnimatedZoom(zoom,freq);
+
+   default_animzoom_=zoom;
+   default_animfreq_=freq;
 }
 
 void QTV3MainWindow::clearVolume()
@@ -1336,8 +1346,10 @@ void QTV3MainWindow::resetDefaults()
    setTilt(default_tilt_);
    setTiltXY(default_tiltXY_);
    setTiltYZ(default_tiltYZ_);
+   setAnimatedTilt(default_animtilt_,default_animomega_);
    setClip(default_clip_);
    setZoom(default_zoom_);
+   setAnimatedZoom(default_animzoom_,default_animfreq_);
 
    if (default_tfcenter_!=0.5 || default_tfsize_!=1.0)
       setTF(default_tfcenter_,default_tfsize_,default_tfinverse_);
