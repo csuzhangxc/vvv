@@ -329,8 +329,16 @@ protected:
    // monitor time of last event
    bool eventFilter(QObject *target, QEvent *event)
    {
-      if (dynamic_cast<QMouseEvent*>(event) ||
-          dynamic_cast<QKeyEvent*>(event))
+      bool userevent = false;
+
+      if (dynamic_cast<QMouseEvent*>(event))
+         if (event->type() != QEvent::MouseMove)
+            userevent = true;
+
+      if (dynamic_cast<QKeyEvent*>(event))
+         userevent = true;
+
+      if (userevent)
       {
          last_event_.start();
          idling_ = false;
