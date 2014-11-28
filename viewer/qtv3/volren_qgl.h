@@ -1504,7 +1504,7 @@ protected:
                tiltOmega_ = 0.0;
 
                zoomFactor_ = 0.0;
-               zoomFreq__ = 0.0;
+               zoomFreq_ = 0.0;
 
                angle_ -= 180*(x-mouseLastX);
                tilt_ -= 180*(mouseLastY-y);
@@ -1632,7 +1632,7 @@ protected:
             tiltOmega_ = 0.0;
 
             zoomFactor_ = 0.0;
-            zoomFreq__ = 0.0;
+            zoomFreq_ = 0.0;
 
             double fovy=fovy_;
             double aspect=(double)width()/height();
