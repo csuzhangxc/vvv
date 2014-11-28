@@ -1500,6 +1500,12 @@ protected:
             {
                omega_ = 0.0;
 
+               tiltDelta_ = 0.0;
+               tiltOmega_ = 0.0;
+
+               zoomFactor_ = 0.0;
+               zoomFreq__ = 0.0;
+
                angle_ -= 180*(x-mouseLastX);
                tilt_ -= 180*(mouseLastY-y);
 
@@ -1512,6 +1518,12 @@ protected:
             {
                omega_ = 0.0;
 
+               tiltDelta_ = 0.0;
+               tiltOmega_ = 0.0;
+
+               zoomFactor_ = 0.0;
+               zoomFreq_ = 0.0;
+
                rotateCenter(180*(x-mouseLastX),
                             180*(y-mouseLastY));
 
@@ -1523,6 +1535,12 @@ protected:
             if (bMouseMove)
             {
                omega_ = 0.0;
+
+               tiltDelta_ = 0.0;
+               tiltOmega_ = 0.0;
+
+               zoomFactor_ = 0.0;
+               zoomFreq_ = 0.0;
 
                rotateAnchorPlane(180*(x-mouseLastX),
                                  180*(y-mouseLastY));
@@ -1608,6 +1626,14 @@ protected:
          }
          else if (mode_ == InteractionMode_Measure)
          {
+            omega_ = 0.0;
+
+            tiltDelta_ = 0.0;
+            tiltOmega_ = 0.0;
+
+            zoomFactor_ = 0.0;
+            zoomFreq__ = 0.0;
+
             double fovy=fovy_;
             double aspect=(double)width()/height();
 
@@ -1621,6 +1647,14 @@ protected:
       {
          if (bMouseMove)
          {
+            omega_ = 0.0;
+
+            tiltDelta_ = 0.0;
+            tiltOmega_ = 0.0;
+
+            zoomFactor_ = 0.0;
+            zoomFreq_ = 0.0;
+
             rotateCenter(180*(x-mouseLastX),
                          180*(y-mouseLastY));
 
