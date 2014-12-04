@@ -720,6 +720,8 @@ void QTV3MainWindow::createDocks()
 
 void QTV3MainWindow::reset(const char *teaser, const char *path)
 {
+   setlocale(LC_NUMERIC, "C");
+
    resetInteractions();
 
    if (teaser!=NULL)
