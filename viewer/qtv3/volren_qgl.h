@@ -95,11 +95,12 @@ protected:
 
       glLineWidth(2);
       glEnable(GL_LINE_SMOOTH);
+      glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
       // show rotation cross
-      if (cross_==TRUE)
+      if (cross_)
       {
          static const float s=3.0f; // size of cross in voxels
 
@@ -174,7 +175,7 @@ public:
    };
 
    //! default ctor
-   QGLVolRenWidget(QWidget *parent = 0, bool stereo = false)
+   QGLVolRenWidget(QWidget *parent = 0, bool stereo = FALSE)
       : QGLWidget(parent)
    {
       if (!stereo) setFormat(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer));
@@ -185,9 +186,9 @@ public:
       toload_ = NULL;
       altpath_ = NULL;
       geotoload_ = NULL;
-      loading_ = false;
+      loading_ = FALSE;
 
-      isotoload_ = false;
+      isotoload_ = FALSE;
       isovalue_ = 0.0f;
 
       set_vol_maxsize(512);
@@ -231,19 +232,19 @@ public:
       att_ = 0.25;
       emi_gm_ = 0.25;
       att_gm_ = 0.25;
-      inv_ = false;
-      gm_ = false;
-      sfx_ = false;
+      inv_ = FALSE;
+      gm_ = FALSE;
+      sfx_ = FALSE;
       sfx_base_ = 0.005f;
       sfx_focus_ = 0.2f;
-      sfx_ana_ = true;
+      sfx_ana_ = TRUE;
       sfx_mode_ = 0;
-      tf_ = false;
+      tf_ = FALSE;
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
-      tf_inverse_ = false;
-      geo_show_ = true;
-      cross_show_ = true;
+      tf_inverse_ = FALSE;
+      geo_show_ = TRUE;
+      cross_show_ = TRUE;
 
       setColorHue(VOLREN_DEFAULT_HUE,VOLREN_DEFAULT_SAT,VOLREN_DEFAULT_VAL);
 
@@ -251,11 +252,11 @@ public:
 
       mode_ = InteractionMode_Window;
 
-      bLeftButtonDown = false;
-      bMiddleButtonDown = false;
-      bRightButtonDown = false;
+      bLeftButtonDown = FALSE;
+      bMiddleButtonDown = FALSE;
+      bRightButtonDown = FALSE;
 
-      bMouseMove = false;
+      bMouseMove = FALSE;
       mouseLastX = mouseLastY = 0.5f;
 
       startTimer((int)(1000.0/fps_)); // ms=1000/fps
@@ -337,7 +338,7 @@ public:
 
       tf_center_ = 0.5f;
       tf_size_ = 1.0f;
-      tf_inverse_ = false;
+      tf_inverse_ = FALSE;
 
       vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
 
@@ -623,13 +624,13 @@ public:
    }
 
    //! set inverse mode
-   void setInvMode(bool on=false)
+   void setInvMode(bool on=FALSE)
    {
       inv_=on;
    }
 
    //! set gradient magnitude mode
-   void setGradMag(bool on=false)
+   void setGradMag(bool on=FALSE)
    {
       gm_=on;
 
@@ -653,7 +654,7 @@ public:
    }
 
    //! set stereo mode
-   void setSFX(bool on=false)
+   void setSFX(bool on=FALSE)
    {
       sfx_=on;
    }
@@ -672,7 +673,7 @@ public:
    }
 
    //! set anaglyph mode
-   void setAnaglyph(bool on=false)
+   void setAnaglyph(bool on=FALSE)
    {
       sfx_ana_=on;
    }
@@ -915,13 +916,13 @@ protected:
       bool gfx_fbo=true;
 
 #ifdef HAVE_NO_FBO
-       gfx_fbo=false;
+       gfx_fbo=FALSE;
 #endif
 
 #ifdef MACOSX
 #ifndef AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER
        // fbo bugfix for macos x 10.5 and prior
-       gfx_fbo=false;
+       gfx_fbo=FALSE;
 #endif
 #endif
 
@@ -1043,7 +1044,7 @@ protected:
             else
                glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
          else if (sfx_mode!=0)
-            vr_->setSFXmode(sfx_mode,false);
+            vr_->setSFXmode(sfx_mode,FALSE);
          else
             glDrawBuffer(GL_BACK_LEFT);
 
@@ -1078,7 +1079,7 @@ protected:
             else
                glColorMask(GL_TRUE,GL_FALSE,GL_FALSE,GL_TRUE);
          else if (sfx_mode!=0)
-            vr_->setSFXmode(sfx_mode,true);
+            vr_->setSFXmode(sfx_mode,TRUE);
          else
             glDrawBuffer(GL_BACK_RIGHT);
 
@@ -1229,7 +1230,7 @@ protected:
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
             setGradMag(gm_);
 
-            loading_ = false;
+            loading_ = FALSE;
 
             updated();
          }
@@ -1263,7 +1264,7 @@ protected:
             vr_->set_tfunc(tf_center_,tf_size_, red_,green_,blue_, tf_inverse_);
             setGradMag(gm_);
 
-            loading_ = false;
+            loading_ = FALSE;
 
             updated();
          }
@@ -1277,7 +1278,7 @@ protected:
             free(geotoload_);
             geotoload_ = NULL;
 
-            loading_ = false;
+            loading_ = FALSE;
          }
 
          if (isotoload_ && !loading_)
@@ -1292,9 +1293,9 @@ protected:
             if (surface)
                free(surface);
 
-            isotoload_ = false;
+            isotoload_ = FALSE;
 
-            loading_ = false;
+            loading_ = FALSE;
          }
       }
    }
@@ -1417,7 +1418,7 @@ protected:
       else
          event->ignore();
 
-      bMouseMove = false;
+      bMouseMove = FALSE;
 
       mouseMoveEvent(event);
    }
@@ -1426,22 +1427,22 @@ protected:
    {
       mouseMoveEvent(event);
 
-      bLeftButtonDown = false;
-      bMiddleButtonDown = false;
-      bRightButtonDown = false;
+      bLeftButtonDown = FALSE;
+      bMiddleButtonDown = FALSE;
+      bRightButtonDown = FALSE;
 
-      bMouseMove = false;
+      bMouseMove = FALSE;
    }
 
    void mouseDoubleClickEvent(QMouseEvent *event)
    {
       mouseMoveEvent(event);
 
-      bLeftButtonDown = false;
-      bMiddleButtonDown = false;
-      bRightButtonDown = false;
+      bLeftButtonDown = FALSE;
+      bMiddleButtonDown = FALSE;
+      bRightButtonDown = FALSE;
 
-      bMouseMove = false;
+      bMouseMove = FALSE;
    }
 
    void mouseMoveEvent(QMouseEvent *event)
