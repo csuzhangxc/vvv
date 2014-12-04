@@ -293,6 +293,7 @@ void volume::drawwireframe(float mx,float my,float mz,
 
    glLineWidth(2);
    glEnable(GL_LINE_SMOOTH);
+   glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 

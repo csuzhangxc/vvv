@@ -102,7 +102,7 @@ protected:
       // show rotation cross
       if (cross_)
       {
-         static const float s=3.0f; // size of cross in voxels
+         static const float s=2.0f; // size of cross in voxels
 
          glBegin(GL_LINES);
          glColor3f(1.0f,0.0f,0.0f);
