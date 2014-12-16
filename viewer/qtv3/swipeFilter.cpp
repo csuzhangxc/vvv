@@ -170,7 +170,10 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                   }
                   else
                   {
-                     emit click();
+                     QWidget *widget = qApp->widgetAt(pos);
+
+                     if (widget && dynamic_cast<QLabel*>(widget))
+                        emit click();
 
                      QMouseEvent press(QEvent::MouseButtonPress, mouseEvent->pos(),
                                        Qt::LeftButton,  Qt::MouseButtons(Qt::LeftButton), mouseEvent->modifiers());
