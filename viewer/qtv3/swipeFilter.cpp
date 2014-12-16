@@ -172,8 +172,11 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                   {
                      QWidget *widget = qApp->widgetAt(pos);
 
-                     if (widget && dynamic_cast<QLabel*>(widget))
-                        emit click();
+                     if (widget &&
+                         (dynamic_cast<QTabWidget*>(widget) ||
+                          dynamic_cast<QScrollArea*>(widget) ||
+                          dynamic_cast<QLabel*>(widget)))
+                        emit click(widget);
 
                      QMouseEvent press(QEvent::MouseButtonPress, mouseEvent->pos(),
                                        Qt::LeftButton,  Qt::MouseButtons(Qt::LeftButton), mouseEvent->modifiers());
