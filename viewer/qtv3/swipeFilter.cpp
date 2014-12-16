@@ -40,6 +40,7 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
    QMouseEvent *mouseEvent;
 
    if (parent_->isVisible())
+   {
       if (mouseEvent = dynamic_cast<QMouseEvent*>(event))
       {
          QPoint pos = mouseEvent->globalPos();
@@ -47,6 +48,7 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
          if (mouseEvent->type() == QEvent::MouseButtonPress)
          {
             if (mouseEvent->button() == Qt::LeftButton)
+            {
                if (!leftButtonDown_)
                {
                   QPoint loc = parent_->mapFromGlobal(pos);
@@ -58,17 +60,14 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
 
                      if (widget)
                      {
-                        if (dynamic_cast<QGroupBox*>(widget) ||
-                            dynamic_cast<QLabel*>(widget))
-                        {
-                           widgetHit_ = widget;
+                        bool foreground = (dynamic_cast<QScrollBar*>(widget) ||
+                                           (dynamic_cast<QSlider*>(widget) && !dynamic_cast<SwipeSlider*>(widget)) ||
+                                           dynamic_cast<QDial*>(widget));
 
-                           return(true);
-                        }
+                        bool background = (dynamic_cast<QGroupBox*>(widget) ||
+                                           dynamic_cast<QLabel*>(widget));
 
-                        if (!dynamic_cast<QScrollBar*>(widget) &&
-                            (!dynamic_cast<QSlider*>(widget) || dynamic_cast<SwipeSlider*>(widget)) &&
-                            !dynamic_cast<QDial*>(widget))
+                        if (!foreground)
                         {
                            leftButtonDown_ = true;
                            direction_ = SwipeNone;
@@ -79,11 +78,15 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                            kinetic_ = 0.0;
                            motion_.stop();
 
+                           if (background)
+                              widgetHit_ = widget;
+
                            return(true);
                         }
                      }
                   }
                }
+            }
          }
          else if (mouseEvent->type() == QEvent::MouseMove)
          {
@@ -157,13 +160,6 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
          {
             if (mouseEvent->button() == Qt::LeftButton)
             {
-               if (widgetHit_)
-               {
-                  emit click(widgetHit_);
-
-                  widgetHit_ = NULL;
-               }
-
                if (leftButtonDown_)
                {
                   if (direction_ != SwipeNone)
@@ -191,17 +187,30 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                   }
                   else
                   {
-                     QMouseEvent press(QEvent::MouseButtonPress, mouseEvent->pos(),
-                                       Qt::LeftButton,  Qt::MouseButtons(Qt::LeftButton), mouseEvent->modifiers());
+                     if (widgetHit_)
+                     {
+                        emit click(widgetHit_);
 
-                     QApplication::sendEvent(obj, &press);
+                        leftButtonDown_ = false;
+                        widgetHit_ = NULL;
 
-                     leftButtonDown_ = false;
+                        return(true);
+                     }
+                     else
+                     {
+                        QMouseEvent press(QEvent::MouseButtonPress, mouseEvent->pos(),
+                                          Qt::LeftButton,  Qt::MouseButtons(Qt::LeftButton), mouseEvent->modifiers());
+
+                        QApplication::sendEvent(obj, &press);
+
+                        leftButtonDown_ = false;
+                     }
                   }
                }
             }
          }
       }
+   }
 
    // unhandled events are passed to the base class
    return(QObject::eventFilter(obj, event));
