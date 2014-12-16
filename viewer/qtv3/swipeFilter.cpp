@@ -1,5 +1,7 @@
 // (c) by Stefan Roettger, licensed under GPL 3.0
 
+#include <typeinfo>
+
 #include "swipeFilter.h"
 #include "swipeSlider.h"
 
@@ -13,6 +15,7 @@ SwipeFilter::SwipeFilter(QWidget *parent)
    : QObject(),
      parent_(parent),
      leftButtonDown_(false),
+     widgetHit_(NULL),
      delta_(mouse_delta),
      damping_(motion_damping)
 {
@@ -53,21 +56,31 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                   {
                      QWidget *widget = qApp->widgetAt(pos);
 
-                     if (widget &&
-                         !dynamic_cast<QScrollBar*>(widget) &&
-                         (!dynamic_cast<QSlider*>(widget) || dynamic_cast<SwipeSlider*>(widget)) &&
-                         !dynamic_cast<QDial*>(widget))
+                     if (widget)
                      {
-                        leftButtonDown_ = true;
-                        direction_ = SwipeNone;
-                        lastPos_ = pos;
-                        offset_ = 0;
-                        time_.start();
-                        elapsed_ = 0.0;
-                        kinetic_ = 0.0;
-                        motion_.stop();
+                        if (dynamic_cast<QGroupBox*>(widget) ||
+                            dynamic_cast<QLabel*>(widget))
+                        {
+                           widgetHit_ = widget;
 
-                        return(true);
+                           return(true);
+                        }
+
+                        if (!dynamic_cast<QScrollBar*>(widget) &&
+                            (!dynamic_cast<QSlider*>(widget) || dynamic_cast<SwipeSlider*>(widget)) &&
+                            !dynamic_cast<QDial*>(widget))
+                        {
+                           leftButtonDown_ = true;
+                           direction_ = SwipeNone;
+                           lastPos_ = pos;
+                           offset_ = 0;
+                           time_.start();
+                           elapsed_ = 0.0;
+                           kinetic_ = 0.0;
+                           motion_.stop();
+
+                           return(true);
+                        }
                      }
                   }
                }
@@ -143,6 +156,14 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
          else if (mouseEvent->type() == QEvent::MouseButtonRelease)
          {
             if (mouseEvent->button() == Qt::LeftButton)
+            {
+               if (widgetHit_)
+               {
+                  emit click(widgetHit_);
+
+                  widgetHit_ = NULL;
+               }
+
                if (leftButtonDown_)
                {
                   if (direction_ != SwipeNone)
@@ -170,14 +191,6 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                   }
                   else
                   {
-                     QWidget *widget = qApp->widgetAt(pos);
-
-                     if (widget &&
-                         (dynamic_cast<QTabWidget*>(widget) ||
-                          dynamic_cast<QScrollArea*>(widget) ||
-                          dynamic_cast<QLabel*>(widget)))
-                        emit click(widget);
-
                      QMouseEvent press(QEvent::MouseButtonPress, mouseEvent->pos(),
                                        Qt::LeftButton,  Qt::MouseButtons(Qt::LeftButton), mouseEvent->modifiers());
 
@@ -186,6 +199,7 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                      leftButtonDown_ = false;
                   }
                }
+            }
          }
       }
 

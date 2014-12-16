@@ -39,6 +39,7 @@ protected:
    QWidget *parent_;
 
    bool leftButtonDown_;
+   QWidget *widgetHit_;
    QPoint lastPos_;
    int delta_;
 
