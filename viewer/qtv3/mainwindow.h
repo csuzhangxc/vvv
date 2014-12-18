@@ -173,6 +173,9 @@ public:
    //! set zoom animation
    void setAnimatedZoom(double zoom=0.0,double freq=1.0/60);
 
+   //! force fullscreen rendering mode
+   void forceFullscreen();
+
    //! clear volume
    void clearVolume();
 
@@ -245,6 +248,7 @@ private:
 
    bool demo_;
    bool touch_;
+   bool force_;
 
    QLabel *update_;
 

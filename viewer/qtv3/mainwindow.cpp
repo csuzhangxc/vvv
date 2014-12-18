@@ -14,6 +14,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
    vrw_stereo_ = stereo;
    demo_ = demo;
    touch_ = touch;
+   force_ = false;
 
    createMenus();
    createWidgets();
@@ -180,6 +181,11 @@ void QTV3MainWindow::setAnimatedZoom(double zoom,double freq)
 
    default_animzoom_=zoom;
    default_animfreq_=freq;
+}
+
+void QTV3MainWindow::forceFullscreen()
+{
+   force_ = true;
 }
 
 void QTV3MainWindow::clearVolume()
@@ -1483,8 +1489,9 @@ void QTV3MainWindow::idle_check()
       idling_ = true;
    }
 
-#ifdef FORCE_FULLSCREEN
-   showFullScreen();
-   menuBar()->hide();
-#endif
+   if (force_)
+   {
+      showFullScreen();
+      menuBar()->hide();
+   }
 }

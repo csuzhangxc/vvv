@@ -37,6 +37,7 @@ void usage(const char *prog)
    std::cout << " --zoom-factor=x: animated zoom factor (percent)" << std::endl;
    std::cout << " --zoom-duration=x: animated zoom duration (s)" << std::endl;
    std::cout << " --fullscreen: use full screen rendering mode" << std::endl;
+   std::cout << " --force-fullscreen: force permanent full screen rendering" << std::endl;
    std::cout << " --tfcenter=x: center of the linear transfer function window (0-1)" << std::endl;
    std::cout << " --tfsize=x: size of the linear transfer function window (0-1)" << std::endl;
    std::cout << " --tfemi=x: global emission (percent)" << std::endl;
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
    double zoomFactor=0;
    double zoomDuration=0;
    bool fullscreen=false;
+   bool forcefullscreen=false;
    double tfcenter=0.5;
    double tfsize=1.0;
    bool tfinv=true;
@@ -134,6 +136,7 @@ int main(int argc, char *argv[])
       else if (opt[i].startsWith("zoom-factor=")) zoomFactor=get_opt(opt[i])/100;
       else if (opt[i].startsWith("zoom-duration=")) zoomDuration=get_opt(opt[i]);
       else if (opt[i]=="fullscreen") fullscreen=true;
+      else if (opt[i]=="force-fullscreen") forcefullscreen=true;
       else if (opt[i].startsWith("tfcenter=")) tfcenter=get_opt(opt[i]);
       else if (opt[i].startsWith("tfsize=")) tfsize=get_opt(opt[i]);
       else if (opt[i]=="tflin") tfinv=false;
@@ -192,6 +195,7 @@ int main(int argc, char *argv[])
    if (clip!=0.0) main.setClip(clip/100.0);
    if (zoom!=0.0) main.setZoom(zoom/100.0);
    if (zoomFactor!=0.0 && zoomDuration!=0.0) main.setAnimatedZoom(zoomFactor,1.0/zoomDuration);
+   if (forcefullscreen) main.forceFullscreen();
    if (tfcenter!=0.5 || tfsize!=1.0) main.setTF(tfcenter,tfsize,tfinv);
    if (hue!=360.0) main.setColorHue(hue);
    if (gradmag) main.setGradMag();
