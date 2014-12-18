@@ -31,7 +31,7 @@ QTV3MainWindow::QTV3MainWindow(QWidget *parent,
 
    // install periodic timer
    connect(&idle_check_, SIGNAL(timeout()), this, SLOT(idle_check()));
-   idle_check_.start(1000); // every second
+   idle_check_.start(500); // every half second
 
    // set window title to app name and version
    setWindowTitle(APP_NAME" "APP_VERSION);
@@ -1482,4 +1482,8 @@ void QTV3MainWindow::idle_check()
       last_event_.start();
       idling_ = true;
    }
+
+#ifdef FORCE_FULLSCREEN
+   showFullScreen();
+#endif
 }
