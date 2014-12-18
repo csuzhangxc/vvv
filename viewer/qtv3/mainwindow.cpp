@@ -1485,5 +1485,6 @@ void QTV3MainWindow::idle_check()
 
 #ifdef FORCE_FULLSCREEN
    showFullScreen();
+   menuBar()->hide();
 #endif
 }
