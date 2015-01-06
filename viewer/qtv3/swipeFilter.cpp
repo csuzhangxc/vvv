@@ -80,6 +80,8 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
 
                            if (background)
                               widgetHit_ = widget;
+                           else
+                              widgetHit_ = NULL;
 
                            return(true);
                         }
