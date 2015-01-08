@@ -9,7 +9,8 @@ SwipeSlider::SwipeSlider(Qt::Orientation orientation, QString text, QWidget *par
      maximum_(1.0),
      enabled(false),
      orientation_(orientation),
-     text_(text)
+     text_(text),
+     outline_(0)
 {
    filter = new SwipeFilter(this);
 
@@ -141,9 +142,14 @@ void SwipeSlider::kinetic(SwipeDirection direction, int offset)
    }
 }
 
+void SwipeSlider::setOutline(int width)
+{
+   outline_ = width;
+}
+
 void SwipeSlider::paintEvent(QPaintEvent *event)
 {
-   static const int size2 = 4;
+   int size2 = 4;
 
    QPainter painter(this);
 
@@ -152,17 +158,35 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
    QPointF b((orientation_ == Qt::Horizontal)? width()-1 : 0,
              (orientation_ == Qt::Vertical)? 0 : height()-1);
 
-   QLinearGradient linGrad(a, b);
+   if (outline_ == 0)
+   {
+      QLinearGradient linGrad(a, b);
 
-   double u = 255*(0.3);
-   double v = 255*(0.9);
+      double u = 255*(0.3);
+      double v = 255*(0.9);
 
-   linGrad.setColorAt(0, QColor(u, u, u));
-   linGrad.setColorAt(1, QColor(v, v, v));
+      linGrad.setColorAt(0, QColor(u, u, u));
+      linGrad.setColorAt(1, QColor(v, v, v));
 
-   painter.setPen(Qt::NoPen);
-   painter.setBrush(linGrad);
-   painter.drawRect(rect());
+      painter.setPen(Qt::NoPen);
+      painter.setBrush(linGrad);
+   }
+   else
+   {
+      QPen pen;
+
+      pen.setColor(QColor(0x88, 0x88, 0x88));
+      pen.setWidth(outline_);
+      pen.setJoinStyle(Qt::MiterJoin);
+
+      painter.setPen(pen);
+      painter.setBrush(QColor(0xee, 0xee, 0xee));
+
+      size2 = 2;
+   }
+
+   painter.drawRect(QRect(outline_/2, outline_/2,
+                          width()-outline_, height()-outline_));
 
    if (orientation_ == Qt::Vertical)
    {
@@ -177,9 +201,9 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
          painter.restore();
       }
 
-      double h = value_*size2 + (1.0-value_)*(height()-1-size2);
+      double h = value_*(size2+outline_) + (1.0-value_)*(height()-1-(size2+outline_));
       painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
-      painter.drawLine(0, h, width()-1, h);
+      painter.drawLine(outline_+1, h, width()-1-outline_-1, h);
    }
    else
    {
@@ -193,8 +217,8 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
          painter.restore();
       }
 
-      double w = (1.0-value_)*size2 + value_*(width()-1-size2);
+      double w = (1.0-value_)*(size2+outline_) + value_*(width()-1-(size2+outline_));
       painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
-      painter.drawLine(w, 0, w, height()-1);
+      painter.drawLine(w, outline_+1, w, height()-1-outline_-1);
    }
 }

@@ -34,6 +34,8 @@ public:
    void setValue(double value);
    void setNormalizedValue(double value);
 
+   void setOutline(int width=0);
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
@@ -55,6 +57,7 @@ protected:
 
    Qt::Orientation orientation_;
    QString text_;
+   int outline_;
 
    virtual void paintEvent(QPaintEvent *event);
 
