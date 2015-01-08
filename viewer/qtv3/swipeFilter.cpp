@@ -4,7 +4,6 @@
 
 #include "swipeFilter.h"
 #include "swipeSlider.h"
-#include "swipeTab.h"
 
 static const int mouse_delta = 16;
 static const double mouse_threshold = 20.0;
@@ -63,7 +62,6 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                      {
                         bool foreground = (dynamic_cast<QScrollBar*>(widget) ||
                                            dynamic_cast<QSlider*>(widget) ||
-                                           dynamic_cast<SwipeTabWidget*>(widget) ||
                                            dynamic_cast<SwipeSlider*>(widget) ||
                                            dynamic_cast<QDial*>(widget));
 
