@@ -59,6 +59,7 @@ protected slots:
 signals:
 
    void click(QWidget *widget);
+   void doubleClick(QWidget *widget);
    void swipe(SwipeDirection direction, double speed);
    void move(SwipeDirection direction, int offset);
    void kinetic(SwipeDirection direction, int offset);
