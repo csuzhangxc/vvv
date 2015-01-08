@@ -212,8 +212,8 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
          painter.save();
          painter.setPen(QColor(160,176,224));
          painter.setFont(QFont("Arial", height()*2/5));
-         painter.translate(height()/6, height()/4);
-         painter.drawText(rect(), Qt::AlignCenter, text_);
+         painter.translate(height()/4, -height()/6);
+         painter.drawText(0, height(), text_);
          painter.restore();
       }
 
