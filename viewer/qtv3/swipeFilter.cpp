@@ -62,8 +62,8 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                      {
                         bool foreground = (dynamic_cast<QScrollBar*>(widget) ||
                                            dynamic_cast<QSlider*>(widget) ||
-                                           dynamic_cast<SwipeSlider*>(widget) ||
-                                           dynamic_cast<QDial*>(widget));
+                                           dynamic_cast<QDial*>(widget) ||
+                                           dynamic_cast<SwipeSlider*>(widget));
 
                         if (widget == parent_)
                            foreground = false;
