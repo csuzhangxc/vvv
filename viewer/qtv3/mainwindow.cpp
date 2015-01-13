@@ -365,6 +365,7 @@ void QTV3MainWindow::createWidgets()
                ":focus { background-color: white; }");
    if (demo_) css+="QGroupBox#viewerGroupBox { border: 0; border-radius: 0; }";
    mainSplitter_->setStyleSheet(css);
+   qApp->setStyle(new Style_tweaks);
 
    // assemble main splitter group
    mainSplitter_->setOrientation(Qt::Vertical);

@@ -468,4 +468,19 @@ private:
    void checkSFX(bool stereo);
 };
 
+class Style_tweaks: public QProxyStyle
+{
+public:
+
+   void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+                      QPainter *painter, const QWidget *widget) const
+   {
+      // do not draw focus rectangles
+      if (element == QStyle::PE_FrameFocusRect)
+         return;
+
+      QProxyStyle::drawPrimitive(element, option, painter, widget);
+   }
+};
+
 #endif
