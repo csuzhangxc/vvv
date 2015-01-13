@@ -481,6 +481,7 @@ public:
 
       QProxyStyle::drawPrimitive(element, option, painter, widget);
    }
+
 };
 
 #endif
