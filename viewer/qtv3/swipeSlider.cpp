@@ -26,7 +26,10 @@ SwipeSlider::SwipeSlider(Qt::Orientation orientation, QString text, QWidget *par
    filter->set_delta(5);
    filter->set_damping(0.001);
 
-   setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+   QSizePolicy qsp(QSizePolicy::Expanding, QSizePolicy::Expanding);
+   qsp.setHeightForWidth(true);
+
+   setSizePolicy(qsp);
 }
 
 SwipeSlider::~SwipeSlider()
@@ -232,7 +235,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       }
 
       double h = value_*(size2+outline_) + (1.0-value_)*(height()-1-(size2+outline_));
-      painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
+      painter.setPen(QPen(QColor(0,32,255,160), 2*size2+1));
       painter.drawLine(outline_+1, h, width()-1-outline_-1, h);
    }
    else

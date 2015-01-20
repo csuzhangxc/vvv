@@ -37,13 +37,39 @@ public:
    void setOutline(int width=0);
    void setBlackOnWhite(bool white=true);
 
+   //! return preferred window size
+   QSize sizeHint() const
+   {
+      return(minimumSizeHint());
+   }
+
    //! return preferred minimum window size
    QSize minimumSizeHint() const
    {
       if (orientation_ == Qt::Vertical)
-         return(QSize(100, 20));
+         return(QSize(100, heightForWidth(100)));
       else
-         return(QSize(20, 100));
+         return(QSize(widthForHeight(100), 100));
+   }
+
+   //! return height for given width
+   int heightForWidth(int x) const
+   {
+      int aspect = 7;
+      int y = x/aspect;
+      int miny = 100/aspect;
+      if (y<miny) y = miny;
+      return(y);
+   }
+
+   //! return width for given height
+   int widthForHeight(int y) const
+   {
+      int aspect = 7;
+      int x = y/aspect;
+      int minx = 100/aspect;
+      if (x<minx) x = minx;
+      return(x);
    }
 
 protected:
