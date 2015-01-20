@@ -191,7 +191,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       {
          pen.setColor(QColor(0x88, 0x88, 0x88));
 
-         QBrush brush(QColor(0xf8, 0xf8, 0xf8));
+         QBrush brush(QColor(0xee, 0xee, 0xee));
 
          painter.setPen(pen);
          painter.setBrush(brush);
