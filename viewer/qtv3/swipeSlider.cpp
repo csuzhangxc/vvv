@@ -10,7 +10,8 @@ SwipeSlider::SwipeSlider(Qt::Orientation orientation, QString text, QWidget *par
      enabled(false),
      orientation_(orientation),
      text_(text),
-     outline_(0)
+     outline_(0),
+     white_(true)
 {
    filter = new SwipeFilter(this);
 
@@ -147,6 +148,11 @@ void SwipeSlider::setOutline(int width)
    outline_ = width;
 }
 
+void SwipeSlider::setBlackOnWhite(bool white)
+{
+   white_ = white;
+}
+
 void SwipeSlider::paintEvent(QPaintEvent *event)
 {
    int size2 = 4;
@@ -175,12 +181,33 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
    {
       QPen pen;
 
-      pen.setColor(QColor(0x88, 0x88, 0x88));
       pen.setWidth(outline_);
       pen.setJoinStyle(Qt::MiterJoin);
 
-      painter.setPen(pen);
-      painter.setBrush(QColor(0xee, 0xee, 0xee));
+      if (white_)
+      {
+         pen.setColor(QColor(0x88, 0x88, 0x88));
+
+         QBrush brush(QColor(0xf8, 0xf8, 0xf8));
+
+         painter.setPen(pen);
+         painter.setBrush(brush);
+      }
+      else
+      {
+         pen.setColor(QColor(0x33, 0x33, 0x33));
+
+         QLinearGradient linGrad(a, b);
+
+         double u = 255*(0.1);
+         double v = 255*(0.3);
+
+         linGrad.setColorAt(0, QColor(u, u, u));
+         linGrad.setColorAt(1, QColor(v, v, v));
+
+         painter.setPen(pen);
+         painter.setBrush(linGrad);
+      }
 
       size2 = 2;
    }
@@ -193,7 +220,10 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       if (text_ != "")
       {
          painter.save();
-         painter.setPen(QColor(160,176,224));
+         if (outline_ == 0)
+            painter.setPen(QColor(160,176,224));
+         else
+            painter.setPen(QColor(192,192,192));
          painter.setFont(QFont("Arial", width()*2/5));
          painter.translate(width()/4, width()/6);
          painter.rotate(90);
@@ -210,7 +240,10 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       if (text_ != "")
       {
          painter.save();
-         painter.setPen(QColor(160,176,224));
+         if (outline_ == 0)
+            painter.setPen(QColor(160,176,224));
+         else
+            painter.setPen(QColor(192,192,192));
          painter.setFont(QFont("Arial", height()*2/5));
          painter.translate(height()/4, -height()/6);
          painter.drawText(0, height(), text_);
@@ -218,7 +251,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
       }
 
       double w = (1.0-value_)*(size2+outline_) + value_*(width()-1-(size2+outline_));
-      painter.setPen(QPen(QColor(0,32,192), 2*size2+1));
+      painter.setPen(QPen(QColor(0,32,255,160), 2*size2+1));
       painter.drawLine(w, outline_+1, w, height()-1-outline_-1);
    }
 }
