@@ -68,7 +68,8 @@ bool SwipeFilter::eventFilter(QObject *obj, QEvent *event)
                         if (widget == parent_)
                            foreground = false;
 
-                        bool background = (dynamic_cast<QGroupBox*>(widget) ||
+                        bool background = (dynamic_cast<QFrame*>(widget) ||
+                                           dynamic_cast<QGroupBox*>(widget) ||
                                            dynamic_cast<QLabel*>(widget));
 
                         if (!foreground)
