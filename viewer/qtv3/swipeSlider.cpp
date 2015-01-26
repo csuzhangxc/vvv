@@ -226,7 +226,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
          if (outline_ == 0)
             painter.setPen(QColor(160,176,224));
          else
-            painter.setPen(QColor(192,192,192));
+            painter.setPen(QColor(128,128,128));
          painter.setFont(QFont("Arial", width()*2/5));
          painter.translate(width()/4, width()/6);
          painter.rotate(90);
@@ -246,7 +246,7 @@ void SwipeSlider::paintEvent(QPaintEvent *event)
          if (outline_ == 0)
             painter.setPen(QColor(160,176,224));
          else
-            painter.setPen(QColor(192,192,192));
+            painter.setPen(QColor(128,128,128));
          painter.setFont(QFont("Arial", height()*2/5));
          painter.translate(height()/4, -height()/6);
          painter.drawText(0, height(), text_);
