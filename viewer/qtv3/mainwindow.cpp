@@ -849,6 +849,8 @@ QStringList QTV3MainWindow::browse(QString path,
 
    setFocus();
 
+   setlocale(LC_NUMERIC, "C");
+
    return(files);
 }
 
