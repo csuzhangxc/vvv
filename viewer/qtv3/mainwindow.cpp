@@ -358,13 +358,14 @@ void QTV3MainWindow::createWidgets()
    sliderLayout_ = new QHBoxLayout;
 
    // set main inherited style sheet
-   QString css("QGroupBox { background-color: #eeeeee; border: 2px solid #999999; border-radius: 5px; }"
+   QString css("QMainWindow { background-color: white; }"
+               "QGroupBox { background-color: #eeeeee; border: 2px solid #999999; border-radius: 5px; }"
                "QGroupBox#mainGroupBox { border: 0; border-radius: 0; }"
                "QGroupBox#viewerGroupBox { background-color: #d9d9d9; }"
                "QSplitter::handle:horizontal { background-color: #d9d9d9; }"
                ":focus { background-color: white; }");
    if (demo_) css+="QGroupBox#viewerGroupBox { border: 0; border-radius: 0; }";
-   mainSplitter_->setStyleSheet(css);
+   setStyleSheet(css);
    qApp->setStyle(new Style_tweaks);
 
    // assemble main splitter group
